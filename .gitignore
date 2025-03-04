@@ -1,18 +1,18 @@
-# File di sistema macOS
+# macOS system files
 .DS_Store
 .AppleDouble
 .LSOverride
 
-# Escludere directory di debug 
+# Exclude debug directories
 *.dSYM/
 
-# Esclude la directory di configurazione di Visual Studio Code
+# Exclude Visual Studio Code configuration directory
 *.vscode/
 
-# Escludere le directory di build di CMake
+# Exclude CMake build directories
 /build
 
-# Escludere file temporanei di Google Drive
+# Exclude Google Drive temporary files
 .Google\ Drive
 *.tmp
 *.tmp.drivedownload
@@ -20,15 +20,15 @@
 *.gsheet
 *.gslides
 
-# File di log
+# Log files
 *.log
 
-# File di cache
+# Cache files
 .cache
 *.cache
 *.tmp
 
-# File di backup
+# Backup files
 *~
 *.swp
 *.swo
@@ -40,7 +40,7 @@
 .emacs.desktop
 .emacs.desktop.lock
 
-# File di build
+# Build files
 /build/
 *.o
 *.out
@@ -48,6 +48,6 @@
 *.dll
 *.so
 
-# File temporanei
+# Temporary files
 .tmp.driveupload
 .fake
