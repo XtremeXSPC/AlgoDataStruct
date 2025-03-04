@@ -18,7 +18,8 @@
 
 ## Implemented Data Structures
 
-### Linear Structures
+<details>
+<summary><strong>Linear Structures</strong></summary>
 
 - **Arrays**
   - Static Array
@@ -40,8 +41,10 @@
   - Priority Queue
   - Double-ended Queue (Deque)
   - Circular Queue
+</details>
 
-### Hierarchical Structures
+<details>
+<summary><strong>Hierarchical Structures</strong></summary>
 
 - **Trees**
   - Binary Tree
@@ -64,8 +67,10 @@
   - Binomial Heap
   - Leftist Heap
   - Skew Heap
+</details>
 
-### Associative Structures (+)
+<details>
+<summary><strong>Associative Structures</strong> (+)</summary>
 
 - **Dictionaries/Maps**
   - Dictionary/Map (generic implementation)
@@ -75,8 +80,10 @@
   - MultiMap (map with duplicate keys)
   - BiMap (bidirectional map)
   - Immutable Map implementations
+</details>
 
-### Hashing Structures (+)
+<details>
+<summary><strong>Hashing Structures</strong> (+)</summary>
 
 - **Hash Tables**
   - Hash table with chaining
@@ -86,8 +93,10 @@
   - Bloom Filter
   - Count-Min Sketch
   - HyperLogLog
+</details>
 
-### Graph Structures (+)
+<details>
+<summary><strong>Graph Structures</strong> (+)</summary>
 
 - **Graph Representations**
   - Adjacency Matrix
@@ -97,8 +106,10 @@
   - Directed Graphs
   - Multigraphs
   - Hypergraphs
+</details>
 
-### String Data Structures (+)
+<details>
+<summary><strong>String Data Structures</strong> (+)</summary>
 
 - **String Processing**
   - Suffix Tree
@@ -106,8 +117,10 @@
   - Suffix Automaton
   - FM-index
   - Rope (for efficient string manipulation)
+</details>
 
-### Spatial Data Structures (+)
+<details>
+<summary><strong>Spatial Data Structures</strong> (+)</summary>
 
 - **Spatial Search Structures**
   - KD-Tree
@@ -115,8 +128,10 @@
   - Quad-tree and Oct-tree
   - Voronoi Diagram
   - Range Trees (multidimensional)
+</details>
 
-### Advanced Structures (+)
+<details>
+<summary><strong>Advanced Structures</strong> (+)</summary>
 
 - **Range Query Structures**
   - Sparse Table
@@ -147,6 +162,7 @@
   - LRU Cache
   - LFU Cache
   - Time Series Data Structures
+</details>
 
 (+) *Not implemented yet but I'm working on it!*
 
