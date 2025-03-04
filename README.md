@@ -65,6 +65,17 @@
   - Leftist Heap
   - Skew Heap
 
+### Associative Structures (+)
+
+- **Dictionaries/Maps**
+  - Dictionary/Map (generic implementation)
+  - HashMap/unordered_map
+  - TreeMap/map (ordered map based on tree)
+  - LinkedHashMap (ordered by insertion)
+  - MultiMap (map with duplicate keys)
+  - BiMap (bidirectional map)
+  - Immutable Map implementations
+
 ### Hashing Structures (+)
 
 - **Hash Tables**
@@ -73,6 +84,37 @@
   - Cuckoo Hashing
   - Perfect Hash Table
   - Bloom Filter
+  - Count-Min Sketch
+  - HyperLogLog
+
+### Graph Structures (+)
+
+- **Graph Representations**
+  - Adjacency Matrix
+  - Adjacency List
+  - Disjoint Sets (Union-Find)
+  - Weighted Graphs
+  - Directed Graphs
+  - Multigraphs
+  - Hypergraphs
+
+### String Data Structures (+)
+
+- **String Processing**
+  - Suffix Tree
+  - Suffix Array
+  - Suffix Automaton
+  - FM-index
+  - Rope (for efficient string manipulation)
+
+### Spatial Data Structures (+)
+
+- **Spatial Search Structures**
+  - KD-Tree
+  - R-Tree
+  - Quad-tree and Oct-tree
+  - Voronoi Diagram
+  - Range Trees (multidimensional)
 
 ### Advanced Structures (+)
 
@@ -81,24 +123,30 @@
   - 2D Segment Tree
   - Range Trees
   
-- **Spatial Search Structures**
-  - KD-Tree
-  - R-Tree
-  
-- **Graphs**
-  - Adjacency Matrix
-  - Adjacency List
-  - Disjoint Sets (Union-Find)
-  
 - **Probabilistic Structures**
   - Skip List
   - Treap
   - Splay Tree
+  - MinHash
+  
+- **Concurrent Structures**
+  - Thread-safe Lists
+  - Concurrent Hash Maps
+  - Lock-free Data Structures
+  
+- **Persistent Data Structures**
+  - Persistent Arrays
+  - Persistent Lists
+  - Persistent Maps
+  
+- **Big Data Structures**
+  - Log-Structured Merge Tree (LSM Tree)
+  - External Memory Data Structures
   
 - **Other Structures**
-  - Rope (for efficient string manipulation)
   - LRU Cache
-  - Persistent Data Structures
+  - LFU Cache
+  - Time Series Data Structures
 
 (+) *Not implemented yet but I'm working on it!*
 
@@ -110,14 +158,26 @@ AlgoDataStruct/
 │   ├── linear/
 │   ├── trees/
 │   ├── heaps/
+│   ├── associative/
 │   ├── hash/
+│   ├── graph/
+│   ├── string/
+│   ├── spatial/
+│   ├── concurrent/
+│   ├── persistent/
 │   ├── advanced/
 │   └── utils/
 ├── cpp/
 │   ├── linear/
 │   ├── trees/
 │   ├── heaps/
+│   ├── associative/
 │   ├── hash/
+│   ├── graph/
+│   ├── string/
+│   ├── spatial/
+│   ├── concurrent/
+│   ├── persistent/
 │   ├── advanced/
 │   └── utils/
 ├── docs/
@@ -195,6 +255,38 @@ int main() {
 }
 ```
 
+## Example: Using HashMap
+
+```java
+// Java HashMap example
+import datastructures.associative.HashMap;
+
+public class Main {
+    public static void main(String[] args) {
+        HashMap<String, Integer> scores = new HashMap<>();
+        
+        // Adding key-value pairs
+        scores.put("Alice", 95);
+        scores.put("Bob", 89);
+        scores.put("Charlie", 92);
+        
+        // Retrieving values
+        System.out.println("Bob's score: " + scores.get("Bob")); // 89
+        
+        // Checking if a key exists
+        System.out.println("Does David have a score? " + scores.containsKey("David")); // false
+        
+        // Updating a value
+        scores.put("Bob", 91);
+        System.out.println("Bob's updated score: " + scores.get("Bob")); // 91
+        
+        // Removing a key-value pair
+        scores.remove("Charlie");
+        System.out.println("Charlie's score exists? " + scores.containsKey("Charlie")); // false
+    }
+}
+```
+
 ## Contributions
 
 Contributions are welcome! Please read our contribution guidelines before submitting a pull request.
@@ -206,10 +298,25 @@ Contributions are welcome! Please read our contribution guidelines before submit
 
 ## Learning Resources
 
+### Essential References
 - [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition) - Cormen, Leiserson, Rivest, Stein
 - [Algorithms, 4th Edition](https://algs4.cs.princeton.edu/home/) - Sedgewick & Wayne
 - [Data Structure in C++](https://www.wiley.com/en-us/Data+Structures+and+Algorithms+in+C%2B%2B%2C+2nd+Edition-p-9780470383278) - Michael T. Goodrich, Roberto Tamassia, David M. Mount
 - [The Art of Computer Programming](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) - Knuth
+- [Algorithm Design Manual](https://www.springer.com/gp/book/9781848000698) - Steven S. Skiena
+
+### Advanced Topics
+- [Advanced Data Structures](https://www.cambridge.org/core/books/advanced-data-structures/D58D5C2D12F23464E0406320554A251B) - Peter Brass
+- [Purely Functional Data Structures](https://www.cambridge.org/core/books/purely-functional-data-structures/0409255DA1B48FA731859AC72E34D494) - Chris Okasaki
+- [Graph Algorithms](https://www.amazon.com/Graph-Algorithms-Shimon-Even/dp/0716780453) - Shimon Even
+- [Data Structures and Network Algorithms](https://epubs.siam.org/doi/book/10.1137/1.9781611970265) - Robert Endre Tarjan
+- [Handbook of Data Structures and Applications](https://www.routledge.com/Handbook-of-Data-Structures-and-Applications/Mehta-Sahni/p/book/9780367571481) - Dinesh P. Mehta, Sartaj Sahni
+
+### Specialized Resources
+- [Pearls of Functional Algorithm Design](https://www.cambridge.org/core/books/pearls-of-functional-algorithm-design/B0CF0A666A65F6A1E3B1C509AF8BDAAA) - Richard Bird
+- [Algorithms and Data Structures: The Basic Toolbox](https://www.springer.com/gp/book/9783540779773) - Kurt Mehlhorn, Peter Sanders
+- [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) - Antti Laaksonen
+- [Real-World Algorithms: A Beginner's Guide](https://mitpress.mit.edu/books/real-world-algorithms) - Panos Louridas
 
 ## License
 
