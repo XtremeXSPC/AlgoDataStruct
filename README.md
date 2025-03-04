@@ -6,7 +6,7 @@
 
 ## Description
 
-**Data-Structures** is a comprehensive educational library that implements a wide range of data structures in Java and C++. Designed for students, this library offers clean, well-documented, and efficient implementations of fundamental and advanced data structures.
+**AlgoDataStruct** is a comprehensive educational library that implements a wide range of data structures in Java and C++. Designed for students, this library offers clean, well-documented, and efficient implementations of fundamental and advanced data structures.
 
 ## Goals
 
@@ -58,7 +58,7 @@
   - Suffix Tree
   - Quad-tree and Oct-tree
   
-- **Heaps**
+- **Heaps** (+)
   - Binary Heap
   - Fibonacci Heap
   - Binomial Heap
