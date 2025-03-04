@@ -18,7 +18,7 @@
 
 ## Implemented Data Structures
 
-<details open>
+<details>
 <summary><strong>Linear Structures</strong></summary>
 
 - **Arrays**
@@ -128,6 +128,12 @@
   - Quad-tree and Oct-tree
   - Voronoi Diagram
   - Range Trees (multidimensional)
+  
+- **Nearest Neighbor Search Structures**
+  - HNSW (Hierarchical Navigable Small World)
+  - VP-Tree (Vantage-Point Tree)
+  - Cover Tree
+  - ANNOY (Approximate Nearest Neighbors Oh Yeah)
 </details>
 
 <details>
@@ -333,6 +339,12 @@ Contributions are welcome! Please read our contribution guidelines before submit
 - [Algorithms and Data Structures: The Basic Toolbox](https://www.springer.com/gp/book/9783540779773) - Kurt Mehlhorn, Peter Sanders
 - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) - Antti Laaksonen
 - [Real-World Algorithms: A Beginner's Guide](https://mitpress.mit.edu/books/real-world-algorithms) - Panos Louridas
+
+### Spatial and Nearest Neighbor Search
+- [Similarity Search: The Metric Space Approach](https://www.springer.com/gp/book/9780387291468) - Pavel Zezula, Giuseppe Amato, Vlastislav Dohnal, Michal Batko
+- [Nearest Neighbor Methods in Learning and Vision](https://mitpress.mit.edu/books/nearest-neighbor-methods-learning-and-vision) - Gregory Shakhnarovich, Trevor Darrell, Piotr Indyk
+- [Foundations of Multidimensional and Metric Data Structures](https://www.sciencedirect.com/book/9780123694461/foundations-of-multidimensional-and-metric-data-structures) - Hanan Samet
+- [Computational Geometry: Algorithms and Applications](https://www.springer.com/gp/book/9783540779735) - Mark de Berg, Otfried Cheong, Marc van Kreveld, Mark Overmars
 
 ## License
 
