@@ -14,7 +14,7 @@
 - Include comprehensive documentation with theoretical explanations
 - Demonstrate implementation differences between Java and C++
 - Offer time and space complexity analysis (not always)
-- Include unit tests and usage examples (not always)
+- Include unit tests (not always) and usage examples
 
 ## Implemented Data Structures
 
@@ -65,7 +65,7 @@
   - Leftist Heap
   - Skew Heap
 
-### Hashing Structures
+### Hashing Structures (+)
 
 - **Hash Tables**
   - Hash table with chaining
@@ -74,7 +74,7 @@
   - Perfect Hash Table
   - Bloom Filter
 
-### Advanced Structures
+### Advanced Structures (+)
 
 - **Range Query Structures**
   - Sparse Table
@@ -99,6 +99,8 @@
   - Rope (for efficient string manipulation)
   - LRU Cache
   - Persistent Data Structures
+
+(+) *Not implemented yet but I'm working on it!*
 
 ## Repository Organization
 
@@ -170,7 +172,7 @@ public class Main {
 
 ```cpp
 // Example usage of an AVL Tree
-#include "datastructures/trees/avl_tree.h"
+#include "avl_tree.h" // Make file does the work
 #include <iostream>
 
 int main() {
