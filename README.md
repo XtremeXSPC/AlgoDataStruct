@@ -215,4 +215,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-For questions or suggestions, please open an issue in this repository or contact the main maintainer at: maintainer@algodatastruct.org
+For questions or suggestions, please open an issue in this repository.
