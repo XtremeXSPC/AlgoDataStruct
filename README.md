@@ -18,7 +18,7 @@
 
 ## Implemented Data Structures
 
-<details>
+<details open>
 <summary><strong>Linear Structures</strong></summary>
 
 - **Arrays**
