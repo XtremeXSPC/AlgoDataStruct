@@ -119,7 +119,7 @@ We now define the semantic behavior of each operation through axioms that specif
 
 $\forall L : \text{DoublyLinkedList}<T>$:
 
-1. $L.\mbox{size\_t} = |L|$
+1. $L.\text{size\_t} = |L|$
 2. If $|L| = 0$ then $L.\text{head} = L.\text{tail} = \text{nullptr}$
 3. If $|L| > 0$ then $L.\text{head} \neq \text{nullptr} \land L.\text{tail} \neq \text{nullptr}$
 4. If $|L| = 1$ then $L.\text{head} = L.\text{tail}$
