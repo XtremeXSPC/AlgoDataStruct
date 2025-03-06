@@ -8,6 +8,8 @@
 
 **AlgoDataStruct** is a comprehensive educational library that implements a wide range of data structures in Java and C++. Designed for students, this library offers clean, well-documented, and efficient implementations of fundamental and advanced data structures.
 
+Warning: this repository is not complete as I am implementing the missing data structures.
+
 ## Goals
 
 - Provide clear reference implementations for each data structure
