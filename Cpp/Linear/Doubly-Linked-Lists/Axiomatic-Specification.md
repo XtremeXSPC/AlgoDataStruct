@@ -2,7 +2,7 @@
 
 ## 1. Description
 
-This specification presents a formal description of the doubly linked list data structure, defining both syntactic aspects (structure and interface) and semantic aspects (behavior of operations) through an axiomatic approach.
+This specification presents a formal description of the "Doubly Linked List" data structure, defining both syntactic aspects (structure and interface) and semantic aspects (behavior of operations) through an axiomatic approach.
 
 ## 2. Syntactic Definition
 
@@ -15,8 +15,8 @@ $\text{DoublyLinkedList}<T>$ is a data structure parameterized over a generic ty
 - $\text{Node}<T>$: internal structure that contains:
 
     - $\text{data} : T$ - the value of the element
-    - $\text{next} : \text{shared\_ptr} \ <\text{Node}<T>>$ - pointer to the next node
-    - $\text{prev} : \text{weak\_ptr}<\text{Node}<T>>$ - pointer to the previous node
+    - $\text{next} : \text{shared\textunderscore{}ptr} \ <\text{Node}<T>>$ - pointer to the next node
+    - $\text{prev} : \text{weak\textunderscore{}ptr}<\text{Node}<T>>$ - pointer to the previous node
 
 - $\text{Iterator}$: internal class that provides access to elements
     
@@ -26,9 +26,9 @@ $\text{DoublyLinkedList}<T>$ is a data structure parameterized over a generic ty
 
 $\text{DoublyLinkedList}<T>$ maintains the following attributes:
 
-- $\text{head} : \text{shared\_ptr}<\text{Node}<T>>$ - pointer to the first node
-- $\text{tail} : \text{shared\_ptr}<\text{Node}<T>>$ - pointer to the last node
-- $\text{size\_} : \text{size\_t}$ - number of elements in the list
+- $\text{head} : \text{shared\textunderscore{}ptr}<\text{Node}<T>>$ - pointer to the first node
+- $\text{tail} : \text{shared\textunderscore{}ptr}<\text{Node}<T>>$ - pointer to the last node
+- $\text{size\textunderscore{}t} : \text{size\textunderscore{}t}$ - number of elements in the list
 
 ## 3. Syntactic Interface
 
@@ -119,7 +119,7 @@ We now define the semantic behavior of each operation through axioms that specif
 
 $\forall L : \text{DoublyLinkedList}<T>$:
 
-1. $L.\text{size\_t} = |L|$
+1. $L.\text{size\textunderscore{}t} = |L|$
 2. If $|L| = 0$ then $L.\text{head} = L.\text{tail} = \text{nullptr}$
 3. If $|L| > 0$ then $L.\text{head} \neq \text{nullptr} \land L.\text{tail} \neq \text{nullptr}$
 4. If $|L| = 1$ then $L.\text{head} = L.\text{tail}$
@@ -182,7 +182,7 @@ $L.\text{size}() \Rightarrow s$, where $s = |L|$
 
 #### push_front
 
-$L$.$\text{push\_front}(e) \Rightarrow L'$, where:
+$L$.$\text{push\textunderscore{}front}(e) \Rightarrow L'$, where:
 
 - $|L'| = |L| + 1$
 - $L'[0] = e$
@@ -190,7 +190,7 @@ $L$.$\text{push\_front}(e) \Rightarrow L'$, where:
 
 #### push_back
 
-$L.\text{push\_back}(e) \Rightarrow L'$, where:
+$L.\text{push\textunderscore{}back}(e) \Rightarrow L'$, where:
 
 - $|L'| = |L| + 1$
 - $L'[|L'|-1] = e$
@@ -199,7 +199,7 @@ $L.\text{push\_back}(e) \Rightarrow L'$, where:
 #### pop_front
 
 $\text{Pre: } |L| > 0$  
-$L.\text{pop\_front}() \Rightarrow L'$, where:
+$L.\text{pop\textunderscore{}front}() \Rightarrow L'$, where:
 
 - $|L'| = |L| - 1$
 - $\forall i \in {0, 1, ..., |L'|-1}: L'[i] = L[i+1]$
@@ -207,7 +207,7 @@ $L.\text{pop\_front}() \Rightarrow L'$, where:
 #### pop_back
 
 $\text{Pre: } |L| > 0$  
-$L.\text{pop\_back}() \Rightarrow L'$, where:
+$L.\text{pop\textunderscore{}back}() \Rightarrow L'$, where:
 
 - $|L'| = |L| - 1$
 - $\forall i \in {0, 1, ..., |L'|-1}: L'[i] = L[i]$
