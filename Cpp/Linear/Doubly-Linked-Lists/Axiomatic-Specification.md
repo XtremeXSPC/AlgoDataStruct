@@ -15,8 +15,8 @@ $\text{DoublyLinkedList}<T>$ is a data structure parameterized over a generic ty
 - $\text{Node}<T>$: internal structure that contains:
 
     - $\text{data} : T$ - the value of the element
-    - $\text{next} : \text{shared\_ptr} \ <\text{Node}<T>>$ - pointer to the next node
-    - $\text{prev} : \text{weak\_ptr}<\text{Node}<T>>$ - pointer to the previous node
+    - $\text{next} : \text{shared-ptr} \ <\text{Node}<T>>$ - pointer to the next node
+    - $\text{prev} : \text{weak-ptr}<\text{Node}<T>>$ - pointer to the previous node
 
 - $\text{Iterator}$: internal class that provides access to elements
     
@@ -26,9 +26,9 @@ $\text{DoublyLinkedList}<T>$ is a data structure parameterized over a generic ty
 
 $\text{DoublyLinkedList}<T>$ maintains the following attributes:
 
-- $\text{head} : \text{shared\_ptr}<\text{Node}<T>>$ - pointer to the first node
-- $\text{tail} : \text{shared\_ptr}<\text{Node}<T>>$ - pointer to the last node
-- $\text{size\_t} : \text{size\_t}$ - number of elements in the list
+- $\text{head} : \text{shared-ptr}<\text{Node}<T>>$ - pointer to the first node
+- $\text{tail} : \text{shared-ptr}<\text{Node}<T>>$ - pointer to the last node
+- $\text{size\_t} : \text{size-t}$ - number of elements in the list
 
 ## 3. Syntactic Interface
 
