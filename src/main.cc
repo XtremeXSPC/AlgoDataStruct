@@ -1,3 +1,4 @@
+//===--------------------------------------------------------------------------===//
 /**
  * @file main.cc
  * @author Costantino Lombardi
@@ -5,9 +6,10 @@
  * @version 0.2
  * @date 2025-06-30
  *
- * @copyright Copyright (c) 2025
+ * @copyright MIT License 2025
  *
  */
+//===--------------------------------------------------------------------------===//
 
 #include "../include/ads/lists/Doubly_Linked_List.hpp"
 #include <iostream>
