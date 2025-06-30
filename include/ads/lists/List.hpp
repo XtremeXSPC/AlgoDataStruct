@@ -16,11 +16,11 @@
 
 #include <cstddef>
 
-namespace asd::list {
+namespace ads ::list {
 
 template <typename T>
 class List {
-
+public:
   // Un distruttore virtuale e' obbligatorio nelle classi base polimorfiche.
   virtual ~List() = default;
 
@@ -56,6 +56,6 @@ class List {
   virtual void clear() = 0;
 };
 
-} // namespace asd::list
+} // namespace ads::list
 
 #endif // LIST_HPP
