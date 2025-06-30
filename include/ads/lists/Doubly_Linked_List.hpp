@@ -98,6 +98,7 @@ public:
   /** @brief Distruttore. Svuota la lista e dealloca tutti i nodi. */
   ~DoublyLinkedList() override;
 
+  // Costruttore e assegnazione di copia sono disabilitati.
   DoublyLinkedList(const DoublyLinkedList&)            = delete;
   DoublyLinkedList& operator=(const DoublyLinkedList&) = delete;
 
