@@ -1,0 +1,5 @@
+Checks: "-*,clang-analyzer-*,performance-*,bugprone-*,readability-*,portability-*,modernize-*"
+WarningsAsErrors: ""
+HeaderFilterRegex: '^(include|src)/.*'
+AnalyzeTemporaryDtors: false
+FormatStyle: none
