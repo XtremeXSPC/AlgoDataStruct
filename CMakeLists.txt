@@ -1,5 +1,5 @@
 # Richiede la versione minima di CMake e definisce il nome del progetto
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.24)
 project(AlgoDataStructProject LANGUAGES CXX)
 
 # Imposta lo standard C++ a C++20 
