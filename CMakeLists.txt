@@ -34,15 +34,39 @@ target_sources(ads_lib
 )
 
 # --- Eseguibile per i Test ---
-add_executable(Tester src/main.cc)
-target_compile_options(Tester PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
-target_link_options   (Tester PRIVATE -fsanitize=address)
+add_executable         (Tester src/main.cc)
+target_compile_options (Tester PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
+target_link_options    (Tester PRIVATE -fsanitize=address)
+target_link_libraries  (Tester PRIVATE ads_lib)
+
+# Target 'run' per eseguire comodamente l'eseguibile
+# add_custom_target   (run COMMAND $<TARGET_FILE:Tester> USES_TERMINAL)
+add_custom_target     (run COMMAND $<TARGET_FILE:Tester> USES_TERMINAL)
 
 # Collega l'eseguibile alla nostra libreria
 target_link_libraries(Tester PRIVATE ads_lib)
 
-# Target 'run' per eseguire comodamente l'eseguibile
-add_custom_target(run
-  COMMAND $<TARGET_FILE:Tester>
-  USES_TERMINAL
+# --- INTEGRAZIONE GOOGLETEST E UNIT TESTING ---
+# Abilita la directory dei test
+enable_testing()
+
+# Usa FetchContent per ottenere GoogleTest
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
+# Rende GoogleTest disponibile
+FetchContent_MakeAvailable(googletest)
+
+# Crea l'eseguibile per i test
+add_executable(runTests tests/Test_DoublyLinkedList.cpp)
+target_compile_options(runTests PRIVATE -Wall -Wextra -pedantic -g)
+
+# Collega il nostro eseguibile dei test alla nostra libreria e a GoogleTest
+target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
+
+# Aggiunge il nostro eseguibile al set di test gestito da CTest
+include(GoogleTest)
+gtest_add_tests(TARGET runTests)
+
