@@ -35,7 +35,8 @@ target_sources(ads_lib
 
 # --- Eseguibile per i Test ---
 add_executable(Tester src/main.cc)
-target_compile_options(Tester PRIVATE -Wall -Wextra -pedantic -g)
+target_compile_options(Tester PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
+target_link_options   (Tester PRIVATE -fsanitize=address)
 
 # Collega l'eseguibile alla nostra libreria
 target_link_libraries(Tester PRIVATE ads_lib)

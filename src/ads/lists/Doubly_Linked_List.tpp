@@ -17,8 +17,7 @@
 
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
 
-// Il modo corretto: aprire lo stesso namespace dell'header.
-namespace ads::list {
+using namespace ads;
 
 // --- Implementazione Iteratore (pulita) ---
 template <typename T>
@@ -84,7 +83,6 @@ DoublyLinkedList<T>& DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) no
   return *this;
 }
 
-// ... push, pop, front, back, etc. rimangono invariati ...
 template <typename T>
 template <typename... Args>
 T& DoublyLinkedList<T>::emplace_back(Args&&... args) {
@@ -204,13 +202,39 @@ void DoublyLinkedList<T>::clear() noexcept {
   size_ = 0;
 }
 
-// --- Funzione `insert` (Implementazione completa) ---
-namespace { // Helper in un namespace anonimo per evitare conflitti
+// ----- insert_impl() -----
 template <typename T, typename U>
 typename DoublyLinkedList<T>::iterator insert_impl(DoublyLinkedList<T>& list, typename DoublyLinkedList<T>::iterator pos, U&& value) {
-  // ... logica di insert ... (non esposta direttamente)
+  // 1) casi limite
+  if (pos == list.begin()) {
+    list.emplace_front(std::forward<U>(value));
+    return list.begin();
+  }
+  if (pos == list.end()) {
+    list.emplace_back(std::forward<U>(value));
+    return typename DoublyLinkedList<T>::iterator(list.tail_);
+  }
+
+  // 2) alias al Node interno
+  using Node = typename DoublyLinkedList<T>::Node;
+
+  // 3) inserimento nel mezzo
+  Node* pos_node  = pos.node_ptr_;
+  Node* prev_node = pos_node->prev;
+
+  auto                                   new_node = std::make_unique<Node>(prev_node, std::forward<U>(value));
+  typename DoublyLinkedList<T>::iterator new_it(new_node.get());
+
+  // ricolleghiamo
+  new_node->next  = std::move(prev_node->next);
+  prev_node->next = std::move(new_node);
+  pos_node->prev  = prev_node->next.get();
+
+  // aggiorniamo la size
+  list.size_++;
+
+  return new_it;
 }
-} // namespace
 
 template <typename T>
 typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::insert(iterator pos, const T& value) {
@@ -223,39 +247,63 @@ typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::insert(iterator pos,
     return iterator(tail_);
   }
 
+  using Node      = typename DoublyLinkedList<T>::Node;
   Node* pos_node  = pos.node_ptr_;
   Node* prev_node = pos_node->prev;
 
-  auto new_node   = std::make_unique<Node>(prev_node, value);
-  new_node->next  = std::move(prev_node->next);
-  pos_node->prev  = new_node.get();
+  // 1) costruiamo il nuovo nodo
+  auto new_node = std::make_unique<Node>(prev_node, value);
+
+  // 2) ricolleghiamo avanti
+  new_node->next = std::move(prev_node->next);
+
+  // 3) IMPORTANTISSIMO: aggiorniamo anche il prev del nodo che segue il new_node
+  if (new_node->next)
+    new_node->next->prev = new_node.get();
+
+  // 4) infine inseriamo new_node nella lista
   prev_node->next = std::move(new_node);
 
-  size_++;
-  return iterator(pos_node->prev);
+  // 5) aggiorniamo size
+  ++size_;
+
+  // restituiamo l’iteratore sul nodo appena inserito
+  return iterator(prev_node->next.get());
 }
 
 template <typename T>
 typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::insert(iterator pos, T&& value) {
   if (pos == begin()) {
-    push_front(std::move(value));
+    push_front(value);
     return begin();
   }
   if (pos == end()) {
-    push_back(std::move(value));
+    push_back(value);
     return iterator(tail_);
   }
 
+  using Node      = typename DoublyLinkedList<T>::Node;
   Node* pos_node  = pos.node_ptr_;
   Node* prev_node = pos_node->prev;
 
-  auto new_node   = std::make_unique<Node>(prev_node, std::move(value));
-  new_node->next  = std::move(prev_node->next);
-  pos_node->prev  = new_node.get();
+  // 1) costruiamo il nuovo nodo
+  auto new_node = std::make_unique<Node>(prev_node, value);
+
+  // 2) ricolleghiamo avanti
+  new_node->next = std::move(prev_node->next);
+
+  // 3) IMPORTANTISSIMO: aggiorniamo anche il prev del nodo che segue il new_node
+  if (new_node->next)
+    new_node->next->prev = new_node.get();
+
+  // 4) infine inseriamo new_node nella lista
   prev_node->next = std::move(new_node);
 
-  size_++;
-  return iterator(pos_node->prev);
+  // 5) aggiorniamo size
+  ++size_;
+
+  // restituiamo l’iteratore sul nodo appena inserito
+  return iterator(prev_node->next.get());
 }
 
 template <typename T>
@@ -263,19 +311,32 @@ typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::erase(iterator pos) 
   if (pos == end() || is_empty()) {
     throw std::logic_error("cannot erase invalid iterator");
   }
-  Node*    to_erase = pos.node_ptr_;
-  iterator next_it(to_erase->next.get());
 
-  if (to_erase->prev == nullptr) { // Testa
-    pop_front();
-  } else if (to_erase->next == nullptr) { // Coda
-    pop_back();
-  } else { // In mezzo
-    to_erase->prev->next       = std::move(to_erase->next);
-    to_erase->prev->next->prev = to_erase->prev;
-    size_--;
+  // 1) Prendi il nodo da rimuovere e il suo successore
+  Node* node_to_remove = pos.node_ptr_;
+  Node* next_node      = node_to_remove->next.get();
+
+  // 2) Ricollega il prev del successore (se esiste)
+  if (next_node) {
+    next_node->prev = node_to_remove->prev;
+  } else {
+    // se non c'è successore, stiamo cancellando la tail
+    tail_ = node_to_remove->prev;
   }
-  return next_it;
+
+  // 3) Ricollega il next del precedente (se esiste)
+  if (node_to_remove->prev) {
+    node_to_remove->prev->next = std::move(node_to_remove->next);
+  } else {
+    // se non c'è precedente, stiamo cancellando la head
+    head_ = std::move(node_to_remove->next);
+  }
+
+  // 4) Aggiorna la size
+  --size_;
+
+  // 5) Restituisci l’iteratore al successore (posizione “next”)
+  return iterator(next_node);
 }
 
 template <typename T>
@@ -313,5 +374,12 @@ template <typename T>
 typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::end() noexcept {
   return iterator(nullptr);
 }
+template <typename T>
+auto DoublyLinkedList<T>::begin() const noexcept -> iterator {
+  return iterator(head_.get());
+}
 
-} // namespace ads::list
+template <typename T>
+auto DoublyLinkedList<T>::end() const noexcept -> iterator {
+  return iterator(nullptr);
+}

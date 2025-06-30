@@ -14,7 +14,7 @@
 
 #ifndef DOUBLY_LINKED_LIST_HPP
 #define DOUBLY_LINKED_LIST_HPP
-#include "List.hpp"
+#include <ads/lists/List.hpp>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -28,7 +28,32 @@ private:
   struct Node;
 
 public:
-  class iterator;
+  // --- CLASSE ITERATORE ---
+  class iterator {
+  public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type        = T;
+    using difference_type   = std::ptrdiff_t;
+    using pointer           = T*;
+    using reference         = T&;
+
+    iterator(Node* ptr = nullptr) : node_ptr_(ptr) {}
+
+    reference operator*() const;
+    pointer   operator->() const;
+
+    iterator& operator++();
+    iterator  operator++(int);
+    iterator& operator--();
+    iterator  operator--(int);
+
+    bool operator==(const iterator& other) const { return node_ptr_ == other.node_ptr_; }
+    bool operator!=(const iterator& other) const { return node_ptr_ != other.node_ptr_; }
+
+  private:
+    Node* node_ptr_;
+    friend class DoublyLinkedList<T>;
+  };
 
   // --- COSTRUTTORI, DISTRUTTORE, ASSEGNAZIONE ---
   DoublyLinkedList();
@@ -72,39 +97,19 @@ public:
   iterator erase(iterator pos);
   void     reverse() noexcept;
 
-  // --- ACCESSO AGLI ITERATORI ---
+  // --- ACCESSO AGLI ITERATORI (non-const) ---
   iterator begin() noexcept;
   iterator end() noexcept;
 
-public:
-  // --- CLASSE ITERATORE ---
-  class iterator {
-  public:
-    using iterator_category = std::bidirectional_iterator_tag;
-    using value_type        = T;
-    using difference_type   = std::ptrdiff_t;
-    using pointer           = T*;
-    using reference         = T&;
-
-    iterator(Node* ptr = nullptr) : node_ptr_(ptr) {}
-
-    reference operator*() const;
-    pointer   operator->() const;
-
-    iterator& operator++();
-    iterator  operator++(int);
-    iterator& operator--();
-    iterator  operator--(int);
-
-    bool operator==(const iterator& other) const { return node_ptr_ == other.node_ptr_; }
-    bool operator!=(const iterator& other) const { return node_ptr_ != other.node_ptr_; }
-
-  private:
-    Node* node_ptr_;
-    friend class DoublyLinkedList<T>;
-  };
+  // --- ACCESSO AGLI ITERATORI (const) ---
+  iterator begin() const noexcept;
+  iterator end() const noexcept;
 
 private:
+  // FUNZIONI AUSILIARIE
+  template <typename U>
+  iterator insert_impl(iterator pos, U&& value);
+
   // --- NODO INTERNO ---
   struct Node {
     T                     data;
