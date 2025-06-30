@@ -1,9 +1,21 @@
-#include "../include/ads/lists/Doubly_Linked_List.hpp" // Includi la tua implementazione
-#include <gtest/gtest.h>                               // Includi Google Test
+//===--------------------------------------------------------------------------===//
+/**
+ * @file Test_DoublyLinkedList.cpp
+ * @author Costantino Lombardi
+ * @brief Test cases per DoublyLinkedList
+ * @version 0.1
+ * @date 2025-06-30
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+//===--------------------------------------------------------------------------===//
+
+#include "../include/ads/lists/Doubly_Linked_List.hpp"
+#include <gtest/gtest.h>
 #include <string>
 #include <vector>
 
-// Usiamo il namespace per comodità
 using namespace ads::list;
 
 // Test fixture per inizializzare una lista pulita per ogni test
@@ -93,7 +105,7 @@ TEST_F(DoublyLinkedListTest, PopBack) {
 
   list.pop_back();
   EXPECT_TRUE(list.is_empty());
-  // Ora ci aspettiamo la nostra eccezione personalizzata
+  // Qui ci aspettiamo l'eccezione definita
   EXPECT_THROW(list.pop_back(), ListException);
 }
 
@@ -193,7 +205,7 @@ TEST_F(DoublyLinkedListTest, EraseComprehensive) {
   EXPECT_EQ(*it, 30);
   EXPECT_EQ(list.size(), 2);
 
-  // 3. Rimuovi dalla coda (MODO CORRETTO E SICURO)
+  // 3. Rimuovi dalla coda
   auto it_to_tail = list.begin();
   ++it_to_tail; // Ora punta a 40 (l'ultimo elemento)
   it = list.erase(it_to_tail);

@@ -2,8 +2,6 @@
 
 A sophisticated implementation of a doubly linked list in C++ with modern design patterns and advanced programming constructs.
 
-## Overview
-
 The `DoublyLinkedList<T>` class is a complete implementation of a doubly linked list data structure in modern C++. It offers an intuitive and robust interface with support for various element management and access operations, while leveraging advanced mechanisms to ensure efficient memory management and code safety.
 
 ## Key Features
@@ -36,6 +34,7 @@ struct Node {
 ```
 
 Significant points:
+
 - `std::shared_ptr<Node> next`: "Strong" pointer to the next node, ensures the node exists as long as needed
 - `std::weak_ptr<Node> prev`: "Weak" pointer to the previous node, avoids reference cycles
 - Explicit copy and move constructors for value semantics
@@ -130,6 +129,7 @@ The implementation adheres to the principle of strong exception safety. In parti
 3. **Explicit checks**: Every potentially invalid access is checked and generates appropriate exceptions
 
 Examples of checks:
+
 - Checks for operations on an empty list
 - Checks for dereferencing invalid iterators
 - Checks for comparison operations between iterators
@@ -137,6 +137,7 @@ Examples of checks:
 ### RAII (Resource Acquisition Is Initialization)
 
 The class follows the RAII principle, ensuring that all resources (in this case the memory for nodes) are:
+
 - Acquired during initialization (constructors)
 - Automatically released during destruction (destructor)
 
