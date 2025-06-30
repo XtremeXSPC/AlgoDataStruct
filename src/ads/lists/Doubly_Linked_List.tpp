@@ -17,14 +17,14 @@
 
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
 
-using namespace ads;
+using namespace ads::list;
 
-// --- Implementazione Iteratore (pulita) ---
+//===----- Implementazione Iteratore (pulita) -----====//
 template <typename T>
 typename DoublyLinkedList<T>::iterator::reference DoublyLinkedList<T>::iterator::operator*() const {
   return node_ptr_->data;
 }
-// ... (tutte le altre definizioni dell'iteratore seguono questo pattern pulito)
+
 template <typename T>
 typename DoublyLinkedList<T>::iterator::pointer DoublyLinkedList<T>::iterator::operator->() const {
   return &node_ptr_->data;
@@ -52,7 +52,7 @@ typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::iterator::operator--
   return temp;
 }
 
-// --- Implementazione DoublyLinkedList ---
+//===----- Implementazione DoublyLinkedList -----====//
 
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
@@ -202,9 +202,10 @@ void DoublyLinkedList<T>::clear() noexcept {
   size_ = 0;
 }
 
-// ----- insert_impl() -----
-template <typename T, typename U>
-typename DoublyLinkedList<T>::iterator insert_impl(DoublyLinkedList<T>& list, typename DoublyLinkedList<T>::iterator pos, U&& value) {
+template <typename T>
+template <typename U>
+typename DoublyLinkedList<T>::iterator
+DoublyLinkedList<T>::insert_impl(DoublyLinkedList<T>& list, typename DoublyLinkedList<T>::iterator pos, U&& value) {
   // 1) casi limite
   if (pos == list.begin()) {
     list.emplace_front(std::forward<U>(value));
