@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.24)
 project(AlgoDataStructProject LANGUAGES CXX)
 
+# Imposta il nome del target eseguibile
+set(PROJECT_EXECUTABLE_NAME "Tester")
+
 # Imposta lo standard C++ a C++20 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -34,17 +37,16 @@ target_sources(ads_lib
 )
 
 # --- Eseguibile per i Test ---
-add_executable         (Tester src/main.cc)
-target_compile_options (Tester PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
-target_link_options    (Tester PRIVATE -fsanitize=address)
-target_link_libraries  (Tester PRIVATE ads_lib)
+add_executable         (${PROJECT_EXECUTABLE_NAME} src/main.cc)
+target_compile_options (${PROJECT_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
+target_link_options    (${PROJECT_EXECUTABLE_NAME} PRIVATE -fsanitize=address)
+target_link_libraries  (${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
 
 # Target 'run' per eseguire comodamente l'eseguibile
-# add_custom_target   (run COMMAND $<TARGET_FILE:Tester> USES_TERMINAL)
-add_custom_target     (run COMMAND $<TARGET_FILE:Tester> USES_TERMINAL)
+add_custom_target     (run COMMAND $<TARGET_FILE:${PROJECT_EXECUTABLE_NAME}> USES_TERMINAL)
 
 # Collega l'eseguibile alla nostra libreria
-target_link_libraries(Tester PRIVATE ads_lib)
+target_link_libraries(${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
 
 # --- INTEGRAZIONE GOOGLETEST E UNIT TESTING ---
 # Abilita la directory dei test
