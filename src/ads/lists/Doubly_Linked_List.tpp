@@ -124,7 +124,7 @@ DoublyLinkedList<T>& DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) no
 
 template <typename T>
 template <typename... Args>
-T& DoublyLinkedList<T>::emplace_back(Args&&... args) {
+auto DoublyLinkedList<T>::emplace_back(Args&&... args) {
   if (!tail_) { // Lista vuota
     head_ = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
     tail_ = head_.get();
@@ -148,7 +148,7 @@ void DoublyLinkedList<T>::push_back(T&& value) {
 
 template <typename T>
 template <typename... Args>
-T& DoublyLinkedList<T>::emplace_front(Args&&... args) {
+auto DoublyLinkedList<T>::emplace_front(Args&&... args) {
   auto newNode = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
   if (head_) {
     head_->prev   = newNode.get();
@@ -173,20 +173,23 @@ void DoublyLinkedList<T>::push_front(T&& value) {
 
 template <typename T>
 void DoublyLinkedList<T>::pop_front() {
-  if (is_empty())
+  if (is_empty()) {
     throw ListException("pop_front on empty list");
+  }
   head_ = std::move(head_->next);
-  if (head_)
+  if (head_) {
     head_->prev = nullptr;
-  else // La lista è diventata vuota
+  } else { // La lista è diventata vuota
     tail_ = nullptr;
+  }
   size_--;
 }
 
 template <typename T>
 void DoublyLinkedList<T>::pop_back() {
-  if (is_empty())
+  if (is_empty()) {
     throw ListException("pop_back on empty list");
+  }
   if (size_ == 1) {
     pop_front();
   } else {
@@ -198,29 +201,33 @@ void DoublyLinkedList<T>::pop_back() {
 
 template <typename T>
 T& DoublyLinkedList<T>::front() {
-  if (is_empty())
+  if (is_empty()) {
     throw ListException("front on empty list");
+  }
   return head_->data;
 }
 
 template <typename T>
 const T& DoublyLinkedList<T>::front() const {
-  if (is_empty())
+  if (is_empty()) {
     throw ListException("front on empty list");
+  }
   return head_->data;
 }
 
 template <typename T>
 T& DoublyLinkedList<T>::back() {
-  if (is_empty())
+  if (is_empty()) {
     throw ListException("back on empty list");
+  }
   return tail_->data;
 }
 
 template <typename T>
 const T& DoublyLinkedList<T>::back() const {
-  if (is_empty())
+  if (is_empty()) {
     throw ListException("back on empty list");
+  }
   return tail_->data;
 }
 
@@ -242,12 +249,12 @@ void DoublyLinkedList<T>::clear() noexcept {
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::insert(iterator pos, const T& value) {
+auto DoublyLinkedList<T>::insert(iterator pos, const T& value) {
   return insert(pos, T(value)); // Chiama la versione T&&
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::insert(iterator pos, T&& value) {
+auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
   // Casi limite: inserimento in testa o in coda
   if (pos == begin()) {
     push_front(std::move(value));
@@ -279,7 +286,7 @@ typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::insert(iterator pos,
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::erase(iterator pos) {
+auto DoublyLinkedList<T>::erase(iterator pos) {
   if (pos == end() || is_empty()) {
     throw ListException("cannot erase an invalid or end iterator");
   }

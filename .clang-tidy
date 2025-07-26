@@ -1,5 +1,23 @@
+# A modern and clean .clang-tidy configuration file.
+
+# Defines which checks to enable. The '-' at the beginning disables all checks,
+# then specific groups are re-enabled. This is a common and effective pattern.
 Checks: "-*,clang-analyzer-*,performance-*,bugprone-*,readability-*,portability-*,modernize-*"
+
+# Specify a list of warnings to treat as errors. Empty means none.
+# Example: "bugprone-use-after-move"
 WarningsAsErrors: ""
-HeaderFilterRegex: '^(include|src)/.*'
-AnalyzeTemporaryDtors: false
+
+# A regular expression that tells clang-tidy to only report issues
+# in files from source directories (e.g., 'include' and 'src').
+# This prevents warnings from system headers or third-party libraries.
+HeaderFilterRegex: "^(include|src)/.*"
+
+# Allows fine-tuning specific checks.
+CheckOptions:
+  - key: readability-identifier-naming.VariableCase
+    value: camelCase
+
+# Tells clang-tidy to not apply any formatting fixes.
+# Formatting is better handled by a dedicated tool like clang-format.
 FormatStyle: none
