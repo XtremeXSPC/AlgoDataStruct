@@ -106,14 +106,14 @@ public:
    * @brief Costruttore di spostamento.
    * @param other La lista da cui spostare le risorse.
    */
-  DoublyLinkedList(DoublyLinkedList&&) noexcept;
+  DoublyLinkedList(DoublyLinkedList&& other) noexcept;
 
   /**
    * @brief Operatore di assegnazione per spostamento.
    * @param other La lista da cui spostare le risorse.
    * @return Un riferimento a questa istanza.
    */
-  DoublyLinkedList& operator=(DoublyLinkedList&&) noexcept;
+  DoublyLinkedList& operator=(DoublyLinkedList&& other) noexcept;
 
   //========== INTERFACCIA EREDITATA DA List<T> ==========//
 
@@ -139,15 +139,15 @@ public:
   //=========== FUNZIONALITÀ AGGIUNTIVE ==========//
 
   template <typename... Args>
-  T& emplace_back(Args&&... args);
+  auto emplace_back(Args&&... args);
   template <typename... Args>
-  T& emplace_front(Args&&... args);
+  auto emplace_front(Args&&... args);
 
-  iterator insert(iterator pos, const T& value);
-  iterator insert(iterator pos, T&& value);
+  auto insert(iterator pos, const T& value);
+  auto insert(iterator pos, T&& value);
 
-  iterator erase(iterator pos);
-  void     reverse() noexcept;
+  auto erase(iterator pos);
+  void reverse() noexcept;
 
   //=========== ACCESSO AGLI ITERATORI ===========//
   // (non-const)
@@ -166,7 +166,7 @@ private:
     std::unique_ptr<Node> next;
     Node*                 prev;
     template <typename... Args>
-    Node(Node* p, Args&&... args) : data(std::forward<Args>(args)...), next(nullptr), prev(p) {}
+    Node(Node* ptr, Args&&... args) : data(std::forward<Args>(args)...), next(nullptr), prev(ptr) {}
   };
 
   std::unique_ptr<Node> head_;
