@@ -2,7 +2,7 @@
 /**
  * @file List.hpp
  * @author Costantino Lombardi
- * @brief Interfaccia astratta per una struttura dati di tipo Lista.
+ * @brief Abstract interface for a List data structure.
  * @version 0.2
  * @date 2025-06-30
  *
@@ -19,92 +19,92 @@
 namespace ads::list {
 
   /**
-   * @brief Interfaccia (classe base astratta) che definisce le operazioni comuni
-   *        per una struttura dati di tipo lista.
+   * @brief Interface (abstract base class) that defines common operations
+   *        for a list data structure.
    *
-   * @tparam T Il tipo di dato da memorizzare nella lista.
+   * @tparam T The data type to store in the list.
    */
   template <typename T>
   class List {
   public:
-    // Un distruttore virtuale è obbligatorio nelle classi base polimorfiche.
+    // A virtual destructor is mandatory in polymorphic base classes.
     virtual ~List() = default;
 
     /**
-     * @brief Aggiunge un elemento in coda alla lista (copia).
-     * @param value Il valore da aggiungere.
+     * @brief Adds an element to the end of the list (copy).
+     * @param value The value to add.
      */
     virtual void push_back(const T& value) = 0;
 
     /**
-     * @brief Aggiunge un elemento in coda alla lista (spostamento).
-     * @param value Il valore (r-value) da spostare.
+     * @brief Adds an element to the end of the list (move).
+     * @param value The r-value to move.
      */
     virtual void push_back(T&& value) = 0;
 
     /**
-     * @brief Aggiunge un elemento in testa alla lista (copia).
-     * @param value Il valore da aggiungere.
+     * @brief Adds an element to the front of the list (copy).
+     * @param value The value to add.
      */
     virtual void push_front(const T& value) = 0;
 
     /**
-     * @brief Aggiunge un elemento in testa alla lista (spostamento).
-     * @param value Il valore (r-value) da spostare.
+     * @brief Adds an element to the front of the list (move).
+     * @param value The r-value to move.
      */
     virtual void push_front(T&& value) = 0;
 
     /**
-     * @brief Rimuove l'elemento in coda alla lista.
-     * @details Il comportamento non è definito se la lista è vuota.
+     * @brief Removes the element at the end of the list.
+     * @details Behavior is undefined if the list is empty.
      */
     virtual void pop_back() = 0;
 
     /**
-     * @brief Rimuove l'elemento in testa alla lista.
-     * @details Il comportamento non è definito se la lista è vuota.
+     * @brief Removes the element at the front of the list.
+     * @details Behavior is undefined if the list is empty.
      */
     virtual void pop_front() = 0;
 
     /**
-     * @brief Restituisce un riferimento all'elemento in testa.
-     * @return T& Riferimento al primo elemento.
+     * @brief Returns a reference to the front element.
+     * @return T& Reference to the first element.
      */
     virtual auto front() -> T& = 0;
 
     /**
-     * @brief Restituisce un riferimento costante all'elemento in testa.
-     * @return const T& Riferimento costante al primo elemento.
+     * @brief Returns a constant reference to the front element.
+     * @return const T& Constant reference to the first element.
      */
     virtual auto front() const -> const T& = 0;
 
     /**
-     * @brief Restituisce un riferimento all'elemento in coda.
-     * @return T& Riferimento all'ultimo elemento.
+     * @brief Returns a reference to the back element.
+     * @return T& Reference to the last element.
      */
     virtual auto back() -> T& = 0;
 
     /**
-     * @brief Restituisce un riferimento costante all'elemento in coda.
-     * @return const T& Riferimento costante all'ultimo elemento.
+     * @brief Returns a constant reference to the back element.
+     * @return const T& Constant reference to the last element.
      */
     virtual auto back() const -> const T& = 0;
 
     /**
-     * @brief Verifica se la lista è vuota.
-     * @return true se la lista non contiene elementi.
-     * @return false altrimenti.
+     * @brief Checks if the list is empty.
+     * @return true if the list contains no elements.
+     * @return false otherwise.
      */
     [[nodiscard]] virtual auto is_empty() const noexcept -> bool = 0;
 
     /**
-     * @brief Restituisce il numero di elementi presenti nella lista.
-     * @return size_t Il numero di elementi.
+     * @brief Returns the number of elements in the list.
+     * @return size_t The number of elements.
      */
     [[nodiscard]] virtual auto size() const noexcept -> size_t = 0;
 
     /**
-     * @brief Svuota la lista, rimuovendo tutti gli elementi.
+     * @brief Empties the list, removing all elements.
      */
     virtual void clear() = 0;
   };

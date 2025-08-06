@@ -2,7 +2,7 @@
 /**
  * @file Exception.hpp
  * @author Costantino Lombardi
- * @brief Definisce eccezioni personalizzate per le strutture dati.
+ * @brief Defines custom exceptions for data structures.
  * @version 0.2
  * @date 2025-06-30
  *
@@ -19,16 +19,16 @@
 
 namespace ads::list {
 
-/**
- * @brief Eccezione base per errori logici nelle operazioni sulle liste.
- *
- * Viene lanciata quando un'operazione viene chiamata in uno stato non valido
- * (es. accedere a un elemento di una lista vuota).
- */
-class ListException : public std::logic_error {
-public:
-  using std::logic_error::logic_error;
-};
+  /**
+   * @brief Base exception for logical errors in list operations.
+   *
+   * Thrown when an operation is called in an invalid state
+   * (e.g., accessing an element of an empty list).
+   */
+  class ListException : public std::logic_error {
+  public:
+    using std::logic_error::logic_error;
+  };
 
 } // namespace ads::list
 
