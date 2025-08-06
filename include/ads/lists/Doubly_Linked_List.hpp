@@ -2,7 +2,7 @@
 /**
  * @file Doubly_Linked_List.hpp
  * @author Costantino Lombardi
- * @brief Implementazione di una lista doppiamente concatenata.
+ * @brief Declaration of the DoublyLinkedList class.
  * @version 0.2
  * @date 2025-06-30
  *
@@ -23,15 +23,15 @@
 namespace ads::list {
 
   /**
-   * @brief Una implementazione di una lista doppiamente concatenata.
+   * @brief An implementation of a doubly linked list.
    *
-   * @details Questa classe implementa l'interfaccia `ads::list::List<T>` utilizzando
-   *          una struttura a nodi doppiamente concatenati. Offre inserimento e
-   *          cancellazione in tempo costante (O(1)) all'inizio e alla fine, e
-   *          in tempo costante se si dispone di un iteratore alla posizione.
-   *          La gestione della memoria è automatizzata tramite std::unique_ptr.
+   * @details This class implements the `ads::list::List<T>` interface using
+   *          a doubly linked node structure. It offers constant time (O(1))
+   *          insertion and deletion at the beginning and end, and
+   *          constant time if you have an iterator to the position.
+   *          Memory management is automated via std::unique_ptr.
    *
-   * @tparam T Il tipo di dato da memorizzare nella lista.
+   * @tparam T The type of data to store in the list.
    */
   template <typename T>
   class DoublyLinkedList : public List<T> {
@@ -39,7 +39,7 @@ namespace ads::list {
     struct Node;
 
   public:
-    //========== CLASSE ITERATOR ==========//
+    //========== ITERATOR CLASS ==========//
     class iterator {
     public:
       using iterator_category = std::bidirectional_iterator_tag;
@@ -64,7 +64,7 @@ namespace ads::list {
       friend class DoublyLinkedList<T>;
     };
 
-    //========== CLASSE CONST_ITERATOR ==========//
+    //========== CONST_ITERATOR CLASS ==========//
     class const_iterator {
     public:
       using iterator_category = std::bidirectional_iterator_tag;
@@ -89,32 +89,32 @@ namespace ads::list {
       friend class DoublyLinkedList<T>;
     };
 
-    //========== COSTRUTTORI, DISTRUTTORE, ASSEGNAZIONE ==========//
+    //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
 
-    /** @brief Costruisce una lista vuota. */
+    /** @brief Constructs an empty list. */
     DoublyLinkedList();
 
-    /** @brief Distruttore. Svuota la lista e dealloca tutti i nodi. */
+    /** @brief Destructor. Empties the list and deallocates all nodes. */
     ~DoublyLinkedList() override;
 
-    // Costruttore e assegnazione di copia sono disabilitati.
+    // Copy constructor and assignment are disabled.
     DoublyLinkedList(const DoublyLinkedList&)            = delete;
     DoublyLinkedList& operator=(const DoublyLinkedList&) = delete;
 
     /**
-     * @brief Costruttore di spostamento.
-     * @param other La lista da cui spostare le risorse.
+     * @brief Move constructor.
+     * @param other The list from which to move resources.
      */
     DoublyLinkedList(DoublyLinkedList&& other) noexcept;
 
     /**
-     * @brief Operatore di assegnazione per spostamento.
-     * @param other La lista da cui spostare le risorse.
-     * @return Un riferimento a questa istanza.
+     * @brief Move assignment operator.
+     * @param other The list from which to move resources.
+     * @return A reference to this instance.
      */
     DoublyLinkedList& operator=(DoublyLinkedList&& other) noexcept;
 
-    //========== INTERFACCIA EREDITATA DA List<T> ==========//
+    //========== INTERFACE INHERITED FROM List<T> ==========//
 
     void push_back(const T& value) override;
     void push_back(T&& value) override;
@@ -135,7 +135,7 @@ namespace ads::list {
     size_t size() const noexcept override;
     void   clear() noexcept override;
 
-    //=========== FUNZIONALITÀ AGGIUNTIVE ==========//
+    //=========== ADDITIONAL FUNCTIONALITY ==========//
 
     template <typename... Args>
     auto emplace_back(Args&&... args);
@@ -148,7 +148,7 @@ namespace ads::list {
     auto erase(iterator pos);
     void reverse() noexcept;
 
-    //=========== ACCESSO AGLI ITERATORI ===========//
+    //=========== ACCESS TO ITERATORS ===========//
     // (non-const)
     iterator begin() noexcept;
     iterator end() noexcept;
@@ -159,7 +159,7 @@ namespace ads::list {
     const_iterator cend() const noexcept;
 
   private:
-    //================ NODO INTERNO ================//
+    //================ INTERNAL NODE ================//
     struct Node {
       T                     data;
       std::unique_ptr<Node> next;
@@ -173,7 +173,7 @@ namespace ads::list {
     size_t                size_;
   };
 
-// Inclusione del file di implementazione per i template
+// Include the implementation file for templates
 #include "../../../src/ads/lists/Doubly_Linked_List.tpp"
 
 } // namespace ads::list

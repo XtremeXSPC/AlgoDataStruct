@@ -2,7 +2,7 @@
 /**
  * @file main.cc
  * @author Costantino Lombardi
- * @brief Tester per le funzioni della lista
+ * @brief Tester for list functions
  * @version 0.2
  * @date 2025-06-30
  *
@@ -14,75 +14,74 @@
 #include "../include/ads/lists/Doubly_Linked_List.hpp"
 #include <iostream>
 #include <string>
-#include <vector>
 
-// Funzione helper per stampare la lista e le sue proprietà
+// Helper function to print the list and iterators properties
 void print_list(const ads::list::DoublyLinkedList<int>& list, const std::string& name) {
-  std::cout << "Contenuto di '" << name << "' (size: " << list.size() << "):\n  ";
-  // Usiamo cbegin() e cend() per iterare su una lista const
-  for (auto it = list.cbegin(); it != list.cend(); ++it) {
-    std::cout << *it << " <-> ";
+  std::cout << "Contents of '" << name << "' (size: " << list.size() << "):\n  ";
+  // Use cbegin() and cend() to iteratorerate over a const list
+  for (auto iterator = list.cbegin(); iterator != list.cend(); ++iterator) {
+    std::cout << *iterator << " <-> ";
   }
   std::cout << "nullptr\n";
 
-  // Stampa anche in ordine inverso per verificare i puntatori `prev`
-  std::cout << "  (Inverso): nullptr";
+  // Also print in reverse order to check `prev` pointers
+  std::cout << "  (Reverse): nullptr";
   if (!list.is_empty()) {
-    auto it = list.cend();
+    auto iterator = list.cend();
     do {
-      --it;
-      std::cout << " <-> " << *it;
-    } while (it != list.cbegin());
+      --iterator;
+      std::cout << " <-> " << *iterator;
+    } while (iterator != list.cbegin());
   }
-  std::cout << std::endl;
+  std::cout << '\n';
 }
 
-int main() {
+auto main() -> int {
   try {
     ads::list::DoublyLinkedList<int> myList;
 
-    std::cout << "--- Aggiunta elementi ---" << std::endl;
+    std::cout << "----------- Adding elements ------------" << '\n';
     myList.push_back(10);
     myList.push_back(20);
     myList.push_front(5);
-    myList.emplace_back(30); // Usa emplace
+    myList.emplace_back(30); // Use emplace
     print_list(myList, "myList");
 
-    std::cout << "\n--- Iterazione e manipolazione ---" << std::endl;
-    auto it = myList.begin();
-    ++it;     // it punta a 10
-    *it = 15; // Modifica il valore
-    print_list(myList, "myList dopo modifica");
+    std::cout << "\n------ Iteration and manipulation ------" << '\n';
+    auto iterator = myList.begin();
+    ++iterator;     // iterator points to 10
+    *iterator = 15; // Modify the value
+    print_list(myList, "myList after modification");
 
-    std::cout << "\n--- Inserimento ed eliminazione ---" << std::endl;
-    it = myList.insert(it, 7); // Inserisce 7 prima di 15, it ora punta a 7
-    print_list(myList, "myList dopo insert");
+    std::cout << "\n-------- Insertion and deletion --------" << '\n';
+    iterator = myList.insert(iterator, 7); // Inserts 7 before 15, iterator now points to 7
+    print_list(myList, "myList after insert");
 
-    ++it;                  // it ora punta a 15
-    it = myList.erase(it); // Elimina 15, it ora punta a 20
-    std::cout << "Elemento dopo quello eliminato: " << *it << std::endl;
-    print_list(myList, "myList dopo erase");
+    ++iterator;                        // iterator now points to 15
+    iterator = myList.erase(iterator); // Removes 15, iterator now points to 20
+    std::cout << "Element after the one removed: " << *iterator << '\n';
+    print_list(myList, "myList after erase");
 
-    std::cout << "\n--- Inversione lista ---" << std::endl;
+    std::cout << "\n------------ List reversal -------------" << '\n';
     myList.reverse();
-    print_list(myList, "myList invertita");
+    print_list(myList, "myList reversed");
 
-    std::cout << "\n--- Test Spostamento ---" << std::endl;
+    std::cout << "\n-------------- Move test ---------------" << '\n';
     ads::list::DoublyLinkedList<int> anotherList = std::move(myList);
-    print_list(anotherList, "anotherList (spostata)");
-    print_list(myList, "myList (vuota dopo spostamento)");
+    print_list(anotherList, "anotherList (moved)");
+    print_list(myList, "myList (empty after move)");
 
-    // --- Test Gestione Eccezioni ---
-    std::cout << "\n--- Test Gestione Eccezioni ---" << std::endl;
-    std::cout << "Tento di chiamare front() su una lista vuota..." << std::endl;
-    // myList è vuota dopo lo spostamento
-    // Questa chiamata lancerà un'eccezione
+    // ----- Exception Handling Test ----- //
+    std::cout << "\n------- Exception Handling Test --------" << '\n';
+    std::cout << "Trying to call front() on an empty list..." << '\n';
+    // myList is empty after the move
+    // This call will throw an exception
     myList.front();
 
   } catch (const ads::list::ListException& e) {
-    std::cerr << "ERRORE CATTURATO CORRETTAMENTE: " << e.what() << std::endl;
+    std::cerr << "ERROR CORRECTLY CAUGHT: " << e.what() << '\n';
   } catch (const std::exception& e) {
-    std::cerr << "Errore generico non previsto: " << e.what() << std::endl;
+    std::cerr << "Unexpected generic error: " << e.what() << '\n';
   }
 
   return 0;
