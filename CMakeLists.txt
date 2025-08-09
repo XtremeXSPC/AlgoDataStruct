@@ -1,74 +1,73 @@
-# Richiede la versione minima di CMake e definisce il nome del progetto
+# Requires the minimum version of CMake and defines the project name
 cmake_minimum_required(VERSION 3.24)
 project(AlgoDataStructProject LANGUAGES CXX)
 
-# Imposta il nome del target eseguibile
+# Sets the executable target name
 set(PROJECT_EXECUTABLE_NAME "Tester")
 
-# Imposta lo standard C++ a C++20 
+# Sets the C++ standard to C++20 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Abilita la generazione del database di compilazione per clangd
+# Enables generation of the compilation database for clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# --- Libreria di Template 'ads' (AlgoDataStruct) ---
+# ----- Template Library 'ads' (AlgoDataStruct) ----- #
 add_library(ads_lib INTERFACE)
 
-# La directory 'include' è la directory pubblica
+# The 'include' directory is the public directory
 target_include_directories(ads_lib INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# Specifica i file sorgente e header associati alla libreria
+# Specifies the source and header files associated with the library
 target_sources(ads_lib
-  # Le intestazioni pubbliche (.hpp) fanno parte dell'interfaccia
+  # Public headers (.hpp) are part of the interface
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
     FILES
-      # Interfaccia della Lista
+      # List interface
       include/ads/lists/List.hpp
-      # Header specifici dell'implementazione
+      # Implementation-specific headers
       include/ads/lists/Doubly_Linked_List.hpp
-  # Le implementazioni dei template (.tpp) sono un dettaglio privato
+  # Template implementations (.tpp) are a private detail
   PRIVATE
-    # Implementazioni specifiche
+    # Specific implementations
     src/ads/lists/Doubly_Linked_List.tpp
 )
 
-# --- Eseguibile per i Test ---
+# ----- Executable for Tests ----- #
 add_executable         (${PROJECT_EXECUTABLE_NAME} src/main.cc)
 target_compile_options (${PROJECT_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
 target_link_options    (${PROJECT_EXECUTABLE_NAME} PRIVATE -fsanitize=address)
 target_link_libraries  (${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
 
-# Target 'run' per eseguire comodamente l'eseguibile
+# 'run' target to conveniently execute the executable
 add_custom_target     (run COMMAND $<TARGET_FILE:${PROJECT_EXECUTABLE_NAME}> USES_TERMINAL)
 
-# Collega l'eseguibile alla nostra libreria
+# Links the executable to our library
 target_link_libraries(${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
 
-# --- INTEGRAZIONE GOOGLETEST E UNIT TESTING ---
-# Abilita la directory dei test
+# ----- GOOGLE TEST INTEGRATION AND UNIT TESTING ----- #
+# Enables the test directory
 enable_testing()
 
-# Usa FetchContent per ottenere GoogleTest
+# Uses FetchContent to obtain GoogleTest
 include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
-# Rende GoogleTest disponibile
+# Makes GoogleTest available
 FetchContent_MakeAvailable(googletest)
 
-# Crea l'eseguibile per i test
+# Creates the test executable
 add_executable(runTests tests/Test_DoublyLinkedList.cpp)
 target_compile_options(runTests PRIVATE -Wall -Wextra -pedantic -g)
 
-# Collega il nostro eseguibile dei test alla nostra libreria e a GoogleTest
+# Links our test executable to our library and GoogleTest
 target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
 
-# Aggiunge il nostro eseguibile al set di test gestito da CTest
+# Adds our executable to the test set managed by CTest
 include(GoogleTest)
 gtest_add_tests(TARGET runTests)
-
