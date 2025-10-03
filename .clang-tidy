@@ -2,7 +2,14 @@
 
 # Defines which checks to enable. The '-' at the beginning disables all checks,
 # then specific groups are re-enabled. This is a common and effective pattern.
-Checks: "-*,clang-analyzer-*,performance-*,bugprone-*,readability-*,portability-*,modernize-*"
+Checks: "-*
+  ,clang-analyzer-*
+  ,bugprone-*
+  ,performance-*
+  ,readability-*
+  ,modernize-*
+  ,misc-*
+  ,-misc-unused-includes"
 
 # Specify a list of warnings to treat as errors. Empty means none.
 # Example: "bugprone-use-after-move"
