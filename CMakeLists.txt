@@ -28,16 +28,37 @@ target_sources(ads_lib
     FILES
       # List interface
       include/ads/lists/List.hpp
-      # Implementation-specific headers
+      include/ads/lists/Exception.hpp
       include/ads/lists/Doubly_Linked_List.hpp
+
+      # Stack interface and implementations
+      include/ads/stacks/Stack.hpp
+      include/ads/stacks/Stack_Exception.hpp
+      include/ads/stacks/Array_Stack.hpp
+      include/ads/stacks/Linked_Stack.hpp
+
+      # Queue interface and implementations
+      include/ads/queues/Queue.hpp
+      include/ads/queues/Queue_Exception.hpp
+      include/ads/queues/Circular_Array_Queue.hpp
+      include/ads/queues/Linked_Queue.hpp
+
   # Template implementations (.tpp) are a private detail
   PRIVATE
     # Specific implementations
     src/ads/lists/Doubly_Linked_List.tpp
+
+    # Stack implementations
+    src/ads/stacks/Array_Stack.tpp
+    src/ads/stacks/Linked_Stack.tpp
+    
+    # Queue implementations
+    src/ads/queues/Circular_Array_Queue.tpp
+    src/ads/queues/Linked_Queue.tpp
 )
 
 # ----- Executable for Tests ----- #
-add_executable         (${PROJECT_EXECUTABLE_NAME} src/main.cc)
+add_executable         (${PROJECT_EXECUTABLE_NAME} src/main.cc src/test_stack_queue.cc)
 target_compile_options (${PROJECT_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
 target_link_options    (${PROJECT_EXECUTABLE_NAME} PRIVATE -fsanitize=address)
 target_link_libraries  (${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
