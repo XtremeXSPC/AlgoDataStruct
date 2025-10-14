@@ -21,7 +21,8 @@ using namespace ads::stack;
 //===------------------- ArrayStack implementation --------------------===//
 
 template <typename T>
-ArrayStack<T>::ArrayStack(size_t initial_capacity) : data_(std::make_unique<T[]>(initial_capacity)), size_(0), capacity_(initial_capacity) {
+ArrayStack<T>::ArrayStack(size_t initial_capacity) :
+    data_(std::make_unique_for_overwrite<T[]>(initial_capacity)), size_(0), capacity_(initial_capacity) {
 }
 
 template <typename T>
@@ -54,7 +55,7 @@ void ArrayStack<T>::push(T&& value) {
 
 template <typename T>
 template <typename... Args>
-T& ArrayStack<T>::emplace(Args&&... args) {
+auto ArrayStack<T>::emplace(Args&&... args) -> T& {
   if (size_ == capacity_) {
     grow();
   }
@@ -84,9 +85,10 @@ void ArrayStack<T>::pop() {
     size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
       reallocate(new_capacity);
-    } catch (...) {
+    } catch (const std::bad_alloc&) {
       // If reallocation fails, continue with current capacity
-      // This is a non-critical optimization
+      // This is a non-critical optimization - the stack remains functional
+      // with the current (larger) capacity
     }
   }
 }
@@ -156,7 +158,7 @@ void ArrayStack<T>::grow() {
 template <typename T>
 void ArrayStack<T>::reallocate(size_t new_capacity) {
   // Create new array
-  auto new_data = std::make_unique<T[]>(new_capacity);
+  auto new_data = std::make_unique_for_overwrite<T[]>(new_capacity);
 
   // Move elements to new array
   for (size_t i = 0; i < size_; ++i) {

@@ -22,7 +22,7 @@ using namespace ads::queue;
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
-    data_(std::make_unique<T[]>(initial_capacity)), front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
+    data_(std::make_unique_for_overwrite<T[]>(initial_capacity)), front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
 }
 
 template <typename T>
@@ -192,7 +192,7 @@ void CircularArrayQueue<T>::grow() {
 template <typename T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   // Create new array
-  auto new_data = std::make_unique<T[]>(new_capacity);
+  auto new_data = std::make_unique_for_overwrite<T[]>(new_capacity);
 
   // Copy elements to new array in logical order
   size_t new_index = 0;
