@@ -1,7 +1,11 @@
 # Requires the minimum version of CMake and defines the project name
 cmake_minimum_required(VERSION 3.24)
-project(AlgoDataStructProject LANGUAGES CXX)
 
+# Forces the use of LLVM Clang instead of Apple Clang
+set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
+set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+
+project(AlgoDataStructProject LANGUAGES CXX)
 # Sets the executable target name
 set(PROJECT_EXECUTABLE_NAME "Tester")
 
@@ -12,6 +16,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Enables generation of the compilation database for clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Set global linker flags to correctly use the Homebrew LLVM standard library
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
 
 # ----- Template Library 'ads' (AlgoDataStruct) ----- #
 add_library(ads_lib INTERFACE)
@@ -58,7 +67,7 @@ target_sources(ads_lib
 )
 
 # ----- Executable for Tests ----- #
-add_executable         (${PROJECT_EXECUTABLE_NAME} src/main.cc src/test_stack_queue.cc)
+add_executable         (${PROJECT_EXECUTABLE_NAME} src/test_stack_queue.cc)
 target_compile_options (${PROJECT_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
 target_link_options    (${PROJECT_EXECUTABLE_NAME} PRIVATE -fsanitize=address)
 target_link_libraries  (${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
@@ -85,6 +94,9 @@ FetchContent_MakeAvailable(googletest)
 # Creates the test executable
 add_executable(runTests tests/Test_DoublyLinkedList.cpp)
 target_compile_options(runTests PRIVATE -Wall -Wextra -pedantic -g)
+
+# Add linker flags to use the correct C++ standard library with Homebrew's LLVM
+target_link_options(runTests PRIVATE -L/opt/homebrew/opt/llvm/lib "-Wl,-rpath,/opt/homebrew/opt/llvm/lib")
 
 # Links our test executable to our library and GoogleTest
 target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
