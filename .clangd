@@ -1,10 +1,7 @@
-# .clangd Configuration for "Competitive Programming"
+# .clangd configuration file.
 
 CompileFlags:
   Add:
-    # Target architecture for Apple Silicon
-    - --target=arm64-apple-darwin
-
     # C++23 standard with optimization and debug flags
     - -std=c++23
     - -O2
@@ -13,6 +10,8 @@ CompileFlags:
     # Enable debug mode, disable debug info for faster compilation
     - -DDEBUG
     - -g0
+
+    - "-stdlib=libc++"
 
   Remove:
     # Remove problematic Clang flags that vary by platform
@@ -25,6 +24,7 @@ Diagnostics:
   Suppress:
     # Suppress unsupported types warning
     - type_unsupported
+    - "-Wambiguous-forward-declaration"
 
     # macOS specific paths
     - "^/opt/homebrew/.*"
@@ -83,10 +83,6 @@ Index:
 # Completion settings optimized for productivity
 Completion:
   AllScopes: Yes
-
-# Disable InlayHints to avoid visual clutter
-InlayHints:
-  Enabled: No
 
 # Hover settings
 Hover:
