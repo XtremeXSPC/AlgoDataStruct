@@ -52,7 +52,7 @@ else()
         # macOS with Homebrew - GCC is not the system default.
         # Prefer newer versions and look in Homebrew paths.
         set(COMPILER_SEARCH_NAMES 
-            g++-14 g++-13 g++-12 g++-11 g++-10 g++
+            g++-15 g++-14 g++-13 g++-12 g++-11 g++-10 g++
         )
         set(COMPILER_SEARCH_PATHS 
             /opt/homebrew/bin           # Apple Silicon Homebrew
@@ -65,7 +65,7 @@ else()
     elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         # Linux - prefer newer versions, but check unversioned too.
         set(COMPILER_SEARCH_NAMES 
-            g++-14 g++-13 g++-12 g++-11 g++-10 g++-9 g++
+            g++-15 g++-14 g++-13 g++-12 g++-11 g++-10 g++
         )
         
         # Detect Linux distribution for better diagnostics later.
@@ -93,7 +93,7 @@ else()
     else()
         # BSD and other Unix systems.
         set(COMPILER_SEARCH_NAMES 
-            g++14 g++13 g++12 g++11 g++10 g++
+            g++15 g++14 g++13 g++12 g++11 g++10 g++
         )
         set(COMPILER_SEARCH_PATHS 
             /usr/local/bin
