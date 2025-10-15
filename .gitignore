@@ -11,6 +11,7 @@
 
 # Exclude CMake build directories
 /build
+/bin
 
 # Exclude Google Drive temporary files
 .Google\ Drive
