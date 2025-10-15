@@ -43,7 +43,7 @@ auto main() -> int {
   try {
     ads::list::DoublyLinkedList<int> myList;
 
-    cout << "==========Adding elements ==========" << '\n';
+    cout << "========== Adding elements ==========" << '\n';
     myList.push_back(10);
     myList.push_back(20);
     myList.push_front(5);
