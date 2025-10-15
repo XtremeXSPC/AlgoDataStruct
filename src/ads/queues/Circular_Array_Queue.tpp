@@ -13,6 +13,7 @@
 #pragma once
 
 #include "../../../include/ads/queues/Circular_Array_Queue.hpp"
+#include <memory>
 #include <new>
 #include <utility>
 
@@ -22,7 +23,8 @@ using namespace ads::queue;
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
-    data_(std::make_unique_for_overwrite<T[]>(initial_capacity)), front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
+    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); }), // Custom deleter
+    front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
 }
 
 template <typename T>
@@ -191,34 +193,30 @@ void CircularArrayQueue<T>::grow() {
 
 template <typename T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
-  // Create new array
-  auto new_data = std::make_unique_for_overwrite<T[]>(new_capacity);
+  // Allocate raw memory with custom deleter
+  std::unique_ptr<T[], void (*)(T*)> new_data(
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
   // Copy elements to new array in logical order
   size_t new_index = 0;
   size_t current   = front_;
 
   for (size_t i = 0; i < size_; ++i) {
-    // Use move construction if T is nothrow move constructible
     if constexpr (std::is_nothrow_move_constructible_v<T>) {
       new (new_data.get() + new_index) T(std::move(data_[current]));
     } else {
-      // Use copy construction as fallback for exception safety
       new (new_data.get() + new_index) T(data_[current]);
     }
 
-    // Destroy the old element
     data_[current].~T();
-
     current = next_index(current);
     new_index++;
   }
 
-  // Update the queue state
   data_     = std::move(new_data);
   capacity_ = new_capacity;
   front_    = 0;
-  rear_     = size_; // Next insertion position
+  rear_     = size_;
 }
 
 //===--------------------------------------------------------------------------===//

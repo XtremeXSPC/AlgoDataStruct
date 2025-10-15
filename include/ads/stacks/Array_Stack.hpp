@@ -128,9 +128,9 @@ private:
   void reallocate(size_t new_capacity);
 
   //================ DATA MEMBERS ================//
-  std::unique_ptr<T[]> data_;     ///< The dynamic array holding stack elements
-  size_t               size_;     ///< The current number of elements
-  size_t               capacity_; ///< The current capacity of the array
+  std::unique_ptr<T[], void (*)(T*)> data_;     ///< The dynamic array holding stack elements
+  size_t                             size_;     ///< The current number of elements
+  size_t                             capacity_; ///< The current capacity of the array
 
   static constexpr size_t kGrowthFactor = 2; ///< Growth factor for dynamic resizing
   static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain

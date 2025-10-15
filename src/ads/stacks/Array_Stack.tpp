@@ -14,6 +14,7 @@
 
 #include "../../../include/ads/stacks/Array_Stack.hpp"
 #include <cstring>
+#include <memory>
 #include <new>
 
 using namespace ads::stack;
@@ -22,7 +23,8 @@ using namespace ads::stack;
 
 template <typename T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
-    data_(std::make_unique_for_overwrite<T[]>(initial_capacity)), size_(0), capacity_(initial_capacity) {
+    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); }), // Custom deleter
+    size_(0), capacity_(initial_capacity) {
 }
 
 template <typename T>
@@ -157,8 +159,9 @@ void ArrayStack<T>::grow() {
 
 template <typename T>
 void ArrayStack<T>::reallocate(size_t new_capacity) {
-  // Create new array
-  auto new_data = std::make_unique_for_overwrite<T[]>(new_capacity);
+  // Allocate raw memory with custom deleter
+  std::unique_ptr<T[], void (*)(T*)> new_data(
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
   // Move elements to new array
   for (size_t i = 0; i < size_; ++i) {
