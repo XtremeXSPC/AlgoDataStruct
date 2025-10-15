@@ -15,7 +15,7 @@
 #include <utility>
 
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
-#include "../../../include/ads/lists/Exception.hpp"
+#include "../../../include/ads/lists/List_Exception.hpp"
 
 using namespace ads::list;
 
@@ -45,7 +45,11 @@ auto DoublyLinkedList<T>::iterator::operator++(int) -> typename DoublyLinkedList
 
 template <typename T>
 auto DoublyLinkedList<T>::iterator::operator--() -> typename DoublyLinkedList<T>::iterator& {
-  node_ptr_ = node_ptr_->prev;
+  if (node_ptr_ == nullptr) { // -- from end()
+    node_ptr_ = list_ptr_->tail_;
+  } else {
+    node_ptr_ = node_ptr_->prev;
+  }
   return *this;
 }
 
@@ -82,7 +86,11 @@ auto DoublyLinkedList<T>::const_iterator::operator++(int) -> typename DoublyLink
 
 template <typename T>
 auto DoublyLinkedList<T>::const_iterator::operator--() -> typename DoublyLinkedList<T>::const_iterator& {
-  node_ptr_ = node_ptr_->prev;
+  if (node_ptr_ == nullptr) { // -- from cend()
+    node_ptr_ = list_ptr_->tail_;
+  } else {
+    node_ptr_ = node_ptr_->prev;
+  }
   return *this;
 }
 
@@ -265,7 +273,7 @@ auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
   if (pos == end()) {
     push_back(std::move(value));
     // After push_back, `tail_` points to the new node
-    return iterator(tail_);
+    return iterator(tail_, this);
   }
 
   // Insertion in the middle
@@ -274,7 +282,7 @@ auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
 
   // 1. Create the new node, which points to the previous node
   auto     new_node = std::make_unique<Node>(prev_node, std::move(value));
-  iterator new_it(new_node.get());
+  iterator new_it(new_node.get(), this);
 
   // 2. The new node takes ownership of the pointer to the next node
   new_node->next = std::move(prev_node->next);
@@ -320,7 +328,7 @@ auto DoublyLinkedList<T>::erase(iterator pos) {
 
   // 4. Update the size and return the iterator to the next node.
   size_--;
-  return iterator(next_node);
+  return iterator(next_node, this);
 }
 
 template <typename T>
@@ -355,23 +363,23 @@ void DoublyLinkedList<T>::reverse() noexcept {
 // (non-const)
 template <typename T>
 auto DoublyLinkedList<T>::begin() noexcept -> typename DoublyLinkedList<T>::iterator {
-  return iterator(head_.get());
+  return iterator(head_.get(), this);
 }
 
 template <typename T>
 auto DoublyLinkedList<T>::end() noexcept -> typename DoublyLinkedList<T>::iterator {
-  return iterator(nullptr); // end() is a null iterator
+  return iterator(nullptr, this);
 }
 
 // (const)
 template <typename T>
 auto DoublyLinkedList<T>::begin() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
-  return const_iterator(head_.get());
+  return const_iterator(head_.get(), this);
 }
 
 template <typename T>
 auto DoublyLinkedList<T>::end() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
-  return const_iterator(nullptr);
+  return const_iterator(nullptr, this);
 }
 
 template <typename T>
