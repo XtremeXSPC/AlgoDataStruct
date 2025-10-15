@@ -3,6 +3,7 @@
 # Defines which checks to enable. The '-' at the beginning disables all checks,
 # then specific groups are re-enabled. This is a common and effective pattern.
 Checks: "
+  ,bugprone-*
   ,performance-*
   ,modernize-*
   "
