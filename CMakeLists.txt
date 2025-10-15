@@ -14,13 +14,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Force libc++ globally
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+
 # Enables generation of the compilation database for clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set global linker flags to correctly use the Homebrew LLVM standard library
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
-set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++ -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -stdlib=libc++ -L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib")
 
 # ----- Template Library 'ads' (AlgoDataStruct) ----- #
 add_library(ads_lib INTERFACE)
@@ -67,7 +70,7 @@ target_sources(ads_lib
 )
 
 # ----- Executable for Tests ----- #
-add_executable         (${PROJECT_EXECUTABLE_NAME} src/test_stack_queue.cc)
+add_executable         (${PROJECT_EXECUTABLE_NAME} src/main_Stacks_Queues.cc)
 target_compile_options (${PROJECT_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
 target_link_options    (${PROJECT_EXECUTABLE_NAME} PRIVATE -fsanitize=address)
 target_link_libraries  (${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
@@ -79,28 +82,38 @@ add_custom_target     (run COMMAND $<TARGET_FILE:${PROJECT_EXECUTABLE_NAME}> USE
 target_link_libraries(${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)
 
 # ----- GOOGLE TEST INTEGRATION AND UNIT TESTING ----- #
-# Enables the test directory
-enable_testing()
+option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 
-# Uses FetchContent to obtain GoogleTest
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-)
-# Makes GoogleTest available
-FetchContent_MakeAvailable(googletest)
+if(ENABLE_TESTING)
+  enable_testing()
 
-# Creates the test executable
-add_executable(runTests tests/Test_DoublyLinkedList.cpp)
-target_compile_options(runTests PRIVATE -Wall -Wextra -pedantic -g)
+  # Force GoogleTest to use LLVM toolchain by setting cache variables BEFORE declaration
+  set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++" CACHE STRING "" FORCE)
+  set(CMAKE_CXX_FLAGS "-stdlib=libc++" CACHE STRING "" FORCE)
 
-# Add linker flags to use the correct C++ standard library with Homebrew's LLVM
-target_link_options(runTests PRIVATE -L/opt/homebrew/opt/llvm/lib "-Wl,-rpath,/opt/homebrew/opt/llvm/lib")
+  # Uses FetchContent to obtain GoogleTest
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+  )
 
-# Links our test executable to our library and GoogleTest
-target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
+  # Prevent GoogleTest from overriding our compiler/linker options
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
-# Adds our executable to the test set managed by CTest
-include(GoogleTest)
-gtest_add_tests(TARGET runTests)
+  # Makes GoogleTest available with forced settings
+  FetchContent_MakeAvailable(googletest)
+
+  # Creates the test executable
+  add_executable(runTests tests/Test_DoublyLinkedList.cpp)
+  target_compile_options(runTests PRIVATE -Wall -Wextra -pedantic -g -stdlib=libc++)
+  target_link_options(runTests PRIVATE -stdlib=libc++)
+
+  # Links our test executable to our library and GoogleTest
+  target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
+
+  # Adds our executable to the test set managed by CTest
+  include(GoogleTest)
+  gtest_add_tests(TARGET runTests)
+endif()
