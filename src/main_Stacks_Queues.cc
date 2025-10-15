@@ -1,6 +1,6 @@
 //===--------------------------------------------------------------------------===//
 /**
- * @file test_stack_queue.cc
+ * @file main Stacks_Queues.cc
  * @author Costantino Lombardi
  * @brief Comprehensive test program for Stack and Queue implementations
  * @version 0.1

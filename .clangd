@@ -1,0 +1,6 @@
+# .clangd configuration file
+# Specifies the location of the compilation database for clangd.
+
+CompileFlags:
+  # Uses compile_commands.json from the 'build' directory.
+  CompilationDatabase: build
