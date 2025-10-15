@@ -20,36 +20,36 @@ using namespace ads::list;
 
 //===---------------------- Iterator implementation -------------------------====//
 template <typename T>
-typename DoublyLinkedList<T>::iterator::reference DoublyLinkedList<T>::iterator::operator*() const {
+auto DoublyLinkedList<T>::iterator::operator*() const -> typename DoublyLinkedList<T>::iterator::reference {
   return node_ptr_->data;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator::pointer DoublyLinkedList<T>::iterator::operator->() const {
+auto DoublyLinkedList<T>::iterator::operator->() const -> typename DoublyLinkedList<T>::iterator::pointer {
   return &node_ptr_->data;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator& DoublyLinkedList<T>::iterator::operator++() {
+auto DoublyLinkedList<T>::iterator::operator++() -> typename DoublyLinkedList<T>::iterator& {
   node_ptr_ = node_ptr_->next.get();
   return *this;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::iterator::operator++(int) {
+auto DoublyLinkedList<T>::iterator::operator++(int) -> typename DoublyLinkedList<T>::iterator {
   iterator temp = *this;
   ++(*this);
   return temp;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator& DoublyLinkedList<T>::iterator::operator--() {
+auto DoublyLinkedList<T>::iterator::operator--() -> typename DoublyLinkedList<T>::iterator& {
   node_ptr_ = node_ptr_->prev;
   return *this;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::iterator::operator--(int) {
+auto DoublyLinkedList<T>::iterator::operator--(int) -> typename DoublyLinkedList<T>::iterator {
   iterator temp = *this;
   --(*this);
   return temp;
@@ -57,36 +57,36 @@ typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::iterator::operator--
 
 //===--------------------- Const_iterator implementation --------------------====//
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator::reference DoublyLinkedList<T>::const_iterator::operator*() const {
+auto DoublyLinkedList<T>::const_iterator::operator*() const -> typename DoublyLinkedList<T>::const_iterator::reference {
   return node_ptr_->data;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator::pointer DoublyLinkedList<T>::const_iterator::operator->() const {
+auto DoublyLinkedList<T>::const_iterator::operator->() const -> typename DoublyLinkedList<T>::const_iterator::pointer {
   return &node_ptr_->data;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator& DoublyLinkedList<T>::const_iterator::operator++() {
+auto DoublyLinkedList<T>::const_iterator::operator++() -> typename DoublyLinkedList<T>::const_iterator& {
   node_ptr_ = node_ptr_->next.get();
   return *this;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::const_iterator::operator++(int) {
+auto DoublyLinkedList<T>::const_iterator::operator++(int) -> typename DoublyLinkedList<T>::const_iterator {
   const_iterator temp = *this;
   ++(*this);
   return temp;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator& DoublyLinkedList<T>::const_iterator::operator--() {
+auto DoublyLinkedList<T>::const_iterator::operator--() -> typename DoublyLinkedList<T>::const_iterator& {
   node_ptr_ = node_ptr_->prev;
   return *this;
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::const_iterator::operator--(int) {
+auto DoublyLinkedList<T>::const_iterator::operator--(int) -> typename DoublyLinkedList<T>::const_iterator {
   const_iterator temp = *this;
   --(*this);
   return temp;
@@ -111,7 +111,7 @@ DoublyLinkedList<T>::DoublyLinkedList(DoublyLinkedList&& other) noexcept :
 }
 
 template <typename T>
-DoublyLinkedList<T>& DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept {
+auto DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept -> DoublyLinkedList<T>& {
   if (this != &other) {
     clear();
     head_       = std::move(other.head_);
@@ -201,7 +201,7 @@ void DoublyLinkedList<T>::pop_back() {
 }
 
 template <typename T>
-T& DoublyLinkedList<T>::front() {
+auto DoublyLinkedList<T>::front() -> T& {
   if (is_empty()) {
     throw ListException("front on empty list");
   }
@@ -209,7 +209,7 @@ T& DoublyLinkedList<T>::front() {
 }
 
 template <typename T>
-const T& DoublyLinkedList<T>::front() const {
+auto DoublyLinkedList<T>::front() const -> const T& {
   if (is_empty()) {
     throw ListException("front on empty list");
   }
@@ -217,7 +217,7 @@ const T& DoublyLinkedList<T>::front() const {
 }
 
 template <typename T>
-T& DoublyLinkedList<T>::back() {
+auto DoublyLinkedList<T>::back() -> T& {
   if (is_empty()) {
     throw ListException("back on empty list");
   }
@@ -225,7 +225,7 @@ T& DoublyLinkedList<T>::back() {
 }
 
 template <typename T>
-const T& DoublyLinkedList<T>::back() const {
+auto DoublyLinkedList<T>::back() const -> const T& {
   if (is_empty()) {
     throw ListException("back on empty list");
   }
@@ -233,12 +233,12 @@ const T& DoublyLinkedList<T>::back() const {
 }
 
 template <typename T>
-bool DoublyLinkedList<T>::is_empty() const noexcept {
+auto DoublyLinkedList<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <typename T>
-size_t DoublyLinkedList<T>::size() const noexcept {
+auto DoublyLinkedList<T>::size() const noexcept -> size_t {
   return size_;
 }
 
@@ -353,33 +353,33 @@ void DoublyLinkedList<T>::reverse() noexcept {
 //---------------------------- ITERATOR ACCESS ----------------------------//
 // (non-const)
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::begin() noexcept {
+auto DoublyLinkedList<T>::begin() noexcept -> typename DoublyLinkedList<T>::iterator {
   return iterator(head_.get());
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::end() noexcept {
+auto DoublyLinkedList<T>::end() noexcept -> typename DoublyLinkedList<T>::iterator {
   return iterator(nullptr); // end() is a null iterator
 }
 
 // (const)
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::begin() const noexcept {
+auto DoublyLinkedList<T>::begin() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return const_iterator(head_.get());
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::end() const noexcept {
+auto DoublyLinkedList<T>::end() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return const_iterator(nullptr);
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::cbegin() const noexcept {
+auto DoublyLinkedList<T>::cbegin() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return begin();
 }
 
 template <typename T>
-typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::cend() const noexcept {
+auto DoublyLinkedList<T>::cend() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return end();
 }
 

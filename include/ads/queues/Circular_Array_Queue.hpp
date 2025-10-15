@@ -53,8 +53,8 @@ public:
   ~CircularArrayQueue() override;
 
   // Copy constructor and assignment are disabled (move-only type)
-  CircularArrayQueue(const CircularArrayQueue&)            = delete;
-  CircularArrayQueue& operator=(const CircularArrayQueue&) = delete;
+  CircularArrayQueue(const CircularArrayQueue&)                    = delete;
+  auto operator=(const CircularArrayQueue&) -> CircularArrayQueue& = delete;
 
   /**
    * @brief Move constructor.
@@ -67,7 +67,7 @@ public:
    * @param other The queue from which to move resources.
    * @return A reference to this instance.
    */
-  CircularArrayQueue& operator=(CircularArrayQueue&& other) noexcept;
+  auto operator=(CircularArrayQueue&& other) noexcept -> CircularArrayQueue&;
 
   //========== INTERFACE INHERITED FROM Queue<T> ==========//
 
@@ -75,14 +75,14 @@ public:
   void enqueue(T&& value) override;
   void dequeue() override;
 
-  T&       front() override;
-  const T& front() const override;
-  T&       rear() override;
-  const T& rear() const override;
+  auto front() -> T& override;
+  auto front() const -> const T& override;
+  auto rear() -> T& override;
+  auto rear() const -> const T& override;
 
-  bool   is_empty() const noexcept override;
-  size_t size() const noexcept override;
-  void   clear() noexcept override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+  void               clear() noexcept override;
 
   //=========== ADDITIONAL FUNCTIONALITY ==========//
 
@@ -93,7 +93,7 @@ public:
    * @return Reference to the newly constructed element.
    */
   template <typename... Args>
-  T& emplace(Args&&... args);
+  auto emplace(Args&&... args) -> T&;
 
   /**
    * @brief Returns the current capacity of the internal array.
@@ -123,20 +123,20 @@ private:
    * @param index The current index.
    * @return The next index, wrapping around if necessary.
    */
-  [[nodiscard]] size_t next_index(size_t index) const noexcept { return (index + 1) % capacity_; }
+  [[nodiscard]] auto next_index(size_t index) const noexcept -> size_t { return (index + 1) % capacity_; }
 
   /**
    * @brief Calculates the previous index in the circular buffer.
    * @param index The current index.
    * @return The previous index, wrapping around if necessary.
    */
-  [[nodiscard]] size_t prev_index(size_t index) const noexcept { return (index + capacity_ - 1) % capacity_; }
+  [[nodiscard]] auto prev_index(size_t index) const noexcept -> size_t { return (index + capacity_ - 1) % capacity_; }
 
   /**
    * @brief Checks if the queue is full.
    * @return true if the queue cannot accept more elements without growing.
    */
-  [[nodiscard]] bool is_full() const noexcept {
+  [[nodiscard]] auto is_full() const noexcept -> bool {
     return size_ == capacity_ - 1; // One slot is always kept empty
   }
 

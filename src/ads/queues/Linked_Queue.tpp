@@ -37,7 +37,7 @@ LinkedQueue<T>::LinkedQueue(LinkedQueue&& other) noexcept : front_(std::move(oth
 }
 
 template <typename T>
-LinkedQueue<T>& LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept {
+auto LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept -> LinkedQueue<T>& {
   if (this != &other) {
     clear(); // Clear existing elements first
     front_      = std::move(other.front_);
@@ -61,7 +61,7 @@ void LinkedQueue<T>::enqueue(T&& value) {
 
 template <typename T>
 template <typename... Args>
-T& LinkedQueue<T>::emplace(Args&&... args) {
+auto LinkedQueue<T>::emplace(Args&&... args) -> T& {
   // Create new node with forwarded arguments
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
 
@@ -104,7 +104,7 @@ void LinkedQueue<T>::dequeue() {
 }
 
 template <typename T>
-T& LinkedQueue<T>::front() {
+auto LinkedQueue<T>::front() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
   }
@@ -112,7 +112,7 @@ T& LinkedQueue<T>::front() {
 }
 
 template <typename T>
-const T& LinkedQueue<T>::front() const {
+auto LinkedQueue<T>::front() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
   }
@@ -120,7 +120,7 @@ const T& LinkedQueue<T>::front() const {
 }
 
 template <typename T>
-T& LinkedQueue<T>::rear() {
+auto LinkedQueue<T>::rear() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
   }
@@ -128,7 +128,7 @@ T& LinkedQueue<T>::rear() {
 }
 
 template <typename T>
-const T& LinkedQueue<T>::rear() const {
+auto LinkedQueue<T>::rear() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
   }
@@ -136,12 +136,12 @@ const T& LinkedQueue<T>::rear() const {
 }
 
 template <typename T>
-bool LinkedQueue<T>::is_empty() const noexcept {
+auto LinkedQueue<T>::is_empty() const noexcept -> bool {
   return front_ == nullptr;
 }
 
 template <typename T>
-size_t LinkedQueue<T>::size() const noexcept {
+auto LinkedQueue<T>::size() const noexcept -> size_t {
   return size_;
 }
 

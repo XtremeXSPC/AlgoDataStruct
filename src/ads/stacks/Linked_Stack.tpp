@@ -36,7 +36,7 @@ LinkedStack<T>::LinkedStack(LinkedStack&& other) noexcept : head_(std::move(othe
 }
 
 template <typename T>
-LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack&& other) noexcept {
+auto LinkedStack<T>::operator=(LinkedStack&& other) noexcept -> LinkedStack<T>& {
   if (this != &other) {
     clear(); // Clear existing elements first
     head_       = std::move(other.head_);
@@ -58,7 +58,7 @@ void LinkedStack<T>::push(T&& value) {
 
 template <typename T>
 template <typename... Args>
-T& LinkedStack<T>::emplace(Args&&... args) {
+auto LinkedStack<T>::emplace(Args&&... args) -> T& {
   // Create new node with forwarded arguments
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
 
@@ -88,7 +88,7 @@ void LinkedStack<T>::pop() {
 }
 
 template <typename T>
-T& LinkedStack<T>::top() {
+auto LinkedStack<T>::top() -> T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
   }
@@ -96,7 +96,7 @@ T& LinkedStack<T>::top() {
 }
 
 template <typename T>
-const T& LinkedStack<T>::top() const {
+auto LinkedStack<T>::top() const -> const T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
   }
@@ -104,12 +104,12 @@ const T& LinkedStack<T>::top() const {
 }
 
 template <typename T>
-bool LinkedStack<T>::is_empty() const noexcept {
+auto LinkedStack<T>::is_empty() const noexcept -> bool {
   return head_ == nullptr;
 }
 
 template <typename T>
-size_t LinkedStack<T>::size() const noexcept {
+auto LinkedStack<T>::size() const noexcept -> size_t {
   return size_;
 }
 
