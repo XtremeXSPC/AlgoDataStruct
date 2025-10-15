@@ -74,12 +74,12 @@ public:
   void push(T&& value) override;
   void pop() override;
 
-  T&       top() override;
-  const T& top() const override;
+  auto top() -> T& override;
+  auto top() const -> const T& override;
 
-  bool   is_empty() const noexcept override;
-  size_t size() const noexcept override;
-  void   clear() noexcept override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+  void               clear() noexcept override;
 
   //=========== ADDITIONAL FUNCTIONALITY ==========//
 
@@ -90,13 +90,13 @@ public:
    * @return Reference to the newly constructed element.
    */
   template <typename... Args>
-  T& emplace(Args&&... args);
+  auto emplace(Args&&... args) -> T&;
 
   /**
    * @brief Returns the current capacity of the internal array.
    * @return The number of elements that can be stored without reallocation.
    */
-  [[nodiscard]] size_t capacity() const noexcept { return capacity_; }
+  [[nodiscard]] auto capacity() const noexcept -> size_t { return capacity_; }
 
   /**
    * @brief Reserves capacity for at least n elements.

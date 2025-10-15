@@ -50,8 +50,8 @@ public:
   ~LinkedStack() override;
 
   // Copy constructor and assignment are disabled (move-only type)
-  LinkedStack(const LinkedStack&)            = delete;
-  LinkedStack& operator=(const LinkedStack&) = delete;
+  LinkedStack(const LinkedStack&)                    = delete;
+  auto operator=(const LinkedStack&) -> LinkedStack& = delete;
 
   /**
    * @brief Move constructor.
@@ -64,7 +64,7 @@ public:
    * @param other The stack from which to move resources.
    * @return A reference to this instance.
    */
-  LinkedStack& operator=(LinkedStack&& other) noexcept;
+  auto operator=(LinkedStack&& other) noexcept -> LinkedStack&;
 
   //========== INTERFACE INHERITED FROM Stack<T> ==========//
 
@@ -72,12 +72,13 @@ public:
   void push(T&& value) override;
   void pop() override;
 
-  T&       top() override;
-  const T& top() const override;
+  auto top() -> T& override;
+  auto top() const -> const T& override;
 
-  bool   is_empty() const noexcept override;
-  size_t size() const noexcept override;
-  void   clear() noexcept override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+
+  void clear() noexcept override;
 
   //=========== ADDITIONAL FUNCTIONALITY ==========//
 
@@ -88,7 +89,7 @@ public:
    * @return Reference to the newly constructed element.
    */
   template <typename... Args>
-  T& emplace(Args&&... args);
+  auto emplace(Args&&... args) -> T&;
 
 private:
   //================ INTERNAL NODE ================//

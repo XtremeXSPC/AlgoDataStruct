@@ -23,7 +23,9 @@ using namespace ads::stack;
 
 template <typename T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); }), // Custom deleter
+    data_(
+        static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
+        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter
     size_(0), capacity_(initial_capacity) {
 }
 
@@ -34,7 +36,7 @@ ArrayStack<T>::ArrayStack(ArrayStack&& other) noexcept : data_(std::move(other.d
 }
 
 template <typename T>
-ArrayStack<T>& ArrayStack<T>::operator=(ArrayStack&& other) noexcept {
+auto ArrayStack<T>::operator=(ArrayStack&& other) noexcept -> ArrayStack<T>& {
   if (this != &other) {
     data_           = std::move(other.data_);
     size_           = other.size_;
@@ -96,7 +98,7 @@ void ArrayStack<T>::pop() {
 }
 
 template <typename T>
-T& ArrayStack<T>::top() {
+auto ArrayStack<T>::top() -> T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
   }
@@ -104,7 +106,7 @@ T& ArrayStack<T>::top() {
 }
 
 template <typename T>
-const T& ArrayStack<T>::top() const {
+auto ArrayStack<T>::top() const -> const T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
   }
@@ -112,12 +114,12 @@ const T& ArrayStack<T>::top() const {
 }
 
 template <typename T>
-bool ArrayStack<T>::is_empty() const noexcept {
+auto ArrayStack<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <typename T>
-size_t ArrayStack<T>::size() const noexcept {
+auto ArrayStack<T>::size() const noexcept -> size_t {
   return size_;
 }
 
