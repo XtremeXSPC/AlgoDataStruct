@@ -23,7 +23,9 @@ using namespace ads::queue;
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); }), // Custom deleter
+    data_(
+        static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
+        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter
     front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
 }
 
@@ -42,7 +44,7 @@ CircularArrayQueue<T>::CircularArrayQueue(CircularArrayQueue&& other) noexcept :
 }
 
 template <typename T>
-CircularArrayQueue<T>& CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept {
+auto CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept -> CircularArrayQueue<T>& {
   if (this != &other) {
     clear();
     data_           = std::move(other.data_);
@@ -70,7 +72,7 @@ void CircularArrayQueue<T>::enqueue(T&& value) {
 
 template <typename T>
 template <typename... Args>
-T& CircularArrayQueue<T>::emplace(Args&&... args) {
+auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
   if (is_full()) {
     grow();
   }
@@ -109,7 +111,7 @@ void CircularArrayQueue<T>::dequeue() {
 }
 
 template <typename T>
-T& CircularArrayQueue<T>::front() {
+auto CircularArrayQueue<T>::front() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
   }
@@ -117,7 +119,7 @@ T& CircularArrayQueue<T>::front() {
 }
 
 template <typename T>
-const T& CircularArrayQueue<T>::front() const {
+auto CircularArrayQueue<T>::front() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
   }
@@ -125,7 +127,7 @@ const T& CircularArrayQueue<T>::front() const {
 }
 
 template <typename T>
-T& CircularArrayQueue<T>::rear() {
+auto CircularArrayQueue<T>::rear() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
   }
@@ -134,7 +136,7 @@ T& CircularArrayQueue<T>::rear() {
 }
 
 template <typename T>
-const T& CircularArrayQueue<T>::rear() const {
+auto CircularArrayQueue<T>::rear() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
   }
@@ -143,12 +145,12 @@ const T& CircularArrayQueue<T>::rear() const {
 }
 
 template <typename T>
-bool CircularArrayQueue<T>::is_empty() const noexcept {
+auto CircularArrayQueue<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <typename T>
-size_t CircularArrayQueue<T>::size() const noexcept {
+auto CircularArrayQueue<T>::size() const noexcept -> size_t {
   return size_;
 }
 
