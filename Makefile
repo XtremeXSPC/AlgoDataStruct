@@ -12,4 +12,7 @@ clean:
 configure:
 	cmake -S . -B build
 
+compile_commands:
+	ln -sf build/compile_commands.json compile_commands.json
+
 all: configure build run
