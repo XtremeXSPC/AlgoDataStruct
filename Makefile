@@ -51,7 +51,7 @@ all: configure-clang build symlink
 	@echo ""
 	@echo "✓ Project configured and built successfully!"
 	@echo ""
-	@echo "Run 'make run' to execute Binary Search Tree tests"
+	@echo "Run 'make run' to execute default test ($(TARGET))"
 	@echo "Run 'make help' to see all available commands"
 	@echo ""
 
