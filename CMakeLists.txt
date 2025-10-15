@@ -1,9 +1,23 @@
 # Requires the minimum version of CMake and defines the project name
 cmake_minimum_required(VERSION 3.24)
 
-# Forces the use of LLVM Clang instead of Apple Clang
-set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
-set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+# Forces the use of LLVM Clang instead of system default
+if(APPLE)
+  # macOS - Homebrew LLVM installation
+  set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
+  set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+elseif(UNIX)
+  # Linux (Arch and others) - system LLVM installation
+  find_program(CLANG_C_COMPILER NAMES clang clang-21 clang-20 clang-19)
+  find_program(CLANG_CXX_COMPILER NAMES clang++ clang++-21 clang++-20 clang++-19)
+  
+  if(CLANG_C_COMPILER AND CLANG_CXX_COMPILER)
+    set(CMAKE_C_COMPILER "${CLANG_C_COMPILER}")
+    set(CMAKE_CXX_COMPILER "${CLANG_CXX_COMPILER}")
+  else()
+    message(WARNING "LLVM Clang not found, using system default compiler")
+  endif()
+endif()
 
 project(AlgoDataStructProject LANGUAGES CXX)
 # Sets the executable target name
