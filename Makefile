@@ -33,7 +33,8 @@ DEFAULT_BUILD_TYPE := Debug
 BUILD_DIR := build
 
 # Main test executable
-TEST_EXECUTABLE := $(BUILD_DIR)/bin/test_bst
+TARGET := test_bst
+TEST_EXECUTABLE := $(BUILD_DIR)/bin/$(TARGET)
 
 # ------------------------------ Default Target ------------------------------ #
 # The default target configures with Clang and builds
@@ -41,7 +42,7 @@ TEST_EXECUTABLE := $(BUILD_DIR)/bin/test_bst
 
 # Declare all targets as phony (not real files)
 .PHONY: all build run clean configure configure-clang configure-gcc \
-	configure-debug configure-release reconfigure test help \
+	configure-debug configure-release configure-sanitize reconfigure test help \
 	symlink check
 
 # ------------------------------- Main Targets ------------------------------- #
@@ -68,8 +69,13 @@ build:
 # 'run' target: builds and runs the main test
 run: build
 	@echo ""
-	@echo "Running Binary Search Tree tests..."
-	@echo "========================================"
+	@echo "Running $(TARGET)..."
+	@echo ""
+	@if [ ! -f "$(TEST_EXECUTABLE)" ]; then \
+		echo "Error: $(TEST_EXECUTABLE) not found."; \
+		echo "Available executables: test_bst, test_lists, test_stacks_queues"; \
+		exit 1; \
+	fi
 	@$(TEST_EXECUTABLE)
 
 # 'clean' target: removes all generated files
@@ -128,6 +134,18 @@ configure-release:
 	@echo "✓ Release configuration complete!"
 	@echo ""
 
+# Sanitize configuration (with Clang)
+configure-sanitize:
+	@echo "Configuring Sanitize build with Clang..."
+	cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake \
+	      -DCMAKE_BUILD_TYPE=Sanitize \
+	      -S . -B $(BUILD_DIR)
+	@echo ""
+	@echo "✓ Sanitize configuration complete!"
+	@echo "  Address Sanitizer: Enabled"
+	@echo "  UB Sanitizer: Enabled"
+	@echo ""
+
 # Alias for backward compatibility with old Makefile
 # 'configure' without specification uses Clang
 configure: configure-clang
@@ -151,6 +169,12 @@ test:
 	@echo "Running tests..."
 	@echo "================"
 	cd $(BUILD_DIR) && ctest --output-on-failure
+
+# Configure with sanitizers enabled and build
+sanitize: clean configure-sanitize build
+	@echo ""
+	@echo "Build with sanitizers complete!"
+	@echo "Run 'make run' to execute the tests with sanitizers enabled"
 
 # ----------------------------- Utility Targets ------------------------------ #
 # Create symlink for compile_commands.json

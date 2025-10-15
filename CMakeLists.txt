@@ -84,7 +84,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Output directories for built executables and libraries.
 # Putting them in the source tree makes them easier to find and run.
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 # Create output directories if they don't exist.

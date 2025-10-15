@@ -25,7 +25,7 @@ using namespace std;
 // Helper function to demonstrate polymorphic usage
 template <typename T>
 void test_stack_interface(ads::stack::Stack<T>& stack, const string& stack_type) {
-  cout << "\n========== Testing " << stack_type << " ==========\n";
+  cout << "========== Testing " << stack_type << " ==========\n";
 
   // Test push operations
   cout << "Pushing elements: 10, 20, 30\n";

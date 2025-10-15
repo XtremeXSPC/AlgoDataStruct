@@ -261,9 +261,8 @@ if(APPLE AND IS_LLVM_CLANG)
         set(CMAKE_CXX_FLAGS "-nostdinc++ -I${LLVM_LIBCXX_INCLUDE}" CACHE STRING "" FORCE)
         
         # Configure linker to use LLVM's libc++ library.
-        # Set RPATH so the executable can find libc++ at runtime.
         set(CMAKE_EXE_LINKER_FLAGS 
-            "-L${LLVM_LIBCXX_LIB} -Wl,-rpath,${LLVM_LIBCXX_LIB}" 
+            "-L${LLVM_LIBCXX_LIB}" 
             CACHE STRING "" FORCE)
         
         # Tell CMake about the RPATH for installation.
