@@ -15,10 +15,11 @@
 #ifndef DOUBLY_LINKED_LIST_HPP
 #define DOUBLY_LINKED_LIST_HPP
 
-#include "List.hpp"
 #include <iterator>
 #include <memory>
 #include <utility>
+
+#include "List.hpp"
 
 namespace ads::list {
 
