@@ -49,7 +49,7 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
-    iterator(Node* ptr = nullptr) : node_ptr_(ptr) {}
+    iterator(Node* ptr = nullptr, DoublyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -61,7 +61,8 @@ public:
     auto operator!=(const iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
-    Node* node_ptr_;
+    Node*                 node_ptr_;
+    DoublyLinkedList<T>*  list_ptr_;
     friend class DoublyLinkedList<T>;
   };
 
@@ -74,7 +75,7 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    const_iterator(const Node* ptr = nullptr) : node_ptr_(ptr) {}
+    const_iterator(const Node* ptr = nullptr, const DoublyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -86,7 +87,8 @@ public:
     auto operator!=(const const_iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
-    const Node* node_ptr_;
+    const Node*                 node_ptr_;
+    const DoublyLinkedList<T>*  list_ptr_;
     friend class DoublyLinkedList<T>;
   };
 
