@@ -53,7 +53,7 @@ else()
         # AppleClang is acceptable but LLVM Clang provides more features.
         set(COMPILER_SEARCH_NAMES 
             clang++                     # Generic name (usually LLVM on Homebrew)
-            clang++-19 clang++-18 clang++-17 clang++-16 clang++-15
+            clang++-21 clang++-20 clang++-19 clang++-18 clang++-17 clang++-16 clang++
         )
         set(COMPILER_SEARCH_PATHS 
             /opt/homebrew/opt/llvm/bin  # Homebrew LLVM (Apple Silicon) - PRIORITY
@@ -64,7 +64,7 @@ else()
     elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         # On Linux, prefer newer LLVM versions.
         set(COMPILER_SEARCH_NAMES 
-            clang++-19 clang++-18 clang++-17 clang++-16 clang++-15 clang++-14 clang++
+            clang++-21 clang++-20 clang++-19 clang++-18 clang++-17 clang++-16 clang++
         )
         set(COMPILER_SEARCH_PATHS 
             /usr/bin
@@ -75,7 +75,7 @@ else()
     else()
         # BSD and other Unix systems.
         set(COMPILER_SEARCH_NAMES 
-            clang++18 clang++17 clang++16 clang++15 clang++
+            clang++-21 clang++-20 clang++-19 clang++-18 clang++-17 clang++-16 clang++
         )
         set(COMPILER_SEARCH_PATHS 
             /usr/local/bin
