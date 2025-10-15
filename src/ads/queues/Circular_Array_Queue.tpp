@@ -12,10 +12,11 @@
 //===--------------------------------------------------------------------------===//
 #pragma once
 
-#include "../../../include/ads/queues/Circular_Array_Queue.hpp"
 #include <memory>
 #include <new>
 #include <utility>
+
+#include "../../../include/ads/queues/Circular_Array_Queue.hpp"
 
 using namespace ads::queue;
 

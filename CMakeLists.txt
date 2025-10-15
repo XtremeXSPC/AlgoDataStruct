@@ -55,6 +55,11 @@ target_sources(ads_lib
       include/ads/queues/Circular_Array_Queue.hpp
       include/ads/queues/Linked_Queue.hpp
 
+      # Binary Tree interface and implementations
+      include/ads/trees/Binary_Tree.hpp
+      include/ads/trees/Binary_Tree_Exception.hpp
+      include/ads/trees/Binary_Search_Tree.hpp
+
   # Template implementations (.tpp) are a private detail
   PRIVATE
     # Specific implementations
@@ -67,10 +72,13 @@ target_sources(ads_lib
     # Queue implementations
     src/ads/queues/Circular_Array_Queue.tpp
     src/ads/queues/Linked_Queue.tpp
+
+    # Binary Tree implementations
+    src/ads/trees/Binary_Search_Tree.tpp
 )
 
 # ----- Executable for Tests ----- #
-add_executable         (${PROJECT_EXECUTABLE_NAME} src/main_Stacks_Queues.cc)
+add_executable         (${PROJECT_EXECUTABLE_NAME} src/main_Binary_Search_Tree.cc)
 target_compile_options (${PROJECT_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -pedantic -g -O1 -fsanitize=address)
 target_link_options    (${PROJECT_EXECUTABLE_NAME} PRIVATE -fsanitize=address)
 target_link_libraries  (${PROJECT_EXECUTABLE_NAME} PRIVATE ads_lib)

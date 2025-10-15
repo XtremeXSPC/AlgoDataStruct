@@ -15,11 +15,12 @@
 #ifndef ARRAY_STACK_HPP
 #define ARRAY_STACK_HPP
 
-#include "Stack.hpp"
-#include "Stack_Exception.hpp"
 #include <algorithm>
 #include <memory>
 #include <utility>
+
+#include "Stack.hpp"
+#include "Stack_Exception.hpp"
 
 namespace ads::stack {
 
