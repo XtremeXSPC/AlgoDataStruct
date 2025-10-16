@@ -13,9 +13,6 @@
 #pragma once
 
 #include "../../../include/ads/stacks/Array_Stack.hpp"
-#include <cstring>
-#include <memory>
-#include <new>
 
 using namespace ads::stack;
 

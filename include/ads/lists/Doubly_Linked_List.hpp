@@ -20,7 +20,7 @@
 #include <utility>
 
 #include "List.hpp"
-
+#include "List_Exception.hpp"
 namespace ads::list {
 
 /**
@@ -61,8 +61,8 @@ public:
     auto operator!=(const iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
-    Node*                 node_ptr_;
-    DoublyLinkedList<T>*  list_ptr_;
+    Node*                node_ptr_;
+    DoublyLinkedList<T>* list_ptr_;
     friend class DoublyLinkedList<T>;
   };
 
@@ -87,8 +87,8 @@ public:
     auto operator!=(const const_iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
-    const Node*                 node_ptr_;
-    const DoublyLinkedList<T>*  list_ptr_;
+    const Node*                node_ptr_;
+    const DoublyLinkedList<T>* list_ptr_;
     friend class DoublyLinkedList<T>;
   };
 
