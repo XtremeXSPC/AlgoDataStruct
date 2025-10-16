@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace ads::tree {
+namespace ads::trees {
 
 /**
  * @brief Abstract base class that defines common operations for a binary tree data structure.
@@ -150,7 +150,7 @@ public:
   virtual void level_order_traversal(const std::function<void(const T&)>& visit) const = 0;
 };
 
-} // namespace ads::tree
+} // namespace ads::trees
 
 #endif // BINARY_TREE_HPP
 

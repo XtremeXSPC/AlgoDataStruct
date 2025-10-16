@@ -12,10 +12,9 @@
 //===--------------------------------------------------------------------------===//
 #pragma once
 
-#include <utility>
+
 
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
-#include "../../../include/ads/lists/List_Exception.hpp"
 
 using namespace ads::list;
 
