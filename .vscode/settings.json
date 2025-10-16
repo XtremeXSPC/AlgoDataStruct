@@ -31,7 +31,6 @@
   //===------------ Clangd Configuration -------------===//
   "clangd.onConfigChanged": "restart",
   "clangd.arguments": [
-    "--query-driver=/opt/homebrew/opt/llvm/bin/clang++,/opt/homebrew/opt/gcc/bin/g++-15",
     "--completion-style=detailed",
     "--header-insertion=iwyu",
     "--background-index",
@@ -40,6 +39,7 @@
   ],
   "clangd.detectExtensionConflicts": true,
   "clangd.checkUpdates": false,
+  "cmake.configureOnOpen": false,
 
   //===--------- Build and Run Configuration ---------===//
   "code-runner.executorMap": {
