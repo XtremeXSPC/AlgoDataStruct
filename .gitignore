@@ -7,7 +7,7 @@
 *.dSYM/
 
 # Exclude Visual Studio Code configuration directory
-*.vscode/
+*!.vscode/
 
 # Exclude CMake build directories
 /build
