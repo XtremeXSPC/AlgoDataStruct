@@ -16,7 +16,9 @@
 #define ARRAY_STACK_HPP
 
 #include <algorithm>
+#include <cstring>
 #include <memory>
+#include <new>
 #include <utility>
 
 #include "Stack.hpp"

@@ -53,9 +53,11 @@ endif()
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE OR CMAKE_TOOLCHAIN_FILE STREQUAL "")
     message(WARNING
         "\n"
-        "${ANSI_YELLOW}╔═══════════════════════════════════════════════════════════════╗\n"
-        "║          WARNING: No Toolchain File Specified                 ║\n"
-        "╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}\n"
+        "${ANSI_YELLOW}\n"
+        "╔═══════════════════════════════════════════════════════════════╗\n"
+        "║             WARNING: No Toolchain File Specified              ║\n"
+        "╚═══════════════════════════════════════════════════════════════╝"
+        "${ANSI_RESET}\n"
         "\n"
         "It's strongly recommended to use a toolchain file for consistent\n"
         "compiler selection and proper clangd support.\n"
@@ -371,7 +373,7 @@ endif()
 
 message(STATUS "")
 message(STATUS "${ANSI_BLUE}╔═══════════════════════════════════════════════════════════════╗${ANSI_RESET}")
-message(STATUS "${ANSI_BLUE}║${ANSI_RESET}       AlgoDataStruct - Configuration Summary                  ${ANSI_BLUE}║${ANSI_RESET}")
+message(STATUS "${ANSI_BLUE}║${ANSI_RESET}            AlgoDataStruct - Configuration Summary             ${ANSI_BLUE}║${ANSI_RESET}")
 message(STATUS "${ANSI_BLUE}╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}")
 message(STATUS "")
 

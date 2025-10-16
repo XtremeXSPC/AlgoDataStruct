@@ -15,15 +15,18 @@
 #ifndef BINARY_SEARCH_TREE_HPP
 #define BINARY_SEARCH_TREE_HPP
 
+#include <algorithm>
+#include <functional>
 #include <iterator>
 #include <memory>
+#include <queue>
 #include <stack>
 #include <utility>
 
 #include "Binary_Tree.hpp"
 #include "Binary_Tree_Exception.hpp"
 
-namespace ads::tree {
+namespace ads::trees {
 
 /**
  * @brief An implementation of a Binary Search Tree.
@@ -303,7 +306,7 @@ private:
 // Include the implementation file for templates
 #include "../../../src/ads/trees/Binary_Search_Tree.tpp"
 
-} // namespace ads::tree
+} // namespace ads::trees
 
 #endif // BINARY_SEARCH_TREE_HPP
 

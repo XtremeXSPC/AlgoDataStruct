@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 
-namespace ads::tree {
+namespace ads::trees {
 
 /**
  * @brief Base exception for logical errors in binary tree operations.
@@ -70,7 +70,7 @@ public:
   explicit InvalidOperationException(const char* message) : BinaryTreeException(message) {}
 };
 
-} // namespace ads::tree
+} // namespace ads::trees
 
 #endif // BINARY_TREE_EXCEPTION_HPP
 

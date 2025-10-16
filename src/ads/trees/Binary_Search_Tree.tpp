@@ -12,12 +12,10 @@
 //===--------------------------------------------------------------------------===//
 #pragma once
 
-#include <queue>
-#include <utility>
-
 #include "../../../include/ads/trees/Binary_Search_Tree.hpp"
 
-using ads::tree::BinarySearchTree;
+using ads::trees::BinarySearchTree;
+using std::move;
 
 //===------------------------ Iterator implementation -------------------------===//
 
