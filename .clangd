@@ -4,3 +4,9 @@
 CompileFlags:
   # Uses compile_commands.json from the 'build' directory.
   CompilationDatabase: build
+
+Diagnostics:
+  # Suppress diagnostics from system and standard library files
+  Suppress:
+    # Common warnings to suppress for fast development
+    - unused-includes
