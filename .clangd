@@ -1,12 +1,40 @@
-# .clangd configuration file
-# Specifies the location of the compilation database for clangd.
+# .clangd configuration file for AlgoDataStruct
 
 CompileFlags:
-  # Uses compile_commands.json from the 'build' directory.
-  CompilationDatabase: build
+  # Path to compile_commands.json (symlink in root points to build/)
+  CompilationDatabase: .
 
+  # Add include paths explicitly
+  Add:
+    - "-I/Volumes/LCS.Data/AlgoDataStruct/include"
+    - "-I/Volumes/LCS.Data/AlgoDataStruct/src"
+
+    - "-xc++"
+    - "-std=c++20"
+  # Treat .tpp files as C++ headers
+  Compiler: clang++
+
+# Treat .tpp files as C++ source
+---
+If:
+  PathMatch: .*\.tpp
+
+CompileFlags:
+  Add:
+    - "-xc++"
+---
+# Suppress common template-heavy warnings=
 Diagnostics:
-  # Suppress diagnostics from system and standard library files
+  ClangTidy:
+    Remove:
+      - misc-no-recursion
+      - readability-function-cognitive-complexity
   Suppress:
-    # Common warnings to suppress for fast development
     - unused-includes
+    - unused-template
+  UnusedIncludes: None
+
+# Index settings for better performance
+Index:
+  Background: Build
+  StandardLibrary: Yes

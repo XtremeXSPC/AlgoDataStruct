@@ -31,12 +31,12 @@
   //===------------ Clangd Configuration -------------===//
   "clangd.onConfigChanged": "restart",
   "clangd.arguments": [
+    "--query-driver=/opt/homebrew/opt/llvm/bin/clang++,/opt/homebrew/opt/gcc/bin/g++-15",
+    "--completion-style=detailed",
+    "--header-insertion=iwyu",
     "--background-index",
     "--clang-tidy",
-    "--completion-style=detailed",
-    "--header-insertion=never",
-    "--log=error",
-    "--query-driver=/usr/bin/clang++"
+    "-j=8"
   ],
   "clangd.detectExtensionConflicts": true,
   "clangd.checkUpdates": false,
