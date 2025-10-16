@@ -6,11 +6,17 @@ CompileFlags:
 
   # Add include paths explicitly
   Add:
-    - "-I/Volumes/LCS.Data/AlgoDataStruct/include"
-    - "-I/Volumes/LCS.Data/AlgoDataStruct/src"
+    - "-I${workspaceFolder}/include"
+    - "-I${workspaceFolder}/src"
 
     - "-xc++"
     - "-std=c++20"
+
+  Remove:
+    - "-DLOCAL*"
+    - "--gcc-toolchain*"
+    - "-D__GNUC__*"
+
   # Treat .tpp files as C++ headers
   Compiler: clang++
 
@@ -23,7 +29,7 @@ CompileFlags:
   Add:
     - "-xc++"
 ---
-# Suppress common template-heavy warnings=
+# Suppress common template-heavy warnings
 Diagnostics:
   ClangTidy:
     Remove:
