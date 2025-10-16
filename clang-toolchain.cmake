@@ -305,7 +305,7 @@ message(STATUS "    C++ Standard: C++20")
 # -------------------------- Success Summary Message ------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
-message(STATUS "║             Clang Toolchain Successfully Configured           ║")
+message(STATUS "║            Clang Toolchain Successfully Configured            ║")
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "  Platform       : ${PLATFORM_NAME}")
 if(IS_LLVM_CLANG)

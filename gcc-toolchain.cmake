@@ -373,7 +373,7 @@ message(STATUS "    C++ Standard: C++20")
 # ------------------------- Success Summary Message -------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
-message(STATUS "║              GCC Toolchain Successfully Configured            ║")
+message(STATUS "║             GCC Toolchain Successfully Configured             ║")
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "  Platform       : ${PLATFORM_NAME}")
 message(STATUS "  Compiler Type  : GNU GCC")
