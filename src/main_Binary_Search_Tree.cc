@@ -24,9 +24,11 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+using ads::trees::BinarySearchTree;
+
 // Helper function to print tree contents via in-order traversal
 template <typename T>
-void print_tree(const ads::trees::BinarySearchTree<T>& tree, const string& name) {
+void print_tree(const BinarySearchTree<T>& tree, const string& name) {
   cout << "Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
 
   if (tree.is_empty()) {
@@ -35,7 +37,7 @@ void print_tree(const ads::trees::BinarySearchTree<T>& tree, const string& name)
   }
 
   cout << "  In-order: ";
-  tree.in_order_traversal([](const T& value) { cout << value << " "; });
+  tree.in_order_traversal([](const T& value) -> auto { cout << value << " "; });
   cout << '\n';
 }
 
@@ -43,7 +45,7 @@ void print_tree(const ads::trees::BinarySearchTree<T>& tree, const string& name)
 void test_basic_operations() {
   cout << "\n========== Test: Basic Operations ==========\n";
 
-  ads::trees::BinarySearchTree<int> bst;
+  BinarySearchTree<int> bst;
 
   // Test insertion
   cout << "Inserting values: 50, 30, 70, 20, 40, 60, 80\n";
@@ -61,15 +63,15 @@ void test_basic_operations() {
   cout << "\nDifferent traversals:\n";
 
   cout << "  Pre-order:  ";
-  bst.pre_order_traversal([](const int& value) { cout << value << " "; });
+  bst.pre_order_traversal([](const int& value) -> void { cout << value << " "; });
   cout << '\n';
 
   cout << "  Post-order: ";
-  bst.post_order_traversal([](const int& value) { cout << value << " "; });
+  bst.post_order_traversal([](const int& value) -> void { cout << value << " "; });
   cout << '\n';
 
   cout << "  Level-order: ";
-  bst.level_order_traversal([](const int& value) { cout << value << " "; });
+  bst.level_order_traversal([](const int& value) -> void { cout << value << " "; });
   cout << '\n';
 
   // Test duplicates
@@ -83,7 +85,7 @@ void test_basic_operations() {
 void test_search_operations() {
   cout << "\n========== Test: Search Operations ==========\n";
 
-  ads::trees::BinarySearchTree<int> bst;
+  BinarySearchTree<int> bst;
 
   // Build a tree
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
@@ -123,7 +125,7 @@ void test_search_operations() {
 void test_removal() {
   cout << "\n========== Test: Removal Operations ==========\n";
 
-  ads::trees::BinarySearchTree<int> bst;
+  BinarySearchTree<int> bst;
 
   // Build a tree
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
@@ -163,7 +165,7 @@ void test_removal() {
 void test_iterators() {
   cout << "\n========== Test: Iterators ==========\n";
 
-  ads::trees::BinarySearchTree<int> bst;
+  BinarySearchTree<int> bst;
 
   // Build a tree
   vector<int> values = {50, 30, 70, 20, 40, 60, 80};
@@ -209,12 +211,12 @@ void test_custom_types() {
     Person(string n, int a) : name(std::move(n)), age(a) {}
 
     // BST requires comparison operators
-    bool operator<(const Person& other) const { return age < other.age; }
+    auto operator<(const Person& other) const -> bool { return age < other.age; }
 
-    bool operator==(const Person& other) const { return age == other.age; }
+    auto operator==(const Person& other) const -> bool { return age == other.age; }
   };
 
-  ads::trees::BinarySearchTree<Person> people;
+  BinarySearchTree<Person> people;
 
   // Insert people
   cout << "Inserting people by age:\n";
@@ -225,7 +227,7 @@ void test_custom_types() {
   people.emplace("Eve", 32);
 
   cout << "\nPeople sorted by age (in-order traversal):\n";
-  people.in_order_traversal([](const Person& p) { cout << "  " << p.name << " (age " << p.age << ")\n"; });
+  people.in_order_traversal([](const Person& p) -> void { cout << "  " << p.name << " (age " << p.age << ")\n"; });
 
   cout << "\nYoungest person: " << people.find_min().name << " (age " << people.find_min().age << ")\n";
   cout << "Oldest person: " << people.find_max().name << " (age " << people.find_max().age << ")\n";
@@ -235,7 +237,7 @@ void test_custom_types() {
 void test_move_semantics() {
   cout << "\n========== Test: Move Semantics ==========\n";
 
-  ads::trees::BinarySearchTree<int> bst1;
+  BinarySearchTree<int> bst1;
   bst1.insert(50);
   bst1.insert(30);
   bst1.insert(70);
@@ -244,14 +246,14 @@ void test_move_semantics() {
   print_tree(bst1, "bst1");
 
   // Test move constructor
-  ads::trees::BinarySearchTree<int> bst2 = std::move(bst1);
+  BinarySearchTree<int> bst2 = std::move(bst1);
 
   cout << "\nAfter move construction:\n";
   print_tree(bst1, "bst1 (should be empty)");
   print_tree(bst2, "bst2 (should have the data)");
 
   // Test move assignment
-  ads::trees::BinarySearchTree<int> bst3;
+  BinarySearchTree<int> bst3;
   bst3.insert(10);
   bst3.insert(20);
 
@@ -269,7 +271,7 @@ void test_move_semantics() {
 void test_exceptions() {
   cout << "\n========== Test: Exception Handling ==========\n";
 
-  ads::trees::BinarySearchTree<int> empty_tree;
+  BinarySearchTree<int> empty_tree;
 
   cout << "Testing exceptions on empty tree:\n";
 
@@ -295,7 +297,7 @@ void test_edge_cases() {
   cout << "\n========== Test: Edge Cases ==========\n";
 
   // Single element tree
-  ads::trees::BinarySearchTree<int> single;
+  BinarySearchTree<int> single;
   single.insert(42);
 
   cout << "Single-element tree:\n";
@@ -304,7 +306,7 @@ void test_edge_cases() {
   cout << "  Min: " << single.find_min() << ", Max: " << single.find_max() << '\n';
 
   // Degenerate tree (essentially a linked list)
-  ads::trees::BinarySearchTree<int> degenerate;
+  BinarySearchTree<int> degenerate;
   for (int i = 1; i <= 5; ++i) {
     degenerate.insert(i);
   }
