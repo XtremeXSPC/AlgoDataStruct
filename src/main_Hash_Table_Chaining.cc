@@ -393,7 +393,7 @@ void test_performance() {
 
 int main() {
   cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║   HASH TABLE CHAINING COMPREHENSIVE TEST SUITE        ║\n";
+  cout << "║      HASH TABLE CHAINING COMPREHENSIVE TEST SUITE      ║\n";
   cout << "╚════════════════════════════════════════════════════════╝\n";
 
   try {
@@ -411,8 +411,9 @@ int main() {
     test_clear();
     test_performance();
 
-    cout << "\n╔════════════════════════════════════════════════════════╗\n";
-    cout << "║  ALL TESTS COMPLETED SUCCESSFULLY!                    ║\n";
+    cout << "\n";
+    cout << "╔════════════════════════════════════════════════════════╗\n";
+    cout << "║            ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
     cout << "╚════════════════════════════════════════════════════════╝\n";
 
     return 0;

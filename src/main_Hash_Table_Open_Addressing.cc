@@ -60,7 +60,7 @@ void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string&
 void test_basic_operations() {
   cout << "\n========== Test: Basic Operations (Linear Probing) ==========\n";
 
-  HashTableOpenAddressing<int, string> table(16, 0.5f, ProbingStrategy::LINEAR);
+  HashTableOpenAddressing<int, string> table(16, ProbingStrategy::LINEAR, 0.5f);
 
   cout << "Inserting key-value pairs:\n";
   table.insert(1, "one");
@@ -92,7 +92,7 @@ void test_probing_strategies() {
   for (auto strategy : strategies) {
     cout << "\nTesting " << strategy_to_string(strategy) << ":\n";
 
-    HashTableOpenAddressing<int, int> table(16, 0.5f, strategy);
+    HashTableOpenAddressing<int, int> table(16, strategy, 0.5f);
 
     // Insert some values
     for (int i = 0; i < 10; ++i) {
@@ -120,7 +120,7 @@ void test_probing_strategies() {
 void test_tombstones() {
   cout << "\n========== Test: Tombstone Handling ==========\n";
 
-  HashTableOpenAddressing<int, string> table(8, 0.5f, ProbingStrategy::LINEAR);
+  HashTableOpenAddressing<int, string> table(8, ProbingStrategy::LINEAR, 0.5f);
 
   // Insert values that will cause collisions
   cout << "Inserting colliding keys (0, 8, 16):\n";
@@ -180,7 +180,7 @@ void test_updates() {
 void test_rehashing() {
   cout << "\n========== Test: Rehashing ==========\n";
 
-  HashTableOpenAddressing<int, int> table(4, 0.5f); // Small capacity, low threshold
+  HashTableOpenAddressing<int, int> table(4, ProbingStrategy::LINEAR, 0.5f); // Small capacity, low threshold
 
   cout << "Initial state:\n";
   print_stats(table, "empty table");
@@ -214,7 +214,7 @@ void test_high_collisions() {
   cout << "\n========== Test: High Collision Rate ==========\n";
 
   // Small capacity forces many collisions
-  HashTableOpenAddressing<int, int> table(8, 0.5f, ProbingStrategy::LINEAR);
+  HashTableOpenAddressing<int, int> table(8, ProbingStrategy::LINEAR, 0.5f);
 
   cout << "Inserting 4 values into table with capacity 8:\n";
   table.insert(0, 100);
@@ -346,7 +346,7 @@ void test_performance_comparison() {
   for (auto strategy : strategies) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    HashTableOpenAddressing<int, int> table(16, 0.5f, strategy);
+    HashTableOpenAddressing<int, int> table(16, strategy, 0.5f);
     for (int i = 0; i < N; ++i) {
       table.insert(i, i * 2);
     }
@@ -406,7 +406,7 @@ void test_edge_cases() {
 
 int main() {
   cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║   HASH TABLE OPEN ADDRESSING COMPREHENSIVE TEST       ║\n";
+  cout << "║     HASH TABLE OPEN ADDRESSING COMPREHENSIVE TEST      ║\n";
   cout << "╚════════════════════════════════════════════════════════╝\n";
 
   try {
@@ -423,8 +423,9 @@ int main() {
     test_performance_comparison();
     test_edge_cases();
 
-    cout << "\n╔════════════════════════════════════════════════════════╗\n";
-    cout << "║  ALL TESTS COMPLETED SUCCESSFULLY!                    ║\n";
+    cout << "\n";
+    cout << "╔════════════════════════════════════════════════════════╗\n";
+    cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!            ║\n";
     cout << "╚════════════════════════════════════════════════════════╝\n";
 
     return 0;

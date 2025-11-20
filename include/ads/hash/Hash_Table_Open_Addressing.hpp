@@ -28,7 +28,7 @@ namespace ads::hash {
 /**
  * @brief Probing strategy for open addressing.
  */
-enum class ProbingStrategy { LINEAR, QUADRATIC, DOUBLE_HASH };
+enum class ProbingStrategy : std::uint8_t { LINEAR, QUADRATIC, DOUBLE_HASH };
 
 /**
  * @brief Hash table implementation using open addressing for collision resolution.
@@ -65,15 +65,15 @@ public:
    */
   explicit HashTableOpenAddressing(
       size_t          initial_capacity = kInitialCapacity,
-      float           max_load_factor  = kDefaultMaxLoadFactor,
-      ProbingStrategy strategy         = ProbingStrategy::LINEAR);
+      ProbingStrategy strategy         = ProbingStrategy::LINEAR,
+      float           max_load_factor  = kDefaultMaxLoadFactor);
 
   /** @brief Destructor. Clears all entries and deallocates storage. */
   ~HashTableOpenAddressing() = default;
 
   // Copy constructor and assignment are disabled
-  HashTableOpenAddressing(const HashTableOpenAddressing&)            = delete;
-  HashTableOpenAddressing& operator=(const HashTableOpenAddressing&) = delete;
+  HashTableOpenAddressing(const HashTableOpenAddressing&)                    = delete;
+  auto operator=(const HashTableOpenAddressing&) -> HashTableOpenAddressing& = delete;
 
   /**
    * @brief Move constructor.
@@ -86,7 +86,7 @@ public:
    * @param other The hash table from which to move resources.
    * @return A reference to this instance.
    */
-  HashTableOpenAddressing& operator=(HashTableOpenAddressing&& other) noexcept;
+  auto operator=(HashTableOpenAddressing&& other) noexcept -> HashTableOpenAddressing&;
 
   //========== INSERTION AND MODIFICATION ==========//
 
@@ -97,7 +97,7 @@ public:
    * @return true if inserted, false if updated existing key.
    * @details If the key already exists, its value is updated.
    */
-  bool insert(const Key& key, const Value& value);
+  auto insert(const Key& key, const Value& value) -> bool;
 
   /**
    * @brief Inserts or updates a key-value pair (move version).
@@ -105,7 +105,7 @@ public:
    * @param value The value to move into the table.
    * @return true if inserted, false if updated existing key.
    */
-  bool insert(Key&& key, Value&& value);
+  auto insert(Key&& key, Value&& value) -> bool;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -115,7 +115,7 @@ public:
    * @return Reference to the inserted or updated value.
    */
   template <typename... Args>
-  Value& emplace(const Key& key, Args&&... args);
+  auto emplace(const Key& key, Args&&... args) -> Value&;
 
   //========== ACCESS ==========//
 
@@ -125,7 +125,7 @@ public:
    * @return Reference to the value associated with the key.
    * @throws KeyNotFoundException if the key doesn't exist.
    */
-  Value& at(const Key& key);
+  auto at(const Key& key) -> Value&;
 
   /**
    * @brief Accesses value by key with bounds checking (const version).
@@ -133,7 +133,7 @@ public:
    * @return Const reference to the value associated with the key.
    * @throws KeyNotFoundException if the key doesn't exist.
    */
-  const Value& at(const Key& key) const;
+  auto at(const Key& key) const -> const Value&;
 
   /**
    * @brief Accesses value by key, inserting default if not found.
@@ -141,7 +141,7 @@ public:
    * @return Reference to the value associated with the key.
    * @details If the key doesn't exist, inserts default-constructed value.
    */
-  Value& operator[](const Key& key);
+  auto operator[](const Key& key) -> Value&;
 
   //========== SEARCH ==========//
 
@@ -150,21 +150,21 @@ public:
    * @param key The key to search for.
    * @return true if the key exists, false otherwise.
    */
-  [[nodiscard]] bool contains(const Key& key) const;
+  [[nodiscard]] auto contains(const Key& key) const -> bool;
 
   /**
    * @brief Finds a value by key.
    * @param key The key to search for.
    * @return Pointer to the value if found, nullptr otherwise.
    */
-  [[nodiscard]] Value* find(const Key& key);
+  [[nodiscard]] auto find(const Key& key) -> Value*;
 
   /**
    * @brief Finds a value by key (const version).
    * @param key The key to search for.
    * @return Const pointer to the value if found, nullptr otherwise.
    */
-  [[nodiscard]] const Value* find(const Key& key) const;
+  [[nodiscard]] auto find(const Key& key) const -> const Value*;
 
   //========== REMOVAL ==========//
 
@@ -174,7 +174,7 @@ public:
    * @return true if the key was found and removed, false otherwise.
    * @details Uses tombstone marker to maintain probe chains.
    */
-  bool erase(const Key& key);
+  auto erase(const Key& key) -> bool;
 
   /**
    * @brief Removes all entries from the table.
@@ -187,37 +187,37 @@ public:
    * @brief Returns the number of active entries in the table.
    * @return Number of key-value pairs (excludes tombstones).
    */
-  [[nodiscard]] size_t size() const noexcept;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Returns the number of slots in the table.
    * @return Capacity of the hash table.
    */
-  [[nodiscard]] size_t capacity() const noexcept;
+  [[nodiscard]] auto capacity() const noexcept -> size_t;
 
   /**
    * @brief Checks if the table is empty.
    * @return true if size is 0, false otherwise.
    */
-  [[nodiscard]] bool is_empty() const noexcept;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Returns the current load factor (size/capacity).
    * @return size / capacity ratio.
    */
-  [[nodiscard]] float load_factor() const noexcept;
+  [[nodiscard]] auto load_factor() const noexcept -> float;
 
   /**
    * @brief Returns the maximum load factor threshold.
    * @return Maximum allowed load factor before rehashing.
    */
-  [[nodiscard]] float max_load_factor() const noexcept;
+  [[nodiscard]] auto max_load_factor() const noexcept -> float;
 
   /**
    * @brief Returns the current probing strategy.
    * @return Probing strategy enum value.
    */
-  [[nodiscard]] ProbingStrategy probing_strategy() const noexcept;
+  [[nodiscard]] auto probing_strategy() const noexcept -> ProbingStrategy;
 
   //========== CONFIGURATION ==========//
 
@@ -241,7 +241,7 @@ private:
   /**
    * @brief State of a slot in the hash table.
    */
-  enum class SlotState { EMPTY, OCCUPIED, DELETED };
+  enum class SlotState : std::uint8_t { EMPTY, OCCUPIED, DELETED };
 
   /**
    * @brief Entry in the hash table.
@@ -275,14 +275,14 @@ private:
    * @param key The key to hash.
    * @return Hash value modulo capacity.
    */
-  [[nodiscard]] size_t hash1(const Key& key) const;
+  [[nodiscard]] auto hash1(const Key& key) const -> size_t;
 
   /**
    * @brief Secondary hash function for double hashing.
    * @param key The key to hash.
    * @return Secondary hash value (must be coprime with capacity).
    */
-  [[nodiscard]] size_t hash2(const Key& key) const;
+  [[nodiscard]] auto hash2(const Key& key) const -> size_t;
 
   /**
    * @brief Computes probe sequence index.
@@ -290,28 +290,28 @@ private:
    * @param i Probe attempt number (0, 1, 2, ...).
    * @return Slot index for this probe.
    */
-  [[nodiscard]] size_t probe(const Key& key, size_t i) const;
+  [[nodiscard]] auto probe(const Key& key, size_t i) const -> size_t;
 
   /**
    * @brief Finds a slot for a given key.
    * @param key The key to search for.
    * @return Pointer to slot if found, nullptr otherwise.
    */
-  Slot* find_slot(const Key& key);
+  auto find_slot(const Key& key) -> Slot*;
 
   /**
    * @brief Finds a slot for a given key (const version).
    * @param key The key to search for.
    * @return Const pointer to slot if found, nullptr otherwise.
    */
-  const Slot* find_slot(const Key& key) const;
+  auto find_slot(const Key& key) const -> const Slot*;
 
   /**
    * @brief Finds first empty or deleted slot for insertion.
    * @param key The key to insert.
    * @return Pointer to available slot.
    */
-  Slot* find_insert_slot(const Key& key);
+  auto find_insert_slot(const Key& key) -> Slot*;
 
   //================ REHASHING ================//
 

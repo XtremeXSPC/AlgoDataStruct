@@ -110,7 +110,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
 
   // Remove edge from -> to
   auto& adj = vertices_[from].adjacency;
-  auto  it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) { return e.destination == to; });
+  auto  it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
 
   if (it != adj.end()) {
     adj.erase(it);
@@ -119,7 +119,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
     // For undirected graphs, remove reverse edge
     if (!is_directed_ && from != to) {
       auto& adj_reverse = vertices_[to].adjacency;
-      auto  it_reverse  = std::find_if(adj_reverse.begin(), adj_reverse.end(), [from](const Edge& e) { return e.destination == from; });
+      auto  it_reverse  = std::find_if(adj_reverse.begin(), adj_reverse.end(), [from](const Edge& e) -> auto { return e.destination == from; });
 
       if (it_reverse != adj_reverse.end()) {
         adj_reverse.erase(it_reverse);
@@ -135,7 +135,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to
   }
 
   const auto& adj = vertices_[from].adjacency;
-  return std::any_of(adj.begin(), adj.end(), [to](const Edge& e) { return e.destination == to; });
+  return std::any_of(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
 }
 
 template <typename VertexData, typename EdgeWeight>
@@ -145,7 +145,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, si
   }
 
   const auto& adj = vertices_[from].adjacency;
-  auto        it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) { return e.destination == to; });
+  auto        it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
 
   if (it != adj.end()) {
     return it->weight;

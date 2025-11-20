@@ -176,7 +176,7 @@ void compare_performance() {
   for (size_t i = 0; i < N && i < 10000; ++i) {
     for (size_t j = 0; j < 10 && j < N; ++j) {
       if (list_graph.has_edge(i, j))
-        ++count;
+        count = count + 1;
     }
   }
   auto end       = std::chrono::high_resolution_clock::now();
@@ -188,9 +188,10 @@ void compare_performance() {
   for (size_t i = 0; i < N && i < 10000; ++i) {
     for (size_t j = 0; j < 10 && j < N; ++j) {
       if (matrix_graph.has_edge(i, j))
-        ++count;
+        count = count + 1;
     }
   }
+
   end              = std::chrono::high_resolution_clock::now();
   auto matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   std::cout << "  Matrix: " << matrix_time << " µs (O(1) lookup)\n";
@@ -204,14 +205,16 @@ void compare_performance() {
 
   start         = std::chrono::high_resolution_clock::now();
   auto list_bfs = list_graph.bfs(0);
-  end           = std::chrono::high_resolution_clock::now();
-  list_time     = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+  end       = std::chrono::high_resolution_clock::now();
+  list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   std::cout << "  List:   " << list_time << " µs (visited " << list_bfs.size() << " vertices)\n";
 
   start           = std::chrono::high_resolution_clock::now();
   auto matrix_bfs = matrix_graph.bfs(0);
-  end             = std::chrono::high_resolution_clock::now();
-  matrix_time     = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+  end         = std::chrono::high_resolution_clock::now();
+  matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   std::cout << "  Matrix: " << matrix_time << " µs (visited " << matrix_bfs.size() << " vertices)\n";
   std::cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
@@ -221,8 +224,9 @@ void compare_performance() {
   start = std::chrono::high_resolution_clock::now();
   for (size_t i = 0; i < 100 && i < N; ++i) {
     auto neighbors = list_graph.get_neighbors(i);
-    count += neighbors.size();
+    count          = count + neighbors.size();
   }
+
   end       = std::chrono::high_resolution_clock::now();
   list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   std::cout << "  List:   " << list_time << " µs (O(degree) iteration)\n";
@@ -230,8 +234,9 @@ void compare_performance() {
   start = std::chrono::high_resolution_clock::now();
   for (size_t i = 0; i < 100 && i < N; ++i) {
     auto neighbors = matrix_graph.get_neighbors(i);
-    count += neighbors.size();
+    count          = count + neighbors.size();
   }
+
   end         = std::chrono::high_resolution_clock::now();
   matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   std::cout << "  Matrix: " << matrix_time << " µs (O(V) iteration)\n";
@@ -273,7 +278,7 @@ int main() {
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {
-    std::cerr << "\n❌ Test failed with exception: " << e.what() << '\n';
+    std::cerr << "\nTest failed with exception: " << e.what() << '\n';
     return 1;
   }
 

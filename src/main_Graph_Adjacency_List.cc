@@ -463,7 +463,7 @@ void test_graph_large_performance() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║   GRAPH ADJACENCY LIST - COMPREHENSIVE TEST SUITE    ║\n";
+  std::cout << "║    GRAPH ADJACENCY LIST - COMPREHENSIVE TEST SUITE    ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {

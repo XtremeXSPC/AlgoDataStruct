@@ -22,30 +22,23 @@ using ads::hash::HashTableChaining;
 //============================================================================//
 
 template <typename Key, typename Value>
-HashTableChaining<Key, Value>::HashTableChaining(size_t initial_capacity, float max_load_factor)
-    : buckets_(std::make_unique<Bucket[]>(initial_capacity)),
-      capacity_(initial_capacity),
-      size_(0),
-      max_load_factor_(max_load_factor) {
+HashTableChaining<Key, Value>::HashTableChaining(size_t initial_capacity, float max_load_factor) :
+    buckets_(std::make_unique<Bucket[]>(initial_capacity)), capacity_(initial_capacity), size_(0), max_load_factor_(max_load_factor) {
   if (max_load_factor <= 0.0f) {
     throw InvalidOperationException("Max load factor must be positive");
   }
 }
 
 template <typename Key, typename Value>
-HashTableChaining<Key, Value>::HashTableChaining(HashTableChaining&& other) noexcept
-    : buckets_(std::move(other.buckets_)),
-      capacity_(other.capacity_),
-      size_(other.size_),
-      max_load_factor_(other.max_load_factor_) {
+HashTableChaining<Key, Value>::HashTableChaining(HashTableChaining&& other) noexcept :
+    buckets_(std::move(other.buckets_)), capacity_(other.capacity_), size_(other.size_), max_load_factor_(other.max_load_factor_) {
   other.capacity_        = 0;
   other.size_            = 0;
   other.max_load_factor_ = kDefaultMaxLoadFactor;
 }
 
 template <typename Key, typename Value>
-HashTableChaining<Key, Value>& HashTableChaining<Key, Value>::operator=(
-    HashTableChaining&& other) noexcept {
+auto HashTableChaining<Key, Value>::operator=(HashTableChaining&& other) noexcept -> HashTableChaining<Key, Value>& {
   if (this != &other) {
     buckets_               = std::move(other.buckets_);
     capacity_              = other.capacity_;
@@ -63,7 +56,7 @@ HashTableChaining<Key, Value>& HashTableChaining<Key, Value>::operator=(
 //============================================================================//
 
 template <typename Key, typename Value>
-size_t HashTableChaining<Key, Value>::hash(const Key& key) const {
+auto HashTableChaining<Key, Value>::hash(const Key& key) const -> size_t {
   return std::hash<Key>{}(key) % capacity_;
 }
 
@@ -72,8 +65,7 @@ size_t HashTableChaining<Key, Value>::hash(const Key& key) const {
 //============================================================================//
 
 template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& key) ->
-    typename Bucket::iterator {
+auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& key) -> typename Bucket::iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
     if (it->key == key) {
       return it;
@@ -83,8 +75,7 @@ auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& ke
 }
 
 template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const Key& key) const ->
-    typename Bucket::const_iterator {
+auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const Key& key) const -> typename Bucket::const_iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
     if (it->key == key) {
       return it;
@@ -131,7 +122,7 @@ void HashTableChaining<Key, Value>::insert(Key&& key, Value&& value) {
 
 template <typename Key, typename Value>
 template <typename... Args>
-Value& HashTableChaining<Key, Value>::emplace(const Key& key, Args&&... args) {
+auto HashTableChaining<Key, Value>::emplace(const Key& key, Args&&... args) -> Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -154,7 +145,7 @@ Value& HashTableChaining<Key, Value>::emplace(const Key& key, Args&&... args) {
 //============================================================================//
 
 template <typename Key, typename Value>
-Value& HashTableChaining<Key, Value>::at(const Key& key) {
+auto HashTableChaining<Key, Value>::at(const Key& key) -> Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -166,7 +157,7 @@ Value& HashTableChaining<Key, Value>::at(const Key& key) {
 }
 
 template <typename Key, typename Value>
-const Value& HashTableChaining<Key, Value>::at(const Key& key) const {
+auto HashTableChaining<Key, Value>::at(const Key& key) const -> const Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -178,7 +169,7 @@ const Value& HashTableChaining<Key, Value>::at(const Key& key) const {
 }
 
 template <typename Key, typename Value>
-Value& HashTableChaining<Key, Value>::operator[](const Key& key) {
+auto HashTableChaining<Key, Value>::operator[](const Key& key) -> Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -203,13 +194,13 @@ Value& HashTableChaining<Key, Value>::operator[](const Key& key) {
 //============================================================================//
 
 template <typename Key, typename Value>
-bool HashTableChaining<Key, Value>::contains(const Key& key) const {
+auto HashTableChaining<Key, Value>::contains(const Key& key) const -> bool {
   size_t bucket_idx = hash(key);
   return find_in_bucket(buckets_[bucket_idx], key) != buckets_[bucket_idx].end();
 }
 
 template <typename Key, typename Value>
-Value* HashTableChaining<Key, Value>::find(const Key& key) {
+auto HashTableChaining<Key, Value>::find(const Key& key) -> Value* {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -220,7 +211,7 @@ Value* HashTableChaining<Key, Value>::find(const Key& key) {
 }
 
 template <typename Key, typename Value>
-const Value* HashTableChaining<Key, Value>::find(const Key& key) const {
+auto HashTableChaining<Key, Value>::find(const Key& key) const -> const Value* {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -235,7 +226,7 @@ const Value* HashTableChaining<Key, Value>::find(const Key& key) const {
 //============================================================================//
 
 template <typename Key, typename Value>
-bool HashTableChaining<Key, Value>::erase(const Key& key) {
+auto HashTableChaining<Key, Value>::erase(const Key& key) -> bool {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -260,27 +251,27 @@ void HashTableChaining<Key, Value>::clear() noexcept {
 //============================================================================//
 
 template <typename Key, typename Value>
-size_t HashTableChaining<Key, Value>::size() const noexcept {
+auto HashTableChaining<Key, Value>::size() const noexcept -> size_t {
   return size_;
 }
 
 template <typename Key, typename Value>
-size_t HashTableChaining<Key, Value>::capacity() const noexcept {
+auto HashTableChaining<Key, Value>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
 template <typename Key, typename Value>
-bool HashTableChaining<Key, Value>::is_empty() const noexcept {
+auto HashTableChaining<Key, Value>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <typename Key, typename Value>
-float HashTableChaining<Key, Value>::load_factor() const noexcept {
+auto HashTableChaining<Key, Value>::load_factor() const noexcept -> float {
   return capacity_ > 0 ? static_cast<float>(size_) / static_cast<float>(capacity_) : 0.0f;
 }
 
 template <typename Key, typename Value>
-float HashTableChaining<Key, Value>::max_load_factor() const noexcept {
+auto HashTableChaining<Key, Value>::max_load_factor() const noexcept -> float {
   return max_load_factor_;
 }
 
