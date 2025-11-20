@@ -213,6 +213,7 @@ target_sources(ads_lib
             # Hash Table implementations
             include/ads/hash/Hash_Table_Exception.hpp
             include/ads/hash/Hash_Table_Chaining.hpp
+            include/ads/hash/Hash_Table_Open_Addressing.hpp
 
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
@@ -229,6 +230,7 @@ target_sources(ads_lib
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
         src/ads/hash/Hash_Table_Chaining.tpp
+        src/ads/hash/Hash_Table_Open_Addressing.tpp
 )
 
 # --------------------- Helper Function: Add Executable ---------------------- #
@@ -343,6 +345,11 @@ endif()
 # Hash Table Chaining test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Chaining.cc")
     ads_add_executable(test_hash_chaining src/main_Hash_Table_Chaining.cc)
+endif()
+
+# Hash Table Open Addressing test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Open_Addressing.cc")
+    ads_add_executable(test_hash_open_addr src/main_Hash_Table_Open_Addressing.cc)
 endif()
 
 # -------------------------- GoogleTest Integration -------------------------- #
