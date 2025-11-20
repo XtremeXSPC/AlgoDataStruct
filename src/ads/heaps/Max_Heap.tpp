@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+#pragma once
 
 #include "../../../include/ads/heaps/Max_Heap.hpp"
 #include <new>
@@ -19,16 +20,13 @@ namespace ads::heap {
 //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
 
 template <typename T>
-MaxHeap<T>::MaxHeap(size_t initial_capacity)
-    : data_(static_cast<T*>(::operator new(initial_capacity * sizeof(T)))),
-      size_(0),
-      capacity_(initial_capacity) {}
+MaxHeap<T>::MaxHeap(size_t initial_capacity) :
+    data_(static_cast<T*>(::operator new(initial_capacity * sizeof(T)))), size_(0), capacity_(initial_capacity) {
+}
 
 template <typename T>
-MaxHeap<T>::MaxHeap(const std::vector<T>& elements)
-    : data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))),
-      size_(elements.size()),
-      capacity_(elements.size()) {
+MaxHeap<T>::MaxHeap(const std::vector<T>& elements) :
+    data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))), size_(elements.size()), capacity_(elements.size()) {
   // Copy elements to the array using placement new
   for (size_t i = 0; i < size_; ++i) {
     new (&data_[i]) T(elements[i]);
@@ -45,10 +43,7 @@ MaxHeap<T>::~MaxHeap() {
 }
 
 template <typename T>
-MaxHeap<T>::MaxHeap(MaxHeap&& other) noexcept
-    : data_(other.data_),
-      size_(other.size_),
-      capacity_(other.capacity_) {
+MaxHeap<T>::MaxHeap(MaxHeap&& other) noexcept : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
   other.data_     = nullptr;
   other.size_     = 0;
   other.capacity_ = 0;
@@ -219,8 +214,8 @@ auto MaxHeap<T>::heapify_up(size_t index) -> void {
 template <typename T>
 auto MaxHeap<T>::heapify_down(size_t index) -> void {
   while (true) {
-    size_t left  = left_child(index);
-    size_t right = right_child(index);
+    size_t left    = left_child(index);
+    size_t right   = right_child(index);
     size_t largest = index;
 
     // Max heap: find the largest among node and its children
@@ -275,6 +270,6 @@ auto MaxHeap<T>::grow() -> void {
   capacity_ = new_capacity;
 }
 
-}  // namespace ads::heap
+} // namespace ads::heap
 
 //===--------------------------------------------------------------------------===//

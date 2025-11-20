@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+#pragma once
 
 #include "../../../include/ads/lists/Singly_Linked_List.hpp"
 
@@ -72,7 +73,8 @@ auto SinglyLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
 //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
 
 template <typename T>
-SinglyLinkedList<T>::SinglyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {}
+SinglyLinkedList<T>::SinglyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
+}
 
 template <typename T>
 SinglyLinkedList<T>::~SinglyLinkedList() {
@@ -80,10 +82,8 @@ SinglyLinkedList<T>::~SinglyLinkedList() {
 }
 
 template <typename T>
-SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList&& other) noexcept
-    : head_(std::move(other.head_)),
-      tail_(other.tail_),
-      size_(other.size_) {
+SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList&& other) noexcept :
+    head_(std::move(other.head_)), tail_(other.tail_), size_(other.size_) {
   other.tail_ = nullptr;
   other.size_ = 0;
 }
@@ -292,12 +292,12 @@ auto SinglyLinkedList<T>::clear() noexcept -> void {
 template <typename T>
 auto SinglyLinkedList<T>::reverse() noexcept -> void {
   if (size_ <= 1) {
-    return;  // Nothing to reverse
+    return; // Nothing to reverse
   }
 
   std::unique_ptr<Node> prev    = nullptr;
   std::unique_ptr<Node> current = std::move(head_);
-  tail_                         = current.get();  // The old head becomes the new tail
+  tail_                         = current.get(); // The old head becomes the new tail
 
   while (current) {
     std::unique_ptr<Node> next = std::move(current->next);
@@ -341,6 +341,6 @@ auto SinglyLinkedList<T>::cend() const -> const_iterator {
   return const_iterator(nullptr, this);
 }
 
-}  // namespace ads::list
+} // namespace ads::list
 
 //===--------------------------------------------------------------------------===//
