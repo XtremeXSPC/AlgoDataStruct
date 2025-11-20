@@ -198,6 +198,7 @@ target_sources(ads_lib
             include/ads/queues/Queue_Exception.hpp
             include/ads/queues/Circular_Array_Queue.hpp
             include/ads/queues/Linked_Queue.hpp
+            include/ads/queues/Priority_Queue.hpp
 
             # Binary Tree interface and implementations
             include/ads/trees/Binary_Tree.hpp
@@ -215,6 +216,10 @@ target_sources(ads_lib
             include/ads/hash/Hash_Table_Chaining.hpp
             include/ads/hash/Hash_Table_Open_Addressing.hpp
 
+            # Graph implementations
+            include/ads/graphs/Graph_Adjacency_List.hpp
+            include/ads/graphs/Graph_Adjacency_Matrix.hpp
+
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
     # appear in IDEs and are tracked for changes.
@@ -225,12 +230,15 @@ target_sources(ads_lib
         src/ads/stacks/Linked_Stack.tpp
         src/ads/queues/Circular_Array_Queue.tpp
         src/ads/queues/Linked_Queue.tpp
+        src/ads/queues/Priority_Queue.tpp
         src/ads/trees/Binary_Search_Tree.tpp
         src/ads/trees/AVL_Tree.tpp
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
         src/ads/hash/Hash_Table_Chaining.tpp
         src/ads/hash/Hash_Table_Open_Addressing.tpp
+        src/ads/graphs/Graph_Adjacency_List.tpp
+        src/ads/graphs/Graph_Adjacency_Matrix.tpp
 )
 
 # --------------------- Helper Function: Add Executable ---------------------- #
@@ -350,6 +358,21 @@ endif()
 # Hash Table Open Addressing test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Open_Addressing.cc")
     ads_add_executable(test_hash_open_addr src/main_Hash_Table_Open_Addressing.cc)
+endif()
+
+# Priority Queue test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
+    ads_add_executable(test_priority_queue src/main_Priority_Queue.cc)
+endif()
+
+# Graph Adjacency List test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Graph_Adjacency_List.cc")
+    ads_add_executable(test_graph_adj_list src/main_Graph_Adjacency_List.cc)
+endif()
+
+# Graph Adjacency Matrix test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Graph_Adjacency_Matrix.cc")
+    ads_add_executable(test_graph_adj_matrix src/main_Graph_Adjacency_Matrix.cc)
 endif()
 
 # -------------------------- GoogleTest Integration -------------------------- #
