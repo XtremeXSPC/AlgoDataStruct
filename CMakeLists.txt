@@ -183,8 +183,9 @@ target_sources(ads_lib
         FILES
             # List interface
             include/ads/lists/List.hpp
-            include/ads/lists/Exception.hpp
+            include/ads/lists/List_Exception.hpp
             include/ads/lists/Doubly_Linked_List.hpp
+            include/ads/lists/Singly_Linked_List.hpp
 
             # Stack interface and implementations
             include/ads/stacks/Stack.hpp
@@ -203,16 +204,24 @@ target_sources(ads_lib
             include/ads/trees/Binary_Tree_Exception.hpp
             include/ads/trees/Binary_Search_Tree.hpp
 
+            # Heap implementations
+            include/ads/heaps/Heap_Exception.hpp
+            include/ads/heaps/Min_Heap.hpp
+            include/ads/heaps/Max_Heap.hpp
+
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
     # appear in IDEs and are tracked for changes.
     INTERFACE
         src/ads/lists/Doubly_Linked_List.tpp
+        src/ads/lists/Singly_Linked_List.tpp
         src/ads/stacks/Array_Stack.tpp
         src/ads/stacks/Linked_Stack.tpp
         src/ads/queues/Circular_Array_Queue.tpp
         src/ads/queues/Linked_Queue.tpp
         src/ads/trees/Binary_Search_Tree.tpp
+        src/ads/heaps/Min_Heap.tpp
+        src/ads/heaps/Max_Heap.tpp
 )
 
 # --------------------- Helper Function: Add Executable ---------------------- #
@@ -307,6 +316,16 @@ endif()
 # Linked Lists test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Linked_Lists.cc")
     ads_add_executable(test_lists src/main_Linked_Lists.cc)
+endif()
+
+# Singly Linked List test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
+    ads_add_executable(test_singly_list src/main_Singly_Linked_List.cc)
+endif()
+
+# Heaps test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Heaps.cc")
+    ads_add_executable(test_heaps src/main_Heaps.cc)
 endif()
 
 # -------------------------- GoogleTest Integration -------------------------- #
