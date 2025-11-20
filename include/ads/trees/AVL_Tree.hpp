@@ -130,13 +130,13 @@ public:
   bool remove(const T& value) override;
   void clear() noexcept override;
 
-  [[nodiscard]] bool contains(const T& value) const override;
+  [[nodiscard]] auto contains(const T& value) const -> bool override;
   [[nodiscard]] auto find_min() const -> const T& override;
   [[nodiscard]] auto find_max() const -> const T& override;
 
-  [[nodiscard]] bool   is_empty() const noexcept override;
-  [[nodiscard]] size_t size() const noexcept override;
-  [[nodiscard]] int    height() const noexcept override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto height() const noexcept -> int override;
 
   void in_order_traversal(const std::function<void(const T&)>& visit) const override;
   void pre_order_traversal(const std::function<void(const T&)>& visit) const override;
@@ -159,14 +159,14 @@ public:
    * @details This is primarily for testing/debugging purposes.
    * @return Balance factor of the root node.
    */
-  [[nodiscard]] int get_balance() const noexcept;
+  [[nodiscard]] auto get_balance() const noexcept -> int;
 
   /**
    * @brief Checks if the tree is properly balanced (all balance factors in [-1, 1]).
    * @details This is primarily for testing/debugging purposes.
    * @return true if balanced, false otherwise.
    */
-  [[nodiscard]] bool is_balanced() const noexcept;
+  [[nodiscard]] auto is_balanced() const noexcept -> bool;
 
   //=========== ITERATOR ACCESS ===========//
 
@@ -224,8 +224,7 @@ private:
     int                   height; ///< Height of subtree rooted at this node
 
     template <typename... Args>
-    explicit Node(Args&&... args)
-        : data(std::forward<Args>(args)...), left(nullptr), right(nullptr), height(1) {}
+    explicit Node(Args&&... args) : data(std::forward<Args>(args)...), left(nullptr), right(nullptr), height(1) {}
   };
 
   //================ HEIGHT MANAGEMENT ================//
@@ -235,7 +234,7 @@ private:
    * @param node Node to query (can be nullptr).
    * @return Height of the node (0 if nullptr).
    */
-  [[nodiscard]] int get_height(const Node* node) const noexcept;
+  [[nodiscard]] auto get_height(const Node* node) const noexcept -> int;
 
   /**
    * @brief Updates the height of a node based on its children.
@@ -249,7 +248,7 @@ private:
    * @param node Node to query.
    * @return Balance factor (0 if nullptr).
    */
-  [[nodiscard]] int get_balance_factor(const Node* node) const noexcept;
+  [[nodiscard]] auto get_balance_factor(const Node* node) const noexcept -> int;
 
   //================ ROTATION OPERATIONS ================//
 
@@ -315,8 +314,7 @@ private:
    * @return Potentially new root after insertion and balancing.
    */
   template <typename U>
-  auto insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted)
-      -> std::unique_ptr<Node>;
+  auto insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted) -> std::unique_ptr<Node>;
 
   /**
    * @brief Recursive helper for removing a value.
@@ -325,8 +323,7 @@ private:
    * @param removed Output parameter: set to true if removed, false if not found.
    * @return Potentially new root after removal and balancing.
    */
-  auto remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed)
-      -> std::unique_ptr<Node>;
+  auto remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed) -> std::unique_ptr<Node>;
 
   /**
    * @brief Finds and detaches the minimum node from a subtree.
@@ -384,7 +381,7 @@ private:
    * @param node Current node to check.
    * @return true if subtree rooted at node is balanced.
    */
-  bool is_balanced_helper(const Node* node) const noexcept;
+  auto is_balanced_helper(const Node* node) const noexcept -> bool;
 
   //================ DATA MEMBERS ================//
   std::unique_ptr<Node> root_; ///< Root of the tree

@@ -22,11 +22,11 @@ using ads::trees::AVLTree;
 //============================================================================//
 
 template <typename T>
-AVLTree<T>::AVLTree() : root_(nullptr), size_(0) {}
+AVLTree<T>::AVLTree() : root_(nullptr), size_(0) {
+}
 
 template <typename T>
-AVLTree<T>::AVLTree(AVLTree&& other) noexcept
-    : root_(std::move(other.root_)), size_(other.size_) {
+AVLTree<T>::AVLTree(AVLTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
@@ -45,7 +45,7 @@ AVLTree<T>& AVLTree<T>::operator=(AVLTree&& other) noexcept {
 //============================================================================//
 
 template <typename T>
-int AVLTree<T>::get_height(const Node* node) const noexcept {
+auto AVLTree<T>::get_height(const Node* node) const noexcept -> int {
   return node ? node->height : 0;
 }
 
@@ -57,7 +57,7 @@ void AVLTree<T>::update_height(Node* node) noexcept {
 }
 
 template <typename T>
-int AVLTree<T>::get_balance_factor(const Node* node) const noexcept {
+auto AVLTree<T>::get_balance_factor(const Node* node) const noexcept -> int {
   return node ? get_height(node->left.get()) - get_height(node->right.get()) : 0;
 }
 
@@ -162,7 +162,7 @@ auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
 //============================================================================//
 
 template <typename T>
-bool AVLTree<T>::insert(const T& value) {
+auto AVLTree<T>::insert(const T& value) -> bool {
   bool inserted = false;
   root_         = insert_helper(std::move(root_), value, inserted);
   if (inserted) {
@@ -172,7 +172,7 @@ bool AVLTree<T>::insert(const T& value) {
 }
 
 template <typename T>
-bool AVLTree<T>::insert(T&& value) {
+auto AVLTree<T>::insert(T&& value) -> bool {
   bool inserted = false;
   root_         = insert_helper(std::move(root_), std::move(value), inserted);
   if (inserted) {
@@ -183,14 +183,13 @@ bool AVLTree<T>::insert(T&& value) {
 
 template <typename T>
 template <typename... Args>
-bool AVLTree<T>::emplace(Args&&... args) {
+auto AVLTree<T>::emplace(Args&&... args) -> bool {
   return insert(T(std::forward<Args>(args)...));
 }
 
 template <typename T>
 template <typename U>
-auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted)
-    -> std::unique_ptr<Node> {
+auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted) -> std::unique_ptr<Node> {
   // Base case: create new node
   if (!node) {
     inserted = true;
@@ -217,7 +216,7 @@ auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inse
 //============================================================================//
 
 template <typename T>
-bool AVLTree<T>::remove(const T& value) {
+auto AVLTree<T>::remove(const T& value) -> bool {
   bool removed = false;
   root_        = remove_helper(std::move(root_), value, removed);
   if (removed) {
@@ -227,8 +226,7 @@ bool AVLTree<T>::remove(const T& value) {
 }
 
 template <typename T>
-auto AVLTree<T>::remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed)
-    -> std::unique_ptr<Node> {
+auto AVLTree<T>::remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed) -> std::unique_ptr<Node> {
   // Base case: value not found
   if (!node) {
     removed = false;
@@ -292,7 +290,7 @@ auto AVLTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node
 //============================================================================//
 
 template <typename T>
-bool AVLTree<T>::contains(const T& value) const {
+auto AVLTree<T>::contains(const T& value) const -> bool {
   return find_helper(root_.get(), value) != nullptr;
 }
 
@@ -350,17 +348,17 @@ auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
 //============================================================================//
 
 template <typename T>
-bool AVLTree<T>::is_empty() const noexcept {
+auto AVLTree<T>::is_empty() const noexcept -> bool {
   return root_ == nullptr;
 }
 
 template <typename T>
-size_t AVLTree<T>::size() const noexcept {
+auto AVLTree<T>::size() const noexcept -> size_t {
   return size_;
 }
 
 template <typename T>
-int AVLTree<T>::height() const noexcept {
+auto AVLTree<T>::height() const noexcept -> int {
   return get_height(root_.get());
 }
 
@@ -371,17 +369,17 @@ void AVLTree<T>::clear() noexcept {
 }
 
 template <typename T>
-int AVLTree<T>::get_balance() const noexcept {
+auto AVLTree<T>::get_balance() const noexcept -> int {
   return get_balance_factor(root_.get());
 }
 
 template <typename T>
-bool AVLTree<T>::is_balanced() const noexcept {
+auto AVLTree<T>::is_balanced() const noexcept -> bool {
   return is_balanced_helper(root_.get());
 }
 
 template <typename T>
-bool AVLTree<T>::is_balanced_helper(const Node* node) const noexcept {
+auto AVLTree<T>::is_balanced_helper(const Node* node) const noexcept -> bool {
   if (!node) {
     return true;
   }
@@ -441,8 +439,7 @@ void AVLTree<T>::level_order_traversal(const std::function<void(const T&)>& visi
 }
 
 template <typename T>
-void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit)
-    const {
+void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
   }
@@ -453,8 +450,7 @@ void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(cons
 }
 
 template <typename T>
-void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit)
-    const {
+void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
   }
@@ -465,8 +461,7 @@ void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(con
 }
 
 template <typename T>
-void AVLTree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit)
-    const {
+void AVLTree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
   }
