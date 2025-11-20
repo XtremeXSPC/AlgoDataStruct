@@ -213,13 +213,40 @@ The following data structures are currently implemented in C++ with full tests a
   - 2.4x faster than chaining for sequential access
   - Superior cache locality
 
+### Phase 3 ✅ - Graphs, Priority Queues & Associative Containers
+
+- **Graph (Adjacency List)** - Dynamic graph with template vertex data and edge weights
+  - O(1) add vertex, O(E) add edge
+  - BFS and DFS traversals with path reconstruction
+  - Neighbor queries with/without weights
+  - Support for directed and undirected graphs
+
+- **Graph (Adjacency Matrix)** - Dense graph representation
+  - O(1) edge lookup and modification
+  - O(V²) space complexity
+  - Superior performance for dense graphs
+  - Complete graph operations (transpose, degree, etc.)
+
+- **Priority Queue** - Heap-based priority queue with custom comparators
+  - O(log n) push/pop, O(1) top
+  - Min-heap and max-heap support via comparator
+  - Template-based for any comparable type
+
+- **HashMap** - STL-compatible hash map with iterators
+  - Built on HashTableChaining with std::pair<const Key, Value>
+  - Full iterator support (forward iterators)
+  - Range-based for loops and structured bindings
+  - Utility methods: keys(), values(), entries()
+  - Initializer list constructor
+
+- **Dijkstra Integration Test** - Real-world graph algorithm demonstration
+  - Uses Graph + PriorityQueue together
+  - European cities road network example
+  - Performance test on 1000-vertex graph (< 1ms)
+
 ### Trees (Classic)
 
 - **Binary Search Tree** - Classic BST with in-order iterators
-
-### In Progress 🔨
-
-- **Phase 3**: Graph (Adjacency List & Matrix), Priority Queue, Advanced Trees
 
 **All implemented structures include:**
 
