@@ -2,152 +2,106 @@
   "version": "0.2.0",
   "configurations": [
     {
-      //===---------------- Main Programming Task (macOS) -----------------===//
-      // Uses CodeLLDB and redirects input from the corresponding '.in' file.
-      "name": "[[Competitions]] Debug - CodeLLDB",
+      "name": "(macOS) Debug with CodeLLDB",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+      "program": "${workspaceFolder}/build/bin/${input:executableName}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build: Build Active File (Debug)",
-      "stdio": [
-        "${workspaceFolder}/input_cases/${fileBasenameNoExtension}.in",
-        null,
-        null
-      ]
-    },
-    {
-      //===----------------- Standard Debug Task (macOS) ------------------===//
-      // This version also loads your custom LLDB formatters.
-      "name": "(macOS) Debug - CodeLLDB",
-      "type": "lldb",
-      "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
-      "args": [],
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build: Build Active File (Debug)",
+      "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
+      "stdio": [null, null, null],
       "initCommands": [
         "command script import /Users/lcs-dev/.lldb/LLDB_Formatters"
       ]
     },
     {
-      //===---------- Debug with user-provided arguments (macOS) ----------===//
-      "name": "(macOS) Debug with Arguments - CodeLLDB",
-      "type": "lldb",
-      "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
-      "args": ["${input:debugArgs}"],
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build: Build Active File (Debug)"
-    },
-    {
-      //===------------ Debug with MS C/C++ Extension (macOS) -------------===//
-      "name": "(macOS) Debug - MS C/C++",
+      "name": "(macOS) Debug with MS C/C++",
       "type": "cppdbg",
       "targetArchitecture": "aarch64",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
-      "args": [
-        "<",
-        "${workspaceFolder}/input_cases/${fileBasenameNoExtension}.in"
-      ],
+      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",
-      "preLaunchTask": "Build: Build Active File (Debug)",
+      "preLaunchTask": "CMake: Build All",
       "setupCommands": [
         {
           "description": "Load Custom LLDB Formatters",
-          "text": "command script import /Users/lcs-dev/.lldb/lldb_formatters.py",
-          "ignoreFailures": false
+          "text": "command script import /Users/lcs-dev/.lldb/LLDB_Formatters",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Set inline breakpoint strategy",
+          "text": "settings set target.inline-breakpoint-strategy always",
+          "ignoreFailures": true
         }
       ]
     },
     {
-      //===----------------- Standard Debug Task (Linux) ------------------===//
-      "name": "(Linux) Debug - CodeLLDB",
+      "name": "(Linux) Debug with CodeLLDB",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+      "program": "${workspaceFolder}/build/bin/${input:executableName}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build: Build Active File (Debug)",
+      "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
+      "stdio": [null, null, null],
       "initCommands": [
         "command script import /home/lcs-dev/.lldb/LLDB_Formatters"
       ]
     },
     {
-      //===------------ Debug with MS C/C++ Extension (Linuz) -------------===//
-      "name": "(Linux) Debug - MS C/C++",
+      "name": "(Linux) Debug with MS C/C++",
       "type": "cppdbg",
       "targetArchitecture": "x64",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
-      "args": [
-        "<",
-        "${workspaceFolder}/input_cases/${fileBasenameNoExtension}.in"
-      ],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "preLaunchTask": "Build: Build Active File (Debug)",
-      "setupCommands": [
-        {
-          "description": "Load Custom LLDB Formatters",
-          "text": "command script import /home/lcs-dev/.lldb/lldb_formatters.py",
-          "ignoreFailures": false
-        }
-      ]
-    },
-    {
-      //===---- Cross-Platform Debug Configuration with Input Support -----===//
-      "name": "Debug C/C++ (Cross-Platform with Input)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+      "program": "${workspaceFolder}/build/bin/${input:executableName}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": false,
-      "preLaunchTask": "Build: Build Active File (Debug)",
-
-      //===--------------- Platform-specific Configuration ----------------===//
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "CMake: Build All",
+      "setupCommands": [
+        {
+          "description": "Enable Pretty-Printing for GDB",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "Debug C/C++ (Cross-Platform)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "preLaunchTask": "CMake: Build All",
       "windows": {
-        "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
+        "program": "${workspaceFolder}/build/bin/${input:executableName}.exe",
         "MIMode": "gdb",
-        "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe",
-        "args": [
-          "<",
-          "${workspaceFolder}/input_cases/${fileBasenameNoExtension}.in"
-        ]
+        "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
       },
       "linux": {
-        "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+        "program": "${workspaceFolder}/build/bin/${input:executableName}",
         "MIMode": "gdb",
-        "miDebuggerPath": "/usr/bin/gdb",
-        "args": [
-          "<",
-          "${workspaceFolder}/input_cases/${fileBasenameNoExtension}.in"
-        ]
+        "miDebuggerPath": "/usr/bin/gdb"
       },
       "osx": {
-        "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
-        "MIMode": "lldb",
-        "args": [
-          "<",
-          "${workspaceFolder}/input_cases/${fileBasenameNoExtension}.in"
-        ]
+        "program": "${workspaceFolder}/build/bin/${input:executableName}",
+        "MIMode": "lldb"
       },
-
-      //===------------------------ Setup Commands ------------------------===//
       "setupCommands": [
         {
           "description": "Load Custom LLDB Formatters (macOS)",
@@ -169,10 +123,16 @@
   ],
   "inputs": [
     {
-      "id": "debugArgs",
-      "type": "promptString",
-      "description": "Enter program arguments for debugging",
-      "default": ""
+      "id": "executableName",
+      "type": "pickString",
+      "description": "Select executable to debug",
+      "options": [
+        "test_bst",
+        "test_stacks_queues",
+        "test_lists",
+        "runTests"
+      ],
+      "default": "test_bst"
     }
   ]
 }
