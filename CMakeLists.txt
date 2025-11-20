@@ -203,11 +203,17 @@ target_sources(ads_lib
             include/ads/trees/Binary_Tree.hpp
             include/ads/trees/Binary_Tree_Exception.hpp
             include/ads/trees/Binary_Search_Tree.hpp
+            include/ads/trees/AVL_Tree.hpp
 
             # Heap implementations
             include/ads/heaps/Heap_Exception.hpp
             include/ads/heaps/Min_Heap.hpp
             include/ads/heaps/Max_Heap.hpp
+
+            # Hash Table implementations
+            include/ads/hash/Hash_Table_Exception.hpp
+            include/ads/hash/Hash_Table_Chaining.hpp
+            include/ads/hash/Hash_Table_Open_Addressing.hpp
 
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
@@ -220,8 +226,11 @@ target_sources(ads_lib
         src/ads/queues/Circular_Array_Queue.tpp
         src/ads/queues/Linked_Queue.tpp
         src/ads/trees/Binary_Search_Tree.tpp
+        src/ads/trees/AVL_Tree.tpp
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
+        src/ads/hash/Hash_Table_Chaining.tpp
+        src/ads/hash/Hash_Table_Open_Addressing.tpp
 )
 
 # --------------------- Helper Function: Add Executable ---------------------- #
@@ -308,6 +317,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Binary_Search_Tree.cc")
     ads_add_executable(test_bst src/main_Binary_Search_Tree.cc)
 endif()
 
+# AVL Tree test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_AVL_Tree.cc")
+    ads_add_executable(test_avl src/main_AVL_Tree.cc)
+endif()
+
 # Stacks and Queues test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
     ads_add_executable(test_stacks_queues src/main_Stacks_Queues.cc)
@@ -326,6 +340,16 @@ endif()
 # Heaps test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Heaps.cc")
     ads_add_executable(test_heaps src/main_Heaps.cc)
+endif()
+
+# Hash Table Chaining test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Chaining.cc")
+    ads_add_executable(test_hash_chaining src/main_Hash_Table_Chaining.cc)
+endif()
+
+# Hash Table Open Addressing test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Open_Addressing.cc")
+    ads_add_executable(test_hash_open_addr src/main_Hash_Table_Open_Addressing.cc)
 endif()
 
 # -------------------------- GoogleTest Integration -------------------------- #

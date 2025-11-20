@@ -127,10 +127,14 @@
       "type": "pickString",
       "description": "Select executable to debug",
       "options": [
+        "test_avl",
         "test_bst",
-        "test_stacks_queues",
+        "test_hash_chaining",
+        "test_hash_open_addr",
+        "test_heaps",
         "test_lists",
-        "runTests"
+        "test_singly_lists",
+        "test_stacks_queues"
       ],
       "default": "test_bst"
     }
