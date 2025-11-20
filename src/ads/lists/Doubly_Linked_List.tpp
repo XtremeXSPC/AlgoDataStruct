@@ -12,8 +12,6 @@
 //===--------------------------------------------------------------------------===//
 #pragma once
 
-
-
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
 
 using namespace ads::list;

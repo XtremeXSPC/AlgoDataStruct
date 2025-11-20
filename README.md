@@ -27,22 +27,23 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Static Array
   - Dynamic Array (ArrayList/Vector)
   - Circular Array
-  
+
 - **Linked Lists**
   - Singly Linked List
   - Doubly Linked List
   - Circular Linked List
   - Skip List
-  
+
 - **Stacks**
   - Array-based implementation
   - Linked list-based implementation
-  
+
 - **Queues**
   - Simple Queue
   - Priority Queue
   - Double-ended Queue (Deque)
   - Circular Queue
+
 </details>
 
 <details>
@@ -62,13 +63,14 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Trie (Prefix Tree)
   - Suffix Tree
   - Quad-tree and Oct-tree
-  
+
 - **Heaps** (+)
   - Binary Heap
   - Fibonacci Heap
   - Binomial Heap
   - Leftist Heap
   - Skew Heap
+
 </details>
 
 <details>
@@ -82,6 +84,7 @@ Warning: this repository is not complete as I am implementing the missing data s
   - MultiMap (map with duplicate keys)
   - BiMap (bidirectional map)
   - Immutable Map implementations
+
 </details>
 
 <details>
@@ -95,6 +98,7 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Bloom Filter
   - Count-Min Sketch
   - HyperLogLog
+
 </details>
 
 <details>
@@ -108,6 +112,7 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Directed Graphs
   - Multigraphs
   - Hypergraphs
+
 </details>
 
 <details>
@@ -119,6 +124,7 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Suffix Automaton
   - FM-index
   - Rope (for efficient string manipulation)
+
 </details>
 
 <details>
@@ -130,12 +136,13 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Quad-tree and Oct-tree
   - Voronoi Diagram
   - Range Trees (multidimensional)
-  
+
 - **Nearest Neighbor Search Structures**
   - HNSW (Hierarchical Navigable Small World)
   - VP-Tree (Vantage-Point Tree)
   - Cover Tree
   - ANNOY (Approximate Nearest Neighbors Oh Yeah)
+
 </details>
 
 <details>
@@ -145,31 +152,32 @@ Warning: this repository is not complete as I am implementing the missing data s
   - Sparse Table
   - 2D Segment Tree
   - Range Trees
-  
+
 - **Probabilistic Structures**
   - Skip List
   - Treap
   - Splay Tree
   - MinHash
-  
+
 - **Concurrent Structures**
   - Thread-safe Lists
   - Concurrent Hash Maps
   - Lock-free Data Structures
-  
+
 - **Persistent Data Structures**
   - Persistent Arrays
   - Persistent Lists
   - Persistent Maps
-  
+
 - **Big Data Structures**
   - Log-Structured Merge Tree (LSM Tree)
   - External Memory Data Structures
-  
+
 - **Other Structures**
   - LRU Cache
   - LFU Cache
   - Time Series Data Structures
+
 </details>
 
 (+) *Not implemented yet but I'm working on it!*
@@ -237,15 +245,15 @@ import datastructures.trees.AVLTree;
 public class Main {
     public static void main(String[] args) {
         AVLTree<Integer> avlTree = new AVLTree<>();
-        
+
         avlTree.insert(10);
         avlTree.insert(20);
         avlTree.insert(30);
-        
+
         System.out.println("Contains 20? " + avlTree.contains(20)); // true
         avlTree.delete(20);
         System.out.println("Contains 20? " + avlTree.contains(20)); // false
-        
+
         System.out.println("In-order traversal: ");
         avlTree.inOrderTraversal(value -> System.out.print(value + " "));
     }
@@ -261,20 +269,20 @@ public class Main {
 
 int main() {
     AVLTree<int> avlTree;
-    
+
     avlTree.insert(10);
     avlTree.insert(20);
     avlTree.insert(30);
-    
+
     std::cout << "Contains 20? " << (avlTree.contains(20) ? "Yes" : "No") << std::endl; // Yes
     avlTree.remove(20);
     std::cout << "Contains 20? " << (avlTree.contains(20) ? "Yes" : "No") << std::endl; // No
-    
+
     std::cout << "In-order traversal: ";
     avlTree.inOrderTraversal([](int value) {
         std::cout << value << " ";
     });
-    
+
     return 0;
 }
 ```
@@ -288,22 +296,22 @@ import datastructures.associative.HashMap;
 public class Main {
     public static void main(String[] args) {
         HashMap<String, Integer> scores = new HashMap<>();
-        
+
         // Adding key-value pairs
         scores.put("Alice", 95);
         scores.put("Bob", 89);
         scores.put("Charlie", 92);
-        
+
         // Retrieving values
         System.out.println("Bob's score: " + scores.get("Bob")); // 89
-        
+
         // Checking if a key exists
         System.out.println("Does David have a score? " + scores.containsKey("David")); // false
-        
+
         // Updating a value
         scores.put("Bob", 91);
         System.out.println("Bob's updated score: " + scores.get("Bob")); // 91
-        
+
         // Removing a key-value pair
         scores.remove("Charlie");
         System.out.println("Charlie's score exists? " + scores.containsKey("Charlie")); // false
@@ -323,6 +331,7 @@ Contributions are welcome! Please read our contribution guidelines before submit
 ## Learning Resources
 
 ### Essential References
+
 - [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition) - Cormen, Leiserson, Rivest, Stein
 - [Algorithms, 4th Edition](https://algs4.cs.princeton.edu/home/) - Sedgewick & Wayne
 - [Data Structure in C++](https://www.wiley.com/en-us/Data+Structures+and+Algorithms+in+C%2B%2B%2C+2nd+Edition-p-9780470383278) - Michael T. Goodrich, Roberto Tamassia, David M. Mount
@@ -330,6 +339,7 @@ Contributions are welcome! Please read our contribution guidelines before submit
 - [Algorithm Design Manual](https://www.springer.com/gp/book/9781848000698) - Steven S. Skiena
 
 ### Advanced Topics
+
 - [Advanced Data Structures](https://www.cambridge.org/core/books/advanced-data-structures/D58D5C2D12F23464E0406320554A251B) - Peter Brass
 - [Purely Functional Data Structures](https://www.cambridge.org/core/books/purely-functional-data-structures/0409255DA1B48FA731859AC72E34D494) - Chris Okasaki
 - [Graph Algorithms](https://www.amazon.com/Graph-Algorithms-Shimon-Even/dp/0716780453) - Shimon Even
@@ -337,12 +347,14 @@ Contributions are welcome! Please read our contribution guidelines before submit
 - [Handbook of Data Structures and Applications](https://www.routledge.com/Handbook-of-Data-Structures-and-Applications/Mehta-Sahni/p/book/9780367571481) - Dinesh P. Mehta, Sartaj Sahni
 
 ### Specialized Resources
+
 - [Pearls of Functional Algorithm Design](https://www.cambridge.org/core/books/pearls-of-functional-algorithm-design/B0CF0A666A65F6A1E3B1C509AF8BDAAA) - Richard Bird
 - [Algorithms and Data Structures: The Basic Toolbox](https://www.springer.com/gp/book/9783540779773) - Kurt Mehlhorn, Peter Sanders
 - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) - Antti Laaksonen
 - [Real-World Algorithms: A Beginner's Guide](https://mitpress.mit.edu/books/real-world-algorithms) - Panos Louridas
 
 ### Spatial and Nearest Neighbor Search
+
 - [Similarity Search: The Metric Space Approach](https://www.springer.com/gp/book/9780387291468) - Pavel Zezula, Giuseppe Amato, Vlastislav Dohnal, Michal Batko
 - [Nearest Neighbor Methods in Learning and Vision](https://mitpress.mit.edu/books/nearest-neighbor-methods-learning-and-vision) - Gregory Shakhnarovich, Trevor Darrell, Piotr Indyk
 - [Foundations of Multidimensional and Metric Data Structures](https://www.sciencedirect.com/book/9780123694461/foundations-of-multidimensional-and-metric-data-structures) - Hanan Samet
