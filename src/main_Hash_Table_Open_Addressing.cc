@@ -87,8 +87,7 @@ void test_basic_operations() {
 void test_probing_strategies() {
   cout << "\n========== Test: Different Probing Strategies ==========\n";
 
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC,
-                                         ProbingStrategy::DOUBLE_HASH};
+  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     cout << "\nTesting " << strategy_to_string(strategy) << ":\n";
@@ -190,8 +189,7 @@ void test_rehashing() {
   for (int i = 1; i <= 20; ++i) {
     table.insert(i, i * 10);
     if (i % 5 == 0) {
-      cout << "After " << i << " insertions: capacity=" << table.capacity()
-           << ", load_factor=" << table.load_factor() << '\n';
+      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor() << '\n';
     }
   }
 
@@ -220,9 +218,9 @@ void test_high_collisions() {
 
   cout << "Inserting 4 values into table with capacity 8:\n";
   table.insert(0, 100);
-  table.insert(8, 200);   // Will collide with 0
-  table.insert(16, 300);  // Will collide with 0 and 8
-  table.insert(24, 400);  // Will collide with all above
+  table.insert(8, 200);  // Will collide with 0
+  table.insert(16, 300); // Will collide with 0 and 8
+  table.insert(24, 400); // Will collide with all above
 
   cout << "\nAll values share the same hash:\n";
   for (int key : {0, 8, 16, 24}) {
@@ -263,7 +261,7 @@ void test_exceptions() {
   // Test at() with non-existent key
   cout << "Testing at() with non-existent key:\n";
   try {
-    string value = table.at(100);
+    table.at(100);
     cout << "  ERROR: No exception thrown!\n";
   } catch (const exception& e) {
     cout << "  Caught exception: " << e.what() << '\n';
@@ -343,8 +341,7 @@ void test_performance_comparison() {
   const int N = 50000;
 
   // Test Open Addressing with different strategies
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC,
-                                         ProbingStrategy::DOUBLE_HASH};
+  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     auto start = std::chrono::high_resolution_clock::now();

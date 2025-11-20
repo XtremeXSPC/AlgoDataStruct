@@ -96,16 +96,13 @@ void test_ll_rotation() {
   cout << "This should trigger a Right rotation (LL case)\n\n";
 
   avl.insert(30);
-  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(20);
-  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(10);
-  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   print_avl_tree(avl, "avl after LL rotation");
 
@@ -125,16 +122,13 @@ void test_rr_rotation() {
   cout << "This should trigger a Left rotation (RR case)\n\n";
 
   avl.insert(10);
-  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(20);
-  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(30);
-  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   print_avl_tree(avl, "avl after RR rotation");
 
@@ -154,16 +148,13 @@ void test_lr_rotation() {
   cout << "This should trigger a Left-Right rotation (LR case)\n\n";
 
   avl.insert(30);
-  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(10);
-  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(20);
-  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   print_avl_tree(avl, "avl after LR rotation");
 
@@ -183,16 +174,13 @@ void test_rl_rotation() {
   cout << "This should trigger a Right-Left rotation (RL case)\n\n";
 
   avl.insert(10);
-  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 10: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(30);
-  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 30: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   avl.insert(20);
-  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced()
-       << '\n';
+  cout << "After inserting 20: height=" << avl.height() << ", balanced=" << avl.is_balanced() << '\n';
 
   print_avl_tree(avl, "avl after RL rotation");
 
@@ -328,8 +316,7 @@ void test_sorted_sequence() {
 
   cout << "AVL Tree:\n";
   cout << "  Size:   " << avl.size() << '\n';
-  cout << "  Height: " << avl.height() << " (should be ~" << (int)(1.44 * std::log2(N))
-       << ")\n";
+  cout << "  Height: " << avl.height() << " (should be ~" << (int)(1.44 * std::log2(N)) << ")\n";
   cout << "  Balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 
   cout << "\nBST (unbalanced):\n";
@@ -352,6 +339,7 @@ void test_performance() {
   std::uniform_int_distribution<> dis(1, N * 10);
 
   vector<int> random_values;
+  random_values.reserve(N);
   for (int i = 0; i < N; ++i) {
     random_values.push_back(dis(gen));
   }
@@ -409,7 +397,7 @@ void test_edge_cases() {
   // Test find_min/max on empty tree
   cout << "\nTesting find_min() on empty tree (should throw):\n";
   try {
-    avl.find_min();
+    [[maybe_unused]] auto min_val = avl.find_min();
     cout << "  ERROR: No exception thrown!\n";
   } catch (const exception& e) {
     cout << "  Caught exception: " << e.what() << '\n';
@@ -422,17 +410,17 @@ void test_edge_cases() {
 
   // Test clear
   cout << "\nTesting clear():\n";
-  avl.insert(10);
-  avl.insert(20);
-  avl.insert(30);
+  [[maybe_unused]] bool inserted1 = avl.insert(10);
+  [[maybe_unused]] bool inserted2 = avl.insert(20);
+  [[maybe_unused]] bool inserted3 = avl.insert(30);
   cout << "Before clear: size=" << avl.size() << '\n';
   avl.clear();
   cout << "After clear: size=" << avl.size() << ", is_empty=" << avl.is_empty() << '\n';
 }
 
-int main() {
+auto main() -> int {
   cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║       AVL TREE COMPREHENSIVE TEST SUITE               ║\n";
+  cout << "║           AVL TREE COMPREHENSIVE TEST SUITE            ║\n";
   cout << "╚════════════════════════════════════════════════════════╝\n";
 
   try {
@@ -449,8 +437,9 @@ int main() {
     test_performance();
     test_edge_cases();
 
-    cout << "\n╔════════════════════════════════════════════════════════╗\n";
-    cout << "║  ALL TESTS COMPLETED SUCCESSFULLY!                    ║\n";
+    cout << "\n";
+    cout << "╔════════════════════════════════════════════════════════╗\n";
+    cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!            ║\n";
     cout << "╚════════════════════════════════════════════════════════╝\n";
 
     return 0;

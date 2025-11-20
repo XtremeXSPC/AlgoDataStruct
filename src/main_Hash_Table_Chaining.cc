@@ -99,9 +99,9 @@ void test_bracket_operator() {
   HashTableChaining<string, int> table;
 
   cout << "Using operator[] to insert and access:\n";
-  table["first"] = 1;
+  table["first"]  = 1;
   table["second"] = 2;
-  table["third"] = 3;
+  table["third"]  = 3;
 
   cout << "  first: " << table["first"] << '\n';
   cout << "  second: " << table["second"] << '\n';
@@ -182,8 +182,7 @@ void test_rehashing() {
   for (int i = 1; i <= 20; ++i) {
     table.insert(i, i * 10);
     if (i % 5 == 0) {
-      cout << "After " << i << " insertions: capacity=" << table.capacity()
-           << ", load_factor=" << table.load_factor() << '\n';
+      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor() << '\n';
     }
   }
 
@@ -233,9 +232,7 @@ struct Person {
   Person() : name(""), age(0) {}
   Person(const string& n, int a) : name(n), age(a) {}
 
-  bool operator==(const Person& other) const {
-    return name == other.name && age == other.age;
-  }
+  bool operator==(const Person& other) const { return name == other.name && age == other.age; }
 };
 
 void test_custom_types() {
@@ -289,7 +286,7 @@ void test_exceptions() {
   // Test at() with non-existent key
   cout << "Testing at() with non-existent key:\n";
   try {
-    string value = table.at(100);
+    table.at(100);
     cout << "  ERROR: No exception thrown!\n";
   } catch (const exception& e) {
     cout << "  Caught exception: " << e.what() << '\n';
