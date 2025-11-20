@@ -16,17 +16,17 @@
 # Usage:
 #   With Clang (recommended):
 #     cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build
-#   
+#
 #   With GCC:
 #     cmake -DCMAKE_TOOLCHAIN_FILE=gcc-toolchain.cmake -B build
-#   
+#
 #   Then build:
 #     cmake --build build
 #
 # ============================================================================ #
 
 cmake_minimum_required(VERSION 3.20)
-project(AlgoDataStructProject 
+project(AlgoDataStructProject
     VERSION 1.0.0
     LANGUAGES CXX
     DESCRIPTION "Educational data structures library in C++"
@@ -106,7 +106,7 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
     endif()
 
     set(DETECTED_PATHS "")
-    
+
     # Query the compiler for its include search paths.
     execute_process(
         COMMAND ${CMAKE_CXX_COMPILER} -E -x c++ -v /dev/null
@@ -120,7 +120,7 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
         # Parse the compiler output to extract include paths.
         string(REPLACE "\n" ";" OUTPUT_LINES "${COMPILER_OUTPUT}")
         set(IS_PARSING_INCLUDES FALSE)
-        
+
         foreach(line ${OUTPUT_LINES})
             # Start of include path section
             if(line MATCHES "^#include.*search starts here:")
@@ -142,10 +142,10 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
     # Cache results for faster reconfiguration
     if(DETECTED_PATHS)
         list(REMOVE_DUPLICATES DETECTED_PATHS)
-        set(COMPILER_SYSTEM_INCLUDES_CACHED "${DETECTED_PATHS}" CACHE INTERNAL 
+        set(COMPILER_SYSTEM_INCLUDES_CACHED "${DETECTED_PATHS}" CACHE INTERNAL
             "Cached compiler include paths")
         set(${OUTPUT_VARIABLE} "${DETECTED_PATHS}" PARENT_SCOPE)
-        
+
         list(LENGTH DETECTED_PATHS PATH_COUNT)
         message(STATUS "${ANSI_GREEN}Detected ${PATH_COUNT} compiler include paths${ANSI_RESET}")
     else()
@@ -169,7 +169,7 @@ add_library(ads_lib INTERFACE)
 # Specify where the public headers are located.
 # Users of this library (our test executables) will automatically get this
 # path added to their include directories.
-target_include_directories(ads_lib INTERFACE 
+target_include_directories(ads_lib INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
@@ -224,15 +224,15 @@ target_sources(ads_lib
 function(ads_add_executable TARGET_NAME SOURCE_FILE)
     # Create the executable target
     add_executable(${TARGET_NAME} ${SOURCE_FILE})
-    
+
     # Link with our header-only library.
     # This automatically adds the include directory and all necessary properties.
     target_link_libraries(${TARGET_NAME} PRIVATE ads_lib)
-    
+
     # ---------------------- Compiler Flags and Warnings --------------------- #
     # We use different flags based on build configuration (Debug, Release, etc.)
     # and compiler type (GCC vs Clang).
-    
+
     # Common warning flags for all compilers.
     # These help catch potential bugs and encourage good coding practices.
     set(COMMON_WARNINGS
@@ -241,32 +241,32 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
         -Wpedantic     # Warn about non-standard C++
         -Wshadow       # Warn about variable shadowing
     )
-    
+
     # Configuration-specific flags using generator expressions.
     # Generator expressions are evaluated at build time, not configure time.
     target_compile_options(${TARGET_NAME} PRIVATE
         ${COMMON_WARNINGS}
-        
+
         # Debug configuration: No optimization, full debug info
         $<$<CONFIG:Debug>:-g -O0>
-        
+
         # Release configuration: Maximum optimization, no debug info
         $<$<CONFIG:Release>:-O3 -DNDEBUG>
-        
+
         # Sanitizer configuration (if using sanitizer build type)
         $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
     )
-    
+
     # Compiler-specific definitions for enhanced debugging
     target_compile_definitions(${TARGET_NAME} PRIVATE
         # For GCC in Debug mode, enable STL debug mode
         # This adds runtime checks for iterators and containers
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:GNU>>:_GLIBCXX_DEBUG>
-        
+
         # For Clang/libc++, enable extensive hardening checks
         $<$<CXX_COMPILER_ID:Clang,AppleClang>:_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE>
     )
-    
+
     # ----------------- Add System Include Paths for clangd ------------------ #
     # If we detected compiler include paths, add them as system includes.
     # This helps clangd find standard library headers.
@@ -276,17 +276,17 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
             target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${dir})
         endforeach()
     endif()
-    
+
     # ------------------------- Linker Configuration ------------------------- #
     # Configuration-specific linker flags
     target_link_options(${TARGET_NAME} PRIVATE
         # Link sanitizer libraries for Sanitize builds
         $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
-        
+
         # Strip symbols in Release builds to reduce executable size
         $<$<CONFIG:Release>:-s>
     )
-    
+
     # Print a status message when the target is added
     message(STATUS "${ANSI_GREEN}Added test executable: ${TARGET_NAME}${ANSI_RESET}")
 endfunction()
@@ -317,30 +317,30 @@ option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 
 if(ENABLE_TESTING)
     enable_testing()
-    
+
     # Download and configure GoogleTest using FetchContent
     include(FetchContent)
     FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
     )
-    
+
     # Configure GoogleTest to work with MSVC's runtime library
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
-    
+
     FetchContent_MakeAvailable(googletest)
-    
+
     # Add the test executable if test files exist
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
         add_executable(runTests tests/Test_DoublyLinkedList.cpp)
         target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
         target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
-        
+
         # Register tests with CTest
         include(GoogleTest)
         gtest_discover_tests(runTests)
-        
+
         message(STATUS "${ANSI_GREEN}GoogleTest enabled: runTests executable created${ANSI_RESET}")
     endif()
 endif()
@@ -351,7 +351,7 @@ endif()
 # Create a symlink to compile_commands.json in the project root.
 # This makes it easy for clangd and other tools to find the compilation database.
 add_custom_target(symlink_compile_commands
-    COMMAND ${CMAKE_COMMAND} -E create_symlink 
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
             "${CMAKE_BINARY_DIR}/compile_commands.json"
             "${CMAKE_SOURCE_DIR}/compile_commands.json"
     COMMENT "${ANSI_CYAN}Creating symlink for compile_commands.json${ANSI_RESET}"

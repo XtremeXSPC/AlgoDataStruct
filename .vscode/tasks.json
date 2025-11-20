@@ -1,52 +1,100 @@
 {
   "version": "2.0.0",
-  "options": {
-    "env": {
-      "CPP_TOOLS_CONFIG": "${env:HOME}/.config/cpp-tools/competitive.sh"
-    }
-  },
   "tasks": [
-    //===------------------------ CORE BUILD TASKS ------------------------===//
     {
-      "label": "Build: Build Active File (Debug)",
+      "label": "CMake: Configure (Debug)",
       "type": "shell",
-      "command": "zsh",
+      "command": "cmake",
       "args": [
-        "-c",
-        "source ${CPP_TOOLS_CONFIG} && cppbuild ${fileBasenameNoExtension}"
+        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-B",
+        "build"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "detail": "Configure project with CMake for Debug build"
+    },
+    {
+      "label": "CMake: Configure (Release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-B",
+        "build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "detail": "Configure project with CMake for Release build"
+    },
+    {
+      "label": "CMake: Build All",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "-j8"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "problemMatcher": ["$gcc"],
-      "detail": "Builds the currently open file in Debug mode."
+      "detail": "Build all targets using CMake"
     },
     {
-      "label": "Build: Build Active File (Release)",
+      "label": "CMake: Build Active Target",
       "type": "shell",
       "command": "cmake",
       "args": [
         "--build",
         "build",
-        "--config",
-        "Release",
         "--target",
-        "${fileBasenameNoExtension}"
+        "${input:targetName}",
+        "-j8"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": "build",
       "problemMatcher": ["$gcc"],
-      "detail": "Builds the currently open file in optimized Release mode for contests."
+      "detail": "Build specific target (prompts for target name)"
     },
-    //===------------------------ RUN & TEST TASKS ------------------------===//
     {
-      "label": "Run: Build & Run Active File",
+      "label": "CMake: Clean",
       "type": "shell",
-      "command": "zsh",
-      "args": [
-        "-c",
-        "source ${CPP_TOOLS_CONFIG} && cppgo ${fileBasenameNoExtension}"
-      ],
+      "command": "cmake",
+      "args": ["--build", "build", "--target", "clean"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "detail": "Clean build artifacts"
+    },
+    {
+      "label": "CMake: Clean & Reconfigure (Debug)",
+      "type": "shell",
+      "command": "rm",
+      "args": ["-rf", "build", "&&", "cmake", "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake", "-DCMAKE_BUILD_TYPE=Debug", "-B", "build"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "detail": "Remove build directory and reconfigure for Debug"
+    },
+    {
+      "label": "Run: test_bst",
+      "type": "shell",
+      "command": "./bin/test_bst",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
       "group": {
         "kind": "test",
         "isDefault": true
@@ -57,16 +105,17 @@
         "panel": "shared",
         "clear": true
       },
-      "detail": "Builds and runs the active file. Looks for 'input.txt' or '{problem_name}.in' in 'input_cases/'."
+      "dependsOn": ["CMake: Build All"],
+      "problemMatcher": [],
+      "detail": "Build and run Binary Search Tree tests"
     },
     {
-      "label": "Run: Build & Run (Prompt for Input)",
+      "label": "Run: test_stacks_queues",
       "type": "shell",
-      "command": "zsh",
-      "args": [
-        "-c",
-        "source ${CPP_TOOLS_CONFIG} && cppgo ${fileBasenameNoExtension} ${input:inputFile}"
-      ],
+      "command": "./bin/test_stacks_queues",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -74,16 +123,17 @@
         "panel": "shared",
         "clear": true
       },
-      "detail": "Builds and runs the active file, prompting you to enter the input filename."
+      "dependsOn": ["CMake: Build All"],
+      "problemMatcher": [],
+      "detail": "Build and run Stacks and Queues tests"
     },
     {
-      "label": "Test: Judge Active File",
+      "label": "Run: test_lists",
       "type": "shell",
-      "command": "zsh",
-      "args": [
-        "-c",
-        "source ${CPP_TOOLS_CONFIG} && cppjudge ${fileBasenameNoExtension}"
-      ],
+      "command": "./bin/test_lists",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -91,64 +141,51 @@
         "panel": "shared",
         "clear": true
       },
-      "detail": "Tests the active file against all corresponding '.in'/'.out' sample files in 'input_cases/'."
-    },
-    //===-------------------- CONFIGURATION & CLEANUP ---------------------===//
-    {
-      "label": "Configure: Reconfigure Project (Debug)",
-      "type": "shell",
-      "command": "zsh",
-      "args": ["-c", "source ${CPP_TOOLS_CONFIG} && cppconf Debug"],
-      "detail": "Cleans and re-runs CMake configuration for Debug. Updates compile_commands.json."
+      "dependsOn": ["CMake: Build All"],
+      "problemMatcher": [],
+      "detail": "Build and run Linked Lists tests"
     },
     {
-      "label": "Configure: Reconfigure Project (Release)",
+      "label": "Test: Run GoogleTest Suite",
       "type": "shell",
-      "command": "zsh",
-      "args": ["-c", "source ${CPP_TOOLS_CONFIG} && cppconf Release"],
-      "detail": "Re-runs CMake configuration for Release."
-    },
-    {
-      "label": "Configure: Reconfigure Project (Sanitize)",
-      "type": "shell",
-      "command": "zsh",
-      "args": ["-c", "source ${CPP_TOOLS_CONFIG} && cppconf Sanitize"],
-      "detail": "Re-runs CMake configuration for memory sanitization."
-    },
-    {
-      "label": "Clean: Clean Project",
-      "type": "shell",
-      "command": "cppclean",
-      "detail": "Removes the build directory entirely."
-    },
-    //===----------------------- ADVANCED DEBUGGING -----------------------===//
-    {
-      "label": "Debug: Memory Check Active File (Sanitize)",
-      "type": "shell",
-      "command": "zsh",
-      "args": [
-        "-c",
-        "source ${CPP_TOOLS_CONFIG}",
-        "cppconf Sanitize && cppgo ${fileBasenameNoExtension}"
-      ],
+      "command": "ctest",
+      "args": ["--output-on-failure", "--verbose"],
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
         "focus": true,
-        "panel": "shared",
-        "clear": true
+        "panel": "shared"
       },
+      "problemMatcher": [],
+      "detail": "Run all GoogleTest unit tests (requires ENABLE_TESTING=ON)"
+    },
+    {
+      "label": "Format: clang-format Active File",
+      "type": "shell",
+      "command": "clang-format",
+      "args": ["-i", "${file}"],
+      "problemMatcher": [],
+      "detail": "Format current file with clang-format"
+    },
+    {
+      "label": "Lint: clang-tidy Active File",
+      "type": "shell",
+      "command": "clang-tidy",
+      "args": ["${file}", "--", "-std=c++20"],
       "problemMatcher": ["$gcc"],
-      "detail": "Reconfigures for Sanitize mode, then builds and runs the active file for memory debugging."
+      "detail": "Run clang-tidy on current file"
     }
   ],
-  // Input prompt used by the "Run (Prompt for Input)" task
   "inputs": [
     {
-      "id": "inputFile",
-      "type": "promptString",
-      "description": "Enter the input file name (e.g., sample.in)",
-      "default": "${fileBasenameNoExtension}.in"
+      "id": "targetName",
+      "type": "pickString",
+      "description": "Select target to build",
+      "options": ["test_bst", "test_stacks_queues", "test_lists", "runTests"],
+      "default": "test_bst"
     }
   ]
 }
