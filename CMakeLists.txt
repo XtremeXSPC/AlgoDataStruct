@@ -384,6 +384,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Map.cc")
     ads_add_executable(test_hashmap src/main_Hash_Map.cc)
 endif()
 
+# Dijkstra Integration test (Graph + PriorityQueue)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dijkstra_Integration.cc")
+    ads_add_executable(test_dijkstra src/main_Dijkstra_Integration.cc)
+endif()
+
 # -------------------------- GoogleTest Integration -------------------------- #
 # GoogleTest support is optional and disabled by default.
 # Enable it with: cmake -DENABLE_TESTING=ON ...
