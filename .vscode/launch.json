@@ -10,7 +10,7 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
-      "stdio": [null, null, null],
+      "terminal": "console",
       "initCommands": [
         "command script import /Users/lcs-dev/.lldb/LLDB_Formatters"
       ]
@@ -50,7 +50,7 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
-      "stdio": [null, null, null],
+      "terminal": "console",
       "initCommands": [
         "command script import /home/lcs-dev/.lldb/LLDB_Formatters"
       ]
