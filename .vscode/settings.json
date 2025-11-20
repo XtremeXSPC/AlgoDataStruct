@@ -8,7 +8,7 @@
   "editor.wordWrap": "off",
   "editor.minimap.enabled": false,
   "editor.lineNumbers": "on",
-  "editor.rulers": [80, 120],
+  "editor.rulers": [85, 120],
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
 
