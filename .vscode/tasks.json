@@ -52,13 +52,7 @@
       "label": "CMake: Build Active Target",
       "type": "shell",
       "command": "cmake",
-      "args": [
-        "--build",
-        "build",
-        "--target",
-        "${input:targetName}",
-        "-j8"
-      ],
+      "args": ["--build", "build", "--target", "${input:targetName}", "-j8"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -81,7 +75,16 @@
       "label": "CMake: Clean & Reconfigure (Debug)",
       "type": "shell",
       "command": "rm",
-      "args": ["-rf", "build", "&&", "cmake", "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake", "-DCMAKE_BUILD_TYPE=Debug", "-B", "build"],
+      "args": [
+        "-rf",
+        "build",
+        "&&",
+        "cmake",
+        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-B",
+        "build"
+      ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -89,9 +92,9 @@
       "detail": "Remove build directory and reconfigure for Debug"
     },
     {
-      "label": "Run: test_bst",
+      "label": "Run: Select Target",
       "type": "shell",
-      "command": "./bin/test_bst",
+      "command": "./bin/${input:runTarget}",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
@@ -107,43 +110,7 @@
       },
       "dependsOn": ["CMake: Build All"],
       "problemMatcher": [],
-      "detail": "Build and run Binary Search Tree tests"
-    },
-    {
-      "label": "Run: test_stacks_queues",
-      "type": "shell",
-      "command": "./bin/test_stacks_queues",
-      "options": {
-        "cwd": "${workspaceFolder}/build"
-      },
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "clear": true
-      },
-      "dependsOn": ["CMake: Build All"],
-      "problemMatcher": [],
-      "detail": "Build and run Stacks and Queues tests"
-    },
-    {
-      "label": "Run: test_lists",
-      "type": "shell",
-      "command": "./bin/test_lists",
-      "options": {
-        "cwd": "${workspaceFolder}/build"
-      },
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "clear": true
-      },
-      "dependsOn": ["CMake: Build All"],
-      "problemMatcher": [],
-      "detail": "Build and run Linked Lists tests"
+      "detail": "Build and run selected test binary"
     },
     {
       "label": "Test: Run GoogleTest Suite",
@@ -184,7 +151,30 @@
       "id": "targetName",
       "type": "pickString",
       "description": "Select target to build",
-      "options": ["test_bst", "test_stacks_queues", "test_lists", "runTests"],
+      "options": [
+        "test_bst",
+        "test_stacks_queues",
+        "test_lists",
+        "test_avl",
+        "test_hash_chaining",
+        "test_hash_open_addressing"
+      ],
+      "default": "test_bst"
+    },
+    {
+      "id": "runTarget",
+      "type": "pickString",
+      "description": "Select test binary to run",
+      "options": [
+        "test_avl",
+        "test_bst",
+        "test_hash_chaining",
+        "test_hash_open_addr",
+        "test_heaps",
+        "test_lists",
+        "test_singly_lists",
+        "test_stacks_queues"
+      ],
       "default": "test_bst"
     }
   ]

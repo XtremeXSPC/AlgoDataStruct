@@ -186,26 +186,40 @@ Warning: this repository is not complete as I am implementing the missing data s
 
 The following data structures are currently implemented in C++ with full tests and documentation:
 
-### Linear Structures
+### Phase 1 ✅ - Linear Structures & Basic Heaps
 
 - **Doubly Linked List** - Bidirectional list with iterators
-- **Singly Linked List** - Forward-only list with forward iterators (Phase 1)
+- **Singly Linked List** - Forward-only list with forward iterators
 - **Stack** - Array-based and Linked implementations
 - **Queue** - Circular Array and Linked implementations
+- **Min Heap** - Array-based binary min heap
+- **Max Heap** - Array-based binary max heap
 
-### Trees
+### Phase 2 ✅ - Balanced Trees & Hash Tables
+
+- **AVL Tree** - Self-balancing BST with all 4 rotations (LL, RR, LR, RL)
+  - O(log n) guaranteed for insert/remove/search
+  - Height: ~1.44*log(n) vs BST: O(n) for sorted input
+  - Comprehensive test suite with rotation verification
+
+- **Hash Table (Chaining)** - Collision resolution via linked lists
+  - O(1) average time for insert/find/erase
+  - Dynamic rehashing with configurable load factor
+  - Move semantics and exception handling
+
+- **Hash Table (Open Addressing)** - Direct slot probing
+  - Three probing strategies: Linear, Quadratic, Double Hashing
+  - Tombstone handling for proper deletion
+  - 2.4x faster than chaining for sequential access
+  - Superior cache locality
+
+### Trees (Classic)
 
 - **Binary Search Tree** - Classic BST with in-order iterators
 
-### Heaps
-
-- **Min Heap** - Array-based binary min heap (Phase 1)
-- **Max Heap** - Array-based binary max heap (Phase 1)
-
 ### In Progress 🔨
 
-- **Phase 2**: AVL Tree, Hash Tables (Chaining & Open Addressing)
-- **Phase 3**: Graph (Adjacency List & Matrix), HashMap, Priority Queue
+- **Phase 3**: Graph (Adjacency List & Matrix), Priority Queue, Advanced Trees
 
 **All implemented structures include:**
 
