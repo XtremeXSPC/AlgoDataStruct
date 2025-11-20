@@ -1,0 +1,16 @@
+[
+  {
+    "key": "ctrl+shift+b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "CMake: Build Active Target"
+  },
+  {
+    "key": "f5",
+    "command": "workbench.action.debug.start",
+    "when": "debuggersAvailable && debugState == 'inactive'"
+  },
+  {
+    "key": "f7",
+    "command": "workbench.action.tasks.build"
+  }
+]

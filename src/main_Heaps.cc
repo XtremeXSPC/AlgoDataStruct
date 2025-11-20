@@ -11,11 +11,11 @@
 //===--------------------------------------------------------------------------===//
 
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "../include/ads/heaps/Min_Heap.hpp"
 #include "../include/ads/heaps/Max_Heap.hpp"
+#include "../include/ads/heaps/Min_Heap.hpp"
 
 using namespace ads::heap;
 
@@ -141,7 +141,7 @@ void test_min_heap_exception_handling() {
 void test_min_heap_large() {
   print_separator("Min Heap - Large Dataset");
 
-  const int N = 10000;
+  const int    N = 10000;
   MinHeap<int> heap;
 
   std::cout << "Inserting " << N << " elements...\n";
