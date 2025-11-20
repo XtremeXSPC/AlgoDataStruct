@@ -67,7 +67,7 @@ auto HashTableChaining<Key, Value>::hash(const Key& key) const -> size_t {
 template <typename Key, typename Value>
 auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& key) -> typename Bucket::iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
-    if (it->key == key) {
+    if (it->first == key) {
       return it;
     }
   }
@@ -77,7 +77,7 @@ auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& ke
 template <typename Key, typename Value>
 auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const Key& key) const -> typename Bucket::const_iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
-    if (it->key == key) {
+    if (it->first == key) {
       return it;
     }
   }
@@ -95,7 +95,7 @@ void HashTableChaining<Key, Value>::insert(const Key& key, const Value& value) {
 
   if (it != buckets_[bucket_idx].end()) {
     // Key exists, update value
-    it->value = value;
+    it->second = value;
   } else {
     // Key doesn't exist, insert new entry
     buckets_[bucket_idx].emplace_back(key, value);
@@ -111,7 +111,7 @@ void HashTableChaining<Key, Value>::insert(Key&& key, Value&& value) {
 
   if (it != buckets_[bucket_idx].end()) {
     // Key exists, update value
-    it->value = std::move(value);
+    it->second = std::move(value);
   } else {
     // Key doesn't exist, insert new entry
     buckets_[bucket_idx].emplace_back(std::move(key), std::move(value));
@@ -128,15 +128,15 @@ auto HashTableChaining<Key, Value>::emplace(const Key& key, Args&&... args) -> V
 
   if (it != buckets_[bucket_idx].end()) {
     // Key exists, update value
-    it->value = Value(std::forward<Args>(args)...);
-    return it->value;
+    it->second = Value(std::forward<Args>(args)...);
+    return it->second;
   } else {
     // Key doesn't exist, insert new entry
     buckets_[bucket_idx].emplace_back(key, std::forward<Args>(args)...);
     ++size_;
     check_and_rehash();
     // Return reference to the newly inserted value
-    return buckets_[hash(key)].back().value;
+    return buckets_[hash(key)].back().second;
   }
 }
 
@@ -153,7 +153,7 @@ auto HashTableChaining<Key, Value>::at(const Key& key) -> Value& {
     throw KeyNotFoundException("Key not found in hash table");
   }
 
-  return it->value;
+  return it->second;
 }
 
 template <typename Key, typename Value>
@@ -165,7 +165,7 @@ auto HashTableChaining<Key, Value>::at(const Key& key) const -> const Value& {
     throw KeyNotFoundException("Key not found in hash table");
   }
 
-  return it->value;
+  return it->second;
 }
 
 template <typename Key, typename Value>
@@ -174,7 +174,7 @@ auto HashTableChaining<Key, Value>::operator[](const Key& key) -> Value& {
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
   if (it != buckets_[bucket_idx].end()) {
-    return it->value;
+    return it->second;
   }
 
   // Key doesn't exist, insert with default value
@@ -186,7 +186,7 @@ auto HashTableChaining<Key, Value>::operator[](const Key& key) -> Value& {
   // Need to rehash the key since capacity might have changed
   bucket_idx = hash(key);
   it         = find_in_bucket(buckets_[bucket_idx], key);
-  return it->value;
+  return it->second;
 }
 
 //============================================================================//
@@ -205,7 +205,7 @@ auto HashTableChaining<Key, Value>::find(const Key& key) -> Value* {
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
   if (it != buckets_[bucket_idx].end()) {
-    return &(it->value);
+    return &(it->second);
   }
   return nullptr;
 }
@@ -216,7 +216,7 @@ auto HashTableChaining<Key, Value>::find(const Key& key) const -> const Value* {
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
   if (it != buckets_[bucket_idx].end()) {
-    return &(it->value);
+    return &(it->second);
   }
   return nullptr;
 }
@@ -316,7 +316,8 @@ void HashTableChaining<Key, Value>::rehash(size_t new_capacity) {
   // Reinsert all entries
   for (size_t i = 0; i < old_capacity; ++i) {
     for (auto& entry : old_buckets[i]) {
-      insert(std::move(entry.key), std::move(entry.value));
+      // Key is const in pair, so we copy it; value can be moved
+      insert(entry.first, std::move(entry.second));
       // Decrement size since insert increments it
       --size_;
     }

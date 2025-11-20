@@ -23,6 +23,12 @@
 
 #include "Hash_Table_Exception.hpp"
 
+// Forward declaration for HashMap friend
+namespace ads::associative {
+template <typename, typename, typename>
+class HashMap;
+}
+
 namespace ads::hash {
 
 /**
@@ -216,21 +222,16 @@ public:
   void reserve(size_t new_capacity);
 
 private:
+  // Friend declaration for HashMap to access internal structure
+  template <typename, typename, typename>
+  friend class ::ads::associative::HashMap;
+
   //================ INTERNAL STRUCTURES ================//
 
   /**
-   * @brief Entry in the hash table.
+   * @brief Entry is std::pair for structured bindings support
    */
-  struct Entry {
-    Key   key;
-    Value value;
-
-    Entry(const Key& k, const Value& v) : key(k), value(v) {}
-    Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
-
-    template <typename... Args>
-    Entry(const Key& k, Args&&... args) : key(k), value(std::forward<Args>(args)...) {}
-  };
+  using Entry = std::pair<const Key, Value>;
 
   /**
    * @brief A bucket is a list of entries.

@@ -220,6 +220,9 @@ target_sources(ads_lib
             include/ads/graphs/Graph_Adjacency_List.hpp
             include/ads/graphs/Graph_Adjacency_Matrix.hpp
 
+            # Associative structures
+            include/ads/associative/Hash_Map.hpp
+
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
     # appear in IDEs and are tracked for changes.
@@ -239,6 +242,7 @@ target_sources(ads_lib
         src/ads/hash/Hash_Table_Open_Addressing.tpp
         src/ads/graphs/Graph_Adjacency_List.tpp
         src/ads/graphs/Graph_Adjacency_Matrix.tpp
+        src/ads/associative/Hash_Map.tpp
 )
 
 # --------------------- Helper Function: Add Executable ---------------------- #
@@ -373,6 +377,11 @@ endif()
 # Graph Adjacency Matrix test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Graph_Adjacency_Matrix.cc")
     ads_add_executable(test_graph_adj_matrix src/main_Graph_Adjacency_Matrix.cc)
+endif()
+
+# HashMap test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Map.cc")
+    ads_add_executable(test_hashmap src/main_Hash_Map.cc)
 endif()
 
 # -------------------------- GoogleTest Integration -------------------------- #
