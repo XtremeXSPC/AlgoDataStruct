@@ -204,9 +204,9 @@ void test_graph_bfs() {
   GraphAdjacencyList<int> graph(false);
 
   // Create a more complex graph
-  //     0 --- 1 --- 2
-  //     |     |     |
-  //     3 --- 4     5
+  //     0 ---- 1 ---- 2
+  //     |     |       |
+  //     3 ---- 4      5
 
   auto v0 = graph.add_vertex(0);
   auto v1 = graph.add_vertex(1);
@@ -395,7 +395,7 @@ void test_graph_exception_handling() {
   }
 
   try {
-    graph.bfs(10);
+    auto result = graph.bfs(10);
     std::cout << "ERROR: Should have thrown exception for invalid start vertex\n";
   } catch (const GraphException& e) {
     std::cout << "Caught expected exception: " << e.what() << '\n';
@@ -407,7 +407,7 @@ void test_graph_exception_handling() {
 void test_graph_large_performance() {
   print_separator("Graph - Large Dataset Performance");
 
-  const size_t             N = 10000;
+  const size_t            N = 10000;
   GraphAdjacencyList<int> graph(false);
 
   std::cout << "Creating graph with " << N << " vertices...\n";
@@ -488,12 +488,13 @@ int main() {
     // Performance tests
     test_graph_large_performance();
 
-    std::cout << "\n╔═══════════════════════════════════════════════════════╗\n";
+    std::cout << "\n";
+    std::cout << "╔═══════════════════════════════════════════════════════╗\n";
     std::cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {
-    std::cerr << "\n❌ Test failed with exception: " << e.what() << '\n';
+    std::cerr << "\nTest failed with exception: " << e.what() << '\n';
     return 1;
   }
 

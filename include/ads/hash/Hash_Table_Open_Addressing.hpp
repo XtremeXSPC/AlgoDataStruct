@@ -328,11 +328,11 @@ private:
   void check_and_rehash();
 
   //================ DATA MEMBERS ================//
-  std::unique_ptr<Slot[]> table_;            ///< Array of slots
-  size_t                  capacity_;         ///< Number of slots
-  size_t                  size_;             ///< Number of occupied slots
-  float                   max_load_factor_;  ///< Threshold for rehashing
-  ProbingStrategy         strategy_;         ///< Probing strategy
+  std::unique_ptr<Slot[]> table_;           ///< Array of slots
+  size_t                  capacity_;        ///< Number of slots
+  size_t                  size_;            ///< Number of occupied slots
+  float                   max_load_factor_; ///< Threshold for rehashing
+  ProbingStrategy         strategy_;        ///< Probing strategy
 
   static constexpr size_t kInitialCapacity      = 16;
   static constexpr float  kDefaultMaxLoadFactor = 0.5f;

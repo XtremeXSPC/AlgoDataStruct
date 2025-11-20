@@ -117,7 +117,7 @@ public:
   auto operator=(PriorityQueue&& other) noexcept -> PriorityQueue&;
 
   // Disable copy constructor and copy assignment (can be enabled if needed)
-  PriorityQueue(const PriorityQueue&) = delete;
+  PriorityQueue(const PriorityQueue&)                    = delete;
   auto operator=(const PriorityQueue&) -> PriorityQueue& = delete;
 
   /**
@@ -267,9 +267,9 @@ private:
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
 };
 
-}  // namespace ads::queue
+} // namespace ads::queue
 
 #include "../../../src/ads/queues/Priority_Queue.tpp"
 
-#endif  // PRIORITY_QUEUE_HPP
+#endif // PRIORITY_QUEUE_HPP
 //===--------------------------------------------------------------------------===//

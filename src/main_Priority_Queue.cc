@@ -273,7 +273,7 @@ void test_top_k_elements() {
 
   // Find top 5 largest elements from a stream using a min-heap of size 5
   const int                          k = 5;
-  PriorityQueue<int, std::greater<>> min_heap;  // Min-heap
+  PriorityQueue<int, std::greater<>> min_heap; // Min-heap
 
   std::vector<int> stream = {12, 5, 787, 1, 23, 100, 34, 56, 89, 45, 678, 234, 98, 345, 567};
 
@@ -307,7 +307,7 @@ void test_top_k_elements() {
 void test_priority_queue_large() {
   print_separator("Priority Queue - Large Dataset Performance");
 
-  const int N = 100000;
+  const int          N = 100000;
   PriorityQueue<int> pq;
   pq.reserve(N);
 
@@ -368,7 +368,7 @@ void test_heapify_construction_performance() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║     PRIORITY QUEUE - COMPREHENSIVE TEST SUITE        ║\n";
+  std::cout << "║       PRIORITY QUEUE - COMPREHENSIVE TEST SUITE       ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {
@@ -391,12 +391,13 @@ int main() {
     test_priority_queue_large();
     test_heapify_construction_performance();
 
-    std::cout << "\n╔═══════════════════════════════════════════════════════╗\n";
+    std::cout << "\n";
+    std::cout << "╔═══════════════════════════════════════════════════════╗\n";
     std::cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {
-    std::cerr << "\n❌ Test failed with exception: " << e.what() << '\n';
+    std::cerr << "\nTest failed with exception: " << e.what() << '\n';
     return 1;
   }
 

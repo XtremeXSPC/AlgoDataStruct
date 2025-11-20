@@ -15,10 +15,10 @@
 #ifndef MIN_HEAP_HPP
 #define MIN_HEAP_HPP
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
-#include <algorithm>
 
 #include "Heap_Exception.hpp"
 
@@ -82,7 +82,7 @@ public:
   auto operator=(MinHeap&& other) noexcept -> MinHeap&;
 
   // Disable copy constructor and copy assignment
-  MinHeap(const MinHeap&) = delete;
+  MinHeap(const MinHeap&)                    = delete;
   auto operator=(const MinHeap&) -> MinHeap& = delete;
 
   //========== INSERTION OPERATIONS ==========//
@@ -187,8 +187,8 @@ private:
   size_t size_;     ///< Number of elements in the heap
   size_t capacity_; ///< Current capacity of the array
 
-  static constexpr size_t kInitialCapacity = 16;  ///< Default initial capacity
-  static constexpr size_t kGrowthFactor    = 2;   ///< Growth factor for reallocation
+  static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity
+  static constexpr size_t kGrowthFactor    = 2;  ///< Growth factor for reallocation
 
   //========== PRIVATE HELPER METHODS ==========//
 
@@ -240,9 +240,9 @@ private:
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
 };
 
-}  // namespace ads::heap
+} // namespace ads::heap
 
 #include "../../../src/ads/heaps/Min_Heap.tpp"
 
-#endif  // MIN_HEAP_HPP
+#endif // MIN_HEAP_HPP
 //===--------------------------------------------------------------------------===//

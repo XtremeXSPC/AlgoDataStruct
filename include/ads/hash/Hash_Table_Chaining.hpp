@@ -55,8 +55,7 @@ public:
    * @param initial_capacity Initial number of buckets (default: 16).
    * @param max_load_factor Maximum load factor before rehashing (default: 0.75).
    */
-  explicit HashTableChaining(size_t initial_capacity   = kInitialCapacity,
-                             float  max_load_factor = kDefaultMaxLoadFactor);
+  explicit HashTableChaining(size_t initial_capacity = kInitialCapacity, float max_load_factor = kDefaultMaxLoadFactor);
 
   /** @brief Destructor. Clears all entries and deallocates buckets. */
   ~HashTableChaining() = default;
@@ -261,8 +260,7 @@ private:
    * @param key The key to find.
    * @return Const iterator to the entry, or bucket.end() if not found.
    */
-  auto find_in_bucket(const Bucket& bucket, const Key& key) const ->
-      typename Bucket::const_iterator;
+  auto find_in_bucket(const Bucket& bucket, const Key& key) const -> typename Bucket::const_iterator;
 
   /**
    * @brief Rehashes the table to a new capacity.
@@ -281,9 +279,9 @@ private:
   size_t                    size_;            ///< Number of entries
   float                     max_load_factor_; ///< Threshold for rehashing
 
-  static constexpr size_t kInitialCapacity        = 16;
-  static constexpr float  kDefaultMaxLoadFactor   = 0.75f;
-  static constexpr size_t kGrowthFactor           = 2;
+  static constexpr size_t kInitialCapacity      = 16;
+  static constexpr float  kDefaultMaxLoadFactor = 0.75f;
+  static constexpr size_t kGrowthFactor         = 2;
 };
 
 // Include the implementation file for templates

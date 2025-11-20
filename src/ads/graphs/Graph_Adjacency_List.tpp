@@ -20,19 +20,18 @@ namespace ads::graph {
 //========== CONSTRUCTORS AND ASSIGNMENT ==========//
 
 template <typename VertexData, typename EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed)
-    : vertices_(), is_directed_(is_directed), num_edges_(0) {
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) : vertices_(), is_directed_(is_directed), num_edges_(0) {
 }
 
 template <typename VertexData, typename EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_t num_vertices, bool is_directed)
-    : vertices_(), is_directed_(is_directed), num_edges_(0) {
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_t num_vertices, bool is_directed) :
+    vertices_(), is_directed_(is_directed), num_edges_(0) {
   vertices_.reserve(num_vertices);
 }
 
 template <typename VertexData, typename EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(GraphAdjacencyList&& other) noexcept
-    : vertices_(std::move(other.vertices_)), is_directed_(other.is_directed_), num_edges_(other.num_edges_) {
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(GraphAdjacencyList&& other) noexcept :
+    vertices_(std::move(other.vertices_)), is_directed_(other.is_directed_), num_edges_(other.num_edges_) {
   other.num_edges_ = 0;
 }
 
@@ -358,8 +357,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_i
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited,
-                                                             std::vector<size_t>& result) const -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const
+    -> void {
   visited[vertex_id] = true;
   result.push_back(vertex_id);
 
@@ -371,5 +370,5 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, st
   }
 }
 
-}  // namespace ads::graph
+} // namespace ads::graph
 //===--------------------------------------------------------------------------===//

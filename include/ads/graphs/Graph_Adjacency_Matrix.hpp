@@ -70,21 +70,21 @@ public:
   auto operator=(GraphAdjacencyMatrix&& other) noexcept -> GraphAdjacencyMatrix&;
 
   // Disable copy
-  GraphAdjacencyMatrix(const GraphAdjacencyMatrix&) = delete;
+  GraphAdjacencyMatrix(const GraphAdjacencyMatrix&)                    = delete;
   auto operator=(const GraphAdjacencyMatrix&) -> GraphAdjacencyMatrix& = delete;
-  ~GraphAdjacencyMatrix() = default;
+  ~GraphAdjacencyMatrix()                                              = default;
 
   //========== VERTEX OPERATIONS ==========//
-  auto add_vertex(const VertexData& data) -> size_t;
-  auto add_vertex(VertexData&& data) -> size_t;
-  auto get_vertex_data(size_t vertex_id) -> VertexData&;
-  auto get_vertex_data(size_t vertex_id) const -> const VertexData&;
+  auto               add_vertex(const VertexData& data) -> size_t;
+  auto               add_vertex(VertexData&& data) -> size_t;
+  auto               get_vertex_data(size_t vertex_id) -> VertexData&;
+  auto               get_vertex_data(size_t vertex_id) const -> const VertexData&;
   [[nodiscard]] auto has_vertex(size_t vertex_id) const noexcept -> bool;
   [[nodiscard]] auto num_vertices() const noexcept -> size_t;
 
   //========== EDGE OPERATIONS ==========//
-  auto add_edge(size_t from, size_t to, EdgeWeight weight = EdgeWeight{}) -> void;
-  auto remove_edge(size_t from, size_t to) -> void;
+  auto               add_edge(size_t from, size_t to, EdgeWeight weight = EdgeWeight{}) -> void;
+  auto               remove_edge(size_t from, size_t to) -> void;
   [[nodiscard]] auto has_edge(size_t from, size_t to) const -> bool;
   [[nodiscard]] auto get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight>;
   [[nodiscard]] auto num_edges() const noexcept -> size_t;
@@ -97,7 +97,7 @@ public:
   //========== QUERY OPERATIONS ==========//
   [[nodiscard]] auto is_directed() const noexcept -> bool;
   [[nodiscard]] auto is_empty() const noexcept -> bool;
-  auto clear() -> void;
+  auto               clear() -> void;
 
   //========== TRAVERSAL ALGORITHMS ==========//
   [[nodiscard]] auto bfs(size_t start_vertex) const -> std::vector<size_t>;
@@ -107,19 +107,19 @@ public:
   [[nodiscard]] auto connected_components() const -> std::vector<std::vector<size_t>>;
 
 private:
-  std::vector<Vertex>                                      vertices_;   ///< Vector of vertices
-  std::vector<std::vector<std::optional<EdgeWeight>>>     matrix_;     ///< Adjacency matrix
-  bool                                                     is_directed_; ///< Graph type
-  size_t                                                   num_edges_;   ///< Edge count
+  std::vector<Vertex>                                 vertices_;    ///< Vector of vertices
+  std::vector<std::vector<std::optional<EdgeWeight>>> matrix_;      ///< Adjacency matrix
+  bool                                                is_directed_; ///< Graph type
+  size_t                                              num_edges_;   ///< Edge count
 
   auto validate_vertex(size_t vertex_id) const -> void;
   auto dfs_helper(size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const -> void;
   auto resize_matrix(size_t new_size) -> void;
 };
 
-}  // namespace ads::graph
+} // namespace ads::graph
 
 #include "../../../src/ads/graphs/Graph_Adjacency_Matrix.tpp"
 
-#endif  // GRAPH_ADJACENCY_MATRIX_HPP
+#endif // GRAPH_ADJACENCY_MATRIX_HPP
 //===--------------------------------------------------------------------------===//

@@ -128,7 +128,7 @@ public:
   auto operator=(GraphAdjacencyList&& other) noexcept -> GraphAdjacencyList&;
 
   // Disable copy constructor and copy assignment (can be enabled if needed)
-  GraphAdjacencyList(const GraphAdjacencyList&) = delete;
+  GraphAdjacencyList(const GraphAdjacencyList&)                    = delete;
   auto operator=(const GraphAdjacencyList&) -> GraphAdjacencyList& = delete;
 
   /**
@@ -339,7 +339,7 @@ public:
 private:
   //========== PRIVATE MEMBERS ==========//
 
-  std::vector<Vertex> vertices_;   ///< Vector of all vertices
+  std::vector<Vertex> vertices_;    ///< Vector of all vertices
   bool                is_directed_; ///< True if graph is directed
   size_t              num_edges_;   ///< Number of edges
 
@@ -361,9 +361,9 @@ private:
   auto dfs_helper(size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const -> void;
 };
 
-}  // namespace ads::graph
+} // namespace ads::graph
 
 #include "../../../src/ads/graphs/Graph_Adjacency_List.tpp"
 
-#endif  // GRAPH_ADJACENCY_LIST_HPP
+#endif // GRAPH_ADJACENCY_LIST_HPP
 //===--------------------------------------------------------------------------===//
