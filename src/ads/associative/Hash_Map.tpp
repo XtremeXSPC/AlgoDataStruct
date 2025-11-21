@@ -113,8 +113,8 @@ auto HashMap<Key, Value, Hash>::iterator::advance_to_next_bucket() -> void {
 
 // Const iterator implementation
 template <typename Key, typename Value, typename Hash>
-HashMap<Key, Value, Hash>::const_iterator::const_iterator(const iterator& it)
-    : map_(it.map_), bucket_idx_(it.bucket_idx_), list_it_(it.list_it_) {
+HashMap<Key, Value, Hash>::const_iterator::const_iterator(const iterator& it) :
+    map_(it.map_), bucket_idx_(it.bucket_idx_), list_it_(it.list_it_) {
 }
 
 template <typename Key, typename Value, typename Hash>

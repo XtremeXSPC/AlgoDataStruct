@@ -242,7 +242,7 @@ void test_custom_types() {
 
   table.insert("alice", Person("Alice", 30));
   table.insert("bob", Person("Bob", 25));
-  table.emplace("charlie", "Charlie", 35);
+  table.insert("charlie", Person("Charlie", 35));
 
   cout << "Accessing custom types:\n";
   cout << "  alice: " << table["alice"].name << ", age " << table["alice"].age << '\n';

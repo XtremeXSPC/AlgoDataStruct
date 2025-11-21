@@ -27,8 +27,8 @@ void test_hashmap_basic() {
 
   HashMap<std::string, int> scores;
 
-  scores["Alice"] = 95;
-  scores["Bob"]   = 87;
+  scores["Alice"]   = 95;
+  scores["Bob"]     = 87;
   scores["Charlie"] = 92;
 
   std::cout << "Created map with 3 entries\n";
@@ -159,7 +159,7 @@ void test_word_frequency() {
 
   for (const auto& [w, count] : frequency) {
     if (count > max_count) {
-      max_count      = count;
+      max_count     = count;
       most_frequent = w;
     }
   }
@@ -190,7 +190,7 @@ void test_hashmap_move_semantics() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║         HASH MAP - COMPREHENSIVE TEST SUITE           ║\n";
+  std::cout << "║          HASH MAP - COMPREHENSIVE TEST SUITE          ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {

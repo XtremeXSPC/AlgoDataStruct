@@ -119,7 +119,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
     // For undirected graphs, remove reverse edge
     if (!is_directed_ && from != to) {
       auto& adj_reverse = vertices_[to].adjacency;
-      auto  it_reverse  = std::find_if(adj_reverse.begin(), adj_reverse.end(), [from](const Edge& e) -> auto { return e.destination == from; });
+      auto  it_reverse =
+          std::find_if(adj_reverse.begin(), adj_reverse.end(), [from](const Edge& e) -> auto { return e.destination == from; });
 
       if (it_reverse != adj_reverse.end()) {
         adj_reverse.erase(it_reverse);

@@ -88,12 +88,11 @@ public:
 
     using BucketIterator = typename std::list<Entry>::iterator;
 
-    HashMap*        map_;
-    size_t          bucket_idx_;
-    BucketIterator  list_it_;
+    HashMap*       map_;
+    size_t         bucket_idx_;
+    BucketIterator list_it_;
 
-    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it)
-        : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
+    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -125,12 +124,11 @@ public:
 
     using BucketIterator = typename std::list<Entry>::const_iterator;
 
-    const HashMap*  map_;
-    size_t          bucket_idx_;
-    BucketIterator  list_it_;
+    const HashMap* map_;
+    size_t         bucket_idx_;
+    BucketIterator list_it_;
 
-    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it)
-        : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
+    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -286,8 +284,7 @@ private:
 
   // Helper to get bucket and list iterator for a key
   auto find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator>;
-  auto find_in_table(const Key& key) const
-      -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
+  auto find_in_table(const Key& key) const -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
 
   // Access to internal table structure (for iterators)
   friend class iterator;

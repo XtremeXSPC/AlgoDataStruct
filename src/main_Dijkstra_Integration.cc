@@ -79,8 +79,7 @@ std::vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size
 /**
  * @brief Print shortest paths from source to all cities
  */
-void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source,
-                          const std::vector<double>& distances) {
+void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const std::vector<double>& distances) {
   std::cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
   std::cout << "===========================================\n";
 
@@ -96,8 +95,8 @@ void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t 
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║   DIJKSTRA'S ALGORITHM - INTEGRATION TEST             ║\n";
-  std::cout << "║   Graph (Adjacency List) + Priority Queue            ║\n";
+  std::cout << "║        DIJKSTRA'S ALGORITHM - INTEGRATION TEST        ║\n";
+  std::cout << "║        Graph (Adjacency List) + Priority Queue        ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n\n";
 
   // Create a graph of European cities with distances in km
@@ -113,14 +112,14 @@ int main() {
   size_t zurich = cities.add_vertex(City("Zurich"));
 
   // Add roads (edges) with distances
-  cities.add_edge(rome, milan, 572);   // Rome - Milan
-  cities.add_edge(milan, paris, 851);  // Milan - Paris
-  cities.add_edge(milan, zurich, 277); // Milan - Zurich
-  cities.add_edge(paris, berlin, 1054);// Paris - Berlin
-  cities.add_edge(berlin, munich, 585);// Berlin - Munich
-  cities.add_edge(munich, vienna, 434);// Munich - Vienna
-  cities.add_edge(munich, zurich, 316);// Munich - Zurich
-  cities.add_edge(vienna, zurich, 598);// Vienna - Zurich
+  cities.add_edge(rome, milan, 572);    // Rome - Milan
+  cities.add_edge(milan, paris, 851);   // Milan - Paris
+  cities.add_edge(milan, zurich, 277);  // Milan - Zurich
+  cities.add_edge(paris, berlin, 1054); // Paris - Berlin
+  cities.add_edge(berlin, munich, 585); // Berlin - Munich
+  cities.add_edge(munich, vienna, 434); // Munich - Vienna
+  cities.add_edge(munich, zurich, 316); // Munich - Zurich
+  cities.add_edge(vienna, zurich, 598); // Vienna - Zurich
 
   std::cout << "European Cities Road Network:\n";
   std::cout << "-----------------------------\n";
@@ -128,7 +127,7 @@ int main() {
   std::cout << "Edges: " << cities.num_edges() << "\n\n";
 
   // Test Dijkstra from different starting cities
-  const std::vector<std::string> test_cities = {"Rome", "Paris", "Berlin"};
+  const std::vector<std::string> test_cities  = {"Rome", "Paris", "Berlin"};
   const std::vector<size_t>      test_indices = {rome, paris, berlin};
 
   for (size_t i = 0; i < test_cities.size(); ++i) {
@@ -144,7 +143,7 @@ int main() {
   std::cout << "Performance Test: Random Graph\n";
   std::cout << std::string(55, '=') << "\n";
 
-  const size_t num_vertices = 1000;
+  const size_t                     num_vertices = 1000;
   GraphAdjacencyList<City, double> large_graph(false);
 
   // Add vertices
@@ -160,8 +159,7 @@ int main() {
     }
   }
 
-  std::cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, "
-            << large_graph.num_edges() << " edges\n";
+  std::cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, " << large_graph.num_edges() << " edges\n";
 
   std::cout << "Running Dijkstra from vertex 0...\n";
   auto start_time = std::chrono::high_resolution_clock::now();
@@ -177,7 +175,8 @@ int main() {
   std::cout << "  To vertex 500: " << distances[500] << "\n";
   std::cout << "  To vertex 999: " << distances[999] << "\n";
 
-  std::cout << "\n╔═══════════════════════════════════════════════════════╗\n";
+  std::cout << "\n";
+  std::cout << "╔═══════════════════════════════════════════════════════╗\n";
   std::cout << "║       INTEGRATION TEST COMPLETED SUCCESSFULLY!        ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 

@@ -57,19 +57,14 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
-    iterator(Node* ptr = nullptr, SinglyLinkedList<T>* list = nullptr)
-        : node_ptr_(ptr), list_ptr_(list) {}
+    iterator(Node* ptr = nullptr, SinglyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
-    auto operator==(const iterator& other) const -> bool {
-      return node_ptr_ == other.node_ptr_;
-    }
-    auto operator!=(const iterator& other) const -> bool {
-      return node_ptr_ != other.node_ptr_;
-    }
+    auto operator==(const iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
+    auto operator!=(const iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
     Node*                node_ptr_;
@@ -89,19 +84,14 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    const_iterator(const Node* ptr = nullptr, const SinglyLinkedList<T>* list = nullptr)
-        : node_ptr_(ptr), list_ptr_(list) {}
+    const_iterator(const Node* ptr = nullptr, const SinglyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
-    auto operator==(const const_iterator& other) const -> bool {
-      return node_ptr_ == other.node_ptr_;
-    }
-    auto operator!=(const const_iterator& other) const -> bool {
-      return node_ptr_ != other.node_ptr_;
-    }
+    auto operator==(const const_iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
+    auto operator!=(const const_iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
     const Node*                node_ptr_;
@@ -140,7 +130,7 @@ public:
   auto operator=(SinglyLinkedList&& other) noexcept -> SinglyLinkedList&;
 
   // Disable copy constructor and copy assignment
-  SinglyLinkedList(const SinglyLinkedList&) = delete;
+  SinglyLinkedList(const SinglyLinkedList&)                    = delete;
   auto operator=(const SinglyLinkedList&) -> SinglyLinkedList& = delete;
 
   //========== INSERTION OPERATIONS ==========//
@@ -327,21 +317,21 @@ private:
    *          The unique_ptr provides automatic memory management.
    */
   struct Node {
-    T                      data;
+    T                     data;
     std::unique_ptr<Node> next;
 
     template <typename... Args>
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
   };
 
-  std::unique_ptr<Node> head_;  ///< Pointer to the first node (owns the node)
-  Node*                 tail_;  ///< Raw pointer to the last node (non-owning)
-  size_t                size_;  ///< Number of elements in the list
+  std::unique_ptr<Node> head_; ///< Pointer to the first node (owns the node)
+  Node*                 tail_; ///< Raw pointer to the last node (non-owning)
+  size_t                size_; ///< Number of elements in the list
 };
 
-}  // namespace ads::list
+} // namespace ads::list
 
 #include "../../../src/ads/lists/Singly_Linked_List.tpp"
 
-#endif  // SINGLY_LINKED_LIST_HPP
+#endif // SINGLY_LINKED_LIST_HPP
 //===--------------------------------------------------------------------------===//

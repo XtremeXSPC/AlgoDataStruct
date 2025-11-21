@@ -34,8 +34,7 @@ PriorityQueue<T, Compare>::PriorityQueue(std::initializer_list<T> init, Compare 
 }
 
 template <typename T, typename Compare>
-PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept
-    : heap_(std::move(other.heap_)), comp_(std::move(other.comp_)) {
+PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept : heap_(std::move(other.heap_)), comp_(std::move(other.comp_)) {
 }
 
 template <typename T, typename Compare>
@@ -165,9 +164,9 @@ auto PriorityQueue<T, Compare>::heapify_down(size_t index) -> void {
   const size_t heap_size = heap_.size();
 
   while (true) {
-    size_t largest       = index;
-    size_t left_index    = left_child(index);
-    size_t right_index   = right_child(index);
+    size_t largest     = index;
+    size_t left_index  = left_child(index);
+    size_t right_index = right_child(index);
 
     // Find the largest among node, left child, and right child
     if (left_index < heap_size && comp_(heap_[largest], heap_[left_index])) {
@@ -202,5 +201,5 @@ auto PriorityQueue<T, Compare>::build_heap() -> void {
   }
 }
 
-}  // namespace ads::queue
+} // namespace ads::queue
 //===--------------------------------------------------------------------------===//
