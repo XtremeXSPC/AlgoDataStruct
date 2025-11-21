@@ -10,6 +10,7 @@
  */
 //===--------------------------------------------------------------------------===//
 
+#include "ads/support/ConsoleColors.hpp"
 #include "ads/trees/B_Tree.hpp"
 
 #include <algorithm>
@@ -21,16 +22,6 @@
 
 using namespace ads::trees;
 using namespace std;
-
-// ANSI color codes
-#define RESET "\033[0m"
-#define RED "\033[31m"
-#define GREEN "\033[32m"
-#define YELLOW "\033[33m"
-#define BLUE "\033[34m"
-#define MAGENTA "\033[35m"
-#define CYAN "\033[36m"
-#define BOLD "\033[1m"
 
 // Test tracking
 int tests_passed = 0;
@@ -441,7 +432,7 @@ auto main() -> int {
   cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   if (tests_failed == 0) {
-    cout << GREEN << BOLD << "\n  ✓ All tests passed!\n" << RESET << '\n';
+    cout << GREEN << BOLD << "  ✓ All tests passed!\n" << RESET << '\n';
   }
 
   return tests_failed > 0 ? 1 : 0;

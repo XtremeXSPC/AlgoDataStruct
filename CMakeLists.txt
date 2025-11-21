@@ -426,9 +426,19 @@ if(ENABLE_TESTING)
 
     FetchContent_MakeAvailable(googletest)
 
-    # Add the test executable if test files exist
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
-        add_executable(runTests tests/Test_DoublyLinkedList.cpp)
+    # Collect available test sources
+    set(TEST_SOURCES "")
+    foreach(TEST_FILE
+            tests/Test_DoublyLinkedList.cpp
+            tests/test_Singly_Linked_List.cpp
+            tests/test_Binary_Search_Tree.cpp)
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_FILE}")
+            list(APPEND TEST_SOURCES "${TEST_FILE}")
+        endif()
+    endforeach()
+
+    if(TEST_SOURCES)
+        add_executable(runTests ${TEST_SOURCES})
         target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
         target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
 
