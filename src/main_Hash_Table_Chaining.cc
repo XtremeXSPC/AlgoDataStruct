@@ -2,7 +2,7 @@
 /**
  * @file main_Hash_Table_Chaining.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test program for Hash Table Chaining implementation
+ * @brief Comprehensive demo program for Hash Table Chaining implementation
  * @version 0.1
  * @date 2025-11-20
  *
@@ -40,8 +40,8 @@ void print_stats(const HashTableChaining<Key, Value>& table, const string& name)
 }
 
 // Test basic insertion and access
-void test_basic_operations() {
-  cout << "\n========== Test: Basic Operations ==========\n";
+void demo_basic_operations() {
+  cout << "\n========== Demo: Basic Operations ==========\n";
 
   HashTableChaining<int, string> table;
 
@@ -67,8 +67,8 @@ void test_basic_operations() {
 }
 
 // Test update existing keys
-void test_updates() {
-  cout << "\n========== Test: Updates ==========\n";
+void demo_updates() {
+  cout << "\n========== Demo: Updates ==========\n";
 
   HashTableChaining<string, int> table;
 
@@ -93,8 +93,8 @@ void test_updates() {
 }
 
 // Test operator[]
-void test_bracket_operator() {
-  cout << "\n========== Test: Operator[] ==========\n";
+void demo_bracket_operator() {
+  cout << "\n========== Demo: Operator[] ==========\n";
 
   HashTableChaining<string, int> table;
 
@@ -115,8 +115,8 @@ void test_bracket_operator() {
 }
 
 // Test find()
-void test_find() {
-  cout << "\n========== Test: Find ==========\n";
+void demo_find() {
+  cout << "\n========== Demo: Find ==========\n";
 
   HashTableChaining<int, string> table;
   table.insert(10, "ten");
@@ -141,8 +141,8 @@ void test_find() {
 }
 
 // Test erase
-void test_erase() {
-  cout << "\n========== Test: Erase ==========\n";
+void demo_erase() {
+  cout << "\n========== Demo: Erase ==========\n";
 
   HashTableChaining<int, string> table;
 
@@ -170,8 +170,8 @@ void test_erase() {
 }
 
 // Test rehashing
-void test_rehashing() {
-  cout << "\n========== Test: Rehashing ==========\n";
+void demo_rehashing() {
+  cout << "\n========== Demo: Rehashing ==========\n";
 
   HashTableChaining<int, int> table(4, 0.75f); // Small initial capacity
 
@@ -203,8 +203,8 @@ void test_rehashing() {
 }
 
 // Test reserve()
-void test_reserve() {
-  cout << "\n========== Test: Reserve ==========\n";
+void demo_reserve() {
+  cout << "\n========== Demo: Reserve ==========\n";
 
   HashTableChaining<int, string> table;
 
@@ -235,8 +235,8 @@ struct Person {
   bool operator==(const Person& other) const { return name == other.name && age == other.age; }
 };
 
-void test_custom_types() {
-  cout << "\n========== Test: Custom Types ==========\n";
+void demo_custom_types() {
+  cout << "\n========== Demo: Custom Types ==========\n";
 
   HashTableChaining<string, Person> table;
 
@@ -253,8 +253,8 @@ void test_custom_types() {
 }
 
 // Test collisions (intentional)
-void test_collisions() {
-  cout << "\n========== Test: Collision Handling ==========\n";
+void demo_collisions() {
+  cout << "\n========== Demo: Collision Handling ==========\n";
 
   // Use small capacity to force collisions
   HashTableChaining<int, string> table(4);
@@ -276,8 +276,8 @@ void test_collisions() {
 }
 
 // Test exception handling
-void test_exceptions() {
-  cout << "\n========== Test: Exception Handling ==========\n";
+void demo_exceptions() {
+  cout << "\n========== Demo: Exception Handling ==========\n";
 
   HashTableChaining<int, string> table;
   table.insert(1, "one");
@@ -303,8 +303,8 @@ void test_exceptions() {
 }
 
 // Test move semantics
-void test_move_semantics() {
-  cout << "\n========== Test: Move Semantics ==========\n";
+void demo_move_semantics() {
+  cout << "\n========== Demo: Move Semantics ==========\n";
 
   HashTableChaining<int, string> table1;
   table1.insert(1, "one");
@@ -329,8 +329,8 @@ void test_move_semantics() {
 }
 
 // Test clear()
-void test_clear() {
-  cout << "\n========== Test: Clear ==========\n";
+void demo_clear() {
+  cout << "\n========== Demo: Clear ==========\n";
 
   HashTableChaining<int, int> table;
   for (int i = 0; i < 100; ++i) {
@@ -352,8 +352,8 @@ void test_clear() {
 }
 
 // Performance comparison with std::unordered_map
-void test_performance() {
-  cout << "\n========== Test: Performance Comparison ==========\n";
+void demo_performance() {
+  cout << "\n========== Demo: Performance Comparison ==========\n";
 
   const int N = 100000;
 
@@ -393,27 +393,27 @@ void test_performance() {
 
 int main() {
   cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║      HASH TABLE CHAINING COMPREHENSIVE TEST SUITE      ║\n";
+  cout << "║      HASH TABLE CHAINING COMPREHENSIVE DEMO PROGRAM      ║\n";
   cout << "╚════════════════════════════════════════════════════════╝\n";
 
   try {
-    test_basic_operations();
-    test_updates();
-    test_bracket_operator();
-    test_find();
-    test_erase();
-    test_rehashing();
-    test_reserve();
-    test_custom_types();
-    test_collisions();
-    test_exceptions();
-    test_move_semantics();
-    test_clear();
-    test_performance();
+    demo_basic_operations();
+    demo_updates();
+    demo_bracket_operator();
+    demo_find();
+    demo_erase();
+    demo_rehashing();
+    demo_reserve();
+    demo_custom_types();
+    demo_collisions();
+    demo_exceptions();
+    demo_move_semantics();
+    demo_clear();
+    demo_performance();
 
     cout << "\n";
     cout << "╔════════════════════════════════════════════════════════╗\n";
-    cout << "║            ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
+    cout << "║            ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
     cout << "╚════════════════════════════════════════════════════════╝\n";
 
     return 0;

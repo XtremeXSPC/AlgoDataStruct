@@ -42,8 +42,8 @@ void print_tree(const BinarySearchTree<T>& tree, const string& name) {
 }
 
 // Test basic insertion and traversals
-void test_basic_operations() {
-  cout << "\n========== Test: Basic Operations ==========\n";
+void demo_basic_operations() {
+  cout << "\n========== Demo: Basic Operations ==========\n";
 
   BinarySearchTree<int> bst;
 
@@ -82,8 +82,8 @@ void test_basic_operations() {
 }
 
 // Test search operations
-void test_search_operations() {
-  cout << "\n========== Test: Search Operations ==========\n";
+void demo_search_operations() {
+  cout << "\n========== Demo: Search Operations ==========\n";
 
   BinarySearchTree<int> bst;
 
@@ -107,7 +107,7 @@ void test_search_operations() {
 
   // Test successor and predecessor
   cout << "\nTesting successor and predecessor:\n";
-  int        test_val = 40;
+  int        demo_val = 40;
   const int* succ     = bst.successor(test_val);
   const int* pred     = bst.predecessor(test_val);
 
@@ -122,8 +122,8 @@ void test_search_operations() {
 }
 
 // Test removal operations
-void test_removal() {
-  cout << "\n========== Test: Removal Operations ==========\n";
+void demo_removal() {
+  cout << "\n========== Demo: Removal Operations ==========\n";
 
   BinarySearchTree<int> bst;
 
@@ -162,8 +162,8 @@ void test_removal() {
 }
 
 // Test iterator functionality
-void test_iterators() {
-  cout << "\n========== Test: Iterators ==========\n";
+void demo_iterators() {
+  cout << "\n========== Demo: Iterators ==========\n";
 
   BinarySearchTree<int> bst;
 
@@ -201,8 +201,8 @@ void test_iterators() {
 }
 
 // Test with custom types
-void test_custom_types() {
-  cout << "\n========== Test: Custom Types ==========\n";
+void demo_custom_types() {
+  cout << "\n========== Demo: Custom Types ==========\n";
 
   struct Person {
     string name;
@@ -234,8 +234,8 @@ void test_custom_types() {
 }
 
 // Test move semantics
-void test_move_semantics() {
-  cout << "\n========== Test: Move Semantics ==========\n";
+void demo_move_semantics() {
+  cout << "\n========== Demo: Move Semantics ==========\n";
 
   BinarySearchTree<int> bst1;
   bst1.insert(50);
@@ -268,8 +268,8 @@ void test_move_semantics() {
 }
 
 // Test exception handling
-void test_exceptions() {
-  cout << "\n========== Test: Exception Handling ==========\n";
+void demo_exceptions() {
+  cout << "\n========== Demo: Exception Handling ==========\n";
 
   BinarySearchTree<int> empty_tree;
 
@@ -293,8 +293,8 @@ void test_exceptions() {
 }
 
 // Test edge cases
-void test_edge_cases() {
-  cout << "\n========== Test: Edge Cases ==========\n";
+void demo_edge_cases() {
+  cout << "\n========== Demo: Edge Cases ==========\n";
 
   // Single element tree
   BinarySearchTree<int> single;
@@ -332,14 +332,14 @@ auto main() -> int {
     cout << "Binary Search Tree - Comprehensive Tests\n";
     cout << "========================================\n";
 
-    test_basic_operations();
-    test_search_operations();
-    test_removal();
-    test_iterators();
-    test_custom_types();
-    test_move_semantics();
-    test_exceptions();
-    test_edge_cases();
+    demo_basic_operations();
+    demo_search_operations();
+    demo_removal();
+    demo_iterators();
+    demo_custom_types();
+    demo_move_semantics();
+    demo_exceptions();
+    demo_edge_cases();
 
     cout << "\n========================================\n";
     cout << "All Tests Completed Successfully!\n";

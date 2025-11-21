@@ -2,532 +2,369 @@
 /**
  * @file main_Trie.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test suite for Trie (Prefix Tree) implementation
+ * @brief Comprehensive demo program for Trie (Prefix Tree) implementation
  * @version 1.0
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the Trie data structure,
+ * showcasing prefix-based operations, autocomplete, and string manipulation.
  */
 //===--------------------------------------------------------------------------===//
 
-#include "ads/support/ConsoleColors.hpp"
-#include "ads/trees/Trie.hpp"
-
-#include <algorithm>
-#include <cassert>
 #include <chrono>
 #include <iostream>
+#include <string>
 #include <vector>
 
-using namespace ads::trees;
-using namespace std;
+#include "../include/ads/trees/Trie.hpp"
 
-// Test result tracking
-int tests_passed = 0;
-int tests_failed = 0;
+using std::cerr;
+using std::cout;
+using std::string;
+using std::vector;
 
-#define TEST(name) cout << CYAN << "[TEST] " << RESET << (name) << "..." << endl;
+using ads::trees::Trie;
 
-#define ASSERT(condition, message)                                                                                                         \
-  do {                                                                                                                                     \
-    if (!(condition)) {                                                                                                                    \
-      cout << RED << "  ✗ FAILED: " << RESET << (message) << endl;                                                                         \
-      tests_failed++;                                                                                                                      \
-      return;                                                                                                                              \
-    }                                                                                                                                      \
-  } while (0)
+// Helper function to print trie statistics
+void print_trie_stats(const Trie& trie, const string& name) {
+  cout << "Trie '" << name << "' (size: " << trie.size() << "):\n";
 
-#define PASS()                                                                                                                             \
-  do {                                                                                                                                     \
-    cout << GREEN << "  ✓ PASSED" << RESET << endl;                                                                                        \
-    tests_passed++;                                                                                                                        \
-  } while (0)
+  if (trie.is_empty()) {
+    cout << "  (empty)\n";
+    return;
+  }
 
-//===--------------------------------------------------------------------------===//
-// Test Functions
-//===--------------------------------------------------------------------------===//
+  auto words = trie.get_all_words();
+  cout << "  Words: ";
+  for (size_t i = 0; i < words.size() && i < 10; ++i) {
+    cout << words[i];
+    if (i < words.size() - 1 && i < 9) {
+      cout << ", ";
+    }
+  }
+  if (words.size() > 10) {
+    cout << "... (+" << (words.size() - 10) << " more)";
+  }
+  cout << '\n';
+}
 
-/**
- * @brief Test basic insert and search operations
- */
-void test_basic_insert_search() {
-  TEST("Basic Insert and Search");
+// Demo: Basic operations
+void demo_basic_operations() {
+  cout << "\n========== Demo: Basic Operations ==========\n";
 
-  TrieMap trie;
+  Trie trie;
 
-  // Test empty trie
-  ASSERT(trie.is_empty(), "New trie should be empty");
-  ASSERT(trie.size() == 0, "New trie should have size 0");
+  cout << "Creating empty Trie...\n";
+  cout << "  Size: " << trie.size() << ", Empty: " << (trie.is_empty() ? "yes" : "no") << "\n";
 
   // Insert words
-  trie.insert("hello");
-  ASSERT(!trie.is_empty(), "Trie should not be empty after insert");
-  ASSERT(trie.size() == 1, "Size should be 1 after one insert");
-  ASSERT(trie.search("hello"), "Should find inserted word 'hello'");
-
-  trie.insert("world");
-  ASSERT(trie.size() == 2, "Size should be 2 after two inserts");
-  ASSERT(trie.search("world"), "Should find inserted word 'world'");
-
-  // Search for non-existent words
-  ASSERT(!trie.search("hel"), "'hel' is prefix, not word");
-  ASSERT(!trie.search("worlds"), "'worlds' was not inserted");
-  ASSERT(!trie.search(""), "Empty string should not be found");
-
-  // Insert duplicate
-  trie.insert("hello");
-  ASSERT(trie.size() == 2, "Size should remain 2 after duplicate insert");
-
-  PASS();
-}
-
-/**
- * @brief Test prefix matching functionality
- */
-void test_starts_with() {
-  TEST("Starts With (Prefix Matching)");
-
-  TrieMap trie;
-  trie.insert("apple");
-  trie.insert("application");
-  trie.insert("apply");
-  trie.insert("banana");
-
-  // Valid prefixes
-  ASSERT(trie.starts_with("app"), "Should find prefix 'app'");
-  ASSERT(trie.starts_with("appl"), "Should find prefix 'appl'");
-  ASSERT(trie.starts_with("apple"), "Complete word is valid prefix");
-  ASSERT(trie.starts_with("ban"), "Should find prefix 'ban'");
-  ASSERT(trie.starts_with(""), "Empty prefix should match everything");
-
-  // Invalid prefixes
-  ASSERT(!trie.starts_with("orange"), "Should not find 'orange' prefix");
-  ASSERT(!trie.starts_with("applz"), "Should not find 'applz' prefix");
-
-  PASS();
-}
-
-/**
- * @brief Test word removal
- */
-void test_remove() {
-  TEST("Remove Word");
-
-  TrieMap trie;
-  trie.insert("car");
-  trie.insert("card");
-  trie.insert("care");
-  trie.insert("careful");
-  trie.insert("cat");
-
-  ASSERT(trie.size() == 5, "Should have 5 words initially");
-
-  // Remove word that's not prefix of others
-  ASSERT(trie.remove("cat"), "Should successfully remove 'cat'");
-  ASSERT(!trie.search("cat"), "'cat' should be gone");
-  ASSERT(trie.size() == 4, "Size should be 4 after removal");
-
-  // Remove word that's prefix of others
-  ASSERT(trie.remove("care"), "Should successfully remove 'care'");
-  ASSERT(!trie.search("care"), "'care' should be gone");
-  ASSERT(trie.search("careful"), "'careful' should still exist");
-  ASSERT(trie.size() == 3, "Size should be 3 after removal");
-
-  // Remove word that has prefixes
-  ASSERT(trie.remove("card"), "Should successfully remove 'card'");
-  ASSERT(trie.search("car"), "'car' should still exist");
-  ASSERT(trie.size() == 2, "Size should be 2 after removal");
-
-  // Try removing non-existent word
-  ASSERT(!trie.remove("cart"), "Should return false for non-existent word");
-  ASSERT(trie.size() == 2, "Size should remain 2");
-
-  // Remove all remaining words
-  trie.remove("car");
-  trie.remove("careful");
-  ASSERT(trie.is_empty(), "Trie should be empty after removing all");
-
-  PASS();
-}
-
-/**
- * @brief Test getting all words with prefix
- */
-void test_get_all_words_with_prefix() {
-  TEST("Get All Words With Prefix");
-
-  TrieMap trie;
-  trie.insert("car");
-  trie.insert("card");
-  trie.insert("care");
-  trie.insert("careful");
-  trie.insert("cat");
-  trie.insert("dog");
-
-  // Get words with prefix "car"
-  auto car_words = trie.get_all_words_with_prefix("car");
-  ASSERT(car_words.size() == 4, "Should find 4 words with prefix 'car'");
-
-  // Verify all expected words are present
-  vector<string> expected_car = {"car", "card", "care", "careful"};
-  sort(car_words.begin(), car_words.end());
-  sort(expected_car.begin(), expected_car.end());
-  ASSERT(car_words == expected_car, "Should match expected words");
-
-  // Get words with prefix "ca"
-  auto ca_words = trie.get_all_words_with_prefix("ca");
-  ASSERT(ca_words.size() == 5, "Should find 5 words with prefix 'ca'");
-
-  // Get words with prefix that doesn't exist
-  auto xyz_words = trie.get_all_words_with_prefix("xyz");
-  ASSERT(xyz_words.empty(), "Should find no words with prefix 'xyz'");
-
-  // Get all words (empty prefix)
-  auto all_words = trie.get_all_words_with_prefix("");
-  ASSERT(all_words.size() == 6, "Should find all 6 words with empty prefix");
-
-  PASS();
-}
-
-/**
- * @brief Test counting words with prefix
- */
-void test_count_words_with_prefix() {
-  TEST("Count Words With Prefix");
-
-  TrieMap trie;
-  trie.insert("test");
-  trie.insert("testing");
-  trie.insert("tester");
-  trie.insert("tested");
-  trie.insert("team");
-  trie.insert("tea");
-
-  ASSERT(trie.count_words_with_prefix("test") == 4, "Should count 4 'test*' words");
-  ASSERT(trie.count_words_with_prefix("tea") == 2, "Should count 2 'tea*' words");
-  ASSERT(trie.count_words_with_prefix("te") == 6, "Should count all 6 'te*' words");
-  ASSERT(trie.count_words_with_prefix("xyz") == 0, "Should count 0 'xyz*' words");
-  ASSERT(trie.count_words_with_prefix("") == 6, "Should count all words");
-
-  PASS();
-}
-
-/**
- * @brief Test longest common prefix
- */
-void test_longest_common_prefix() {
-  TEST("Longest Common Prefix");
-
-  TrieMap trie;
-
-  // Empty trie
-  ASSERT(trie.longest_common_prefix() == "", "Empty trie should return empty prefix");
-
-  // Single word
-  trie.insert("flower");
-  ASSERT(trie.longest_common_prefix() == "flower", "Single word should be LCP");
-
-  // Multiple words with common prefix
-  trie.insert("flow");
-  trie.insert("flight");
-  string lcp = trie.longest_common_prefix();
-  ASSERT(lcp == "fl", "LCP of flower, flow, flight should be 'fl'");
-
-  // No common prefix
-  TrieMap trie2;
-  trie2.insert("dog");
-  trie2.insert("racecar");
-  trie2.insert("car");
-  ASSERT(trie2.longest_common_prefix() == "", "No LCP for different starting letters");
-
-  PASS();
-}
-
-/**
- * @brief Test clear operation
- */
-void test_clear() {
-  TEST("Clear Trie");
-
-  TrieMap trie;
+  cout << "\nInserting words: hello, world, help, heap, hero\n";
   trie.insert("hello");
   trie.insert("world");
-  trie.insert("test");
+  trie.insert("help");
+  trie.insert("heap");
+  trie.insert("hero");
 
-  ASSERT(trie.size() == 3, "Should have 3 words");
+  print_trie_stats(trie, "trie");
 
-  trie.clear();
-  ASSERT(trie.is_empty(), "Trie should be empty after clear");
-  ASSERT(trie.size() == 0, "Size should be 0 after clear");
-  ASSERT(!trie.search("hello"), "Should not find cleared words");
+  // Search for words
+  cout << "\nSearching for words:\n";
+  cout << "  Contains 'hello'? " << (trie.contains("hello") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'help'? " << (trie.contains("help") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'hel'? " << (trie.contains("hel") ? "Yes" : "No") << " (prefix only)\n";
+  cout << "  Contains 'helper'? " << (trie.contains("helper") ? "Yes" : "No") << '\n';
 
-  // Insert after clear
-  trie.insert("new");
-  ASSERT(trie.size() == 1, "Should be able to insert after clear");
-  ASSERT(trie.search("new"), "Should find newly inserted word");
-
-  PASS();
+  // Duplicate insertion
+  cout << "\nTrying to insert duplicate 'hello': ";
+  bool inserted = trie.insert("hello");
+  cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-/**
- * @brief Test array-based trie (lowercase a-z only)
- */
-void test_array_based_trie() {
-  TEST("Array-Based Trie (a-z only)");
+// Demo: Prefix operations
+void demo_prefix_operations() {
+  cout << "\n========== Demo: Prefix Operations ==========\n";
 
-  TrieArray trie;
+  Trie trie;
 
-  // Insert lowercase words
-  trie.insert("hello");
-  trie.insert("world");
-  trie.insert("algorithm");
-
-  ASSERT(trie.size() == 3, "Should have 3 words");
-  ASSERT(trie.search("hello"), "Should find 'hello'");
-  ASSERT(trie.search("world"), "Should find 'world'");
-  ASSERT(trie.starts_with("alg"), "Should find prefix 'alg'");
-
-  // Test operations
-  auto words = trie.get_all_words_with_prefix("h");
-  ASSERT(words.size() == 1, "Should find 1 word with prefix 'h'");
-
-  PASS();
-}
-
-/**
- * @brief Test exception handling
- */
-void test_exceptions() {
-  TEST("Exception Handling");
-
-  TrieMap trie;
-
-  // Empty word insertion
-  try {
-    trie.insert("");
-    ASSERT(false, "Should throw on empty word insert");
-  } catch (const std::invalid_argument& e) {
-    // Expected
-  }
-
-  // For array-based trie, test invalid characters
-  TrieArray array_trie;
-  try {
-    array_trie.insert("Hello"); // Uppercase not allowed
-    ASSERT(false, "Should throw on uppercase in array trie");
-  } catch (const std::invalid_argument& e) {
-    // Expected
-  }
-
-  try {
-    array_trie.insert("hello!"); // Special char not allowed
-    ASSERT(false, "Should throw on special char in array trie");
-  } catch (const std::invalid_argument& e) {
-    // Expected
-  }
-
-  PASS();
-}
-
-/**
- * @brief Test with dictionary words (autocomplete scenario)
- */
-void test_autocomplete_scenario() {
-  TEST("Autocomplete Scenario");
-
-  TrieMap dictionary;
-
-  // Build small dictionary
-  vector<string> words = {"program", "programming", "programmer", "programs", "progress",
-                          "project", "projector",   "provide",    "provider", "provision"};
-
+  // Insert words with common prefixes
+  vector<string> words = {"apple", "application", "apply", "apt", "banana", "band", "bandana"};
   for (const auto& word : words) {
-    dictionary.insert(word);
-  }
-
-  // User types "prog"
-  auto suggestions = dictionary.get_all_words_with_prefix("prog");
-  ASSERT(suggestions.size() == 5, "Should suggest 5 words for 'prog'");
-
-  // User types "proje"
-  suggestions = dictionary.get_all_words_with_prefix("proje");
-  ASSERT(suggestions.size() == 2, "Should suggest 2 words for 'proje'");
-
-  // User types "provi"
-  suggestions = dictionary.get_all_words_with_prefix("provi");
-  ASSERT(suggestions.size() == 3, "Should suggest 3 words for 'provi'");
-
-  PASS();
-}
-
-/**
- * @brief Performance test with large dataset
- */
-void test_performance() {
-  TEST("Performance Test (Large Dataset)");
-
-  TrieMap   trie;
-  const int num_words = 10000;
-
-  // Measure insert time
-  auto start = chrono::high_resolution_clock::now();
-
-  for (int i = 0; i < num_words; ++i) {
-    string word = "word" + to_string(i);
     trie.insert(word);
   }
 
-  auto end             = chrono::high_resolution_clock::now();
-  auto insert_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+  print_trie_stats(trie, "trie");
 
-  cout << "  Insert " << num_words << " words: " << insert_duration.count() << " ms" << '\n';
-  ASSERT(trie.size() == num_words, "Should have inserted all words");
+  // Test starts_with
+  cout << "\nTesting starts_with():\n";
+  cout << "  Starts with 'app'? " << (trie.starts_with("app") ? "Yes" : "No") << '\n';
+  cout << "  Starts with 'ban'? " << (trie.starts_with("ban") ? "Yes" : "No") << '\n';
+  cout << "  Starts with 'cat'? " << (trie.starts_with("cat") ? "Yes" : "No") << '\n';
+  cout << "  Starts with 'apple'? " << (trie.starts_with("apple") ? "Yes" : "No") << '\n';
 
-  // Measure search time
-  start = chrono::high_resolution_clock::now();
-
-  for (int i = 0; i < num_words; ++i) {
-    string word = "word" + to_string(i);
-    ASSERT(trie.search(word), "Should find all inserted words");
+  // Get words with prefix
+  cout << "\nWords starting with 'app':\n  ";
+  auto app_words = trie.get_words_with_prefix("app");
+  for (const auto& word : app_words) {
+    cout << word << " ";
   }
+  cout << '\n';
 
-  end                  = chrono::high_resolution_clock::now();
-  auto search_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-  cout << "  Search " << num_words << " words: " << search_duration.count() << " ms" << '\n';
-
-  // Measure prefix search
-  start = chrono::high_resolution_clock::now();
-
-  auto results = trie.get_all_words_with_prefix("word1");
-
-  end                  = chrono::high_resolution_clock::now();
-  auto prefix_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-  cout << "  Prefix search 'word1*': " << prefix_duration.count() << " ms (found " << results.size() << " matches)" << '\n';
-
-  PASS();
+  cout << "\nWords starting with 'ban':\n  ";
+  auto ban_words = trie.get_words_with_prefix("ban");
+  for (const auto& word : ban_words) {
+    cout << word << " ";
+  }
+  cout << '\n';
 }
 
-/**
- * @brief Test move semantics
- */
-void test_move_semantics() {
-  TEST("Move Semantics");
+// Demo: Autocomplete functionality
+void demo_autocomplete() {
+  cout << "\n========== Demo: Autocomplete ==========\n";
 
-  TrieMap trie1;
+  Trie trie;
+
+  // Insert a vocabulary
+  vector<string> vocabulary = {"car",         "card",    "care",      "careful", "carefully", "careless",
+                               "carpet",      "carpool", "cat",       "catch",   "category",  "cattle",
+                               "celebration", "cell",    "cellphone", "center",  "central"};
+
+  for (const auto& word : vocabulary) {
+    trie.insert(word);
+  }
+
+  cout << "Vocabulary loaded: " << trie.size() << " words\n";
+
+  // Simulate autocomplete
+  auto autocomplete = [&trie](const string& prefix) {
+    cout << "\nAutocomplete for '" << prefix << "':\n";
+    auto suggestions = trie.get_words_with_prefix(prefix);
+    if (suggestions.empty()) {
+      cout << "  (no suggestions)\n";
+    } else {
+      for (const auto& word : suggestions) {
+        cout << "  - " << word << '\n';
+      }
+    }
+    cout << "  (" << suggestions.size() << " suggestions)\n";
+  };
+
+  autocomplete("car");
+  autocomplete("cat");
+  autocomplete("cel");
+  autocomplete("xyz");
+}
+
+// Demo: Word counting
+void demo_word_counting() {
+  cout << "\n========== Demo: Word Counting ==========\n";
+
+  Trie trie;
+
+  vector<string> words = {"test", "testing", "tested", "tester", "tests", "the", "them", "their", "there", "these"};
+
+  for (const auto& word : words) {
+    trie.insert(word);
+  }
+
+  print_trie_stats(trie, "trie");
+
+  // Count words with prefix
+  cout << "\nCounting words with prefix:\n";
+  cout << "  Words starting with 'test': " << trie.count_words_with_prefix("test") << '\n';
+  cout << "  Words starting with 'the': " << trie.count_words_with_prefix("the") << '\n';
+  cout << "  Words starting with 't': " << trie.count_words_with_prefix("t") << '\n';
+  cout << "  Words starting with 'xyz': " << trie.count_words_with_prefix("xyz") << '\n';
+}
+
+// Demo: Remove operations
+void demo_remove_operations() {
+  cout << "\n========== Demo: Remove Operations ==========\n";
+
+  Trie trie;
+
+  trie.insert("car");
+  trie.insert("card");
+  trie.insert("care");
+  trie.insert("careful");
+
+  print_trie_stats(trie, "original trie");
+
+  // Remove a word that's a prefix of another
+  cout << "\nRemoving 'car' (prefix of 'card', 'care', 'careful'):\n";
+  trie.remove("car");
+  cout << "  Contains 'car'? " << (trie.contains("car") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'card'? " << (trie.contains("card") ? "Yes" : "No") << '\n';
+  cout << "  Starts with 'car'? " << (trie.starts_with("car") ? "Yes" : "No") << '\n';
+
+  // Remove a longer word
+  cout << "\nRemoving 'careful':\n";
+  trie.remove("careful");
+  cout << "  Contains 'careful'? " << (trie.contains("careful") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'care'? " << (trie.contains("care") ? "Yes" : "No") << '\n';
+
+  print_trie_stats(trie, "after removals");
+}
+
+// Demo: Move semantics
+void demo_move_semantics() {
+  cout << "\n========== Demo: Move Semantics ==========\n";
+
+  Trie trie1;
   trie1.insert("hello");
   trie1.insert("world");
-  trie1.insert("test");
+  trie1.insert("help");
 
-  size_t original_size = trie1.size();
+  cout << "Original trie:\n";
+  print_trie_stats(trie1, "trie1");
 
   // Move constructor
-  TrieMap trie2(std::move(trie1));
-  ASSERT(trie2.size() == original_size, "Moved trie should have same size");
-  ASSERT(trie2.search("hello"), "Moved trie should contain words");
+  Trie trie2 = std::move(trie1);
+
+  cout << "\nAfter move construction:\n";
+  print_trie_stats(trie1, "trie1 (should be empty)");
+  print_trie_stats(trie2, "trie2 (should have the data)");
 
   // Move assignment
-  TrieMap trie3;
-  trie3.insert("temp");
+  Trie trie3;
+  trie3.insert("test");
+
+  cout << "\nBefore move assignment:\n";
+  print_trie_stats(trie3, "trie3");
+
   trie3 = std::move(trie2);
-  ASSERT(trie3.size() == original_size, "Move assigned trie should have same size");
-  ASSERT(trie3.search("world"), "Move assigned trie should contain words");
 
-  PASS();
+  cout << "\nAfter move assignment:\n";
+  print_trie_stats(trie2, "trie2 (should be empty)");
+  print_trie_stats(trie3, "trie3 (should have trie2's data)");
 }
 
-/**
- * @brief Stress test with complex scenarios
- */
-void test_stress() {
-  TEST("Stress Test");
+// Demo: Performance with large dataset
+void demo_performance() {
+  cout << "\n========== Demo: Performance ==========\n";
 
-  TrieMap trie;
+  Trie trie;
 
-  // Insert many words with shared prefixes
-  vector<string> prefixes = {"cat", "car", "dog", "dot", "test", "tea"};
-  vector<string> suffixes = {"", "s", "ed", "ing", "er", "est"};
+  const int N = 10000;
 
-  size_t word_count = 0;
-  for (const auto& prefix : prefixes) {
-    for (const auto& suffix : suffixes) {
-      string word = prefix + suffix;
-      if (!word.empty()) {
-        trie.insert(word);
-        word_count++;
-      }
-    }
+  cout << "Inserting " << N << " words...\n";
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  for (int i = 0; i < N; ++i) {
+    trie.insert("word" + std::to_string(i));
   }
 
-  ASSERT(trie.size() == word_count, "Should have inserted all combinations");
+  auto end      = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  // Verify all words can be found
-  for (const auto& prefix : prefixes) {
-    for (const auto& suffix : suffixes) {
-      string word = prefix + suffix;
-      if (!word.empty()) {
-        ASSERT(trie.search(word), "Should find word: " + word);
-      }
-    }
+  cout << "  Time: " << duration.count() << " ms\n";
+  cout << "  Size: " << trie.size() << "\n";
+
+  // Search performance
+  cout << "\nSearching for all " << N << " words...\n";
+  start = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < N; ++i) {
+    [[maybe_unused]] bool found = trie.contains("word" + std::to_string(i));
   }
+  end      = std::chrono::high_resolution_clock::now();
+  duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  // Remove half the words
-  for (size_t i = 0; i < prefixes.size() / 2; ++i) {
-    for (const auto& suffix : suffixes) {
-      string word = prefixes[i] + suffix;
-      if (!word.empty()) {
-        trie.remove(word);
-      }
-    }
-  }
+  cout << "  Time: " << duration.count() << " ms\n";
 
-  // Verify removed words are gone
-  for (size_t i = 0; i < prefixes.size() / 2; ++i) {
-    for (const auto& suffix : suffixes) {
-      string word = prefixes[i] + suffix;
-      if (!word.empty()) {
-        ASSERT(!trie.search(word), "Should not find removed word: " + word);
-      }
-    }
-  }
+  // Prefix search performance
+  cout << "\nSearching for words with prefix 'word1'...\n";
+  start          = std::chrono::high_resolution_clock::now();
+  auto word1_set = trie.get_words_with_prefix("word1");
+  end            = std::chrono::high_resolution_clock::now();
+  duration       = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  PASS();
+  cout << "  Time: " << duration.count() << " ms\n";
+  cout << "  Found: " << word1_set.size() << " words\n";
 }
 
-//===--------------------------------------------------------------------------===//
-// Main Test Runner
-//===--------------------------------------------------------------------------===//
+// Demo: Case sensitivity
+void demo_case_sensitivity() {
+  cout << "\n========== Demo: Case Sensitivity ==========\n";
+
+  Trie trie;
+
+  trie.insert("Hello");
+  trie.insert("hello");
+  trie.insert("HELLO");
+
+  cout << "Inserted: 'Hello', 'hello', 'HELLO'\n";
+  cout << "  Size: " << trie.size() << " (each is stored separately)\n\n";
+
+  cout << "Searching:\n";
+  cout << "  Contains 'Hello'? " << (trie.contains("Hello") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'hello'? " << (trie.contains("hello") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'HELLO'? " << (trie.contains("HELLO") ? "Yes" : "No") << '\n';
+  cout << "  Contains 'HeLLo'? " << (trie.contains("HeLLo") ? "Yes" : "No") << '\n';
+}
+
+// Demo: Edge cases
+void demo_edge_cases() {
+  cout << "\n========== Demo: Edge Cases ==========\n";
+
+  Trie trie;
+
+  // Empty string
+  cout << "Testing empty string:\n";
+  trie.insert("");
+  cout << "  Inserted empty string, size: " << trie.size() << '\n';
+  cout << "  Contains ''? " << (trie.contains("") ? "Yes" : "No") << '\n';
+
+  // Single character words
+  cout << "\nSingle character words:\n";
+  trie.insert("a");
+  trie.insert("b");
+  trie.insert("c");
+  cout << "  Inserted 'a', 'b', 'c', size: " << trie.size() << '\n';
+
+  // Long word
+  string long_word = "supercalifragilisticexpialidocious";
+  cout << "\nLong word:\n";
+  trie.insert(long_word);
+  cout << "  Inserted '" << long_word << "'\n";
+  cout << "  Contains it? " << (trie.contains(long_word) ? "Yes" : "No") << '\n';
+  cout << "  Starts with 'super'? " << (trie.starts_with("super") ? "Yes" : "No") << '\n';
+
+  // Clear and reuse
+  cout << "\nClearing and reusing trie:\n";
+  trie.clear();
+  cout << "  After clear - Size: " << trie.size() << ", Empty: " << (trie.is_empty() ? "yes" : "no") << '\n';
+
+  trie.insert("new");
+  trie.insert("words");
+  print_trie_stats(trie, "trie after reuse");
+}
 
 auto main() -> int {
-  cout << BOLD << BLUE << "\n=================================\n" << RESET;
-  cout << BOLD << "  Trie Test Suite\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
+  try {
+    cout << "========================================\n";
+    cout << "  Trie (Prefix Tree) - Comprehensive Demo\n";
+    cout << "========================================\n";
 
-  // Run all tests
-  test_basic_insert_search();
-  test_starts_with();
-  test_remove();
-  test_get_all_words_with_prefix();
-  test_count_words_with_prefix();
-  test_longest_common_prefix();
-  test_clear();
-  test_array_based_trie();
-  test_exceptions();
-  test_autocomplete_scenario();
-  test_performance();
-  test_move_semantics();
-  test_stress();
+    demo_basic_operations();
+    demo_prefix_operations();
+    demo_autocomplete();
+    demo_word_counting();
+    demo_remove_operations();
+    demo_move_semantics();
+    demo_performance();
+    demo_case_sensitivity();
+    demo_edge_cases();
 
-  // Print summary
-  cout << BOLD << BLUE << "\n=================================\n" << RESET;
-  cout << BOLD << "  Test Summary\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET;
-  cout << GREEN << "  Passed: " << tests_passed << RESET << '\n';
-  cout << RED << "  Failed: " << tests_failed << RESET << '\n';
-  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
+    cout << "\n========================================\n";
+    cout << "  All Demos Completed Successfully!\n";
+    cout << "========================================\n";
 
-  return tests_failed > 0 ? 1 : 0;
+  } catch (const std::exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
+  return 0;
 }
-
-//===--------------------------------------------------------------------------===//

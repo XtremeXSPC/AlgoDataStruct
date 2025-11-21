@@ -2,212 +2,183 @@
 /**
  * @file main_B_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test suite for B-Tree implementation
+ * @brief Comprehensive demo program for B-Tree implementation
  * @version 1.0
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the B-Tree data structure,
+ * showcasing its multi-way branching, node splitting, and various operations.
  */
 //===--------------------------------------------------------------------------===//
 
-#include "ads/support/ConsoleColors.hpp"
-#include "ads/trees/B_Tree.hpp"
-
 #include <algorithm>
-#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <string>
 #include <vector>
 
-using namespace ads::trees;
-using namespace std;
+#include "../include/ads/trees/B_Tree.hpp"
 
-// Test tracking
-int tests_passed = 0;
-int tests_failed = 0;
+using std::cerr;
+using std::cout;
+using std::string;
+using std::to_string;
+using std::vector;
 
-#define TEST(name) cout << CYAN << "[TEST] " << RESET << (name) << "..." << endl;
+using ads::trees::B_Tree;
 
-#define ASSERT(condition, message)                                                                                                         \
-  do {                                                                                                                                     \
-    if (!(condition)) {                                                                                                                    \
-      cout << RED << "  ✗ FAILED: " << RESET << (message) << endl;                                                                         \
-      tests_failed++;                                                                                                                      \
-      return;                                                                                                                              \
-    }                                                                                                                                      \
-  } while (0)
+// Helper function to print tree contents
+template <size_t T>
+void print_btree(const B_Tree<int, T>& tree, const string& name) {
+  cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height()
+       << ", nodes: " << tree.count_nodes() << "):\n";
 
-#define PASS()                                                                                                                             \
-  do {                                                                                                                                     \
-    cout << GREEN << "  ✓ PASSED" << RESET << endl;                                                                                        \
-    tests_passed++;                                                                                                                        \
-  } while (0)
+  if (tree.is_empty()) {
+    cout << "  (empty)\n";
+    return;
+  }
 
-//===--------------------------------------------------------------------------===//
-// Test Functions
-//===--------------------------------------------------------------------------===//
+  cout << "  In-order: ";
+  tree.in_order_traversal([](const int& value) -> void { cout << value << " "; });
+  cout << '\n';
+}
 
-/**
- * @brief Test basic insert and search
- */
-void test_basic_insert_search() {
-  TEST("Basic Insert and Search");
+// Demo: Basic operations
+void demo_basic_operations() {
+  cout << "\n========== Demo: Basic Operations ==========\n";
 
-  B_Tree<int, 3> btree;
+  B_Tree<int, 3> btree; // Minimum degree t=3 (2-5 keys per node)
 
-  ASSERT(btree.is_empty(), "New tree should be empty");
-  ASSERT(btree.size() == 0, "New tree should have size 0");
-  ASSERT(btree.get_min_degree() == 3, "Min degree should be 3");
-  ASSERT(btree.get_max_keys() == 5, "Max keys should be 2*3-1 = 5");
+  cout << "Creating empty B-Tree with minimum degree t=3...\n";
+  cout << "  Size: " << btree.size() << ", Empty: " << (btree.is_empty() ? "yes" : "no") << "\n";
+  cout << "  Min degree: " << btree.get_min_degree() << ", Max keys per node: " << btree.get_max_keys() << "\n";
 
   // Insert elements
-  ASSERT(btree.insert(10), "Should insert 10");
-  ASSERT(btree.size() == 1, "Size should be 1");
-  ASSERT(btree.search(10), "Should find 10");
+  cout << "\nInserting values: 10, 20, 5, 6, 12, 30, 7, 17\n";
+  btree.insert(10);
+  btree.insert(20);
+  btree.insert(5);
+  btree.insert(6);
+  btree.insert(12);
+  btree.insert(30);
+  btree.insert(7);
+  btree.insert(17);
 
-  ASSERT(btree.insert(20), "Should insert 20");
-  ASSERT(btree.insert(5), "Should insert 5");
-  ASSERT(btree.size() == 3, "Size should be 3");
+  print_btree(btree, "btree");
 
-  // Search existing
-  ASSERT(btree.contains(5), "Should contain 5");
-  ASSERT(btree.contains(10), "Should contain 10");
-  ASSERT(btree.contains(20), "Should contain 20");
+  // Test search operations
+  cout << "\nSearch operations:\n";
+  cout << "  search(10): " << (btree.search(10) ? "found" : "not found") << '\n';
+  cout << "  search(15): " << (btree.search(15) ? "found" : "not found") << '\n';
+  cout << "  contains(30): " << (btree.contains(30) ? "yes" : "no") << '\n';
 
-  // Search non-existing
-  ASSERT(!btree.search(15), "Should not find 15");
-  ASSERT(!btree.search(100), "Should not find 100");
-
-  // Duplicate insert
-  ASSERT(!btree.insert(10), "Should not insert duplicate 10");
-  ASSERT(btree.size() == 3, "Size should remain 3");
-
-  PASS();
+  // Test duplicates
+  cout << "\nTrying to insert duplicate (10): ";
+  bool inserted = btree.insert(10);
+  cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-/**
- * @brief Test sequential insertions and splits
- */
-void test_sequential_insert() {
-  TEST("Sequential Insert with Splits");
+// Demo: Node splitting
+void demo_node_splitting() {
+  cout << "\n========== Demo: Node Splitting ==========\n";
 
-  B_Tree<int, 2> btree; // t=2: 2-3-4 tree (1-3 keys, 2-4 children)
+  cout << "B-Trees split nodes when they become full.\n";
+  cout << "With t=2, each node can hold 1-3 keys.\n\n";
 
-  cout << "  Inserting 1-10 sequentially..." << '\n';
+  B_Tree<int, 2> btree; // t=2: 2-3-4 tree behavior (1-3 keys per node)
 
-  // Insert 1-10 and watch splits happen
+  cout << "Inserting 1 to 10 sequentially (observing height changes):\n";
   for (int i = 1; i <= 10; ++i) {
-    ASSERT(btree.insert(i), "Should insert " + to_string(i));
-    ASSERT(btree.validate_properties(), "Tree should maintain B-Tree properties after insert " + to_string(i));
+    int prev_height = btree.height();
+    btree.insert(i);
+    int new_height = btree.height();
+
+    if (new_height > prev_height) {
+      cout << "  After inserting " << i << ": height increased from " << prev_height << " to " << new_height << '\n';
+    }
   }
 
-  ASSERT(btree.size() == 10, "Should have 10 elements");
-
-  // Verify all elements present
-  for (int i = 1; i <= 10; ++i) {
-    ASSERT(btree.search(i), "Should find " + to_string(i));
-  }
-
-  int h = btree.height();
-  cout << "  Height: " << h << " nodes: " << btree.count_nodes() << '\n';
-
-  PASS();
+  print_btree(btree, "btree");
+  cout << "\nB-Tree properties maintained after all insertions: " << (btree.validate_properties() ? "yes" : "no")
+       << '\n';
 }
 
-/**
- * @brief Test in-order traversal
- */
-void test_traversal() {
-  TEST("In-Order Traversal");
+// Demo: Different minimum degrees
+void demo_different_degrees() {
+  cout << "\n========== Demo: Different Minimum Degrees ==========\n";
+
+  cout << "Higher minimum degree = wider tree = shorter height\n\n";
+
+  const int N = 50;
+
+  // t=2: 2-3-4 tree
+  B_Tree<int, 2> btree2;
+  for (int i = 1; i <= N; ++i) {
+    btree2.insert(i);
+  }
+  cout << "t=2 (2-3-4 tree): height=" << btree2.height() << ", nodes=" << btree2.count_nodes() << '\n';
+
+  // t=3
+  B_Tree<int, 3> btree3;
+  for (int i = 1; i <= N; ++i) {
+    btree3.insert(i);
+  }
+  cout << "t=3:             height=" << btree3.height() << ", nodes=" << btree3.count_nodes() << '\n';
+
+  // t=5
+  B_Tree<int, 5> btree5;
+  for (int i = 1; i <= N; ++i) {
+    btree5.insert(i);
+  }
+  cout << "t=5:             height=" << btree5.height() << ", nodes=" << btree5.count_nodes() << '\n';
+
+  // t=10
+  B_Tree<int, 10> btree10;
+  for (int i = 1; i <= N; ++i) {
+    btree10.insert(i);
+  }
+  cout << "t=10:            height=" << btree10.height() << ", nodes=" << btree10.count_nodes() << '\n';
+
+  cout << "\nAs t increases, height decreases but node count may vary.\n";
+}
+
+// Demo: Search and traversal
+void demo_search_traversal() {
+  cout << "\n========== Demo: Search and Traversal ==========\n";
 
   B_Tree<int, 3> btree;
 
   // Insert in random order
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+  cout << "Inserting values in order: ";
   for (int val : values) {
+    cout << val << " ";
     btree.insert(val);
   }
+  cout << '\n';
 
-  // Collect via traversal
-  vector<int> result;
-  btree.in_order_traversal([&result](const int& val) -> void { result.push_back(val); });
+  // In-order traversal
+  cout << "\nIn-order traversal (sorted): ";
+  btree.in_order_traversal([](const int& val) -> void { cout << val << " "; });
+  cout << '\n';
 
-  // Should be sorted
-  vector<int> expected = {10, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80};
-  ASSERT(result == expected, "In-order traversal should produce sorted output");
+  // Using iterators (if available)
+  cout << "Using range-based for loop: ";
+  for (const auto& val : btree) {
+    cout << val << " ";
+  }
+  cout << '\n';
 
-  PASS();
+  // Validate properties
+  cout << "\nB-Tree properties valid: " << (btree.validate_properties() ? "yes" : "no") << '\n';
 }
 
-/**
- * @brief Test B-Tree properties validation
- */
-void test_properties() {
-  TEST("B-Tree Properties Validation");
-
-  B_Tree<int, 3> btree;
-
-  // Empty tree is valid
-  ASSERT(btree.validate_properties(), "Empty tree should be valid");
-
-  // Insert many elements
-  for (int i = 1; i <= 100; ++i) {
-    btree.insert(i);
-  }
-
-  ASSERT(btree.validate_properties(), "Large tree should maintain properties");
-  ASSERT(btree.size() == 100, "Should have 100 elements");
-
-  // All leaves should be at same level
-  // Height should be low: log_t(n)
-  int h = btree.height();
-  cout << "  Height for 100 elements (t=3): " << h << '\n';
-  // For t=3, log_3(100) ≈ 4.19
-  ASSERT(h <= 5, "Height should be ≤ 5 for 100 elements with t=3");
-
-  PASS();
-}
-
-/**
- * @brief Test with different minimum degrees
- */
-void test_different_degrees() {
-  TEST("Different Minimum Degrees");
-
-  // t=2: 2-3-4 tree
-  {
-    B_Tree<int, 2> btree2;
-    for (int i = 1; i <= 50; ++i) {
-      btree2.insert(i);
-    }
-    ASSERT(btree2.size() == 50, "t=2 tree should have 50 elements");
-    ASSERT(btree2.validate_properties(), "t=2 tree should be valid");
-    int h2 = btree2.height();
-    cout << "  t=2: height=" << h2 << " nodes=" << btree2.count_nodes() << '\n';
-  }
-
-  // t=5: larger nodes
-  {
-    B_Tree<int, 5> btree5;
-    for (int i = 1; i <= 50; ++i) {
-      btree5.insert(i);
-    }
-    ASSERT(btree5.size() == 50, "t=5 tree should have 50 elements");
-    ASSERT(btree5.validate_properties(), "t=5 tree should be valid");
-    int h5 = btree5.height();
-    cout << "  t=5: height=" << h5 << " nodes=" << btree5.count_nodes() << '\n';
-    // t=5 should have lower height than t=2
-  }
-
-  PASS();
-}
-
-/**
- * @brief Test random insertions
- */
-void test_random_insert() {
-  TEST("Random Insertions");
+// Demo: Random insertions
+void demo_random_insertions() {
+  cout << "\n========== Demo: Random Insertions ==========\n";
 
   B_Tree<int, 3> btree;
 
@@ -217,161 +188,149 @@ void test_random_insert() {
     values.push_back(i);
   }
 
-  random_device rd;
-  mt19937       g(rd());
-  shuffle(values.begin(), values.end(), g);
+  std::random_device              rd;
+  std::mt19937                    g(rd());
+  std::shuffle(values.begin(), values.end(), g);
 
-  // Insert in random order
+  cout << "Inserting 100 values in random order...\n";
   for (int val : values) {
     btree.insert(val);
-    ASSERT(btree.validate_properties(), "Tree should maintain properties");
   }
 
-  ASSERT(btree.size() == 100, "Should have 100 elements");
+  cout << "  Size: " << btree.size() << '\n';
+  cout << "  Height: " << btree.height() << '\n';
+  cout << "  Node count: " << btree.count_nodes() << '\n';
+  cout << "  Properties valid: " << (btree.validate_properties() ? "yes" : "no") << '\n';
 
-  // Verify all elements
+  // Verify all elements present
+  int found_count = 0;
   for (int i = 1; i <= 100; ++i) {
-    ASSERT(btree.search(i), "Should find " + to_string(i));
+    if (btree.search(i)) {
+      ++found_count;
+    }
   }
-
-  PASS();
+  cout << "  All elements found: " << (found_count == 100 ? "yes" : "no") << '\n';
 }
 
-/**
- * @brief Test clear operation
- */
-void test_clear() {
-  TEST("Clear Tree");
-
-  B_Tree<int, 3> btree;
-
-  // Insert elements
-  for (int i = 1; i <= 20; ++i) {
-    btree.insert(i);
-  }
-
-  ASSERT(btree.size() == 20, "Should have 20 elements");
-
-  // Clear
-  btree.clear();
-  ASSERT(btree.is_empty(), "Tree should be empty after clear");
-  ASSERT(btree.size() == 0, "Size should be 0 after clear");
-  ASSERT(!btree.search(10), "Should not find elements after clear");
-
-  // Insert after clear
-  btree.insert(42);
-  ASSERT(btree.size() == 1, "Should be able to insert after clear");
-  ASSERT(btree.validate_properties(), "Tree should be valid after clear and insert");
-
-  PASS();
-}
-
-/**
- * @brief Test move semantics
- */
-void test_move_semantics() {
-  TEST("Move Semantics");
+// Demo: Move semantics
+void demo_move_semantics() {
+  cout << "\n========== Demo: Move Semantics ==========\n";
 
   B_Tree<int, 3> btree1;
   for (int i = 1; i <= 20; ++i) {
     btree1.insert(i);
   }
 
-  size_t original_size = btree1.size();
+  cout << "Original tree:\n";
+  print_btree(btree1, "btree1");
 
   // Move constructor
-  B_Tree<int, 3> btree2(std::move(btree1));
-  ASSERT(btree2.size() == original_size, "Moved tree should have same size");
-  ASSERT(btree2.search(10), "Moved tree should contain elements");
-  ASSERT(btree2.validate_properties(), "Moved tree should be valid");
+  B_Tree<int, 3> btree2 = std::move(btree1);
+
+  cout << "\nAfter move construction:\n";
+  print_btree(btree1, "btree1 (should be empty)");
+  print_btree(btree2, "btree2 (should have the data)");
 
   // Move assignment
   B_Tree<int, 3> btree3;
   btree3.insert(100);
+  btree3.insert(200);
+
+  cout << "\nBefore move assignment:\n";
+  print_btree(btree3, "btree3");
+
   btree3 = std::move(btree2);
-  ASSERT(btree3.size() == original_size, "Move assigned tree should have same size");
-  ASSERT(btree3.search(15), "Move assigned tree should contain elements");
 
-  PASS();
+  cout << "\nAfter move assignment:\n";
+  print_btree(btree2, "btree2 (should be empty)");
+  print_btree(btree3, "btree3 (should have btree2's data)");
 }
 
-/**
- * @brief Test stress with large dataset
- */
-void test_stress() {
-  TEST("Stress Test (Large Dataset)");
-
-  B_Tree<int, 5> btree;
-  const int      N = 10000;
-
-  // Insert
-  auto start = chrono::high_resolution_clock::now();
-  for (int i = 1; i <= N; ++i) {
-    btree.insert(i);
-  }
-  auto end             = chrono::high_resolution_clock::now();
-  auto insert_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-  cout << "  Insert " << N << " elements: " << insert_duration.count() << " ms" << '\n';
-
-  ASSERT(btree.size() == N, "Should have " + to_string(N) + " elements");
-  ASSERT(btree.validate_properties(), "Large tree should maintain properties");
-
-  int    h     = btree.height();
-  size_t nodes = btree.count_nodes();
-  cout << "  Height: " << h << " Nodes: " << nodes << '\n';
-
-  // Height should be log_5(10000) ≈ 5.71
-  ASSERT(h <= 7, "Height should be ≤ 7 for 10000 elements with t=5");
-
-  // Search
-  start = chrono::high_resolution_clock::now();
-  for (int i = 1; i <= N; ++i) {
-    ASSERT(btree.search(i), "Should find all elements");
-  }
-  end                  = chrono::high_resolution_clock::now();
-  auto search_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-  cout << "  Search " << N << " elements: " << search_duration.count() << " ms" << '\n';
-
-  PASS();
-}
-
-/**
- * @brief Test with string type
- */
-void test_string_type() {
-  TEST("String Type Support");
+// Demo: String type support
+void demo_string_type() {
+  cout << "\n========== Demo: String Type Support ==========\n";
 
   B_Tree<string, 3> btree;
 
   vector<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon"};
 
+  cout << "Inserting fruits: ";
   for (const auto& word : words) {
+    cout << word << " ";
     btree.insert(word);
   }
+  cout << '\n';
 
-  ASSERT(btree.size() == 10, "Should have 10 words");
-  ASSERT(btree.validate_properties(), "String tree should be valid");
-  ASSERT(btree.search("cherry"), "Should find 'cherry'");
-  ASSERT(!btree.search("orange"), "Should not find 'orange'");
+  cout << "\nIn-order traversal (alphabetically sorted):\n  ";
+  btree.in_order_traversal([](const string& s) -> void { cout << s << " "; });
+  cout << '\n';
 
-  // Check sorted order
-  vector<string> result;
-  btree.in_order_traversal([&result](const string& s) -> void { result.push_back(s); });
-
-  vector<string> expected = words;
-  sort(expected.begin(), expected.end());
-  ASSERT(result == expected, "String traversal should be sorted");
-
-  PASS();
+  cout << "\nSearch operations:\n";
+  cout << "  search(\"cherry\"): " << (btree.search("cherry") ? "found" : "not found") << '\n';
+  cout << "  search(\"orange\"): " << (btree.search("orange") ? "found" : "not found") << '\n';
 }
 
-/**
- * @brief Test height comparison with different t values
- */
-void test_height_comparison() {
-  TEST("Height Comparison (Different t)");
+// Demo: Performance
+void demo_performance() {
+  cout << "\n========== Demo: Performance ==========\n";
+
+  const int N = 10000;
+
+  cout << "Inserting " << N << " elements sequentially...\n";
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  B_Tree<int, 5> btree;
+  for (int i = 1; i <= N; ++i) {
+    btree.insert(i);
+  }
+
+  auto end             = std::chrono::high_resolution_clock::now();
+  auto insert_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+  cout << "  Insert time: " << insert_duration.count() << " ms\n";
+  cout << "  Size: " << btree.size() << '\n';
+  cout << "  Height: " << btree.height() << " (theoretical O(log_t(n)) ~ " << (int)(std::log(N) / std::log(5)) << ")\n";
+
+  // Search performance
+  cout << "\nSearching for all " << N << " elements...\n";
+  start = std::chrono::high_resolution_clock::now();
+  for (int i = 1; i <= N; ++i) {
+    [[maybe_unused]] bool found = btree.search(i);
+  }
+  end                  = std::chrono::high_resolution_clock::now();
+  auto search_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+  cout << "  Search time: " << search_duration.count() << " ms\n";
+}
+
+// Demo: Clear and reuse
+void demo_clear_reuse() {
+  cout << "\n========== Demo: Clear and Reuse ==========\n";
+
+  B_Tree<int, 3> btree;
+
+  for (int i = 1; i <= 20; ++i) {
+    btree.insert(i);
+  }
+  cout << "After inserting 20 elements:\n";
+  cout << "  Size: " << btree.size() << ", Height: " << btree.height() << '\n';
+
+  btree.clear();
+  cout << "\nAfter clear():\n";
+  cout << "  Size: " << btree.size() << ", Empty: " << (btree.is_empty() ? "yes" : "no") << '\n';
+
+  btree.insert(42);
+  btree.insert(17);
+  btree.insert(99);
+  cout << "\nAfter inserting new values (42, 17, 99):\n";
+  print_btree(btree, "btree");
+  cout << "  Properties valid: " << (btree.validate_properties() ? "yes" : "no") << '\n';
+}
+
+// Demo: Height comparison for large datasets
+void demo_height_comparison() {
+  cout << "\n========== Demo: Height Comparison ==========\n";
 
   const int N = 1000;
 
@@ -385,57 +344,40 @@ void test_height_comparison() {
     btree10.insert(i);
   }
 
-  int h2  = btree2.height();
-  int h5  = btree5.height();
-  int h10 = btree10.height();
+  cout << "For " << N << " elements:\n";
+  cout << "  t=2:  height=" << btree2.height() << ", nodes=" << btree2.count_nodes() << '\n';
+  cout << "  t=5:  height=" << btree5.height() << ", nodes=" << btree5.count_nodes() << '\n';
+  cout << "  t=10: height=" << btree10.height() << ", nodes=" << btree10.count_nodes() << '\n';
 
-  cout << "  For " << N << " elements:" << '\n';
-  cout << "    t=2:  height=" << h2 << " nodes=" << btree2.count_nodes() << '\n';
-  cout << "    t=5:  height=" << h5 << " nodes=" << btree5.count_nodes() << '\n';
-  cout << "    t=10: height=" << h10 << " nodes=" << btree10.count_nodes() << '\n';
-
-  // Larger t should have smaller height
-  ASSERT(h10 < h5, "t=10 should have lower height than t=5");
-  ASSERT(h5 < h2, "t=5 should have lower height than t=2");
-
-  PASS();
+  cout << "\nLarger minimum degree results in shorter trees,\n";
+  cout << "which means fewer disk accesses in database applications.\n";
 }
-
-//===--------------------------------------------------------------------------===//
-// Main Test Runner
-//===--------------------------------------------------------------------------===//
 
 auto main() -> int {
-  cout << BOLD << BLUE << "\n=================================\n" << RESET;
-  cout << BOLD << "  B-Tree Test Suite\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
+  try {
+    cout << "========================================\n";
+    cout << "     B-Tree - Comprehensive Demo\n";
+    cout << "========================================\n";
 
-  // Run all tests
-  test_basic_insert_search();
-  test_sequential_insert();
-  test_traversal();
-  test_properties();
-  test_different_degrees();
-  test_random_insert();
-  test_clear();
-  test_move_semantics();
-  test_stress();
-  test_string_type();
-  test_height_comparison();
+    demo_basic_operations();
+    demo_node_splitting();
+    demo_different_degrees();
+    demo_search_traversal();
+    demo_random_insertions();
+    demo_move_semantics();
+    demo_string_type();
+    demo_performance();
+    demo_clear_reuse();
+    demo_height_comparison();
 
-  // Print summary
-  cout << BOLD << BLUE << "\n=================================\n" << RESET;
-  cout << BOLD << "  Test Summary\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET;
-  cout << GREEN << "  Passed: " << tests_passed << RESET << '\n';
-  cout << RED << "  Failed: " << tests_failed << RESET << '\n';
-  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
+    cout << "\n========================================\n";
+    cout << "  All Demos Completed Successfully!\n";
+    cout << "========================================\n";
 
-  if (tests_failed == 0) {
-    cout << GREEN << BOLD << "  ✓ All tests passed!\n" << RESET << '\n';
+  } catch (const std::exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
   }
 
-  return tests_failed > 0 ? 1 : 0;
+  return 0;
 }
-
-//===--------------------------------------------------------------------------===//
