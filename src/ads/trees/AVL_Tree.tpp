@@ -31,7 +31,7 @@ AVLTree<T>::AVLTree(AVLTree&& other) noexcept : root_(std::move(other.root_)), s
 }
 
 template <typename T>
-AVLTree<T>& AVLTree<T>::operator=(AVLTree&& other) noexcept {
+auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
   if (this != &other) {
     root_       = std::move(other.root_);
     size_       = other.size_;

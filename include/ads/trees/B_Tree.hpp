@@ -63,7 +63,7 @@ class B_Tree {
 private:
   static_assert(MinDegree >= 2, "Minimum degree must be at least 2");
 
-  static constexpr int t = MinDegree;
+  static constexpr int t        = MinDegree;
   static constexpr int MAX_KEYS = 2 * t - 1;
   static constexpr int MIN_KEYS = t - 1;
 
@@ -71,10 +71,10 @@ private:
    * @brief Internal node structure
    */
   struct Node {
-    std::vector<T> keys;                               // Sorted keys
-    std::vector<std::unique_ptr<Node>> children;       // Child pointers
-    bool is_leaf;
-    int n;  // Current number of keys
+    std::vector<T>                     keys;     // Sorted keys
+    std::vector<std::unique_ptr<Node>> children; // Child pointers
+    bool                               is_leaf;
+    int                                n; // Current number of keys
 
     Node(bool leaf) : is_leaf(leaf), n(0) {
       keys.reserve(MAX_KEYS);
@@ -85,12 +85,12 @@ private:
   };
 
   std::unique_ptr<Node> root_;
-  size_t size_;
+  size_t                size_;
 
   /**
    * @brief Search for key in subtree
    */
-  bool search_helper(const Node* node, const T& key) const {
+  auto search_helper(const Node* node, const T& key) const -> bool {
     if (!node) {
       return false;
     }
@@ -126,7 +126,7 @@ private:
    */
   void split_child(Node* parent, int index) {
     Node* full_child = parent->children[index].get();
-    auto new_child = std::make_unique<Node>(full_child->is_leaf);
+    auto  new_child  = std::make_unique<Node>(full_child->is_leaf);
 
     new_child->n = t - 1;
 
@@ -165,7 +165,7 @@ private:
    * @param key Key to insert
    * @return true if inserted, false if duplicate
    */
-  bool insert_non_full(Node* node, const T& key) {
+  auto insert_non_full(Node* node, const T& key) -> bool {
     int i = node->n - 1;
 
     if (node->is_leaf) {
@@ -204,7 +204,7 @@ private:
         if (key > node->keys[i]) {
           i++;
         } else if (key == node->keys[i]) {
-          return false;  // Duplicate
+          return false; // Duplicate
         }
       }
 
@@ -238,7 +238,7 @@ private:
   /**
    * @brief Calculate height of tree
    */
-  int height_helper(const Node* node) const {
+  auto height_helper(const Node* node) const -> int {
     if (!node) {
       return -1;
     }
@@ -251,12 +251,12 @@ private:
   /**
    * @brief Count nodes in tree
    */
-  size_t count_nodes_helper(const Node* node) const {
+  auto count_nodes_helper(const Node* node) const -> size_t {
     if (!node) {
       return 0;
     }
 
-    size_t count = 1;  // This node
+    size_t count = 1; // This node
     if (!node->is_leaf) {
       for (int i = 0; i <= node->n; i++) {
         count += count_nodes_helper(node->children[i].get());
@@ -268,7 +268,7 @@ private:
   /**
    * @brief Validate B-Tree properties
    */
-  bool validate_helper(const Node* node, int min_keys, int max_keys, int level) const {
+  auto validate_helper(const Node* node, int min_keys, int max_keys, int level) const -> bool {
     if (!node) {
       return true;
     }
@@ -315,12 +315,12 @@ public:
   ~B_Tree() = default;
 
   // Disable copy
-  B_Tree(const B_Tree&) = delete;
-  B_Tree& operator=(const B_Tree&) = delete;
+  B_Tree(const B_Tree&)                    = delete;
+  auto operator=(const B_Tree&) -> B_Tree& = delete;
 
   // Enable move
-  B_Tree(B_Tree&&) noexcept = default;
-  B_Tree& operator=(B_Tree&&) noexcept = default;
+  B_Tree(B_Tree&&) noexcept                    = default;
+  auto operator=(B_Tree&&) noexcept -> B_Tree& = default;
 
   /**
    * @brief Insert a key into the tree
@@ -332,7 +332,7 @@ public:
    * @return true if inserted, false if duplicate
    * @complexity O(t log_t n)
    */
-  bool insert(const T& key) {
+  auto insert(const T& key) -> bool {
     if (!root_) {
       root_ = std::make_unique<Node>(true);
       root_->keys.push_back(key);
@@ -362,32 +362,24 @@ public:
    * @return true if found
    * @complexity O(t log_t n)
    */
-  bool search(const T& key) const {
-    return search_helper(root_.get(), key);
-  }
+  auto search(const T& key) const -> bool { return search_helper(root_.get(), key); }
 
   /**
    * @brief Alias for search
    */
-  bool contains(const T& key) const {
-    return search(key);
-  }
+  auto contains(const T& key) const -> bool { return search(key); }
 
   /**
    * @brief Get number of keys in tree
    * @complexity O(1)
    */
-  size_t size() const {
-    return size_;
-  }
+  [[nodiscard]] auto size() const -> size_t { return size_; }
 
   /**
    * @brief Check if tree is empty
    * @complexity O(1)
    */
-  bool is_empty() const {
-    return size_ == 0;
-  }
+  [[nodiscard]] auto is_empty() const -> bool { return size_ == 0; }
 
   /**
    * @brief Clear all keys
@@ -403,39 +395,29 @@ public:
    * @return Height (all leaves at same level)
    * @complexity O(log_t n)
    */
-  int height() const {
-    return height_helper(root_.get());
-  }
+  [[nodiscard]] auto height() const -> int { return height_helper(root_.get()); }
 
   /**
    * @brief Get minimum degree
    * @return Minimum degree t
    */
-  static constexpr int get_min_degree() {
-    return t;
-  }
+  static constexpr auto get_min_degree() -> int { return t; }
 
   /**
    * @brief Get maximum keys per node
    */
-  static constexpr int get_max_keys() {
-    return MAX_KEYS;
-  }
+  static constexpr auto get_max_keys() -> int { return MAX_KEYS; }
 
   /**
    * @brief Get minimum keys per node (except root)
    */
-  static constexpr int get_min_keys() {
-    return MIN_KEYS;
-  }
+  static constexpr auto get_min_keys() -> int { return MIN_KEYS; }
 
   /**
    * @brief Count total number of nodes
    * @complexity O(n)
    */
-  size_t count_nodes() const {
-    return count_nodes_helper(root_.get());
-  }
+  [[nodiscard]] auto count_nodes() const -> size_t { return count_nodes_helper(root_.get()); }
 
   /**
    * @brief Validate B-Tree properties
@@ -449,7 +431,7 @@ public:
    * @return true if valid B-Tree
    * @complexity O(n)
    */
-  bool validate_properties() const {
+  [[nodiscard]] auto validate_properties() const -> bool {
     if (!root_) {
       return true;
     }
@@ -463,11 +445,9 @@ public:
    * @param visit Function to call for each key
    * @complexity O(n)
    */
-  void in_order_traversal(std::function<void(const T&)> visit) const {
-    in_order_helper(root_.get(), visit);
-  }
+  void in_order_traversal(std::function<void(const T&)> visit) const { in_order_helper(root_.get(), visit); }
 };
 
-}  // namespace ads::trees
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//

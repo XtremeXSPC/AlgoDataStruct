@@ -60,13 +60,9 @@ private:
    */
   struct TrieNode {
     // Children storage: map for flexibility, array for speed
-    typename std::conditional<
-        UseMap,
-        std::unordered_map<char, std::unique_ptr<TrieNode>>,
-        std::array<std::unique_ptr<TrieNode>, 26>
-    >::type children;
+    std::conditional_t<UseMap, std::unordered_map<char, std::unique_ptr<TrieNode>>, std::array<std::unique_ptr<TrieNode>, 26>> children;
 
-    bool is_end_of_word;  ///< True if this node marks end of a word
+    bool is_end_of_word; ///< True if this node marks end of a word
 
     /**
      * @brief Construct a new Trie Node
@@ -80,7 +76,7 @@ private:
      * @brief Check if node has any children
      * @return true if node has at least one child
      */
-    bool has_children() const {
+    [[nodiscard]] auto has_children() const -> bool {
       if constexpr (UseMap) {
         return !children.empty();
       } else {
@@ -94,8 +90,8 @@ private:
     }
   };
 
-  std::unique_ptr<TrieNode> root_;  ///< Root node (empty prefix)
-  size_t word_count_;               ///< Number of words stored
+  std::unique_ptr<TrieNode> root_;       ///< Root node (empty prefix)
+  size_t                    word_count_; ///< Number of words stored
 
   /**
    * @brief Get child index for array-based implementation
@@ -103,7 +99,7 @@ private:
    * @return Index 0-25 for 'a'-'z'
    * @throws std::invalid_argument if character not in [a-z]
    */
-  static int char_to_index(char c) {
+  static auto char_to_index(char c) -> int {
     if (c < 'a' || c > 'z') {
       throw std::invalid_argument("Trie with array storage only supports lowercase a-z");
     }
@@ -116,7 +112,7 @@ private:
    * @param c Character key
    * @return Pointer to child node, or nullptr if not exists
    */
-  TrieNode* get_child(const TrieNode* node, char c) const {
+  auto get_child(const TrieNode* node, char c) const -> TrieNode* {
     if constexpr (UseMap) {
       auto it = node->children.find(c);
       return (it != node->children.end()) ? it->second.get() : nullptr;
@@ -132,7 +128,7 @@ private:
    * @param c Character key
    * @return Reference to child node (creates if doesn't exist)
    */
-  TrieNode*& get_or_create_child(TrieNode* node, char c) {
+  auto get_or_create_child(TrieNode* node, char c) -> TrieNode*& {
     if constexpr (UseMap) {
       auto& child_ptr = node->children[c];
       if (!child_ptr) {
@@ -153,7 +149,7 @@ private:
    * @param prefix Prefix string to find
    * @return Pointer to node representing prefix, or nullptr if not found
    */
-  TrieNode* find_prefix_node(const std::string& prefix) const {
+  auto find_prefix_node(const std::string& prefix) const -> TrieNode* {
     TrieNode* node = root_.get();
     for (char c : prefix) {
       node = get_child(node, c);
@@ -172,7 +168,7 @@ private:
    * @param found Output parameter: set to true if word was found and removed
    * @return true if current node should be deleted
    */
-  bool remove_helper(TrieNode* node, const std::string& word, size_t depth, bool& found) {
+  auto remove_helper(TrieNode* node, const std::string& word, size_t depth, bool& found) -> bool {
     if (!node) {
       return false;
     }
@@ -191,7 +187,7 @@ private:
     }
 
     // Recurse to child
-    char c = word[depth];
+    char      c     = word[depth];
     TrieNode* child = get_child(node, c);
 
     // If character path doesn't exist, word not in trie
@@ -222,9 +218,7 @@ private:
    * @param current_word Prefix accumulated so far
    * @param results Vector to store results
    */
-  void dfs_collect_words(const TrieNode* node,
-                         const std::string& current_word,
-                         std::vector<std::string>& results) const {
+  void dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const {
     if (!node) {
       return;
     }
@@ -254,7 +248,7 @@ private:
    * @param node Current node
    * @return Number of words in subtree
    */
-  size_t count_words_helper(const TrieNode* node) const {
+  auto count_words_helper(const TrieNode* node) const -> size_t {
     if (!node) {
       return 0;
     }
@@ -286,12 +280,12 @@ public:
   ~Trie() = default;
 
   // Disable copy (deep copy would be expensive)
-  Trie(const Trie&) = delete;
-  Trie& operator=(const Trie&) = delete;
+  Trie(const Trie&)                    = delete;
+  auto operator=(const Trie&) -> Trie& = delete;
 
   // Enable move
-  Trie(Trie&&) noexcept = default;
-  Trie& operator=(Trie&&) noexcept = default;
+  Trie(Trie&&) noexcept                    = default;
+  auto operator=(Trie&&) noexcept -> Trie& = default;
 
   /**
    * @brief Insert a word into the trie
@@ -339,7 +333,7 @@ public:
    * trie.search("hell");   // false (not marked as word)
    * ```
    */
-  bool search(const std::string& word) const {
+  [[nodiscard]] auto search(const std::string& word) const -> bool {
     if (word.empty()) {
       return false;
     }
@@ -362,9 +356,9 @@ public:
    * trie.starts_with("world"); // false
    * ```
    */
-  bool starts_with(const std::string& prefix) const {
+  [[nodiscard]] auto starts_with(const std::string& prefix) const -> bool {
     if (prefix.empty()) {
-      return true;  // Empty prefix matches everything
+      return true; // Empty prefix matches everything
     }
     return find_prefix_node(prefix) != nullptr;
   }
@@ -388,7 +382,7 @@ public:
    * trie.search("card");   // true
    * ```
    */
-  bool remove(const std::string& word) {
+  auto remove(const std::string& word) -> bool {
     if (word.empty() || !root_) {
       return false;
     }
@@ -414,12 +408,12 @@ public:
    * // words = ["car", "card", "cat"]
    * ```
    */
-  std::vector<std::string> get_all_words_with_prefix(const std::string& prefix) const {
+  [[nodiscard]] auto get_all_words_with_prefix(const std::string& prefix) const -> std::vector<std::string> {
     std::vector<std::string> results;
 
     TrieNode* node = find_prefix_node(prefix);
     if (!node) {
-      return results;  // Prefix not found
+      return results; // Prefix not found
     }
 
     // DFS from this node to collect all words
@@ -439,7 +433,7 @@ public:
    * trie.count_words_with_prefix("ca");  // 3 (car, card, cat)
    * ```
    */
-  size_t count_words_with_prefix(const std::string& prefix) const {
+  [[nodiscard]] auto count_words_with_prefix(const std::string& prefix) const -> size_t {
     TrieNode* node = find_prefix_node(prefix);
     if (!node) {
       return 0;
@@ -461,25 +455,25 @@ public:
    * trie.longest_common_prefix();  // "fl"
    * ```
    */
-  std::string longest_common_prefix() const {
+  [[nodiscard]] auto longest_common_prefix() const -> std::string {
     if (!root_ || word_count_ == 0) {
       return "";
     }
 
     std::string prefix;
-    TrieNode* node = root_.get();
+    TrieNode*   node = root_.get();
 
     // Traverse while there's only one child and not end of word
     while (node) {
       // Count children
-      int child_count = 0;
-      char next_char = '\0';
-      TrieNode* next_node = nullptr;
+      int       child_count = 0;
+      char      next_char   = '\0';
+      TrieNode* next_node   = nullptr;
 
       if constexpr (UseMap) {
         child_count = node->children.size();
         if (child_count == 1) {
-          auto it = node->children.begin();
+          auto it   = node->children.begin();
           next_char = it->first;
           next_node = it->second.get();
         }
@@ -489,7 +483,8 @@ public:
             child_count++;
             next_char = static_cast<char>('a' + i);
             next_node = node->children[i].get();
-            if (child_count > 1) break;
+            if (child_count > 1)
+              break;
           }
         }
       }
@@ -511,25 +506,21 @@ public:
    * @return Word count
    * @complexity O(1)
    */
-  size_t size() const {
-    return word_count_;
-  }
+  [[nodiscard]] auto size() const -> size_t { return word_count_; }
 
   /**
    * @brief Check if trie is empty
    * @return true if no words stored
    * @complexity O(1)
    */
-  bool is_empty() const {
-    return word_count_ == 0;
-  }
+  [[nodiscard]] auto is_empty() const -> bool { return word_count_ == 0; }
 
   /**
    * @brief Remove all words from trie
    * @complexity O(n) where n = total nodes
    */
   void clear() {
-    root_ = std::make_unique<TrieNode>();
+    root_       = std::make_unique<TrieNode>();
     word_count_ = 0;
   }
 
@@ -538,15 +529,13 @@ public:
    * @return Vector of all words
    * @complexity O(n*k) where n=word count, k=avg word length
    */
-  std::vector<std::string> get_all_words() const {
-    return get_all_words_with_prefix("");
-  }
+  [[nodiscard]] auto get_all_words() const -> std::vector<std::string> { return get_all_words_with_prefix(""); }
 };
 
 // Common type aliases
-using TrieMap = Trie<true>;      ///< Trie with map storage (supports any char)
-using TrieArray = Trie<false>;   ///< Trie with array storage (lowercase a-z only)
+using TrieMap   = Trie<true>;  ///< Trie with map storage (supports any char)
+using TrieArray = Trie<false>; ///< Trie with array storage (lowercase a-z only)
 
-}  // namespace ads::trees
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//

@@ -16,14 +16,14 @@
 
 #pragma once
 
-// All implementation is in Red_Black_Tree.hpp due to template nature
-// This file exists to maintain consistency with other data structures
+// All implementation is in Red_Black_Tree.hpp due to template nature.
+// This file exists to maintain consistency with other data structures.
 
 namespace ads::trees {
 
 // Template implementations are fully contained in Red_Black_Tree.hpp
-// No additional definitions needed here
+// No additional definitions needed here.
 
-}  // namespace ads::trees
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//

@@ -45,10 +45,7 @@ namespace ads::trees {
 /**
  * @brief Node color enum for Red-Black Tree
  */
-enum class Color {
-  Red,
-  Black
-};
+enum class Color { Red, Black };
 
 /**
  * @brief Red-Black Tree implementation
@@ -68,28 +65,25 @@ private:
    * @brief Internal node structure
    */
   struct Node {
-    T data;
-    Color color;
+    T                     data;
+    Color                 color;
     std::unique_ptr<Node> left;
     std::unique_ptr<Node> right;
-    Node* parent;  // Non-owning pointer for upward traversal
+    Node*                 parent; // Non-owning pointer for upward traversal
 
-    Node(const T& val, Color col = Color::Red, Node* par = nullptr)
-        : data(val), color(col), left(nullptr), right(nullptr), parent(par) {}
+    Node(const T& val, Color col = Color::Red, Node* par = nullptr) : data(val), color(col), left(nullptr), right(nullptr), parent(par) {}
 
-    Node(T&& val, Color col = Color::Red, Node* par = nullptr)
-        : data(std::move(val)), color(col), left(nullptr), right(nullptr), parent(par) {}
+    Node(T&& val, Color col = Color::Red, Node* par = nullptr) :
+        data(std::move(val)), color(col), left(nullptr), right(nullptr), parent(par) {}
   };
 
   std::unique_ptr<Node> root_;
-  size_t size_;
+  size_t                size_{};
 
   /**
    * @brief Get color of node (nullptr is considered black)
    */
-  static Color get_color(const Node* node) {
-    return (node == nullptr) ? Color::Black : node->color;
-  }
+  static auto get_color(const Node* node) -> Color { return (node == nullptr) ? Color::Black : node->color; }
 
   /**
    * @brief Set color of node (safe for nullptr)
@@ -112,10 +106,10 @@ private:
    * @param x_ptr Unique pointer to node x (will be modified)
    * @return Unique pointer to new subtree root (y)
    */
-  std::unique_ptr<Node> rotate_left(std::unique_ptr<Node> x_ptr) {
-    auto y_ptr = std::move(x_ptr->right);
-    Node* x = x_ptr.get();
-    Node* y = y_ptr.get();
+  auto rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_ptr<Node> {
+    auto  y_ptr = std::move(x_ptr->right);
+    Node* x     = x_ptr.get();
+    Node* y     = y_ptr.get();
 
     // Turn y's left subtree into x's right subtree
     x_ptr->right = std::move(y_ptr->left);
@@ -127,7 +121,7 @@ private:
     y->parent = x->parent;
 
     // y's left child becomes x
-    y->left = std::move(x_ptr);
+    y->left         = std::move(x_ptr);
     y->left->parent = y;
 
     return y_ptr;
@@ -145,10 +139,10 @@ private:
    * @param y_ptr Unique pointer to node y (will be modified)
    * @return Unique pointer to new subtree root (x)
    */
-  std::unique_ptr<Node> rotate_right(std::unique_ptr<Node> y_ptr) {
-    auto x_ptr = std::move(y_ptr->left);
-    Node* y = y_ptr.get();
-    Node* x = x_ptr.get();
+  auto rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique_ptr<Node> {
+    auto  x_ptr = std::move(y_ptr->left);
+    Node* y     = y_ptr.get();
+    Node* x     = x_ptr.get();
 
     // Turn x's right subtree into y's left subtree
     y_ptr->left = std::move(x_ptr->right);
@@ -160,7 +154,7 @@ private:
     x->parent = y->parent;
 
     // x's right child becomes y
-    x->right = std::move(y_ptr);
+    x->right         = std::move(y_ptr);
     x->right->parent = x;
 
     return x_ptr;
@@ -177,7 +171,7 @@ private:
   void insert_fixup(Node* node) {
     // Continue until we reach root or parent is black
     while (node != root_.get() && get_color(node->parent) == Color::Red) {
-      Node* parent = node->parent;
+      Node* parent      = node->parent;
       Node* grandparent = parent->parent;
 
       if (parent == grandparent->left.get()) {
@@ -189,7 +183,7 @@ private:
           set_color(parent, Color::Black);
           set_color(uncle, Color::Black);
           set_color(grandparent, Color::Red);
-          node = grandparent;  // Continue from grandparent
+          node = grandparent; // Continue from grandparent
         } else {
           // Uncle is black
           if (node == parent->right.get()) {
@@ -198,7 +192,7 @@ private:
             // Rotate at parent level
             if (grandparent->left.get() == parent) {
               grandparent->left = rotate_left(std::move(grandparent->left));
-              parent = node->parent;
+              parent            = node->parent;
             }
           }
           // Case 3: Node is left child - Recolor and right rotate grandparent
@@ -233,7 +227,7 @@ private:
             node = parent;
             if (grandparent->right.get() == parent) {
               grandparent->right = rotate_right(std::move(grandparent->right));
-              parent = node->parent;
+              parent             = node->parent;
             }
           }
           // Case 3: Node is right child - Recolor and left rotate grandparent
@@ -260,7 +254,7 @@ private:
   /**
    * @brief Recursive insert helper
    */
-  std::pair<Node*, bool> insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent) {
+  auto insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent) -> std::pair<Node*, bool> {
     if (!node) {
       node = std::make_unique<Node>(value, Color::Red, parent);
       size_++;
@@ -280,7 +274,7 @@ private:
   /**
    * @brief Find minimum node in subtree
    */
-  static Node* find_min(Node* node) {
+  static auto find_min(Node* node) -> Node* {
     while (node && node->left) {
       node = node->left.get();
     }
@@ -290,7 +284,7 @@ private:
   /**
    * @brief Recursive search helper
    */
-  bool search_helper(const Node* node, const T& value) const {
+  auto search_helper(const Node* node, const T& value) const -> bool {
     if (!node) {
       return false;
     }
@@ -317,7 +311,7 @@ private:
   /**
    * @brief Calculate height of subtree
    */
-  int height_helper(const Node* node) const {
+  auto height_helper(const Node* node) const -> int {
     if (!node) {
       return -1;
     }
@@ -327,9 +321,9 @@ private:
   /**
    * @brief Calculate black height (number of black nodes from node to leaf)
    */
-  int black_height_helper(const Node* node) const {
+  auto black_height_helper(const Node* node) const -> int {
     if (!node) {
-      return 0;  // NIL is black
+      return 0; // NIL is black
     }
     int left_bh = black_height_helper(node->left.get());
     return left_bh + (node->color == Color::Black ? 1 : 0);
@@ -339,25 +333,24 @@ private:
    * @brief Validate Red-Black properties recursively
    * @return Black height of subtree, or -1 if invalid
    */
-  int validate_helper(const Node* node) const {
+  auto validate_helper(const Node* node) const -> int {
     if (!node) {
-      return 0;  // NIL leaves are black
+      return 0; // NIL leaves are black
     }
 
     // Property 4: If node is red, children must be black
     if (node->color == Color::Red) {
-      if (get_color(node->left.get()) == Color::Red ||
-          get_color(node->right.get()) == Color::Red) {
-        return -1;  // Violation: red node has red child
+      if (get_color(node->left.get()) == Color::Red || get_color(node->right.get()) == Color::Red) {
+        return -1; // Violation: red node has red child
       }
     }
 
     // Property 5: Black heights must be equal for all paths
-    int left_bh = validate_helper(node->left.get());
+    int left_bh  = validate_helper(node->left.get());
     int right_bh = validate_helper(node->right.get());
 
     if (left_bh == -1 || right_bh == -1 || left_bh != right_bh) {
-      return -1;  // Violation: unequal black heights
+      return -1; // Violation: unequal black heights
     }
 
     // Return black height of this subtree
@@ -376,12 +369,12 @@ public:
   ~Red_Black_Tree() = default;
 
   // Disable copy (would be expensive)
-  Red_Black_Tree(const Red_Black_Tree&) = delete;
-  Red_Black_Tree& operator=(const Red_Black_Tree&) = delete;
+  Red_Black_Tree(const Red_Black_Tree&)                    = delete;
+  auto operator=(const Red_Black_Tree&) -> Red_Black_Tree& = delete;
 
   // Enable move
-  Red_Black_Tree(Red_Black_Tree&&) noexcept = default;
-  Red_Black_Tree& operator=(Red_Black_Tree&&) noexcept = default;
+  Red_Black_Tree(Red_Black_Tree&&) noexcept                    = default;
+  auto operator=(Red_Black_Tree&&) noexcept -> Red_Black_Tree& = default;
 
   /**
    * @brief Insert a value into the tree
@@ -393,7 +386,7 @@ public:
    * @return true if inserted, false if duplicate
    * @complexity O(log n) time, at most 2 rotations
    */
-  bool insert(const T& value) {
+  auto insert(const T& value) -> bool {
     auto [new_node, inserted] = insert_helper(root_, value, nullptr);
 
     if (inserted) {
@@ -409,32 +402,24 @@ public:
    * @return true if found
    * @complexity O(log n)
    */
-  bool search(const T& value) const {
-    return search_helper(root_.get(), value);
-  }
+  auto search(const T& value) const -> bool { return search_helper(root_.get(), value); }
 
   /**
    * @brief Alias for search
    */
-  bool contains(const T& value) const {
-    return search(value);
-  }
+  auto contains(const T& value) const -> bool { return search(value); }
 
   /**
    * @brief Get number of elements
    * @complexity O(1)
    */
-  size_t size() const {
-    return size_;
-  }
+  [[nodiscard]] auto size() const -> size_t { return size_; }
 
   /**
    * @brief Check if tree is empty
    * @complexity O(1)
    */
-  bool is_empty() const {
-    return size_ == 0;
-  }
+  [[nodiscard]] auto is_empty() const -> bool { return size_ == 0; }
 
   /**
    * @brief Clear all elements
@@ -450,18 +435,14 @@ public:
    * @return Height (empty tree = -1, single node = 0)
    * @complexity O(n)
    */
-  int height() const {
-    return height_helper(root_.get());
-  }
+  [[nodiscard]] auto height() const -> int { return height_helper(root_.get()); }
 
   /**
    * @brief Get black height of tree
    * @return Number of black nodes from root to leaf
    * @complexity O(log n)
    */
-  int black_height() const {
-    return black_height_helper(root_.get());
-  }
+  [[nodiscard]] auto black_height() const -> int { return black_height_helper(root_.get()); }
 
   /**
    * @brief Validate Red-Black Tree properties
@@ -474,9 +455,9 @@ public:
    * @return true if all properties satisfied
    * @complexity O(n)
    */
-  bool validate_properties() const {
+  [[nodiscard]] auto validate_properties() const -> bool {
     if (!root_) {
-      return true;  // Empty tree is valid
+      return true; // Empty tree is valid
     }
 
     // Property 2: Root must be black
@@ -493,11 +474,9 @@ public:
    * @param visit Function to call for each element
    * @complexity O(n)
    */
-  void in_order_traversal(std::function<void(const T&)> visit) const {
-    in_order_helper(root_.get(), visit);
-  }
+  void in_order_traversal(std::function<void(const T&)> visit) const { in_order_helper(root_.get(), visit); }
 };
 
-}  // namespace ads::trees
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//

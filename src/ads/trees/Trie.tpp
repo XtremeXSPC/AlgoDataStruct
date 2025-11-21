@@ -24,14 +24,14 @@
 
 #pragma once
 
-// All implementation is in Trie.hpp due to template nature and constexpr if usage
-// This file exists to maintain consistency with other data structures in the library
+// All implementation is in Trie.hpp due to template nature and constexpr if usage.
+// This file exists to maintain consistency with other data structures in the library.
 
 namespace ads::trees {
 
 // Template implementations are fully contained in Trie.hpp
 // No additional definitions needed here
 
-}  // namespace ads::trees
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//
