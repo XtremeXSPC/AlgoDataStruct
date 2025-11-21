@@ -23,6 +23,12 @@
 
 #include "Hash_Table_Exception.hpp"
 
+// Forward declaration for HashMap friend
+namespace ads::associative {
+template <typename, typename, typename>
+class HashMap;
+}
+
 namespace ads::hash {
 
 /**
@@ -55,8 +61,7 @@ public:
    * @param initial_capacity Initial number of buckets (default: 16).
    * @param max_load_factor Maximum load factor before rehashing (default: 0.75).
    */
-  explicit HashTableChaining(size_t initial_capacity   = kInitialCapacity,
-                             float  max_load_factor = kDefaultMaxLoadFactor);
+  explicit HashTableChaining(size_t initial_capacity = kInitialCapacity, float max_load_factor = kDefaultMaxLoadFactor);
 
   /** @brief Destructor. Clears all entries and deallocates buckets. */
   ~HashTableChaining() = default;
@@ -217,21 +222,16 @@ public:
   void reserve(size_t new_capacity);
 
 private:
+  // Friend declaration for HashMap to access internal structure
+  template <typename, typename, typename>
+  friend class ::ads::associative::HashMap;
+
   //================ INTERNAL STRUCTURES ================//
 
   /**
-   * @brief Entry in the hash table.
+   * @brief Entry is std::pair for structured bindings support
    */
-  struct Entry {
-    Key   key;
-    Value value;
-
-    Entry(const Key& k, const Value& v) : key(k), value(v) {}
-    Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
-
-    template <typename... Args>
-    Entry(const Key& k, Args&&... args) : key(k), value(std::forward<Args>(args)...) {}
-  };
+  using Entry = std::pair<const Key, Value>;
 
   /**
    * @brief A bucket is a list of entries.
@@ -261,8 +261,7 @@ private:
    * @param key The key to find.
    * @return Const iterator to the entry, or bucket.end() if not found.
    */
-  auto find_in_bucket(const Bucket& bucket, const Key& key) const ->
-      typename Bucket::const_iterator;
+  auto find_in_bucket(const Bucket& bucket, const Key& key) const -> typename Bucket::const_iterator;
 
   /**
    * @brief Rehashes the table to a new capacity.
@@ -281,9 +280,9 @@ private:
   size_t                    size_;            ///< Number of entries
   float                     max_load_factor_; ///< Threshold for rehashing
 
-  static constexpr size_t kInitialCapacity        = 16;
-  static constexpr float  kDefaultMaxLoadFactor   = 0.75f;
-  static constexpr size_t kGrowthFactor           = 2;
+  static constexpr size_t kInitialCapacity      = 16;
+  static constexpr float  kDefaultMaxLoadFactor = 0.75f;
+  static constexpr size_t kGrowthFactor         = 2;
 };
 
 // Include the implementation file for templates

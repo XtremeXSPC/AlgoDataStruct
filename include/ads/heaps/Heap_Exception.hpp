@@ -39,7 +39,7 @@ public:
   explicit HeapException(const std::string& message) : std::runtime_error(message) {}
 };
 
-}  // namespace ads::heap
+} // namespace ads::heap
 
-#endif  // HEAP_EXCEPTION_HPP
+#endif // HEAP_EXCEPTION_HPP
 //===--------------------------------------------------------------------------===//

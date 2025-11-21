@@ -271,7 +271,7 @@ void test_heap_comparison() {
 
 int main() {
   std::cout << "==============================================\n";
-  std::cout << "     MIN HEAP AND MAX HEAP - COMPREHENSIVE TESTS\n";
+  std::cout << " MIN HEAP AND MAX HEAP - COMPREHENSIVE TESTS  \n";
   std::cout << "==============================================\n";
 
   try {

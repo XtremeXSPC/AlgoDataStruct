@@ -52,8 +52,8 @@ public:
   ~LinkedQueue() override;
 
   // Copy constructor and assignment are disabled (move-only type)
-  LinkedQueue(const LinkedQueue&)            = delete;
-  LinkedQueue& operator=(const LinkedQueue&) = delete;
+  LinkedQueue(const LinkedQueue&)                    = delete;
+  auto operator=(const LinkedQueue&) -> LinkedQueue& = delete;
 
   /**
    * @brief Move constructor.
@@ -66,7 +66,7 @@ public:
    * @param other The queue from which to move resources.
    * @return A reference to this instance.
    */
-  LinkedQueue& operator=(LinkedQueue&& other) noexcept;
+  auto operator=(LinkedQueue&& other) noexcept -> LinkedQueue&;
 
   //========== INTERFACE INHERITED FROM Queue<T> ==========//
 
@@ -74,14 +74,16 @@ public:
   void enqueue(T&& value) override;
   void dequeue() override;
 
-  T&       front() override;
-  const T& front() const override;
-  T&       rear() override;
-  const T& rear() const override;
+  auto front() -> T& override;
+  auto rear() -> T& override;
 
-  bool   is_empty() const noexcept override;
-  size_t size() const noexcept override;
-  void   clear() noexcept override;
+  auto front() const -> const T& override;
+  auto rear() const -> const T& override;
+
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+
+  void clear() noexcept override;
 
   //=========== ADDITIONAL FUNCTIONALITY ==========//
 
@@ -92,7 +94,7 @@ public:
    * @return Reference to the newly constructed element.
    */
   template <typename... Args>
-  T& emplace(Args&&... args);
+  auto emplace(Args&&... args) -> T&;
 
 private:
   //================ INTERNAL NODE ================//
