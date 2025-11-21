@@ -103,8 +103,8 @@ public:
   ~BinarySearchTree() override = default;
 
   // Copy constructor and assignment are disabled (move-only type)
-  BinarySearchTree(const BinarySearchTree&)            = delete;
-  BinarySearchTree& operator=(const BinarySearchTree&) = delete;
+  BinarySearchTree(const BinarySearchTree&)                    = delete;
+  auto operator=(const BinarySearchTree&) -> BinarySearchTree& = delete;
 
   /**
    * @brief Move constructor.
@@ -117,22 +117,22 @@ public:
    * @param other The tree from which to move resources.
    * @return A reference to this instance.
    */
-  BinarySearchTree& operator=(BinarySearchTree&& other) noexcept;
+  auto operator=(BinarySearchTree&& other) noexcept -> BinarySearchTree&;
 
   //========== INTERFACE INHERITED FROM BinaryTree<T> ==========//
 
-  bool insert(const T& value) override;
-  bool insert(T&& value) override;
-  bool remove(const T& value) override;
+  auto insert(const T& value) -> bool override;
+  auto insert(T&& value) -> bool override;
+  auto remove(const T& value) -> bool override;
   void clear() noexcept override;
 
-  [[nodiscard]] bool contains(const T& value) const override;
+  [[nodiscard]] auto contains(const T& value) const -> bool override;
   [[nodiscard]] auto find_min() const -> const T& override;
   [[nodiscard]] auto find_max() const -> const T& override;
 
-  [[nodiscard]] bool   is_empty() const noexcept override;
-  [[nodiscard]] size_t size() const noexcept override;
-  [[nodiscard]] int    height() const noexcept override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto height() const noexcept -> int override;
 
   void in_order_traversal(const std::function<void(const T&)>& visit) const override;
   void pre_order_traversal(const std::function<void(const T&)>& visit) const override;
@@ -148,7 +148,7 @@ public:
    * @return true if the element was inserted, false if it already exists.
    */
   template <typename... Args>
-  bool emplace(Args&&... args);
+  auto emplace(Args&&... args) -> bool;
 
   /**
    * @brief Returns the successor of a given value.
@@ -230,7 +230,7 @@ private:
    * @return true if inserted, false if duplicate.
    */
   template <typename U>
-  bool insert_helper(std::unique_ptr<Node>& node, U&& value);
+  auto insert_helper(std::unique_ptr<Node>& node, U&& value) -> bool;
 
   /**
    * @brief Recursive helper for removing a value.
@@ -238,7 +238,7 @@ private:
    * @param value The value to remove.
    * @return true if removed, false if not found.
    */
-  bool remove_helper(std::unique_ptr<Node>& node, const T& value);
+  auto remove_helper(std::unique_ptr<Node>& node, const T& value) -> bool;
 
   /**
    * @brief Finds and detaches the minimum node from a subtree.

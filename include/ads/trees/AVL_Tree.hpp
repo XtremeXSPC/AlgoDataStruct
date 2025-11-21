@@ -107,8 +107,8 @@ public:
   ~AVLTree() override = default;
 
   // Copy constructor and assignment are disabled (move-only type)
-  AVLTree(const AVLTree&)            = delete;
-  AVLTree& operator=(const AVLTree&) = delete;
+  AVLTree(const AVLTree&)                    = delete;
+  auto operator=(const AVLTree&) -> AVLTree& = delete;
 
   /**
    * @brief Move constructor.
@@ -121,13 +121,13 @@ public:
    * @param other The tree from which to move resources.
    * @return A reference to this instance.
    */
-  AVLTree& operator=(AVLTree&& other) noexcept;
+  auto operator=(AVLTree&& other) noexcept -> AVLTree&;
 
   //========== INTERFACE INHERITED FROM BinaryTree<T> ==========//
 
-  bool insert(const T& value) override;
-  bool insert(T&& value) override;
-  bool remove(const T& value) override;
+  auto insert(const T& value) -> bool override;
+  auto insert(T&& value) -> bool override;
+  auto remove(const T& value) -> bool override;
   void clear() noexcept override;
 
   [[nodiscard]] auto contains(const T& value) const -> bool override;
@@ -152,7 +152,7 @@ public:
    * @return true if the element was inserted, false if it already exists.
    */
   template <typename... Args>
-  bool emplace(Args&&... args);
+  auto emplace(Args&&... args) -> bool;
 
   /**
    * @brief Returns the balance factor of the tree (at the root).
