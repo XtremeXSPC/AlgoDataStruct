@@ -15,10 +15,10 @@
 #ifndef MAX_HEAP_HPP
 #define MAX_HEAP_HPP
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
-#include <algorithm>
 
 #include "Heap_Exception.hpp"
 
@@ -82,7 +82,7 @@ public:
   auto operator=(MaxHeap&& other) noexcept -> MaxHeap&;
 
   // Disable copy constructor and copy assignment
-  MaxHeap(const MaxHeap&) = delete;
+  MaxHeap(const MaxHeap&)                    = delete;
   auto operator=(const MaxHeap&) -> MaxHeap& = delete;
 
   //========== INSERTION OPERATIONS ==========//
@@ -187,8 +187,8 @@ private:
   size_t size_;     ///< Number of elements in the heap
   size_t capacity_; ///< Current capacity of the array
 
-  static constexpr size_t kInitialCapacity = 16;  ///< Default initial capacity
-  static constexpr size_t kGrowthFactor    = 2;   ///< Growth factor for reallocation
+  static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity
+  static constexpr size_t kGrowthFactor    = 2;  ///< Growth factor for reallocation
 
   //========== PRIVATE HELPER METHODS ==========//
 
@@ -240,9 +240,9 @@ private:
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
 };
 
-}  // namespace ads::heap
+} // namespace ads::heap
 
 #include "../../../src/ads/heaps/Max_Heap.tpp"
 
-#endif  // MAX_HEAP_HPP
+#endif // MAX_HEAP_HPP
 //===--------------------------------------------------------------------------===//
