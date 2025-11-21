@@ -2,20 +2,21 @@
 
 # Defines which checks to enable. The '-' at the beginning disables all checks,
 # then specific groups are re-enabled. This is a common and effective pattern.
-Checks: "
+Checks: '
   ,bugprone-*
   ,performance-*
   ,modernize-*
-  "
+  ,-performance-avoid-endl
+  '
 
 # Specify a list of warnings to treat as errors. Empty means none.
 # Example: "bugprone-use-after-move"
-WarningsAsErrors: ""
+WarningsAsErrors: ''
 
 # A regular expression that tells clang-tidy to only report issues
 # in files from source directories (e.g., 'include' and 'src').
 # This prevents warnings from system headers or third-party libraries.
-HeaderFilterRegex: "^(include|src)/.*"
+HeaderFilterRegex: '^(include|src)/.*'
 
 # Allows fine-tuning specific checks.
 CheckOptions:

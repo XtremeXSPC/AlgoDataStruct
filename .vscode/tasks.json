@@ -167,6 +167,7 @@
       "description": "Select test binary to run",
       "options": [
         "test_avl",
+        "test_bbt",
         "test_bst",
         "test_dijkstra",
         "test_graph_adj_list",
@@ -177,8 +178,10 @@
         "test_heaps",
         "test_lists",
         "test_priority_queue",
-        "test_singly_lists",
-        "test_stacks_queues"
+        "test_rbt",
+        "test_singly_list",
+        "test_stacks_queues",
+        "test_trie"
       ],
       "default": "test_bst"
     }
