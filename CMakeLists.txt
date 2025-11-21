@@ -324,49 +324,24 @@ endfunction()
 # -------------------------- Main Test Executables --------------------------- #
 # These are the actual test programs that exercise the data structures library.
 
-# Binary Search Tree test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Binary_Search_Tree.cc")
-    ads_add_executable(test_bst src/main_Binary_Search_Tree.cc)
-endif()
-
 # AVL Tree test
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_AVL_Tree.cc")
     ads_add_executable(test_avl src/main_AVL_Tree.cc)
 endif()
 
-# Stacks and Queues test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
-    ads_add_executable(test_stacks_queues src/main_Stacks_Queues.cc)
+# Binary B-Tree test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_B_Tree.cc")
+    ads_add_executable(test_bbt src/main_B_Tree.cc)
 endif()
 
-# Linked Lists test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Linked_Lists.cc")
-    ads_add_executable(test_lists src/main_Linked_Lists.cc)
+# Binary Search Tree test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Binary_Search_Tree.cc")
+    ads_add_executable(test_bst src/main_Binary_Search_Tree.cc)
 endif()
 
-# Singly Linked List test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
-    ads_add_executable(test_singly_list src/main_Singly_Linked_List.cc)
-endif()
-
-# Heaps test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Heaps.cc")
-    ads_add_executable(test_heaps src/main_Heaps.cc)
-endif()
-
-# Hash Table Chaining test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Chaining.cc")
-    ads_add_executable(test_hash_chaining src/main_Hash_Table_Chaining.cc)
-endif()
-
-# Hash Table Open Addressing test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Open_Addressing.cc")
-    ads_add_executable(test_hash_open_addr src/main_Hash_Table_Open_Addressing.cc)
-endif()
-
-# Priority Queue test
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
-    ads_add_executable(test_priority_queue src/main_Priority_Queue.cc)
+# Dijkstra Integration test (Graph + PriorityQueue)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dijkstra_Integration.cc")
+    ads_add_executable(test_dijkstra src/main_Dijkstra_Integration.cc)
 endif()
 
 # Graph Adjacency List test
@@ -384,9 +359,49 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Map.cc")
     ads_add_executable(test_hashmap src/main_Hash_Map.cc)
 endif()
 
-# Dijkstra Integration test (Graph + PriorityQueue)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dijkstra_Integration.cc")
-    ads_add_executable(test_dijkstra src/main_Dijkstra_Integration.cc)
+# Hash Table Chaining test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Chaining.cc")
+    ads_add_executable(test_hash_chaining src/main_Hash_Table_Chaining.cc)
+endif()
+
+# Hash Table Open Addressing test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Open_Addressing.cc")
+    ads_add_executable(test_hash_open_addr src/main_Hash_Table_Open_Addressing.cc)
+endif()
+
+# Heaps test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Heaps.cc")
+    ads_add_executable(test_heaps src/main_Heaps.cc)
+endif()
+
+# Linked Lists test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Linked_Lists.cc")
+    ads_add_executable(test_lists src/main_Linked_Lists.cc)
+endif()
+
+# Priority Queue test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
+    ads_add_executable(test_priority_queue src/main_Priority_Queue.cc)
+endif()
+
+# Red Black Tree test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Red_Black_Tree.cc")
+    ads_add_executable(test_rbt src/main_Red_Black_Tree.cc)
+endif()
+
+# Singly Linked List test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
+    ads_add_executable(test_singly_list src/main_Singly_Linked_List.cc)
+endif()
+
+# Stacks and Queues test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
+    ads_add_executable(test_stacks_queues src/main_Stacks_Queues.cc)
+endif()
+
+# Trie test
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
+    ads_add_executable(test_trie src/main_Trie.cc)
 endif()
 
 # -------------------------- GoogleTest Integration -------------------------- #

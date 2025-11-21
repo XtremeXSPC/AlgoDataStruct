@@ -23,35 +23,34 @@ using namespace ads::trees;
 using namespace std;
 
 // ANSI color codes
-#define RESET   "\033[0m"
-#define RED     "\033[31m"
-#define GREEN   "\033[32m"
-#define YELLOW  "\033[33m"
-#define BLUE    "\033[34m"
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
 #define MAGENTA "\033[35m"
-#define CYAN    "\033[36m"
-#define BOLD    "\033[1m"
+#define CYAN "\033[36m"
+#define BOLD "\033[1m"
 
 // Test tracking
 int tests_passed = 0;
 int tests_failed = 0;
 
-#define TEST(name) \
-  cout << CYAN << "[TEST] " << RESET << name << "..." << endl;
+#define TEST(name) cout << CYAN << "[TEST] " << RESET << (name) << "..." << endl;
 
-#define ASSERT(condition, message) \
-  do { \
-    if (!(condition)) { \
-      cout << RED << "  ✗ FAILED: " << RESET << message << endl; \
-      tests_failed++; \
-      return; \
-    } \
+#define ASSERT(condition, message)                                                                                                         \
+  do {                                                                                                                                     \
+    if (!(condition)) {                                                                                                                    \
+      cout << RED << "  ✗ FAILED: " << RESET << (message) << endl;                                                                         \
+      tests_failed++;                                                                                                                      \
+      return;                                                                                                                              \
+    }                                                                                                                                      \
   } while (0)
 
-#define PASS() \
-  do { \
-    cout << GREEN << "  ✓ PASSED" << RESET << endl; \
-    tests_passed++; \
+#define PASS()                                                                                                                             \
+  do {                                                                                                                                     \
+    cout << GREEN << "  ✓ PASSED" << RESET << endl;                                                                                        \
+    tests_passed++;                                                                                                                        \
   } while (0)
 
 //===--------------------------------------------------------------------------===//
@@ -102,9 +101,9 @@ void test_basic_insert_search() {
 void test_sequential_insert() {
   TEST("Sequential Insert with Splits");
 
-  B_Tree<int, 2> btree;  // t=2: 2-3-4 tree (1-3 keys, 2-4 children)
+  B_Tree<int, 2> btree; // t=2: 2-3-4 tree (1-3 keys, 2-4 children)
 
-  cout << "  Inserting 1-10 sequentially..." << endl;
+  cout << "  Inserting 1-10 sequentially..." << '\n';
 
   // Insert 1-10 and watch splits happen
   for (int i = 1; i <= 10; ++i) {
@@ -120,7 +119,7 @@ void test_sequential_insert() {
   }
 
   int h = btree.height();
-  cout << "  Height: " << h << " nodes: " << btree.count_nodes() << endl;
+  cout << "  Height: " << h << " nodes: " << btree.count_nodes() << '\n';
 
   PASS();
 }
@@ -141,9 +140,7 @@ void test_traversal() {
 
   // Collect via traversal
   vector<int> result;
-  btree.in_order_traversal([&result](const int& val) {
-    result.push_back(val);
-  });
+  btree.in_order_traversal([&result](const int& val) -> void { result.push_back(val); });
 
   // Should be sorted
   vector<int> expected = {10, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80};
@@ -174,7 +171,7 @@ void test_properties() {
   // All leaves should be at same level
   // Height should be low: log_t(n)
   int h = btree.height();
-  cout << "  Height for 100 elements (t=3): " << h << endl;
+  cout << "  Height for 100 elements (t=3): " << h << '\n';
   // For t=3, log_3(100) ≈ 4.19
   ASSERT(h <= 5, "Height should be ≤ 5 for 100 elements with t=3");
 
@@ -196,7 +193,7 @@ void test_different_degrees() {
     ASSERT(btree2.size() == 50, "t=2 tree should have 50 elements");
     ASSERT(btree2.validate_properties(), "t=2 tree should be valid");
     int h2 = btree2.height();
-    cout << "  t=2: height=" << h2 << " nodes=" << btree2.count_nodes() << endl;
+    cout << "  t=2: height=" << h2 << " nodes=" << btree2.count_nodes() << '\n';
   }
 
   // t=5: larger nodes
@@ -208,7 +205,7 @@ void test_different_degrees() {
     ASSERT(btree5.size() == 50, "t=5 tree should have 50 elements");
     ASSERT(btree5.validate_properties(), "t=5 tree should be valid");
     int h5 = btree5.height();
-    cout << "  t=5: height=" << h5 << " nodes=" << btree5.count_nodes() << endl;
+    cout << "  t=5: height=" << h5 << " nodes=" << btree5.count_nodes() << '\n';
     // t=5 should have lower height than t=2
   }
 
@@ -230,7 +227,7 @@ void test_random_insert() {
   }
 
   random_device rd;
-  mt19937 g(rd());
+  mt19937       g(rd());
   shuffle(values.begin(), values.end(), g);
 
   // Insert in random order
@@ -314,24 +311,24 @@ void test_stress() {
   TEST("Stress Test (Large Dataset)");
 
   B_Tree<int, 5> btree;
-  const int N = 10000;
+  const int      N = 10000;
 
   // Insert
   auto start = chrono::high_resolution_clock::now();
   for (int i = 1; i <= N; ++i) {
     btree.insert(i);
   }
-  auto end = chrono::high_resolution_clock::now();
+  auto end             = chrono::high_resolution_clock::now();
   auto insert_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Insert " << N << " elements: " << insert_duration.count() << " ms" << endl;
+  cout << "  Insert " << N << " elements: " << insert_duration.count() << " ms" << '\n';
 
   ASSERT(btree.size() == N, "Should have " + to_string(N) + " elements");
   ASSERT(btree.validate_properties(), "Large tree should maintain properties");
 
-  int h = btree.height();
+  int    h     = btree.height();
   size_t nodes = btree.count_nodes();
-  cout << "  Height: " << h << " Nodes: " << nodes << endl;
+  cout << "  Height: " << h << " Nodes: " << nodes << '\n';
 
   // Height should be log_5(10000) ≈ 5.71
   ASSERT(h <= 7, "Height should be ≤ 7 for 10000 elements with t=5");
@@ -341,10 +338,10 @@ void test_stress() {
   for (int i = 1; i <= N; ++i) {
     ASSERT(btree.search(i), "Should find all elements");
   }
-  end = chrono::high_resolution_clock::now();
+  end                  = chrono::high_resolution_clock::now();
   auto search_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Search " << N << " elements: " << search_duration.count() << " ms" << endl;
+  cout << "  Search " << N << " elements: " << search_duration.count() << " ms" << '\n';
 
   PASS();
 }
@@ -357,10 +354,7 @@ void test_string_type() {
 
   B_Tree<string, 3> btree;
 
-  vector<string> words = {
-    "apple", "banana", "cherry", "date", "elderberry",
-    "fig", "grape", "honeydew", "kiwi", "lemon"
-  };
+  vector<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon"};
 
   for (const auto& word : words) {
     btree.insert(word);
@@ -373,9 +367,7 @@ void test_string_type() {
 
   // Check sorted order
   vector<string> result;
-  btree.in_order_traversal([&result](const string& s) {
-    result.push_back(s);
-  });
+  btree.in_order_traversal([&result](const string& s) -> void { result.push_back(s); });
 
   vector<string> expected = words;
   sort(expected.begin(), expected.end());
@@ -392,8 +384,8 @@ void test_height_comparison() {
 
   const int N = 1000;
 
-  B_Tree<int, 2> btree2;
-  B_Tree<int, 5> btree5;
+  B_Tree<int, 2>  btree2;
+  B_Tree<int, 5>  btree5;
   B_Tree<int, 10> btree10;
 
   for (int i = 1; i <= N; ++i) {
@@ -402,14 +394,14 @@ void test_height_comparison() {
     btree10.insert(i);
   }
 
-  int h2 = btree2.height();
-  int h5 = btree5.height();
+  int h2  = btree2.height();
+  int h5  = btree5.height();
   int h10 = btree10.height();
 
-  cout << "  For " << N << " elements:" << endl;
-  cout << "    t=2:  height=" << h2 << " nodes=" << btree2.count_nodes() << endl;
-  cout << "    t=5:  height=" << h5 << " nodes=" << btree5.count_nodes() << endl;
-  cout << "    t=10: height=" << h10 << " nodes=" << btree10.count_nodes() << endl;
+  cout << "  For " << N << " elements:" << '\n';
+  cout << "    t=2:  height=" << h2 << " nodes=" << btree2.count_nodes() << '\n';
+  cout << "    t=5:  height=" << h5 << " nodes=" << btree5.count_nodes() << '\n';
+  cout << "    t=10: height=" << h10 << " nodes=" << btree10.count_nodes() << '\n';
 
   // Larger t should have smaller height
   ASSERT(h10 < h5, "t=10 should have lower height than t=5");
@@ -422,10 +414,10 @@ void test_height_comparison() {
 // Main Test Runner
 //===--------------------------------------------------------------------------===//
 
-int main() {
+auto main() -> int {
   cout << BOLD << BLUE << "\n=================================\n" << RESET;
   cout << BOLD << "  B-Tree Test Suite\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET << endl;
+  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   // Run all tests
   test_basic_insert_search();
@@ -444,12 +436,12 @@ int main() {
   cout << BOLD << BLUE << "\n=================================\n" << RESET;
   cout << BOLD << "  Test Summary\n" << RESET;
   cout << BOLD << BLUE << "=================================\n" << RESET;
-  cout << GREEN << "  Passed: " << tests_passed << RESET << endl;
-  cout << RED   << "  Failed: " << tests_failed << RESET << endl;
-  cout << BOLD << BLUE << "=================================\n" << RESET << endl;
+  cout << GREEN << "  Passed: " << tests_passed << RESET << '\n';
+  cout << RED << "  Failed: " << tests_failed << RESET << '\n';
+  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   if (tests_failed == 0) {
-    cout << GREEN << BOLD << "\n  ✓ All tests passed!\n" << RESET << endl;
+    cout << GREEN << BOLD << "\n  ✓ All tests passed!\n" << RESET << '\n';
   }
 
   return tests_failed > 0 ? 1 : 0;

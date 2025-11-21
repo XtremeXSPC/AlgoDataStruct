@@ -23,35 +23,34 @@ using namespace ads::trees;
 using namespace std;
 
 // ANSI color codes
-#define RESET   "\033[0m"
-#define RED     "\033[31m"
-#define GREEN   "\033[32m"
-#define YELLOW  "\033[33m"
-#define BLUE    "\033[34m"
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
 #define MAGENTA "\033[35m"
-#define CYAN    "\033[36m"
-#define BOLD    "\033[1m"
+#define CYAN "\033[36m"
+#define BOLD "\033[1m"
 
 // Test tracking
 int tests_passed = 0;
 int tests_failed = 0;
 
-#define TEST(name) \
-  cout << CYAN << "[TEST] " << RESET << name << "..." << endl;
+#define TEST(name) cout << CYAN << "[TEST] " << RESET << (name) << "..." << endl;
 
-#define ASSERT(condition, message) \
-  do { \
-    if (!(condition)) { \
-      cout << RED << "  ✗ FAILED: " << RESET << message << endl; \
-      tests_failed++; \
-      return; \
-    } \
+#define ASSERT(condition, message)                                                                                                         \
+  do {                                                                                                                                     \
+    if (!(condition)) {                                                                                                                    \
+      cout << RED << "  ✗ FAILED: " << RESET << (message) << endl;                                                                         \
+      tests_failed++;                                                                                                                      \
+      return;                                                                                                                              \
+    }                                                                                                                                      \
   } while (0)
 
-#define PASS() \
-  do { \
-    cout << GREEN << "  ✓ PASSED" << RESET << endl; \
-    tests_passed++; \
+#define PASS()                                                                                                                             \
+  do {                                                                                                                                     \
+    cout << GREEN << "  ✓ PASSED" << RESET << endl;                                                                                        \
+    tests_passed++;                                                                                                                        \
   } while (0)
 
 //===--------------------------------------------------------------------------===//
@@ -142,7 +141,7 @@ void test_sequential_insert() {
 
   // Height should be O(log n) - for n=20, height should be ≤ 2*log2(21) ≈ 9
   int h = rbt.height();
-  cout << "  Height for 20 sequential inserts: " << h << endl;
+  cout << "  Height for 20 sequential inserts: " << h << '\n';
   ASSERT(h <= 9, "Height should be ≤ 9 for 20 elements");
 
   PASS();
@@ -166,7 +165,7 @@ void test_descending_insert() {
 
   // Height check
   int h = rbt.height();
-  cout << "  Height for 20 descending inserts: " << h << endl;
+  cout << "  Height for 20 descending inserts: " << h << '\n';
   ASSERT(h <= 9, "Height should be ≤ 9 for 20 elements");
 
   PASS();
@@ -187,7 +186,7 @@ void test_random_insert() {
   }
 
   random_device rd;
-  mt19937 g(rd());
+  mt19937       g(rd());
   shuffle(values.begin(), values.end(), g);
 
   // Insert in random order
@@ -205,7 +204,7 @@ void test_random_insert() {
 
   // Height check: for n=100, height ≤ 2*log2(101) ≈ 13.3
   int h = rbt.height();
-  cout << "  Height for 100 random inserts: " << h << endl;
+  cout << "  Height for 100 random inserts: " << h << '\n';
   ASSERT(h <= 14, "Height should be ≤ 14 for 100 elements");
 
   PASS();
@@ -226,7 +225,7 @@ void test_black_height() {
   }
 
   int bh = rbt.black_height();
-  cout << "  Black height: " << bh << endl;
+  cout << "  Black height: " << bh << '\n';
   ASSERT(bh > 0, "Black height should be positive");
 
   // Black height should be at least log2(n+1) / 2
@@ -252,9 +251,7 @@ void test_traversal() {
 
   // Collect elements via traversal
   vector<int> result;
-  rbt.in_order_traversal([&result](const int& val) {
-    result.push_back(val);
-  });
+  rbt.in_order_traversal([&result](const int& val) -> void { result.push_back(val); });
 
   // Should be sorted
   vector<int> expected = {3, 5, 10, 15, 18, 20, 25};
@@ -328,24 +325,24 @@ void test_stress() {
   TEST("Stress Test (Large Dataset)");
 
   Red_Black_Tree<int> rbt;
-  const int N = 10000;
+  const int           N = 10000;
 
   // Insert many elements
   auto start = chrono::high_resolution_clock::now();
   for (int i = 1; i <= N; ++i) {
     rbt.insert(i);
   }
-  auto end = chrono::high_resolution_clock::now();
+  auto end             = chrono::high_resolution_clock::now();
   auto insert_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Insert " << N << " elements: " << insert_duration.count() << " ms" << endl;
+  cout << "  Insert " << N << " elements: " << insert_duration.count() << " ms" << '\n';
 
   ASSERT(rbt.size() == N, "Should have " + to_string(N) + " elements");
   ASSERT(rbt.validate_properties(), "Large tree should maintain RB properties");
 
   // Height check: for n=10000, height ≤ 2*log2(10001) ≈ 26.6
   int h = rbt.height();
-  cout << "  Height: " << h << endl;
+  cout << "  Height: " << h << '\n';
   ASSERT(h <= 27, "Height should be ≤ 27 for 10000 elements");
 
   // Search test
@@ -353,10 +350,10 @@ void test_stress() {
   for (int i = 1; i <= N; ++i) {
     ASSERT(rbt.search(i), "Should find all inserted elements");
   }
-  end = chrono::high_resolution_clock::now();
+  end                  = chrono::high_resolution_clock::now();
   auto search_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Search " << N << " elements: " << search_duration.count() << " ms" << endl;
+  cout << "  Search " << N << " elements: " << search_duration.count() << " ms" << '\n';
 
   PASS();
 }
@@ -381,9 +378,7 @@ void test_string_type() {
 
   // Check sorted order
   vector<string> result;
-  rbt.in_order_traversal([&result](const string& s) {
-    result.push_back(s);
-  });
+  rbt.in_order_traversal([&result](const string& s) -> void { result.push_back(s); });
 
   vector<string> expected = {"apple", "banana", "cherry", "date", "elderberry"};
   ASSERT(result == expected, "String traversal should be sorted");
@@ -405,12 +400,12 @@ void test_balance_advantage() {
     rbt.insert(i);
   }
 
-  int h = rbt.height();
+  int h               = rbt.height();
   int theoretical_max = static_cast<int>(2 * std::log2(N + 1));
 
-  cout << "  Actual height: " << h << endl;
-  cout << "  Theoretical max (2*log2(n+1)): " << theoretical_max << endl;
-  cout << "  Unbalanced BST height would be: " << (N - 1) << endl;
+  cout << "  Actual height: " << h << '\n';
+  cout << "  Theoretical max (2*log2(n+1)): " << theoretical_max << '\n';
+  cout << "  Unbalanced BST height would be: " << (N - 1) << '\n';
 
   ASSERT(h <= theoretical_max, "Height should be ≤ theoretical maximum");
   ASSERT(h < (N - 1), "Height should be much less than unbalanced BST");
@@ -422,10 +417,10 @@ void test_balance_advantage() {
 // Main Test Runner
 //===--------------------------------------------------------------------------===//
 
-int main() {
+auto main() -> int {
   cout << BOLD << BLUE << "\n=================================\n" << RESET;
   cout << BOLD << "  Red-Black Tree Test Suite\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET << endl;
+  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   // Run all tests
   test_basic_insert_search();
@@ -445,12 +440,12 @@ int main() {
   cout << BOLD << BLUE << "\n=================================\n" << RESET;
   cout << BOLD << "  Test Summary\n" << RESET;
   cout << BOLD << BLUE << "=================================\n" << RESET;
-  cout << GREEN << "  Passed: " << tests_passed << RESET << endl;
-  cout << RED   << "  Failed: " << tests_failed << RESET << endl;
-  cout << BOLD << BLUE << "=================================\n" << RESET << endl;
+  cout << GREEN << "  Passed: " << tests_passed << RESET << '\n';
+  cout << RED << "  Failed: " << tests_failed << RESET << '\n';
+  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   if (tests_failed == 0) {
-    cout << GREEN << BOLD << "\n  ✓ All tests passed!\n" << RESET << endl;
+    cout << GREEN << BOLD << "\n  ✓ All tests passed!\n" << RESET << '\n';
   }
 
   return tests_failed > 0 ? 1 : 0;

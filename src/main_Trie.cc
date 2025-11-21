@@ -22,35 +22,34 @@ using namespace ads::trees;
 using namespace std;
 
 // ANSI color codes for output
-#define RESET   "\033[0m"
-#define RED     "\033[31m"
-#define GREEN   "\033[32m"
-#define YELLOW  "\033[33m"
-#define BLUE    "\033[34m"
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
 #define MAGENTA "\033[35m"
-#define CYAN    "\033[36m"
-#define BOLD    "\033[1m"
+#define CYAN "\033[36m"
+#define BOLD "\033[1m"
 
 // Test result tracking
 int tests_passed = 0;
 int tests_failed = 0;
 
-#define TEST(name) \
-  cout << CYAN << "[TEST] " << RESET << name << "..." << endl;
+#define TEST(name) cout << CYAN << "[TEST] " << RESET << (name) << "..." << endl;
 
-#define ASSERT(condition, message) \
-  do { \
-    if (!(condition)) { \
-      cout << RED << "  ✗ FAILED: " << RESET << message << endl; \
-      tests_failed++; \
-      return; \
-    } \
+#define ASSERT(condition, message)                                                                                                         \
+  do {                                                                                                                                     \
+    if (!(condition)) {                                                                                                                    \
+      cout << RED << "  ✗ FAILED: " << RESET << (message) << endl;                                                                         \
+      tests_failed++;                                                                                                                      \
+      return;                                                                                                                              \
+    }                                                                                                                                      \
   } while (0)
 
-#define PASS() \
-  do { \
-    cout << GREEN << "  ✓ PASSED" << RESET << endl; \
-    tests_passed++; \
+#define PASS()                                                                                                                             \
+  do {                                                                                                                                     \
+    cout << GREEN << "  ✓ PASSED" << RESET << endl;                                                                                        \
+    tests_passed++;                                                                                                                        \
   } while (0)
 
 //===--------------------------------------------------------------------------===//
@@ -323,14 +322,14 @@ void test_exceptions() {
   // For array-based trie, test invalid characters
   TrieArray array_trie;
   try {
-    array_trie.insert("Hello");  // Uppercase not allowed
+    array_trie.insert("Hello"); // Uppercase not allowed
     ASSERT(false, "Should throw on uppercase in array trie");
   } catch (const std::invalid_argument& e) {
     // Expected
   }
 
   try {
-    array_trie.insert("hello!");  // Special char not allowed
+    array_trie.insert("hello!"); // Special char not allowed
     ASSERT(false, "Should throw on special char in array trie");
   } catch (const std::invalid_argument& e) {
     // Expected
@@ -348,11 +347,8 @@ void test_autocomplete_scenario() {
   TrieMap dictionary;
 
   // Build small dictionary
-  vector<string> words = {
-    "program", "programming", "programmer", "programs",
-    "progress", "project", "projector",
-    "provide", "provider", "provision"
-  };
+  vector<string> words = {"program", "programming", "programmer", "programs", "progress",
+                          "project", "projector",   "provide",    "provider", "provision"};
 
   for (const auto& word : words) {
     dictionary.insert(word);
@@ -379,7 +375,7 @@ void test_autocomplete_scenario() {
 void test_performance() {
   TEST("Performance Test (Large Dataset)");
 
-  TrieMap trie;
+  TrieMap   trie;
   const int num_words = 10000;
 
   // Measure insert time
@@ -390,10 +386,10 @@ void test_performance() {
     trie.insert(word);
   }
 
-  auto end = chrono::high_resolution_clock::now();
+  auto end             = chrono::high_resolution_clock::now();
   auto insert_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Insert " << num_words << " words: " << insert_duration.count() << " ms" << endl;
+  cout << "  Insert " << num_words << " words: " << insert_duration.count() << " ms" << '\n';
   ASSERT(trie.size() == num_words, "Should have inserted all words");
 
   // Measure search time
@@ -404,21 +400,20 @@ void test_performance() {
     ASSERT(trie.search(word), "Should find all inserted words");
   }
 
-  end = chrono::high_resolution_clock::now();
+  end                  = chrono::high_resolution_clock::now();
   auto search_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Search " << num_words << " words: " << search_duration.count() << " ms" << endl;
+  cout << "  Search " << num_words << " words: " << search_duration.count() << " ms" << '\n';
 
   // Measure prefix search
   start = chrono::high_resolution_clock::now();
 
   auto results = trie.get_all_words_with_prefix("word1");
 
-  end = chrono::high_resolution_clock::now();
+  end                  = chrono::high_resolution_clock::now();
   auto prefix_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-  cout << "  Prefix search 'word1*': " << prefix_duration.count()
-       << " ms (found " << results.size() << " matches)" << endl;
+  cout << "  Prefix search 'word1*': " << prefix_duration.count() << " ms (found " << results.size() << " matches)" << '\n';
 
   PASS();
 }
@@ -463,7 +458,7 @@ void test_stress() {
   vector<string> prefixes = {"cat", "car", "dog", "dot", "test", "tea"};
   vector<string> suffixes = {"", "s", "ed", "ing", "er", "est"};
 
-  int word_count = 0;
+  size_t word_count = 0;
   for (const auto& prefix : prefixes) {
     for (const auto& suffix : suffixes) {
       string word = prefix + suffix;
@@ -513,10 +508,10 @@ void test_stress() {
 // Main Test Runner
 //===--------------------------------------------------------------------------===//
 
-int main() {
+auto main() -> int {
   cout << BOLD << BLUE << "\n=================================\n" << RESET;
   cout << BOLD << "  Trie Test Suite\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET << endl;
+  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   // Run all tests
   test_basic_insert_search();
@@ -537,9 +532,9 @@ int main() {
   cout << BOLD << BLUE << "\n=================================\n" << RESET;
   cout << BOLD << "  Test Summary\n" << RESET;
   cout << BOLD << BLUE << "=================================\n" << RESET;
-  cout << GREEN << "  Passed: " << tests_passed << RESET << endl;
-  cout << RED   << "  Failed: " << tests_failed << RESET << endl;
-  cout << BOLD << BLUE << "=================================\n" << RESET << endl;
+  cout << GREEN << "  Passed: " << tests_passed << RESET << '\n';
+  cout << RED << "  Failed: " << tests_failed << RESET << '\n';
+  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
 
   return tests_failed > 0 ? 1 : 0;
 }
