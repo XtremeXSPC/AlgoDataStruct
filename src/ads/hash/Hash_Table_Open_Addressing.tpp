@@ -23,35 +23,25 @@ using ads::hash::ProbingStrategy;
 //============================================================================//
 
 template <typename Key, typename Value>
-HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(size_t          initial_capacity,
-                                                              float           max_load_factor,
-                                                              ProbingStrategy strategy)
-    : table_(std::make_unique<Slot[]>(initial_capacity)),
-      capacity_(initial_capacity),
-      size_(0),
-      max_load_factor_(max_load_factor),
-      strategy_(strategy) {
+HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(size_t initial_capacity, ProbingStrategy strategy, float max_load_factor) :
+    table_(std::make_unique<Slot[]>(initial_capacity)), capacity_(initial_capacity), size_(0), max_load_factor_(max_load_factor),
+    strategy_(strategy) {
   if (max_load_factor <= 0.0f || max_load_factor >= 1.0f) {
     throw InvalidOperationException("Max load factor must be in (0, 1)");
   }
 }
 
 template <typename Key, typename Value>
-HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(
-    HashTableOpenAddressing&& other) noexcept
-    : table_(std::move(other.table_)),
-      capacity_(other.capacity_),
-      size_(other.size_),
-      max_load_factor_(other.max_load_factor_),
-      strategy_(other.strategy_) {
+HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(HashTableOpenAddressing&& other) noexcept :
+    table_(std::move(other.table_)), capacity_(other.capacity_), size_(other.size_), max_load_factor_(other.max_load_factor_),
+    strategy_(other.strategy_) {
   other.capacity_        = 0;
   other.size_            = 0;
   other.max_load_factor_ = kDefaultMaxLoadFactor;
 }
 
 template <typename Key, typename Value>
-HashTableOpenAddressing<Key, Value>& HashTableOpenAddressing<Key, Value>::operator=(
-    HashTableOpenAddressing&& other) noexcept {
+auto HashTableOpenAddressing<Key, Value>::operator=(HashTableOpenAddressing&& other) noexcept -> HashTableOpenAddressing<Key, Value>& {
   if (this != &other) {
     table_                 = std::move(other.table_);
     capacity_              = other.capacity_;
@@ -70,12 +60,12 @@ HashTableOpenAddressing<Key, Value>& HashTableOpenAddressing<Key, Value>::operat
 //============================================================================//
 
 template <typename Key, typename Value>
-size_t HashTableOpenAddressing<Key, Value>::hash1(const Key& key) const {
+auto HashTableOpenAddressing<Key, Value>::hash1(const Key& key) const -> size_t {
   return std::hash<Key>{}(key) % capacity_;
 }
 
 template <typename Key, typename Value>
-size_t HashTableOpenAddressing<Key, Value>::hash2(const Key& key) const {
+auto HashTableOpenAddressing<Key, Value>::hash2(const Key& key) const -> size_t {
   // Secondary hash for double hashing
   // Use a different hash and ensure it's never 0 and coprime with capacity
   size_t h = std::hash<Key>{}(key);
@@ -93,7 +83,7 @@ size_t HashTableOpenAddressing<Key, Value>::hash2(const Key& key) const {
 //============================================================================//
 
 template <typename Key, typename Value>
-size_t HashTableOpenAddressing<Key, Value>::probe(const Key& key, size_t i) const {
+auto HashTableOpenAddressing<Key, Value>::probe(const Key& key, size_t i) const -> size_t {
   switch (strategy_) {
   case ProbingStrategy::LINEAR:
     return (hash1(key) + i) % capacity_;
@@ -188,7 +178,7 @@ auto HashTableOpenAddressing<Key, Value>::find_insert_slot(const Key& key) -> Sl
 //============================================================================//
 
 template <typename Key, typename Value>
-bool HashTableOpenAddressing<Key, Value>::insert(const Key& key, const Value& value) {
+auto HashTableOpenAddressing<Key, Value>::insert(const Key& key, const Value& value) -> bool {
   check_and_rehash();
 
   Slot* slot = find_insert_slot(key);
@@ -207,7 +197,7 @@ bool HashTableOpenAddressing<Key, Value>::insert(const Key& key, const Value& va
 }
 
 template <typename Key, typename Value>
-bool HashTableOpenAddressing<Key, Value>::insert(Key&& key, Value&& value) {
+auto HashTableOpenAddressing<Key, Value>::insert(Key&& key, Value&& value) -> bool {
   check_and_rehash();
 
   // Need to search with const key reference
@@ -229,7 +219,7 @@ bool HashTableOpenAddressing<Key, Value>::insert(Key&& key, Value&& value) {
 
 template <typename Key, typename Value>
 template <typename... Args>
-Value& HashTableOpenAddressing<Key, Value>::emplace(const Key& key, Args&&... args) {
+auto HashTableOpenAddressing<Key, Value>::emplace(const Key& key, Args&&... args) -> Value& {
   check_and_rehash();
 
   Slot* slot = find_insert_slot(key);
@@ -253,7 +243,7 @@ Value& HashTableOpenAddressing<Key, Value>::emplace(const Key& key, Args&&... ar
 //============================================================================//
 
 template <typename Key, typename Value>
-Value& HashTableOpenAddressing<Key, Value>::at(const Key& key) {
+auto HashTableOpenAddressing<Key, Value>::at(const Key& key) -> Value& {
   Slot* slot = find_slot(key);
 
   if (!slot) {
@@ -264,7 +254,7 @@ Value& HashTableOpenAddressing<Key, Value>::at(const Key& key) {
 }
 
 template <typename Key, typename Value>
-const Value& HashTableOpenAddressing<Key, Value>::at(const Key& key) const {
+auto HashTableOpenAddressing<Key, Value>::at(const Key& key) const -> const Value& {
   const Slot* slot = find_slot(key);
 
   if (!slot) {
@@ -275,7 +265,7 @@ const Value& HashTableOpenAddressing<Key, Value>::at(const Key& key) const {
 }
 
 template <typename Key, typename Value>
-Value& HashTableOpenAddressing<Key, Value>::operator[](const Key& key) {
+auto HashTableOpenAddressing<Key, Value>::operator[](const Key& key) -> Value& {
   Slot* slot = find_slot(key);
 
   if (slot) {
@@ -295,18 +285,18 @@ Value& HashTableOpenAddressing<Key, Value>::operator[](const Key& key) {
 //============================================================================//
 
 template <typename Key, typename Value>
-bool HashTableOpenAddressing<Key, Value>::contains(const Key& key) const {
+auto HashTableOpenAddressing<Key, Value>::contains(const Key& key) const -> bool {
   return find_slot(key) != nullptr;
 }
 
 template <typename Key, typename Value>
-Value* HashTableOpenAddressing<Key, Value>::find(const Key& key) {
+auto HashTableOpenAddressing<Key, Value>::find(const Key& key) -> Value* {
   Slot* slot = find_slot(key);
   return slot ? &(slot->entry->value) : nullptr;
 }
 
 template <typename Key, typename Value>
-const Value* HashTableOpenAddressing<Key, Value>::find(const Key& key) const {
+auto HashTableOpenAddressing<Key, Value>::find(const Key& key) const -> const Value* {
   const Slot* slot = find_slot(key);
   return slot ? &(slot->entry->value) : nullptr;
 }
@@ -316,7 +306,7 @@ const Value* HashTableOpenAddressing<Key, Value>::find(const Key& key) const {
 //============================================================================//
 
 template <typename Key, typename Value>
-bool HashTableOpenAddressing<Key, Value>::erase(const Key& key) {
+auto HashTableOpenAddressing<Key, Value>::erase(const Key& key) -> bool {
   Slot* slot = find_slot(key);
 
   if (!slot) {
@@ -345,32 +335,32 @@ void HashTableOpenAddressing<Key, Value>::clear() noexcept {
 //============================================================================//
 
 template <typename Key, typename Value>
-size_t HashTableOpenAddressing<Key, Value>::size() const noexcept {
+auto HashTableOpenAddressing<Key, Value>::size() const noexcept -> size_t {
   return size_;
 }
 
 template <typename Key, typename Value>
-size_t HashTableOpenAddressing<Key, Value>::capacity() const noexcept {
+auto HashTableOpenAddressing<Key, Value>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
 template <typename Key, typename Value>
-bool HashTableOpenAddressing<Key, Value>::is_empty() const noexcept {
+auto HashTableOpenAddressing<Key, Value>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <typename Key, typename Value>
-float HashTableOpenAddressing<Key, Value>::load_factor() const noexcept {
+auto HashTableOpenAddressing<Key, Value>::load_factor() const noexcept -> float {
   return capacity_ > 0 ? static_cast<float>(size_) / static_cast<float>(capacity_) : 0.0f;
 }
 
 template <typename Key, typename Value>
-float HashTableOpenAddressing<Key, Value>::max_load_factor() const noexcept {
+auto HashTableOpenAddressing<Key, Value>::max_load_factor() const noexcept -> float {
   return max_load_factor_;
 }
 
 template <typename Key, typename Value>
-ProbingStrategy HashTableOpenAddressing<Key, Value>::probing_strategy() const noexcept {
+auto HashTableOpenAddressing<Key, Value>::probing_strategy() const noexcept -> ProbingStrategy {
   return strategy_;
 }
 

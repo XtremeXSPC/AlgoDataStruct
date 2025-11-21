@@ -101,7 +101,7 @@ public:
    * @brief Returns the current capacity of the internal array.
    * @return The number of elements that can be stored without reallocation.
    */
-  [[nodiscard]] size_t capacity() const noexcept { return capacity_; }
+  [[nodiscard]] auto capacity() const noexcept -> size_t { return capacity_; }
 
   /**
    * @brief Reserves capacity for at least n elements.

@@ -55,8 +55,8 @@ public:
   ~ArrayStack() override = default;
 
   // Copy constructor and assignment are disabled (move-only type)
-  ArrayStack(const ArrayStack&)            = delete;
-  ArrayStack& operator=(const ArrayStack&) = delete;
+  ArrayStack(const ArrayStack&)                    = delete;
+  auto operator=(const ArrayStack&) -> ArrayStack& = delete;
 
   /**
    * @brief Move constructor.
@@ -69,7 +69,7 @@ public:
    * @param other The stack from which to move resources.
    * @return A reference to this instance.
    */
-  ArrayStack& operator=(ArrayStack&& other) noexcept;
+  auto operator=(ArrayStack&& other) noexcept -> ArrayStack&;
 
   //========== INTERFACE INHERITED FROM Stack<T> ==========//
 

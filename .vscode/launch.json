@@ -11,9 +11,7 @@
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": [
-        "command script import /Users/lcs-dev/.lldb/LLDB_Formatters"
-      ]
+      "initCommands": ["command script import /Users/lcs-dev/.lldb/LLDB_Formatters"]
     },
     {
       "name": "(macOS) Debug with MS C/C++",
@@ -51,9 +49,7 @@
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": [
-        "command script import /home/lcs-dev/.lldb/LLDB_Formatters"
-      ]
+      "initCommands": ["command script import /home/lcs-dev/.lldb/LLDB_Formatters"]
     },
     {
       "name": "(Linux) Debug with MS C/C++",
@@ -129,10 +125,15 @@
       "options": [
         "test_avl",
         "test_bst",
+        "test_dijkstra",
+        "test_graph_adj_list",
+        "test_graph_adj_matrix",
         "test_hash_chaining",
         "test_hash_open_addr",
+        "test_hashmap",
         "test_heaps",
         "test_lists",
+        "test_priority_queue",
         "test_singly_lists",
         "test_stacks_queues"
       ],

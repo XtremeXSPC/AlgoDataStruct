@@ -242,7 +242,7 @@ void test_custom_types() {
 
   table.insert("alice", Person("Alice", 30));
   table.insert("bob", Person("Bob", 25));
-  table.emplace("charlie", "Charlie", 35);
+  table.insert("charlie", Person("Charlie", 35));
 
   cout << "Accessing custom types:\n";
   cout << "  alice: " << table["alice"].name << ", age " << table["alice"].age << '\n';
@@ -393,7 +393,7 @@ void test_performance() {
 
 int main() {
   cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║   HASH TABLE CHAINING COMPREHENSIVE TEST SUITE        ║\n";
+  cout << "║      HASH TABLE CHAINING COMPREHENSIVE TEST SUITE      ║\n";
   cout << "╚════════════════════════════════════════════════════════╝\n";
 
   try {
@@ -411,8 +411,9 @@ int main() {
     test_clear();
     test_performance();
 
-    cout << "\n╔════════════════════════════════════════════════════════╗\n";
-    cout << "║  ALL TESTS COMPLETED SUCCESSFULLY!                    ║\n";
+    cout << "\n";
+    cout << "╔════════════════════════════════════════════════════════╗\n";
+    cout << "║            ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
     cout << "╚════════════════════════════════════════════════════════╝\n";
 
     return 0;

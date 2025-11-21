@@ -168,10 +168,15 @@
       "options": [
         "test_avl",
         "test_bst",
+        "test_dijkstra",
+        "test_graph_adj_list",
+        "test_graph_adj_matrix",
         "test_hash_chaining",
         "test_hash_open_addr",
+        "test_hashmap",
         "test_heaps",
         "test_lists",
+        "test_priority_queue",
         "test_singly_lists",
         "test_stacks_queues"
       ],
