@@ -8,16 +8,6 @@
 
 **AlgoDataStruct** is a comprehensive educational library that implements a wide range of data structures in Java and C++. Designed for students, this library offers clean, well-documented, and efficient implementations of fundamental and advanced data structures.
 
-Warning: this repository is not complete as I am implementing the missing data structures.
-
-## Goals
-
-- Provide clear reference implementations for each data structure
-- Include comprehensive documentation with theoretical explanations
-- Demonstrate implementation differences between Java and C++
-- Offer time and space complexity analysis (not always)
-- Include unit tests (not always) and usage examples
-
 ## Implemented Data Structures
 
 <details open>
@@ -51,20 +41,21 @@ Warning: this repository is not complete as I am implementing the missing data s
 
 - **Trees**
   - Binary Tree
-  - Binary Search Tree (BST)
-  - AVL Tree
-  - Red-Black Tree
-  - B-Tree
+  - Binary Search Tree (BST) ✅ (C++)
+  - AVL Tree ✅ (C++)
+  - Red-Black Tree ✅ (C++)
+  - B-Tree ✅ (C++)
   - B+ Tree
   - 2-3 Tree
   - 2-3-4 Tree
   - Segment Tree
   - Fenwick Tree (Binary Indexed Tree)
-  - Trie (Prefix Tree)
+  - Trie (Prefix Tree) ✅ (C++)
   - Suffix Tree
   - Quad-tree and Oct-tree
 
-- **Heaps** (+)
+- **Heaps**
+  - Min/Max Heap ✅ (C++)
   - Binary Heap
   - Fibonacci Heap
   - Binomial Heap
