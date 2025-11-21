@@ -31,8 +31,8 @@ using std::vector;
 using ads::trees::B_Tree;
 
 // Helper function to print tree contents
-template <size_t T>
-void print_btree(const B_Tree<int, T>& tree, const string& name) {
+template <int MinDegree>
+void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
   cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height()
        << ", nodes: " << tree.count_nodes() << "):\n";
 
@@ -163,13 +163,6 @@ void demo_search_traversal() {
   // In-order traversal
   cout << "\nIn-order traversal (sorted): ";
   btree.in_order_traversal([](const int& val) -> void { cout << val << " "; });
-  cout << '\n';
-
-  // Using iterators (if available)
-  cout << "Using range-based for loop: ";
-  for (const auto& val : btree) {
-    cout << val << " ";
-  }
   cout << '\n';
 
   // Validate properties

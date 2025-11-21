@@ -108,17 +108,17 @@ void demo_search_operations() {
   // Test successor and predecessor
   cout << "\nTesting successor and predecessor:\n";
   int        demo_val = 40;
-  const int* succ     = bst.successor(test_val);
-  const int* pred     = bst.predecessor(test_val);
+  const int* succ     = bst.successor(demo_val);
+  const int* pred     = bst.predecessor(demo_val);
 
-  cout << "  Successor of " << test_val << ": " << (succ ? to_string(*succ) : "none") << '\n';
-  cout << "  Predecessor of " << test_val << ": " << (pred ? to_string(*pred) : "none") << '\n';
+  cout << "  Successor of " << demo_val << ": " << (succ ? to_string(*succ) : "none") << '\n';
+  cout << "  Predecessor of " << demo_val << ": " << (pred ? to_string(*pred) : "none") << '\n';
 
-  test_val = 10;
-  succ     = bst.successor(test_val);
-  pred     = bst.predecessor(test_val);
-  cout << "  Successor of " << test_val << ": " << (succ ? to_string(*succ) : "none") << '\n';
-  cout << "  Predecessor of " << test_val << ": " << (pred ? to_string(*pred) : "none") << '\n';
+  demo_val = 10;
+  succ     = bst.successor(demo_val);
+  pred     = bst.predecessor(demo_val);
+  cout << "  Successor of " << demo_val << ": " << (succ ? to_string(*succ) : "none") << '\n';
+  cout << "  Predecessor of " << demo_val << ": " << (pred ? to_string(*pred) : "none") << '\n';
 }
 
 // Test removal operations
