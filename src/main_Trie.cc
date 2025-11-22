@@ -349,7 +349,7 @@ void demo_edge_cases() {
 auto main() -> int {
   try {
     cout << "========================================\n";
-    cout << "  Trie (Prefix Tree) - Comprehensive Demo\n";
+    cout << " Trie (Prefix Tree) - Comprehensive Demo\n";
     cout << "========================================\n";
 
     demo_basic_operations();
@@ -362,7 +362,8 @@ auto main() -> int {
     demo_case_sensitivity();
     demo_edge_cases();
 
-    cout << "\n========================================\n";
+    cout << "\n";
+    cout << "========================================\n";
     cout << "  All Demos Completed Successfully!\n";
     cout << "========================================\n";
 
