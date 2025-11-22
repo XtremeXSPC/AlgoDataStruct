@@ -136,8 +136,8 @@ TEST_F(AVLTreeTest, FindMinMax) {
 }
 
 TEST_F(AVLTreeTest, FindMinMaxOnEmptyThrows) {
-  EXPECT_THROW(tree.find_min(), EmptyTreeException);
-  EXPECT_THROW(tree.find_max(), EmptyTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto result = tree.find_min(); }, EmptyTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto result = tree.find_max(); }, EmptyTreeException);
 }
 
 // ----- Removal Tests ----- //
@@ -209,7 +209,7 @@ TEST_F(AVLTreeTest, InOrderTraversal) {
   tree.insert(40);
 
   std::vector<int> result;
-  tree.in_order_traversal([&result](const int& val) { result.push_back(val); });
+  tree.in_order_traversal([&result](const int& val) -> void { result.push_back(val); });
 
   std::vector<int> expected = {20, 30, 40, 50, 70};
   EXPECT_EQ(result, expected);

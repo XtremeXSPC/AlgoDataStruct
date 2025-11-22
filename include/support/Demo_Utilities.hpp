@@ -79,7 +79,8 @@ inline void print_header(const std::string& program_name) {
  */
 inline void print_footer() {
   std::cout << ANSI_BOLD << ANSI_GREEN;
-  std::cout << "\n========================================\n";
+  std::cout << "\n";
+  std::cout << "========================================\n";
   std::cout << "  All Demos Completed Successfully!\n";
   std::cout << "========================================\n";
   std::cout << ANSI_RESET;

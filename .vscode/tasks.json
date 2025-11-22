@@ -8,6 +8,7 @@
       "args": [
         "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=Debug",
+        "-DENABLE_TESTING=OFF",
         "-B",
         "build"
       ],
@@ -42,7 +43,7 @@
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DENABLE_TESTING=ON",
         "-B",
-        "build"
+        "build-tests"
       ],
       "options": {
         "cwd": "${workspaceFolder}",
@@ -72,7 +73,7 @@
       "label": "CMake: Build (Debug + Tests)",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "-j8"],
+      "args": ["--build", "build-tests", "-j8"],
       "options": {
         "cwd": "${workspaceFolder}",
         "env": {
@@ -110,22 +111,33 @@
     {
       "label": "CMake: Clean & Reconfigure (Debug)",
       "type": "shell",
-      "command": "rm",
+      "command": "sh",
       "args": [
-        "-rf",
-        "build",
-        "&&",
-        "cmake",
-        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
-        "-DCMAKE_BUILD_TYPE=Debug",
-        "-B",
-        "build"
+        "-c",
+        "cmake -E remove_directory build && cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": [],
       "detail": "Remove build directory and reconfigure for Debug"
+    },
+    {
+      "label": "CMake: Clean & Reconfigure (Debug + Tests)",
+      "type": "shell",
+      "command": "sh",
+      "args": [
+        "-c",
+        "cmake -E remove_directory build-tests && cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build-tests"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "CPATH": ""
+        }
+      },
+      "problemMatcher": [],
+      "detail": "Remove build-tests directory and reconfigure for Debug with tests"
     },
     {
       "label": "Run: Select Target",
@@ -154,7 +166,7 @@
       "command": "ctest",
       "args": ["--output-on-failure", "--verbose"],
       "options": {
-        "cwd": "${workspaceFolder}/build",
+        "cwd": "${workspaceFolder}/build-tests",
         "env": {
           "CPATH": ""
         }
