@@ -416,8 +416,9 @@ if(ENABLE_TESTING)
     # Download and configure GoogleTest using FetchContent
     include(FetchContent)
     FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+      googletest
+      URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+      DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
 
     # Configure GoogleTest to work with MSVC's runtime library
