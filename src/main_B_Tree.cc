@@ -33,8 +33,7 @@ using ads::trees::B_Tree;
 // Helper function to print tree contents
 template <int MinDegree>
 void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
-  cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height()
-       << ", nodes: " << tree.count_nodes() << "):\n";
+  cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << ", nodes: " << tree.count_nodes() << "):\n";
 
   if (tree.is_empty()) {
     cout << "  (empty)\n";
@@ -102,8 +101,7 @@ void demo_node_splitting() {
   }
 
   print_btree(btree, "btree");
-  cout << "\nB-Tree properties maintained after all insertions: " << (btree.validate_properties() ? "yes" : "no")
-       << '\n';
+  cout << "\nB-Tree properties maintained after all insertions: " << (btree.validate_properties() ? "yes" : "no") << '\n';
 }
 
 // Demo: Different minimum degrees
@@ -181,8 +179,8 @@ void demo_random_insertions() {
     values.push_back(i);
   }
 
-  std::random_device              rd;
-  std::mt19937                    g(rd());
+  std::random_device rd;
+  std::mt19937       g(rd());
   std::shuffle(values.begin(), values.end(), g);
 
   cout << "Inserting 100 values in random order...\n";

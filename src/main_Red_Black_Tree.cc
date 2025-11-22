@@ -158,8 +158,8 @@ void demo_random_insertions() {
     values.push_back(i);
   }
 
-  std::random_device              rd;
-  std::mt19937                    g(rd());
+  std::random_device rd;
+  std::mt19937       g(rd());
   std::shuffle(values.begin(), values.end(), g);
 
   cout << "Inserting 100 values in random order...\n";

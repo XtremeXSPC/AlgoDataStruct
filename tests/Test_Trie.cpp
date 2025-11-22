@@ -10,6 +10,8 @@
 //===--------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -17,10 +19,12 @@
 
 using namespace ads::trees;
 
+using TrieType = ads::trees::Trie<>;
+
 // Test fixture for Trie
 class TrieTest : public ::testing::Test {
 protected:
-  Trie trie;
+  TrieType trie;
 };
 
 // ----- Basic State Tests ----- //
@@ -43,9 +47,9 @@ TEST_F(TrieTest, Clear) {
 // ----- Insertion Tests ----- //
 
 TEST_F(TrieTest, InsertSingleWord) {
-  EXPECT_TRUE(trie.insert("hello"));
+  trie.insert("hello");
   EXPECT_EQ(trie.size(), 1);
-  EXPECT_TRUE(trie.contains("hello"));
+  EXPECT_TRUE(trie.search("hello"));
 }
 
 TEST_F(TrieTest, InsertMultipleWords) {
@@ -54,21 +58,23 @@ TEST_F(TrieTest, InsertMultipleWords) {
   trie.insert("help");
 
   EXPECT_EQ(trie.size(), 3);
-  EXPECT_TRUE(trie.contains("hello"));
-  EXPECT_TRUE(trie.contains("world"));
-  EXPECT_TRUE(trie.contains("help"));
+  EXPECT_TRUE(trie.search("hello"));
+  EXPECT_TRUE(trie.search("world"));
+  EXPECT_TRUE(trie.search("help"));
 }
 
 TEST_F(TrieTest, InsertDuplicateRejected) {
   trie.insert("hello");
-  EXPECT_FALSE(trie.insert("hello"));
-  EXPECT_EQ(trie.size(), 1);
+  const auto before = trie.size();
+  trie.insert("hello");
+  EXPECT_EQ(trie.size(), before);
+  EXPECT_TRUE(trie.search("hello"));
 }
 
 TEST_F(TrieTest, InsertEmptyString) {
-  EXPECT_TRUE(trie.insert(""));
-  EXPECT_EQ(trie.size(), 1);
-  EXPECT_TRUE(trie.contains(""));
+  EXPECT_THROW(trie.insert(""), std::invalid_argument);
+  EXPECT_EQ(trie.size(), 0);
+  EXPECT_FALSE(trie.search(""));
 }
 
 TEST_F(TrieTest, InsertPrefixWords) {
@@ -78,10 +84,10 @@ TEST_F(TrieTest, InsertPrefixWords) {
   trie.insert("careful");
 
   EXPECT_EQ(trie.size(), 4);
-  EXPECT_TRUE(trie.contains("car"));
-  EXPECT_TRUE(trie.contains("card"));
-  EXPECT_TRUE(trie.contains("care"));
-  EXPECT_TRUE(trie.contains("careful"));
+  EXPECT_TRUE(trie.search("car"));
+  EXPECT_TRUE(trie.search("card"));
+  EXPECT_TRUE(trie.search("care"));
+  EXPECT_TRUE(trie.search("careful"));
 }
 
 // ----- Search Tests ----- //
@@ -91,11 +97,11 @@ TEST_F(TrieTest, ContainsWord) {
   trie.insert("help");
   trie.insert("heap");
 
-  EXPECT_TRUE(trie.contains("hello"));
-  EXPECT_TRUE(trie.contains("help"));
-  EXPECT_TRUE(trie.contains("heap"));
-  EXPECT_FALSE(trie.contains("hel")); // Prefix but not a word
-  EXPECT_FALSE(trie.contains("helper")); // Not inserted
+  EXPECT_TRUE(trie.search("hello"));
+  EXPECT_TRUE(trie.search("help"));
+  EXPECT_TRUE(trie.search("heap"));
+  EXPECT_FALSE(trie.search("hel"));    // Prefix but not a word
+  EXPECT_FALSE(trie.search("helper")); // Not inserted
 }
 
 TEST_F(TrieTest, StartsWithPrefix) {
@@ -121,7 +127,7 @@ TEST_F(TrieTest, GetWordsWithPrefix) {
   trie.insert("cat");
   trie.insert("dog");
 
-  auto words = trie.get_words_with_prefix("car");
+  auto words = trie.get_all_words_with_prefix("car");
   EXPECT_EQ(words.size(), 4);
 
   // Check that all expected words are present
@@ -148,8 +154,8 @@ TEST_F(TrieTest, RemoveWord) {
 
   EXPECT_TRUE(trie.remove("hello"));
   EXPECT_EQ(trie.size(), 1);
-  EXPECT_FALSE(trie.contains("hello"));
-  EXPECT_TRUE(trie.contains("help"));
+  EXPECT_FALSE(trie.search("hello"));
+  EXPECT_TRUE(trie.search("help"));
 }
 
 TEST_F(TrieTest, RemoveNonExistent) {
@@ -165,8 +171,8 @@ TEST_F(TrieTest, RemovePrefixWord) {
 
   // Remove the shorter word, longer should remain
   EXPECT_TRUE(trie.remove("car"));
-  EXPECT_FALSE(trie.contains("car"));
-  EXPECT_TRUE(trie.contains("card"));
+  EXPECT_FALSE(trie.search("car"));
+  EXPECT_TRUE(trie.search("card"));
   EXPECT_TRUE(trie.starts_with("car")); // Prefix still exists
 }
 
@@ -176,8 +182,8 @@ TEST_F(TrieTest, RemoveLongerWord) {
 
   // Remove the longer word, shorter should remain
   EXPECT_TRUE(trie.remove("card"));
-  EXPECT_TRUE(trie.contains("car"));
-  EXPECT_FALSE(trie.contains("card"));
+  EXPECT_TRUE(trie.search("car"));
+  EXPECT_FALSE(trie.search("card"));
 }
 
 TEST_F(TrieTest, RemoveAll) {
@@ -198,18 +204,18 @@ TEST_F(TrieTest, MoveConstructor) {
   trie.insert("hello");
   trie.insert("world");
 
-  Trie moved_trie = std::move(trie);
+  TrieType moved_trie = std::move(trie);
 
   EXPECT_TRUE(trie.is_empty());
   EXPECT_EQ(moved_trie.size(), 2);
-  EXPECT_TRUE(moved_trie.contains("hello"));
+  EXPECT_TRUE(moved_trie.search("hello"));
 }
 
 TEST_F(TrieTest, MoveAssignment) {
   trie.insert("hello");
   trie.insert("world");
 
-  Trie other_trie;
+  TrieType other_trie;
   other_trie = std::move(trie);
 
   EXPECT_TRUE(trie.is_empty());
@@ -224,16 +230,16 @@ TEST_F(TrieTest, SingleCharacterWords) {
   trie.insert("c");
 
   EXPECT_EQ(trie.size(), 3);
-  EXPECT_TRUE(trie.contains("a"));
-  EXPECT_TRUE(trie.contains("b"));
-  EXPECT_TRUE(trie.contains("c"));
+  EXPECT_TRUE(trie.search("a"));
+  EXPECT_TRUE(trie.search("b"));
+  EXPECT_TRUE(trie.search("c"));
 }
 
 TEST_F(TrieTest, LongWord) {
   std::string long_word = "supercalifragilisticexpialidocious";
   trie.insert(long_word);
 
-  EXPECT_TRUE(trie.contains(long_word));
+  EXPECT_TRUE(trie.search(long_word));
   EXPECT_TRUE(trie.starts_with("super"));
   EXPECT_TRUE(trie.starts_with("supercal"));
 }
@@ -243,9 +249,9 @@ TEST_F(TrieTest, CaseSensitivity) {
   trie.insert("hello");
 
   EXPECT_EQ(trie.size(), 2);
-  EXPECT_TRUE(trie.contains("Hello"));
-  EXPECT_TRUE(trie.contains("hello"));
-  EXPECT_FALSE(trie.contains("HELLO"));
+  EXPECT_TRUE(trie.search("Hello"));
+  EXPECT_TRUE(trie.search("hello"));
+  EXPECT_FALSE(trie.search("HELLO"));
 }
 
 // ----- Autocomplete Scenario Tests ----- //
@@ -257,7 +263,7 @@ TEST_F(TrieTest, AutocompleteSuggestions) {
   trie.insert("apply");
   trie.insert("banana");
 
-  auto suggestions = trie.get_words_with_prefix("app");
+  auto suggestions = trie.get_all_words_with_prefix("app");
   EXPECT_EQ(suggestions.size(), 4);
 
   // Verify "banana" is not in suggestions
@@ -268,7 +274,7 @@ TEST_F(TrieTest, NoSuggestionsForUnknownPrefix) {
   trie.insert("hello");
   trie.insert("help");
 
-  auto suggestions = trie.get_words_with_prefix("xyz");
+  auto suggestions = trie.get_all_words_with_prefix("xyz");
   EXPECT_TRUE(suggestions.empty());
 }
 
@@ -283,9 +289,9 @@ TEST_F(TrieTest, LargeDataset) {
   EXPECT_EQ(trie.size(), N);
 
   // Verify some random words
-  EXPECT_TRUE(trie.contains("word0"));
-  EXPECT_TRUE(trie.contains("word500"));
-  EXPECT_TRUE(trie.contains("word999"));
+  EXPECT_TRUE(trie.search("word0"));
+  EXPECT_TRUE(trie.search("word500"));
+  EXPECT_TRUE(trie.search("word999"));
 }
 
 TEST_F(TrieTest, PrefixSearchPerformance) {
@@ -294,7 +300,7 @@ TEST_F(TrieTest, PrefixSearchPerformance) {
     trie.insert("prefix" + std::to_string(i));
   }
 
-  auto words = trie.get_words_with_prefix("prefix");
+  auto words = trie.get_all_words_with_prefix("prefix");
   EXPECT_EQ(words.size(), 100);
 }
 

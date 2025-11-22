@@ -245,8 +245,8 @@ TEST_F(LinkedStackTest, LargeStackOperations) {
 // ==================== Polymorphic Interface Tests ==================== //
 
 TEST(StackPolymorphismTest, ArrayStackThroughInterface) {
-  ArrayStack<int>  concrete_stack;
-  Stack<int>*      stack = &concrete_stack;
+  ArrayStack<int> concrete_stack;
+  Stack<int>*     stack = &concrete_stack;
 
   stack->push(10);
   stack->push(20);

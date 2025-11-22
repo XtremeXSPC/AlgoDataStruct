@@ -15,8 +15,8 @@
 #include <string>
 #include <utility>
 
-#include "ads/support/ConsoleColors.hpp"
 #include "../include/ads/lists/Singly_Linked_List.hpp"
+#include "ads/support/ConsoleColors.hpp"
 
 using ads::list::ListException;
 using ads::list::SinglyLinkedList;

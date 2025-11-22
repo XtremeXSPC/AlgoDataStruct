@@ -78,7 +78,7 @@ TEST_F(AVLTreeTest, LeftLeftRotation) {
 
   // Tree should be balanced
   EXPECT_EQ(tree.size(), 3);
-  EXPECT_LE(tree.height(), 1); // Height should be at most 1 for balanced tree
+  EXPECT_LE(tree.height(), 2); // Height measured in node levels (leaf = 1)
 }
 
 TEST_F(AVLTreeTest, RightRightRotation) {
@@ -88,7 +88,7 @@ TEST_F(AVLTreeTest, RightRightRotation) {
   tree.insert(30); // Should trigger rotation
 
   EXPECT_EQ(tree.size(), 3);
-  EXPECT_LE(tree.height(), 1);
+  EXPECT_LE(tree.height(), 2);
 }
 
 TEST_F(AVLTreeTest, LeftRightRotation) {
@@ -98,7 +98,7 @@ TEST_F(AVLTreeTest, LeftRightRotation) {
   tree.insert(20); // Should trigger LR rotation
 
   EXPECT_EQ(tree.size(), 3);
-  EXPECT_LE(tree.height(), 1);
+  EXPECT_LE(tree.height(), 2);
 }
 
 TEST_F(AVLTreeTest, RightLeftRotation) {
@@ -108,7 +108,7 @@ TEST_F(AVLTreeTest, RightLeftRotation) {
   tree.insert(20); // Should trigger RL rotation
 
   EXPECT_EQ(tree.size(), 3);
-  EXPECT_LE(tree.height(), 1);
+  EXPECT_LE(tree.height(), 2);
 }
 
 // ----- Search Tests ----- //
@@ -196,7 +196,7 @@ TEST_F(AVLTreeTest, RemoveWithRebalancing) {
   tree.remove(40);
   // Tree should still be balanced
 
-  EXPECT_LE(tree.height(), 2);
+  EXPECT_LE(tree.height(), 3);
 }
 
 // ----- Traversal Tests ----- //

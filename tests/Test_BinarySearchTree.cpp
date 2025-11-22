@@ -107,8 +107,8 @@ TEST_F(BinarySearchTreeTest, FindMinMax) {
 }
 
 TEST_F(BinarySearchTreeTest, FindMinMaxOnEmptyThrows) {
-  EXPECT_THROW(tree.find_min(), EmptyTreeException);
-  EXPECT_THROW(tree.find_max(), EmptyTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto val = tree.find_min(); }, EmptyTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto val = tree.find_max(); }, EmptyTreeException);
 }
 
 TEST_F(BinarySearchTreeTest, SuccessorPredecessor) {
