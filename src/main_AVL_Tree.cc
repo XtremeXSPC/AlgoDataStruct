@@ -2,7 +2,7 @@
 /**
  * @file main_AVL_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test program for AVL Tree implementation
+ * @brief Comprehensive demo program for AVL Tree implementation
  * @version 0.1
  * @date 2025-11-20
  *
@@ -47,8 +47,8 @@ void print_avl_tree(const AVLTree<T>& tree, const string& name) {
 }
 
 // Test basic insertion and traversals
-void test_basic_operations() {
-  cout << "\n========== Test: Basic Operations ==========\n";
+void demo_basic_operations() {
+  cout << "\n========== Demo: Basic Operations ==========\n";
 
   AVLTree<int> avl;
 
@@ -87,8 +87,8 @@ void test_basic_operations() {
 }
 
 // Test Left-Left (LL) rotation
-void test_ll_rotation() {
-  cout << "\n========== Test: Left-Left (LL) Rotation ==========\n";
+void demo_ll_rotation() {
+  cout << "\n========== Demo: Left-Left (LL) Rotation ==========\n";
 
   AVLTree<int> avl;
 
@@ -113,8 +113,8 @@ void test_ll_rotation() {
 }
 
 // Test Right-Right (RR) rotation
-void test_rr_rotation() {
-  cout << "\n========== Test: Right-Right (RR) Rotation ==========\n";
+void demo_rr_rotation() {
+  cout << "\n========== Demo: Right-Right (RR) Rotation ==========\n";
 
   AVLTree<int> avl;
 
@@ -139,8 +139,8 @@ void test_rr_rotation() {
 }
 
 // Test Left-Right (LR) rotation
-void test_lr_rotation() {
-  cout << "\n========== Test: Left-Right (LR) Rotation ==========\n";
+void demo_lr_rotation() {
+  cout << "\n========== Demo: Left-Right (LR) Rotation ==========\n";
 
   AVLTree<int> avl;
 
@@ -165,8 +165,8 @@ void test_lr_rotation() {
 }
 
 // Test Right-Left (RL) rotation
-void test_rl_rotation() {
-  cout << "\n========== Test: Right-Left (RL) Rotation ==========\n";
+void demo_rl_rotation() {
+  cout << "\n========== Demo: Right-Left (RL) Rotation ==========\n";
 
   AVLTree<int> avl;
 
@@ -191,8 +191,8 @@ void test_rl_rotation() {
 }
 
 // Test search operations
-void test_search_operations() {
-  cout << "\n========== Test: Search Operations ==========\n";
+void demo_search_operations() {
+  cout << "\n========== Demo: Search Operations ==========\n";
 
   AVLTree<int> avl;
 
@@ -216,8 +216,8 @@ void test_search_operations() {
 }
 
 // Test remove operations
-void test_remove_operations() {
-  cout << "\n========== Test: Remove Operations ==========\n";
+void demo_remove_operations() {
+  cout << "\n========== Demo: Remove Operations ==========\n";
 
   AVLTree<int> avl;
 
@@ -255,8 +255,8 @@ void test_remove_operations() {
 }
 
 // Test iterator
-void test_iterator() {
-  cout << "\n========== Test: Iterator ==========\n";
+void demo_iterator() {
+  cout << "\n========== Demo: Iterator ==========\n";
 
   AVLTree<int> avl;
 
@@ -273,8 +273,8 @@ void test_iterator() {
 }
 
 // Test move semantics
-void test_move_semantics() {
-  cout << "\n========== Test: Move Semantics ==========\n";
+void demo_move_semantics() {
+  cout << "\n========== Demo: Move Semantics ==========\n";
 
   AVLTree<int> avl1;
   avl1.insert(50);
@@ -299,8 +299,8 @@ void test_move_semantics() {
 }
 
 // Test with large sorted sequence (worst case for unbalanced BST)
-void test_sorted_sequence() {
-  cout << "\n========== Test: Sorted Sequence (AVL vs BST) ==========\n";
+void demo_sorted_sequence() {
+  cout << "\n========== Demo: Sorted Sequence (AVL vs BST) ==========\n";
 
   AVLTree<int>          avl;
   BinarySearchTree<int> bst;
@@ -328,8 +328,8 @@ void test_sorted_sequence() {
 }
 
 // Performance test: AVL vs BST
-void test_performance() {
-  cout << "\n========== Test: Performance Comparison ==========\n";
+void demo_performance() {
+  cout << "\n========== Demo: Performance Comparison ==========\n";
 
   const int N = 10000;
 
@@ -380,8 +380,8 @@ void test_performance() {
 }
 
 // Test edge cases
-void test_edge_cases() {
-  cout << "\n========== Test: Edge Cases ==========\n";
+void demo_edge_cases() {
+  cout << "\n========== Demo: Edge Cases ==========\n";
 
   AVLTree<int> avl;
 
@@ -420,26 +420,26 @@ void test_edge_cases() {
 
 auto main() -> int {
   cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║           AVL TREE COMPREHENSIVE TEST SUITE            ║\n";
+  cout << "║           AVL TREE COMPREHENSIVE DEMO PROGRAM            ║\n";
   cout << "╚════════════════════════════════════════════════════════╝\n";
 
   try {
-    test_basic_operations();
-    test_ll_rotation();
-    test_rr_rotation();
-    test_lr_rotation();
-    test_rl_rotation();
-    test_search_operations();
-    test_remove_operations();
-    test_iterator();
-    test_move_semantics();
-    test_sorted_sequence();
-    test_performance();
-    test_edge_cases();
+    demo_basic_operations();
+    demo_ll_rotation();
+    demo_rr_rotation();
+    demo_lr_rotation();
+    demo_rl_rotation();
+    demo_search_operations();
+    demo_remove_operations();
+    demo_iterator();
+    demo_move_semantics();
+    demo_sorted_sequence();
+    demo_performance();
+    demo_edge_cases();
 
     cout << "\n";
     cout << "╔════════════════════════════════════════════════════════╗\n";
-    cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!            ║\n";
+    cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!            ║\n";
     cout << "╚════════════════════════════════════════════════════════╝\n";
 
     return 0;

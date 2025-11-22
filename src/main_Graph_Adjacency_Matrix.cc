@@ -2,7 +2,7 @@
 /**
  * @file main_Graph_Adjacency_Matrix.cc
  * @author Costantino Lombardi
- * @brief Test file for GraphAdjacencyMatrix class with performance comparison
+ * @brief Comprehensive demo program for GraphAdjacencyMatrix class with performance comparison
  * @version 0.1
  * @date 2025-01-20
  *
@@ -32,9 +32,9 @@ void print_vector(const std::vector<T>& vec, const std::string& prefix = "") {
   std::cout << '\n';
 }
 
-//========== BASIC TESTS ==========//
+//========== BASIC DEMOS ==========//
 
-void test_matrix_construction() {
+void demo_matrix_construction() {
   print_separator("Matrix - Construction and Properties");
 
   GraphAdjacencyMatrix<int> graph(false);
@@ -45,7 +45,7 @@ void test_matrix_construction() {
   std::cout << "Edges: " << graph.num_edges() << '\n';
 }
 
-void test_matrix_operations() {
+void demo_matrix_operations() {
   print_separator("Matrix - Basic Operations");
 
   GraphAdjacencyMatrix<std::string> graph(false);
@@ -82,7 +82,7 @@ void test_matrix_operations() {
   std::cout << '\n';
 }
 
-void test_matrix_traversal() {
+void demo_matrix_traversal() {
   print_separator("Matrix - Graph Traversal");
 
   GraphAdjacencyMatrix<int> graph(false);
@@ -115,7 +115,7 @@ void test_matrix_traversal() {
   }
 }
 
-void test_matrix_connected_components() {
+void demo_matrix_connected_components() {
   print_separator("Matrix - Connected Components");
 
   GraphAdjacencyMatrix<int> graph(false);
@@ -259,22 +259,22 @@ void compare_performance() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║   GRAPH ADJACENCY MATRIX - COMPREHENSIVE TEST SUITE   ║\n";
+  std::cout << "║   GRAPH ADJACENCY MATRIX - COMPREHENSIVE DEMO PROGRAM   ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {
     // Basic tests
-    test_matrix_construction();
-    test_matrix_operations();
-    test_matrix_traversal();
-    test_matrix_connected_components();
+    demo_matrix_construction();
+    demo_matrix_operations();
+    demo_matrix_traversal();
+    demo_matrix_connected_components();
 
     // Performance comparison
     compare_performance();
 
     std::cout << "\n";
     std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-    std::cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
+    std::cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {

@@ -233,15 +233,6 @@ endif()
 set(CMAKE_C_COMPILER   ${C_COMPILER_PATH}  CACHE PATH "C compiler"   FORCE)
 set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE} CACHE PATH "C++ compiler" FORCE)
 
-# Set compiler IDs explicitly (helps CMake understand what we're using).
-if(IS_APPLE_CLANG)
-    set(CMAKE_C_COMPILER_ID "AppleClang" CACHE STRING "C compiler ID" FORCE)
-    set(CMAKE_CXX_COMPILER_ID "AppleClang" CACHE STRING "C++ compiler ID" FORCE)
-else()
-    set(CMAKE_C_COMPILER_ID "Clang" CACHE STRING "C compiler ID" FORCE)
-    set(CMAKE_CXX_COMPILER_ID "Clang" CACHE STRING "C++ compiler ID" FORCE)
-endif()
-
 # ------------------- macOS-Specific libc++ Configuration -------------------- #
 # On macOS with LLVM Clang, we need to explicitly configure libc++ paths
 # and RPATH to avoid runtime linking issues.

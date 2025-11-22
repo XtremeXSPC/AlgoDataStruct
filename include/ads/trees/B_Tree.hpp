@@ -44,6 +44,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "Binary_Tree_Exception.hpp"
+
 namespace ads::trees {
 
 /**
@@ -319,8 +321,15 @@ public:
   auto operator=(const B_Tree&) -> B_Tree& = delete;
 
   // Enable move
-  B_Tree(B_Tree&&) noexcept                    = default;
-  auto operator=(B_Tree&&) noexcept -> B_Tree& = default;
+  B_Tree(B_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) { other.size_ = 0; }
+  auto operator=(B_Tree&& other) noexcept -> B_Tree& {
+    if (this != &other) {
+      root_ = std::move(other.root_);
+      size_ = other.size_;
+      other.size_ = 0;
+    }
+    return *this;
+  }
 
   /**
    * @brief Insert a key into the tree
@@ -396,6 +405,38 @@ public:
    * @complexity O(log_t n)
    */
   [[nodiscard]] auto height() const -> int { return height_helper(root_.get()); }
+
+  /**
+   * @brief Get smallest key in the tree
+   * @throws EmptyTreeException if the tree is empty
+   */
+  [[nodiscard]] auto find_min() const -> const T& {
+    if (is_empty()) {
+      throw EmptyTreeException("B-Tree is empty");
+    }
+
+    const Node* node = root_.get();
+    while (!node->is_leaf) {
+      node = node->children.front().get();
+    }
+    return node->keys.front();
+  }
+
+  /**
+   * @brief Get largest key in the tree
+   * @throws EmptyTreeException if the tree is empty
+   */
+  [[nodiscard]] auto find_max() const -> const T& {
+    if (is_empty()) {
+      throw EmptyTreeException("B-Tree is empty");
+    }
+
+    const Node* node = root_.get();
+    while (!node->is_leaf) {
+      node = node->children.back().get();
+    }
+    return node->keys.back();
+  }
 
   /**
    * @brief Get minimum degree
