@@ -426,17 +426,45 @@ if(ENABLE_TESTING)
 
     FetchContent_MakeAvailable(googletest)
 
-    # Collect available test sources
+    # Collect all test source files
     set(TEST_SOURCES "")
-    foreach(TEST_FILE
-            tests/Test_DoublyLinkedList.cpp
-            tests/test_Singly_Linked_List.cpp
-            tests/test_Binary_Search_Tree.cpp)
-        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_FILE}")
-            list(APPEND TEST_SOURCES "${TEST_FILE}")
-        endif()
-    endforeach()
 
+    # Add test files if they exist
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
+        list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_SinglyLinkedList.cpp")
+        list(APPEND TEST_SOURCES tests/Test_SinglyLinkedList.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BinarySearchTree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_BinarySearchTree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_AVLTree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_AVLTree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_RedBlackTree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_RedBlackTree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BTree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_BTree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Trie.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Trie.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Stacks.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Stacks.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Queues.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Queues.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Heaps.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Heaps.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_HashTables.cpp")
+        list(APPEND TEST_SOURCES tests/Test_HashTables.cpp)
+    endif()
+
+    # Create test executable if we have test files
     if(TEST_SOURCES)
         add_executable(runTests ${TEST_SOURCES})
         target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
@@ -446,7 +474,8 @@ if(ENABLE_TESTING)
         include(GoogleTest)
         gtest_discover_tests(runTests)
 
-        message(STATUS "${ANSI_GREEN}GoogleTest enabled: runTests executable created${ANSI_RESET}")
+        list(LENGTH TEST_SOURCES TEST_COUNT)
+        message(STATUS "${ANSI_GREEN}GoogleTest enabled: runTests executable created with ${TEST_COUNT} test files${ANSI_RESET}")
     endif()
 endif()
 

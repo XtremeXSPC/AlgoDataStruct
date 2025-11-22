@@ -2,7 +2,7 @@
 /**
  * @file main Stacks_Queues.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test program for Stack and Queue implementations
+ * @brief Comprehensive demo program for Stack and Queue implementations
  * @version 0.1
  * @date 2025-01-15
  *
@@ -24,7 +24,7 @@ using namespace std;
 
 // Helper function to demonstrate polymorphic usage
 template <typename T>
-void test_stack_interface(ads::stack::Stack<T>& stack, const string& stack_type) {
+void demo_stack_interface(ads::stack::Stack<T>& stack, const string& stack_type) {
   cout << "========== Testing " << stack_type << " ==========\n";
 
   // Test push operations
@@ -54,7 +54,7 @@ void test_stack_interface(ads::stack::Stack<T>& stack, const string& stack_type)
 
 // Helper function for queue testing
 template <typename T>
-void test_queue_interface(ads::queue::Queue<T>& queue, const string& queue_type) {
+void demo_queue_interface(ads::queue::Queue<T>& queue, const string& queue_type) {
   cout << "\n========== Testing " << queue_type << " ==========\n";
 
   // Test enqueue operations
@@ -150,7 +150,7 @@ void performance_comparison() {
 }
 
 // Test emplace functionality with complex types
-void test_emplace_functionality() {
+void demo_emplace_functionality() {
   cout << "\n========== Testing Emplace with Complex Types ==========\n";
 
   struct Person {
@@ -178,15 +178,15 @@ auto main() -> int {
     ads::stack::ArrayStack<int>  array_stack;
     ads::stack::LinkedStack<int> linked_stack;
 
-    test_stack_interface(array_stack, "ArrayStack");
-    test_stack_interface(linked_stack, "LinkedStack");
+    demo_stack_interface(array_stack, "ArrayStack");
+    demo_stack_interface(linked_stack, "LinkedStack");
 
     // Test Queue implementations
     ads::queue::CircularArrayQueue<int> circular_queue;
     ads::queue::LinkedQueue<int>        linked_queue;
 
-    test_queue_interface(circular_queue, "CircularArrayQueue");
-    test_queue_interface(linked_queue, "LinkedQueue");
+    demo_queue_interface(circular_queue, "CircularArrayQueue");
+    demo_queue_interface(linked_queue, "LinkedQueue");
 
     // Test move semantics
     cout << "\n========== Testing Move Semantics ==========\n";
@@ -199,7 +199,7 @@ auto main() -> int {
     cout << "After move, stack1 size: " << stack1.size() << " (should be 0)\n";
 
     // Test emplace functionality
-    test_emplace_functionality();
+    demo_emplace_functionality();
 
     // Performance comparison
     performance_comparison();

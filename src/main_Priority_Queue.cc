@@ -2,7 +2,7 @@
 /**
  * @file main_Priority_Queue.cc
  * @author Costantino Lombardi
- * @brief Test file for PriorityQueue class
+ * @brief Comprehensive demo program for PriorityQueue class
  * @version 0.1
  * @date 2025-01-20
  *
@@ -23,9 +23,9 @@ void print_separator(const std::string& title) {
   std::cout << "\n========== " << title << " ==========\n";
 }
 
-//========== BASIC TESTS ==========//
+//========== BASIC DEMOS ==========//
 
-void test_priority_queue_basic() {
+void demo_priority_queue_basic() {
   print_separator("Priority Queue - Basic Operations (Max-Heap)");
 
   PriorityQueue<int> pq;
@@ -53,7 +53,7 @@ void test_priority_queue_basic() {
   std::cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
 }
 
-void test_priority_queue_min_heap() {
+void demo_priority_queue_min_heap() {
   print_separator("Priority Queue - Min-Heap with std::greater");
 
   PriorityQueue<int, std::greater<int>> min_pq;
@@ -76,7 +76,7 @@ void test_priority_queue_min_heap() {
   std::cout << '\n';
 }
 
-void test_priority_queue_from_vector() {
+void demo_priority_queue_from_vector() {
   print_separator("Priority Queue - Construction from Vector");
 
   std::vector<int> data = {15, 10, 20, 8, 12, 25, 18};
@@ -98,7 +98,7 @@ void test_priority_queue_from_vector() {
   std::cout << '\n';
 }
 
-void test_priority_queue_initializer_list() {
+void demo_priority_queue_initializer_list() {
   print_separator("Priority Queue - Initializer List Construction");
 
   PriorityQueue<int> pq = {3, 1, 4, 1, 5, 9, 2, 6};
@@ -114,7 +114,7 @@ void test_priority_queue_initializer_list() {
   std::cout << '\n';
 }
 
-void test_priority_queue_move_semantics() {
+void demo_priority_queue_move_semantics() {
   print_separator("Priority Queue - Move Semantics");
 
   PriorityQueue<int> pq1;
@@ -140,7 +140,7 @@ void test_priority_queue_move_semantics() {
   std::cout << "PQ2 size after move: " << pq2.size() << '\n';
 }
 
-void test_priority_queue_emplace() {
+void demo_priority_queue_emplace() {
   print_separator("Priority Queue - Emplace Operations");
 
   PriorityQueue<std::string> pq;
@@ -161,7 +161,7 @@ void test_priority_queue_emplace() {
   }
 }
 
-void test_priority_queue_exception_handling() {
+void demo_priority_queue_exception_handling() {
   print_separator("Priority Queue - Exception Handling");
 
   PriorityQueue<int> pq;
@@ -181,7 +181,7 @@ void test_priority_queue_exception_handling() {
   }
 }
 
-void test_priority_queue_sorted_elements() {
+void demo_priority_queue_sorted_elements() {
   print_separator("Priority Queue - Sorted Elements Extraction");
 
   PriorityQueue<int> pq = {8, 3, 10, 1, 6, 14, 4, 7, 13};
@@ -214,7 +214,7 @@ struct TaskCompare {
   auto operator()(const Task& a, const Task& b) const -> bool { return a.priority < b.priority; }
 };
 
-void test_task_scheduling() {
+void demo_task_scheduling() {
   print_separator("Application - Task Scheduling");
 
   PriorityQueue<Task, TaskCompare> task_queue;
@@ -247,7 +247,7 @@ struct EventCompare {
   auto operator()(const Event& a, const Event& b) const -> bool { return a.timestamp > b.timestamp; }
 };
 
-void test_event_simulation() {
+void demo_event_simulation() {
   print_separator("Application - Event Simulation");
 
   PriorityQueue<Event, EventCompare> event_queue;
@@ -268,7 +268,7 @@ void test_event_simulation() {
   }
 }
 
-void test_top_k_elements() {
+void demo_top_k_elements() {
   print_separator("Application - Top-K Largest Elements");
 
   // Find top 5 largest elements from a stream using a min-heap of size 5
@@ -302,9 +302,9 @@ void test_top_k_elements() {
   std::cout << '\n';
 }
 
-//========== PERFORMANCE TESTS ==========//
+//========== PERFORMANCE DEMOS ==========//
 
-void test_priority_queue_large() {
+void demo_priority_queue_large() {
   print_separator("Priority Queue - Large Dataset Performance");
 
   const int          N = 100000;
@@ -341,7 +341,7 @@ void test_priority_queue_large() {
   std::cout << "Elements extracted: " << count << '\n';
 }
 
-void test_heapify_construction_performance() {
+void demo_heapify_construction_performance() {
   print_separator("Priority Queue - Heapify Construction Performance");
 
   const int        N = 100000;
@@ -368,32 +368,32 @@ void test_heapify_construction_performance() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║       PRIORITY QUEUE - COMPREHENSIVE TEST SUITE       ║\n";
+  std::cout << "║       PRIORITY QUEUE - COMPREHENSIVE DEMO PROGRAM       ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {
     // Basic tests
-    test_priority_queue_basic();
-    test_priority_queue_min_heap();
-    test_priority_queue_from_vector();
-    test_priority_queue_initializer_list();
-    test_priority_queue_move_semantics();
-    test_priority_queue_emplace();
-    test_priority_queue_exception_handling();
-    test_priority_queue_sorted_elements();
+    demo_priority_queue_basic();
+    demo_priority_queue_min_heap();
+    demo_priority_queue_from_vector();
+    demo_priority_queue_initializer_list();
+    demo_priority_queue_move_semantics();
+    demo_priority_queue_emplace();
+    demo_priority_queue_exception_handling();
+    demo_priority_queue_sorted_elements();
 
     // Practical applications
-    test_task_scheduling();
-    test_event_simulation();
-    test_top_k_elements();
+    demo_task_scheduling();
+    demo_event_simulation();
+    demo_top_k_elements();
 
     // Performance tests
-    test_priority_queue_large();
-    test_heapify_construction_performance();
+    demo_priority_queue_large();
+    demo_heapify_construction_performance();
 
     std::cout << "\n";
     std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-    std::cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
+    std::cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {

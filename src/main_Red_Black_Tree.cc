@@ -2,444 +2,332 @@
 /**
  * @file main_Red_Black_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test suite for Red-Black Tree implementation
+ * @brief Comprehensive demo program for Red-Black Tree implementation
  * @version 1.0
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the Red-Black Tree data structure,
+ * showcasing its self-balancing properties and various operations.
  */
 //===--------------------------------------------------------------------------===//
 
-#include "ads/support/ConsoleColors.hpp"
-#include "ads/trees/Red_Black_Tree.hpp"
-
 #include <algorithm>
-#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <string>
 #include <vector>
 
-using namespace ads::trees;
-using namespace std;
+#include "../include/ads/trees/Red_Black_Tree.hpp"
 
-// Test tracking
-int tests_passed = 0;
-int tests_failed = 0;
+using std::cerr;
+using std::cout;
+using std::string;
+using std::to_string;
+using std::vector;
 
-#define TEST(name) cout << CYAN << "[TEST] " << RESET << (name) << "..." << endl;
+using ads::trees::Red_Black_Tree;
 
-#define ASSERT(condition, message)                                                                                                         \
-  do {                                                                                                                                     \
-    if (!(condition)) {                                                                                                                    \
-      cout << RED << "  ✗ FAILED: " << RESET << (message) << endl;                                                                         \
-      tests_failed++;                                                                                                                      \
-      return;                                                                                                                              \
-    }                                                                                                                                      \
-  } while (0)
+// Helper function to print tree contents
+template <typename T>
+void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
+  cout << "Red-Black Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
 
-#define PASS()                                                                                                                             \
-  do {                                                                                                                                     \
-    cout << GREEN << "  ✓ PASSED" << RESET << endl;                                                                                        \
-    tests_passed++;                                                                                                                        \
-  } while (0)
+  if (tree.is_empty()) {
+    cout << "  (empty)\n";
+    return;
+  }
 
-//===--------------------------------------------------------------------------===//
-// Test Functions
-//===--------------------------------------------------------------------------===//
+  cout << "  In-order: ";
+  tree.in_order_traversal([](const T& value) -> void { cout << value << " "; });
+  cout << '\n';
+}
 
-/**
- * @brief Test basic insert and search
- */
-void test_basic_insert_search() {
-  TEST("Basic Insert and Search");
+// Demo: Basic operations
+void demo_basic_operations() {
+  cout << "\n========== Demo: Basic Operations ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  ASSERT(rbt.is_empty(), "New tree should be empty");
-  ASSERT(rbt.size() == 0, "New tree should have size 0");
+  cout << "Creating empty Red-Black Tree...\n";
+  cout << "  Size: " << rbt.size() << ", Empty: " << (rbt.is_empty() ? "yes" : "no") << "\n";
 
   // Insert elements
-  ASSERT(rbt.insert(10), "Should insert 10");
-  ASSERT(rbt.size() == 1, "Size should be 1");
-  ASSERT(rbt.search(10), "Should find 10");
+  cout << "\nInserting values: 50, 30, 70, 20, 40, 60, 80\n";
+  rbt.insert(50);
+  rbt.insert(30);
+  rbt.insert(70);
+  rbt.insert(20);
+  rbt.insert(40);
+  rbt.insert(60);
+  rbt.insert(80);
 
-  ASSERT(rbt.insert(20), "Should insert 20");
-  ASSERT(rbt.insert(5), "Should insert 5");
-  ASSERT(rbt.size() == 3, "Size should be 3");
+  print_rbt(rbt, "rbt");
 
-  // Search existing
-  ASSERT(rbt.contains(5), "Should contain 5");
-  ASSERT(rbt.contains(10), "Should contain 10");
-  ASSERT(rbt.contains(20), "Should contain 20");
+  // Test in-order traversal
+  cout << "\nIn-order traversal (should be sorted):\n  ";
+  rbt.in_order_traversal([](const int& value) -> void { cout << value << " "; });
+  cout << '\n';
 
-  // Search non-existing
-  ASSERT(!rbt.search(15), "Should not find 15");
-  ASSERT(!rbt.search(100), "Should not find 100");
-
-  // Duplicate insert
-  ASSERT(!rbt.insert(10), "Should not insert duplicate 10");
-  ASSERT(rbt.size() == 3, "Size should remain 3");
-
-  PASS();
+  // Test duplicates
+  cout << "\nTrying to insert duplicate (40): ";
+  bool inserted = rbt.insert(40);
+  cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-/**
- * @brief Test Red-Black properties are maintained
- */
-void test_rb_properties() {
-  TEST("Red-Black Tree Properties");
+// Demo: Sequential insertions
+void demo_sequential_insertions() {
+  cout << "\n========== Demo: Sequential Insertions ==========\n";
+
+  cout << "Red-Black Trees maintain balance even with sequential insertions.\n\n";
+
+  Red_Black_Tree<int> rbt_asc;
+
+  cout << "Inserting 1 to 15 in ascending order:\n";
+  for (int i = 1; i <= 15; ++i) {
+    rbt_asc.insert(i);
+  }
+  cout << "  Size: " << rbt_asc.size() << ", Height: " << rbt_asc.height() << "\n";
+  cout << "  (A regular BST would have height 15, RBT keeps it balanced)\n";
+
+  Red_Black_Tree<int> rbt_desc;
+
+  cout << "\nInserting 15 to 1 in descending order:\n";
+  for (int i = 15; i >= 1; --i) {
+    rbt_desc.insert(i);
+  }
+  cout << "  Size: " << rbt_desc.size() << ", Height: " << rbt_desc.height() << "\n";
+}
+
+// Demo: Search operations
+void demo_search_operations() {
+  cout << "\n========== Demo: Search Operations ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Empty tree is valid
-  ASSERT(rbt.validate_properties(), "Empty tree should be valid");
-
-  // Single element
-  rbt.insert(10);
-  ASSERT(rbt.validate_properties(), "Single element tree should be valid");
-
-  // Multiple insertions
-  vector<int> values = {20, 5, 15, 25, 1, 7};
+  // Build a tree
+  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     rbt.insert(val);
-    ASSERT(rbt.validate_properties(), "Tree should maintain RB properties after insert " + to_string(val));
   }
 
-  PASS();
+  print_rbt(rbt, "rbt");
+
+  // Test contains/search
+  cout << "\nSearch operations:\n";
+  cout << "  contains(40): " << (rbt.contains(40) ? "found" : "not found") << '\n';
+  cout << "  contains(55): " << (rbt.contains(55) ? "found" : "not found") << '\n';
+  cout << "  search(70): " << (rbt.search(70) ? "found" : "not found") << '\n';
+  cout << "  search(100): " << (rbt.search(100) ? "found" : "not found") << '\n';
 }
 
-/**
- * @brief Test sequential insertions (worst case for BST)
- */
-void test_sequential_insert() {
-  TEST("Sequential Insert (Ascending)");
+// Demo: RB-Tree properties validation
+void demo_property_validation() {
+  cout << "\n========== Demo: RB-Tree Properties Validation ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Insert 1, 2, 3, ..., 20
-  for (int i = 1; i <= 20; ++i) {
-    rbt.insert(i);
+  // Insert random values
+  vector<int> values = {41, 38, 31, 12, 19, 8, 50, 45, 60, 55, 70};
+  cout << "Inserting values: ";
+  for (int val : values) {
+    cout << val << " ";
+    rbt.insert(val);
   }
+  cout << '\n';
 
-  ASSERT(rbt.size() == 20, "Should have 20 elements");
-  ASSERT(rbt.validate_properties(), "Tree should maintain RB properties");
+  print_rbt(rbt, "rbt");
 
-  // Verify all elements present
-  for (int i = 1; i <= 20; ++i) {
-    ASSERT(rbt.search(i), "Should find " + to_string(i));
-  }
-
-  // Height should be O(log n) - for n=20, height should be ≤ 2*log2(21) ≈ 9
-  int h = rbt.height();
-  cout << "  Height for 20 sequential inserts: " << h << '\n';
-  ASSERT(h <= 9, "Height should be ≤ 9 for 20 elements");
-
-  PASS();
+  cout << "\nRed-Black Tree properties:\n";
+  cout << "  Height: " << rbt.height() << '\n';
+  cout << "  Black height: " << rbt.black_height() << '\n';
+  cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 }
 
-/**
- * @brief Test descending insertions
- */
-void test_descending_insert() {
-  TEST("Sequential Insert (Descending)");
+// Demo: Random insertions
+void demo_random_insertions() {
+  cout << "\n========== Demo: Random Insertions ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Insert 20, 19, 18, ..., 1
-  for (int i = 20; i >= 1; --i) {
-    rbt.insert(i);
-  }
-
-  ASSERT(rbt.size() == 20, "Should have 20 elements");
-  ASSERT(rbt.validate_properties(), "Tree should maintain RB properties");
-
-  // Height check
-  int h = rbt.height();
-  cout << "  Height for 20 descending inserts: " << h << '\n';
-  ASSERT(h <= 9, "Height should be ≤ 9 for 20 elements");
-
-  PASS();
-}
-
-/**
- * @brief Test random insertions
- */
-void test_random_insert() {
-  TEST("Random Insertions");
-
-  Red_Black_Tree<int> rbt;
-
-  // Generate random values
+  // Generate and shuffle values
   vector<int> values;
   for (int i = 1; i <= 100; ++i) {
     values.push_back(i);
   }
 
-  random_device rd;
-  mt19937       g(rd());
-  shuffle(values.begin(), values.end(), g);
+  std::random_device rd;
+  std::mt19937       g(rd());
+  std::shuffle(values.begin(), values.end(), g);
 
-  // Insert in random order
+  cout << "Inserting 100 values in random order...\n";
   for (int val : values) {
     rbt.insert(val);
-    ASSERT(rbt.validate_properties(), "Tree should maintain RB properties");
   }
 
-  ASSERT(rbt.size() == 100, "Should have 100 elements");
+  cout << "  Size: " << rbt.size() << '\n';
+  cout << "  Height: " << rbt.height() << " (theoretical max ~2*log2(n) = ~14)\n";
+  cout << "  Black height: " << rbt.black_height() << '\n';
+  cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 
-  // Verify all elements
+  // Verify all elements present
+  int found_count = 0;
   for (int i = 1; i <= 100; ++i) {
-    ASSERT(rbt.search(i), "Should find " + to_string(i));
+    if (rbt.search(i)) {
+      ++found_count;
+    }
   }
-
-  // Height check: for n=100, height ≤ 2*log2(101) ≈ 13.3
-  int h = rbt.height();
-  cout << "  Height for 100 random inserts: " << h << '\n';
-  ASSERT(h <= 14, "Height should be ≤ 14 for 100 elements");
-
-  PASS();
+  cout << "  All elements found: " << (found_count == 100 ? "yes" : "no") << '\n';
 }
 
-/**
- * @brief Test black height property
- */
-void test_black_height() {
-  TEST("Black Height Property");
-
-  Red_Black_Tree<int> rbt;
-
-  // Insert elements
-  vector<int> values = {10, 5, 15, 2, 7, 12, 20, 1, 3, 6, 8};
-  for (int val : values) {
-    rbt.insert(val);
-  }
-
-  int bh = rbt.black_height();
-  cout << "  Black height: " << bh << '\n';
-  ASSERT(bh > 0, "Black height should be positive");
-
-  // Black height should be at least log2(n+1) / 2
-  // For n=11, min black height is around 2-3
-  ASSERT(bh >= 2, "Black height should be at least 2 for 11 elements");
-
-  PASS();
-}
-
-/**
- * @brief Test in-order traversal
- */
-void test_traversal() {
-  TEST("In-Order Traversal");
-
-  Red_Black_Tree<int> rbt;
-
-  // Insert in random order
-  vector<int> values = {15, 5, 20, 3, 10, 18, 25};
-  for (int val : values) {
-    rbt.insert(val);
-  }
-
-  // Collect elements via traversal
-  vector<int> result;
-  rbt.in_order_traversal([&result](const int& val) -> void { result.push_back(val); });
-
-  // Should be sorted
-  vector<int> expected = {3, 5, 10, 15, 18, 20, 25};
-  ASSERT(result == expected, "In-order traversal should produce sorted output");
-
-  PASS();
-}
-
-/**
- * @brief Test clear operation
- */
-void test_clear() {
-  TEST("Clear Tree");
-
-  Red_Black_Tree<int> rbt;
-
-  // Insert elements
-  for (int i = 1; i <= 10; ++i) {
-    rbt.insert(i);
-  }
-
-  ASSERT(rbt.size() == 10, "Should have 10 elements");
-
-  // Clear
-  rbt.clear();
-  ASSERT(rbt.is_empty(), "Tree should be empty after clear");
-  ASSERT(rbt.size() == 0, "Size should be 0 after clear");
-  ASSERT(!rbt.search(5), "Should not find elements after clear");
-
-  // Insert after clear
-  rbt.insert(42);
-  ASSERT(rbt.size() == 1, "Should be able to insert after clear");
-  ASSERT(rbt.validate_properties(), "Tree should be valid after clear and insert");
-
-  PASS();
-}
-
-/**
- * @brief Test move semantics
- */
-void test_move_semantics() {
-  TEST("Move Semantics");
+// Demo: Move semantics
+void demo_move_semantics() {
+  cout << "\n========== Demo: Move Semantics ==========\n";
 
   Red_Black_Tree<int> rbt1;
   for (int i = 1; i <= 10; ++i) {
     rbt1.insert(i);
   }
 
-  size_t original_size = rbt1.size();
+  cout << "Original tree:\n";
+  print_rbt(rbt1, "rbt1");
 
   // Move constructor
-  Red_Black_Tree<int> rbt2(std::move(rbt1));
-  ASSERT(rbt2.size() == original_size, "Moved tree should have same size");
-  ASSERT(rbt2.search(5), "Moved tree should contain elements");
-  ASSERT(rbt2.validate_properties(), "Moved tree should be valid");
+  Red_Black_Tree<int> rbt2 = std::move(rbt1);
+
+  cout << "\nAfter move construction:\n";
+  print_rbt(rbt1, "rbt1 (should be empty)");
+  print_rbt(rbt2, "rbt2 (should have the data)");
 
   // Move assignment
   Red_Black_Tree<int> rbt3;
   rbt3.insert(100);
+  rbt3.insert(200);
+
+  cout << "\nBefore move assignment:\n";
+  print_rbt(rbt3, "rbt3");
+
   rbt3 = std::move(rbt2);
-  ASSERT(rbt3.size() == original_size, "Move assigned tree should have same size");
-  ASSERT(rbt3.search(7), "Move assigned tree should contain elements");
 
-  PASS();
+  cout << "\nAfter move assignment:\n";
+  print_rbt(rbt2, "rbt2 (should be empty)");
+  print_rbt(rbt3, "rbt3 (should have rbt2's data)");
 }
 
-/**
- * @brief Stress test with large dataset
- */
-void test_stress() {
-  TEST("Stress Test (Large Dataset)");
+// Demo: Performance
+void demo_performance() {
+  cout << "\n========== Demo: Performance ==========\n";
+
+  const int N = 10000;
+
+  cout << "Inserting " << N << " elements sequentially...\n";
+
+  auto start = std::chrono::high_resolution_clock::now();
 
   Red_Black_Tree<int> rbt;
-  const int           N = 10000;
-
-  // Insert many elements
-  auto start = chrono::high_resolution_clock::now();
-  for (int i = 1; i <= N; ++i) {
-    rbt.insert(i);
-  }
-  auto end             = chrono::high_resolution_clock::now();
-  auto insert_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-  cout << "  Insert " << N << " elements: " << insert_duration.count() << " ms" << '\n';
-
-  ASSERT(rbt.size() == N, "Should have " + to_string(N) + " elements");
-  ASSERT(rbt.validate_properties(), "Large tree should maintain RB properties");
-
-  // Height check: for n=10000, height ≤ 2*log2(10001) ≈ 26.6
-  int h = rbt.height();
-  cout << "  Height: " << h << '\n';
-  ASSERT(h <= 27, "Height should be ≤ 27 for 10000 elements");
-
-  // Search test
-  start = chrono::high_resolution_clock::now();
-  for (int i = 1; i <= N; ++i) {
-    ASSERT(rbt.search(i), "Should find all inserted elements");
-  }
-  end                  = chrono::high_resolution_clock::now();
-  auto search_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-  cout << "  Search " << N << " elements: " << search_duration.count() << " ms" << '\n';
-
-  PASS();
-}
-
-/**
- * @brief Test with string type
- */
-void test_string_type() {
-  TEST("String Type Support");
-
-  Red_Black_Tree<string> rbt;
-
-  vector<string> words = {"apple", "banana", "cherry", "date", "elderberry"};
-  for (const auto& word : words) {
-    rbt.insert(word);
-  }
-
-  ASSERT(rbt.size() == 5, "Should have 5 words");
-  ASSERT(rbt.validate_properties(), "String tree should be valid");
-  ASSERT(rbt.search("cherry"), "Should find 'cherry'");
-  ASSERT(!rbt.search("fig"), "Should not find 'fig'");
-
-  // Check sorted order
-  vector<string> result;
-  rbt.in_order_traversal([&result](const string& s) -> void { result.push_back(s); });
-
-  vector<string> expected = {"apple", "banana", "cherry", "date", "elderberry"};
-  ASSERT(result == expected, "String traversal should be sorted");
-
-  PASS();
-}
-
-/**
- * @brief Performance comparison with unbalanced BST (conceptual)
- */
-void test_balance_advantage() {
-  TEST("Balance Advantage Demonstration");
-
-  Red_Black_Tree<int> rbt;
-
-  // Sequential insert (worst case for unbalanced BST)
-  const int N = 1000;
   for (int i = 1; i <= N; ++i) {
     rbt.insert(i);
   }
 
-  int h               = rbt.height();
-  int theoretical_max = static_cast<int>(2 * std::log2(N + 1));
+  auto end             = std::chrono::high_resolution_clock::now();
+  auto insert_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  cout << "  Actual height: " << h << '\n';
-  cout << "  Theoretical max (2*log2(n+1)): " << theoretical_max << '\n';
-  cout << "  Unbalanced BST height would be: " << (N - 1) << '\n';
+  cout << "  Insert time: " << insert_duration.count() << " ms\n";
+  cout << "  Size: " << rbt.size() << '\n';
+  cout << "  Height: " << rbt.height() << " (theoretical O(log n) ~ " << (int)(2 * std::log2(N)) << ")\n";
 
-  ASSERT(h <= theoretical_max, "Height should be ≤ theoretical maximum");
-  ASSERT(h < (N - 1), "Height should be much less than unbalanced BST");
+  // Search performance
+  cout << "\nSearching for all " << N << " elements...\n";
+  start = std::chrono::high_resolution_clock::now();
+  for (int i = 1; i <= N; ++i) {
+    [[maybe_unused]] bool found = rbt.search(i);
+  }
+  end                  = std::chrono::high_resolution_clock::now();
+  auto search_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  PASS();
+  cout << "  Search time: " << search_duration.count() << " ms\n";
 }
 
-//===--------------------------------------------------------------------------===//
-// Main Test Runner
-//===--------------------------------------------------------------------------===//
+// Demo: Clear and reuse
+void demo_clear_reuse() {
+  cout << "\n========== Demo: Clear and Reuse ==========\n";
+
+  Red_Black_Tree<int> rbt;
+
+  for (int i = 1; i <= 20; ++i) {
+    rbt.insert(i);
+  }
+  cout << "After inserting 20 elements:\n";
+  cout << "  Size: " << rbt.size() << ", Height: " << rbt.height() << '\n';
+
+  rbt.clear();
+  cout << "\nAfter clear():\n";
+  cout << "  Size: " << rbt.size() << ", Empty: " << (rbt.is_empty() ? "yes" : "no") << '\n';
+
+  rbt.insert(42);
+  rbt.insert(17);
+  rbt.insert(99);
+  cout << "\nAfter inserting new values (42, 17, 99):\n";
+  print_rbt(rbt, "rbt");
+  cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
+}
+
+// Demo: Edge cases
+void demo_edge_cases() {
+  cout << "\n========== Demo: Edge Cases ==========\n";
+
+  Red_Black_Tree<int> rbt;
+
+  // Test operations on empty tree
+  cout << "Testing operations on empty tree:\n";
+  cout << "  is_empty(): " << (rbt.is_empty() ? "true" : "false") << '\n';
+  cout << "  size(): " << rbt.size() << '\n';
+  cout << "  height(): " << rbt.height() << '\n';
+  cout << "  contains(42): " << (rbt.contains(42) ? "true" : "false") << '\n';
+  cout << "  validate_properties(): " << (rbt.validate_properties() ? "true" : "false") << '\n';
+
+  // Test single element
+  cout << "\nTesting single element:\n";
+  rbt.insert(42);
+  print_rbt(rbt, "rbt with single element");
+  cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
+
+  // Test clear
+  cout << "\nTesting clear():\n";
+  rbt.insert(10);
+  rbt.insert(20);
+  rbt.insert(30);
+  cout << "Before clear: size=" << rbt.size() << '\n';
+  rbt.clear();
+  cout << "After clear: size=" << rbt.size() << ", is_empty=" << rbt.is_empty() << '\n';
+}
 
 auto main() -> int {
-  cout << BOLD << BLUE << "\n=================================\n" << RESET;
-  cout << BOLD << "  Red-Black Tree Test Suite\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
+  try {
+    cout << "========================================\n";
+    cout << "  Red-Black Tree - Comprehensive Demo\n";
+    cout << "========================================\n";
 
-  // Run all tests
-  test_basic_insert_search();
-  test_rb_properties();
-  test_sequential_insert();
-  test_descending_insert();
-  test_random_insert();
-  test_black_height();
-  test_traversal();
-  test_clear();
-  test_move_semantics();
-  test_stress();
-  test_string_type();
-  test_balance_advantage();
+    demo_basic_operations();
+    demo_sequential_insertions();
+    demo_search_operations();
+    demo_property_validation();
+    demo_random_insertions();
+    demo_move_semantics();
+    demo_performance();
+    demo_clear_reuse();
+    demo_edge_cases();
 
-  // Print summary
-  cout << BOLD << BLUE << "\n=================================\n" << RESET;
-  cout << BOLD << "  Test Summary\n" << RESET;
-  cout << BOLD << BLUE << "=================================\n" << RESET;
-  cout << GREEN << "  Passed: " << tests_passed << RESET << '\n';
-  cout << RED << "  Failed: " << tests_failed << RESET << '\n';
-  cout << BOLD << BLUE << "=================================\n" << RESET << '\n';
+    cout << "\n========================================\n";
+    cout << "  All Demos Completed Successfully!\n";
+    cout << "========================================\n";
 
-  if (tests_failed == 0) {
-    cout << GREEN << BOLD << "  ✓ All tests passed!\n" << RESET << '\n';
+  } catch (const std::exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
   }
 
-  return tests_failed > 0 ? 1 : 0;
+  return 0;
 }
-
-//===--------------------------------------------------------------------------===//

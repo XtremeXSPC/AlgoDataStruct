@@ -2,7 +2,7 @@
 /**
  * @file main_Hash_Map.cc
  * @author Costantino Lombardi
- * @brief Test file for HashMap class with iterators
+ * @brief Comprehensive demo program for HashMap class with iterators
  * @version 0.1
  * @date 2025-01-20
  *
@@ -22,7 +22,7 @@ void print_separator(const std::string& title) {
   std::cout << "\n========== " << title << " ==========\n";
 }
 
-void test_hashmap_basic() {
+void demo_hashmap_basic() {
   print_separator("HashMap - Basic Operations");
 
   HashMap<std::string, int> scores;
@@ -41,7 +41,7 @@ void test_hashmap_basic() {
   std::cout << "Contains 'David': " << scores.contains("David") << '\n';
 }
 
-void test_hashmap_iteration() {
+void demo_hashmap_iteration() {
   print_separator("HashMap - Range-Based For Loop");
 
   HashMap<std::string, int> ages = {{"Alice", 25}, {"Bob", 30}, {"Charlie", 28}};
@@ -57,7 +57,7 @@ void test_hashmap_iteration() {
   }
 }
 
-void test_hashmap_insert_emplace() {
+void demo_hashmap_insert_emplace() {
   print_separator("HashMap - Insert and Emplace");
 
   HashMap<int, std::string> map;
@@ -79,7 +79,7 @@ void test_hashmap_insert_emplace() {
   }
 }
 
-void test_hashmap_erase() {
+void demo_hashmap_erase() {
   print_separator("HashMap - Erase Operations");
 
   HashMap<std::string, double> prices = {{"apple", 1.20}, {"banana", 0.50}, {"orange", 0.80}, {"grape", 2.50}};
@@ -103,7 +103,7 @@ void test_hashmap_erase() {
   }
 }
 
-void test_hashmap_utility_methods() {
+void demo_hashmap_utility_methods() {
   print_separator("HashMap - Utility Methods (keys, values, entries)");
 
   HashMap<std::string, int> inventory = {{"apples", 50}, {"oranges", 30}, {"bananas", 45}, {"grapes", 25}};
@@ -134,7 +134,7 @@ void test_hashmap_utility_methods() {
   }
 }
 
-void test_word_frequency() {
+void demo_word_frequency() {
   print_separator("Application - Word Frequency Counter");
 
   std::string text = "the quick brown fox jumps over the lazy dog the fox was quick";
@@ -167,7 +167,7 @@ void test_word_frequency() {
   std::cout << "  '" << most_frequent << "' appears " << max_count << " times\n";
 }
 
-void test_hashmap_move_semantics() {
+void demo_hashmap_move_semantics() {
   print_separator("HashMap - Move Semantics");
 
   HashMap<int, std::string> map1;
@@ -190,21 +190,21 @@ void test_hashmap_move_semantics() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║          HASH MAP - COMPREHENSIVE TEST SUITE          ║\n";
+  std::cout << "║          HASH MAP - COMPREHENSIVE DEMO PROGRAM          ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {
-    test_hashmap_basic();
-    test_hashmap_iteration();
-    test_hashmap_insert_emplace();
-    test_hashmap_erase();
-    test_hashmap_utility_methods();
-    test_word_frequency();
-    test_hashmap_move_semantics();
+    demo_hashmap_basic();
+    demo_hashmap_iteration();
+    demo_hashmap_insert_emplace();
+    demo_hashmap_erase();
+    demo_hashmap_utility_methods();
+    demo_word_frequency();
+    demo_hashmap_move_semantics();
 
     std::cout << "\n";
     std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-    std::cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
+    std::cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {

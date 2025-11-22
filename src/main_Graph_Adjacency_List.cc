@@ -2,7 +2,7 @@
 /**
  * @file main_Graph_Adjacency_List.cc
  * @author Costantino Lombardi
- * @brief Test file for GraphAdjacencyList class
+ * @brief Comprehensive demo program for GraphAdjacencyList class
  * @version 0.1
  * @date 2025-01-20
  *
@@ -31,9 +31,9 @@ void print_vector(const std::vector<T>& vec, const std::string& prefix = "") {
   std::cout << '\n';
 }
 
-//========== BASIC TESTS ==========//
+//========== BASIC DEMOS ==========//
 
-void test_graph_construction() {
+void demo_graph_construction() {
   print_separator("Graph - Construction and Basic Properties");
 
   // Undirected graph
@@ -50,7 +50,7 @@ void test_graph_construction() {
   std::cout << "Directed: " << g_directed.is_directed() << '\n';
 }
 
-void test_graph_add_vertices() {
+void demo_graph_add_vertices() {
   print_separator("Graph - Adding Vertices");
 
   GraphAdjacencyList<std::string> graph(false);
@@ -71,7 +71,7 @@ void test_graph_add_vertices() {
   std::cout << "Has vertex 10: " << graph.has_vertex(10) << '\n';
 }
 
-void test_graph_add_edges_undirected() {
+void demo_graph_add_edges_undirected() {
   print_separator("Graph - Adding Edges (Undirected)");
 
   GraphAdjacencyList<int> graph(false);
@@ -111,7 +111,7 @@ void test_graph_add_edges_undirected() {
   }
 }
 
-void test_graph_add_edges_directed() {
+void demo_graph_add_edges_directed() {
   print_separator("Graph - Adding Edges (Directed)");
 
   GraphAdjacencyList<int> graph(true);
@@ -142,7 +142,7 @@ void test_graph_add_edges_directed() {
   std::cout << "Has edge 3->1: " << graph.has_edge(v3, v1) << " (reverse)\n";
 }
 
-void test_graph_neighbors() {
+void demo_graph_neighbors() {
   print_separator("Graph - Getting Neighbors");
 
   GraphAdjacencyList<char> graph(false);
@@ -173,7 +173,7 @@ void test_graph_neighbors() {
   }
 }
 
-void test_graph_remove_edge() {
+void demo_graph_remove_edge() {
   print_separator("Graph - Removing Edges");
 
   GraphAdjacencyList<int> graph(false);
@@ -196,9 +196,9 @@ void test_graph_remove_edge() {
   std::cout << "Has edge 1->0: " << graph.has_edge(v1, v0) << " (undirected)\n";
 }
 
-//========== TRAVERSAL ALGORITHM TESTS ==========//
+//========== TRAVERSAL ALGORITHM DEMOS ==========//
 
-void test_graph_bfs() {
+void demo_graph_bfs() {
   print_separator("Graph - Breadth-First Search (BFS)");
 
   GraphAdjacencyList<int> graph(false);
@@ -233,7 +233,7 @@ void test_graph_bfs() {
   print_vector(bfs_result, "Traversal order: ");
 }
 
-void test_graph_dfs() {
+void demo_graph_dfs() {
   print_separator("Graph - Depth-First Search (DFS)");
 
   GraphAdjacencyList<int> graph(false);
@@ -264,7 +264,7 @@ void test_graph_dfs() {
   print_vector(dfs_result, "Traversal order: ");
 }
 
-void test_graph_path_finding() {
+void demo_graph_path_finding() {
   print_separator("Graph - Path Finding");
 
   GraphAdjacencyList<std::string> graph(false);
@@ -318,7 +318,7 @@ void test_graph_path_finding() {
   std::cout << "Madrid connected to Berlin: " << graph.is_connected(madrid, berlin) << '\n';
 }
 
-void test_graph_connected_components() {
+void demo_graph_connected_components() {
   print_separator("Graph - Connected Components");
 
   GraphAdjacencyList<int> graph(false);
@@ -348,7 +348,7 @@ void test_graph_connected_components() {
   }
 }
 
-void test_graph_move_semantics() {
+void demo_graph_move_semantics() {
   print_separator("Graph - Move Semantics");
 
   GraphAdjacencyList<int> graph1(false);
@@ -373,7 +373,7 @@ void test_graph_move_semantics() {
   std::cout << "Graph3: " << graph3.num_vertices() << " vertices, " << graph3.num_edges() << " edges\n";
 }
 
-void test_graph_exception_handling() {
+void demo_graph_exception_handling() {
   print_separator("Graph - Exception Handling");
 
   GraphAdjacencyList<int> graph(false);
@@ -402,9 +402,9 @@ void test_graph_exception_handling() {
   }
 }
 
-//========== PERFORMANCE TESTS ==========//
+//========== PERFORMANCE DEMOS ==========//
 
-void test_graph_large_performance() {
+void demo_graph_large_performance() {
   print_separator("Graph - Large Dataset Performance");
 
   const size_t            N = 10000;
@@ -463,34 +463,34 @@ void test_graph_large_performance() {
 
 int main() {
   std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║    GRAPH ADJACENCY LIST - COMPREHENSIVE TEST SUITE    ║\n";
+  std::cout << "║    GRAPH ADJACENCY LIST - COMPREHENSIVE DEMO PROGRAM    ║\n";
   std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   try {
     // Basic tests
-    test_graph_construction();
-    test_graph_add_vertices();
-    test_graph_add_edges_undirected();
-    test_graph_add_edges_directed();
-    test_graph_neighbors();
-    test_graph_remove_edge();
+    demo_graph_construction();
+    demo_graph_add_vertices();
+    demo_graph_add_edges_undirected();
+    demo_graph_add_edges_directed();
+    demo_graph_neighbors();
+    demo_graph_remove_edge();
 
     // Traversal algorithm tests
-    test_graph_bfs();
-    test_graph_dfs();
-    test_graph_path_finding();
-    test_graph_connected_components();
+    demo_graph_bfs();
+    demo_graph_dfs();
+    demo_graph_path_finding();
+    demo_graph_connected_components();
 
     // Advanced tests
-    test_graph_move_semantics();
-    test_graph_exception_handling();
+    demo_graph_move_semantics();
+    demo_graph_exception_handling();
 
     // Performance tests
-    test_graph_large_performance();
+    demo_graph_large_performance();
 
     std::cout << "\n";
     std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-    std::cout << "║           ALL TESTS COMPLETED SUCCESSFULLY!           ║\n";
+    std::cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
     std::cout << "╚═══════════════════════════════════════════════════════╝\n";
 
   } catch (const std::exception& e) {

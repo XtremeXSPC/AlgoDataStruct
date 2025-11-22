@@ -34,6 +34,26 @@
       "detail": "Configure project with CMake for Release build"
     },
     {
+      "label": "CMake: Configure (Debug + Tests)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DENABLE_TESTING=ON",
+        "-B",
+        "build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "CPATH": ""
+        }
+      },
+      "problemMatcher": [],
+      "detail": "Configure project with CMake for Debug build and GoogleTest"
+    },
+    {
       "label": "CMake: Build All",
       "type": "shell",
       "command": "cmake",
@@ -47,6 +67,22 @@
       },
       "problemMatcher": ["$gcc"],
       "detail": "Build all targets using CMake"
+    },
+    {
+      "label": "CMake: Build (Debug + Tests)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "-j8"],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "CPATH": ""
+        }
+      },
+      "group": "build",
+      "dependsOn": ["CMake: Configure (Debug + Tests)"],
+      "problemMatcher": ["$gcc"],
+      "detail": "Build all targets with testing enabled"
     },
     {
       "label": "CMake: Build Active Target",
@@ -118,9 +154,13 @@
       "command": "ctest",
       "args": ["--output-on-failure", "--verbose"],
       "options": {
-        "cwd": "${workspaceFolder}/build"
+        "cwd": "${workspaceFolder}/build",
+        "env": {
+          "CPATH": ""
+        }
       },
       "group": "test",
+      "dependsOn": ["CMake: Build (Debug + Tests)"],
       "presentation": {
         "reveal": "always",
         "focus": true,
