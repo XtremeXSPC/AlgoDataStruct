@@ -2,7 +2,7 @@
 /**
  * @file main_Heaps.cc
  * @author Costantino Lombardi
- * @brief Test file for MinHeap and MaxHeap classes
+ * @brief Comprehensive demo program for MinHeap and MaxHeap classes
  * @version 0.1
  * @date 2025-01-20
  *
@@ -23,9 +23,9 @@ void print_separator(const std::string& title) {
   std::cout << "\n========== " << title << " ==========\n";
 }
 
-//========== MIN HEAP TESTS ==========//
+//========== MIN HEAP DEMOS ==========//
 
-void test_min_heap_basic() {
+void demo_min_heap_basic() {
   print_separator("Min Heap - Basic Operations");
 
   MinHeap<int> heap;
@@ -52,7 +52,7 @@ void test_min_heap_basic() {
   std::cout << "Heap is now empty: " << std::boolalpha << heap.is_empty() << '\n';
 }
 
-void test_min_heap_from_vector() {
+void demo_min_heap_from_vector() {
   print_separator("Min Heap - Construction from Vector");
 
   std::vector<int> data = {15, 10, 20, 8, 12, 25, 18};
@@ -73,7 +73,7 @@ void test_min_heap_from_vector() {
   std::cout << '\n';
 }
 
-void test_min_heap_move_semantics() {
+void demo_min_heap_move_semantics() {
   print_separator("Min Heap - Move Semantics");
 
   MinHeap<int> heap1;
@@ -99,7 +99,7 @@ void test_min_heap_move_semantics() {
   std::cout << "Heap2 size after move: " << heap2.size() << '\n';
 }
 
-void test_min_heap_emplace() {
+void demo_min_heap_emplace() {
   print_separator("Min Heap - Emplace Operations");
 
   MinHeap<std::string> heap;
@@ -118,7 +118,7 @@ void test_min_heap_emplace() {
   }
 }
 
-void test_min_heap_exception_handling() {
+void demo_min_heap_exception_handling() {
   print_separator("Min Heap - Exception Handling");
 
   MinHeap<int> heap;
@@ -138,7 +138,7 @@ void test_min_heap_exception_handling() {
   }
 }
 
-void test_min_heap_large() {
+void demo_min_heap_large() {
   print_separator("Min Heap - Large Dataset");
 
   const int    N = 10000;
@@ -163,9 +163,9 @@ void test_min_heap_large() {
   std::cout << "Size after clear: " << heap.size() << '\n';
 }
 
-//========== MAX HEAP TESTS ==========//
+//========== MAX HEAP DEMOS ==========//
 
-void test_max_heap_basic() {
+void demo_max_heap_basic() {
   print_separator("Max Heap - Basic Operations");
 
   MaxHeap<int> heap;
@@ -192,7 +192,7 @@ void test_max_heap_basic() {
   std::cout << "Heap is now empty: " << std::boolalpha << heap.is_empty() << '\n';
 }
 
-void test_max_heap_from_vector() {
+void demo_max_heap_from_vector() {
   print_separator("Max Heap - Construction from Vector");
 
   std::vector<int> data = {15, 10, 20, 8, 12, 25, 18};
@@ -213,7 +213,7 @@ void test_max_heap_from_vector() {
   std::cout << '\n';
 }
 
-void test_max_heap_heapsort() {
+void demo_max_heap_heapsort() {
   print_separator("Max Heap - Heapsort Application");
 
   std::vector<int> data = {64, 34, 25, 12, 22, 11, 90};
@@ -239,7 +239,7 @@ void test_max_heap_heapsort() {
   std::cout << '\n';
 }
 
-void test_heap_comparison() {
+void demo_heap_comparison() {
   print_separator("Heap Comparison - Min vs Max");
 
   std::vector<int> data = {5, 2, 8, 1, 9, 3, 7};
@@ -271,27 +271,27 @@ void test_heap_comparison() {
 
 int main() {
   std::cout << "==============================================\n";
-  std::cout << " MIN HEAP AND MAX HEAP - COMPREHENSIVE TESTS  \n";
+  std::cout << " MIN HEAP AND MAX HEAP - COMPREHENSIVE DEMO  \n";
   std::cout << "==============================================\n";
 
   try {
     // Min Heap tests
-    test_min_heap_basic();
-    test_min_heap_from_vector();
-    test_min_heap_move_semantics();
-    test_min_heap_emplace();
-    test_min_heap_exception_handling();
-    test_min_heap_large();
+    demo_min_heap_basic();
+    demo_min_heap_from_vector();
+    demo_min_heap_move_semantics();
+    demo_min_heap_emplace();
+    demo_min_heap_exception_handling();
+    demo_min_heap_large();
 
     // Max Heap tests
-    test_max_heap_basic();
-    test_max_heap_from_vector();
-    test_max_heap_heapsort();
+    demo_max_heap_basic();
+    demo_max_heap_from_vector();
+    demo_max_heap_heapsort();
 
     // Comparison
-    test_heap_comparison();
+    demo_heap_comparison();
 
-    print_separator("ALL TESTS COMPLETED SUCCESSFULLY");
+    print_separator("ALL DEMOS COMPLETED SUCCESSFULLY");
     return 0;
   } catch (const std::exception& e) {
     std::cerr << "\n!!! UNEXPECTED EXCEPTION !!!\n";

@@ -40,6 +40,8 @@
 #include <stdexcept>
 #include <utility>
 
+#include "Binary_Tree_Exception.hpp"
+
 namespace ads::trees {
 
 /**
@@ -373,8 +375,15 @@ public:
   auto operator=(const Red_Black_Tree&) -> Red_Black_Tree& = delete;
 
   // Enable move
-  Red_Black_Tree(Red_Black_Tree&&) noexcept                    = default;
-  auto operator=(Red_Black_Tree&&) noexcept -> Red_Black_Tree& = default;
+  Red_Black_Tree(Red_Black_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) { other.size_ = 0; }
+  auto operator=(Red_Black_Tree&& other) noexcept -> Red_Black_Tree& {
+    if (this != &other) {
+      root_ = std::move(other.root_);
+      size_ = other.size_;
+      other.size_ = 0;
+    }
+    return *this;
+  }
 
   /**
    * @brief Insert a value into the tree
@@ -436,6 +445,38 @@ public:
    * @complexity O(n)
    */
   [[nodiscard]] auto height() const -> int { return height_helper(root_.get()); }
+
+  /**
+   * @brief Get smallest value in the tree
+   * @throws EmptyTreeException if the tree is empty
+   */
+  [[nodiscard]] auto find_min() const -> const T& {
+    if (is_empty()) {
+      throw EmptyTreeException("Red-Black Tree is empty");
+    }
+
+    const Node* node = root_.get();
+    while (node->left) {
+      node = node->left.get();
+    }
+    return node->data;
+  }
+
+  /**
+   * @brief Get largest value in the tree
+   * @throws EmptyTreeException if the tree is empty
+   */
+  [[nodiscard]] auto find_max() const -> const T& {
+    if (is_empty()) {
+      throw EmptyTreeException("Red-Black Tree is empty");
+    }
+
+    const Node* node = root_.get();
+    while (node->right) {
+      node = node->right.get();
+    }
+    return node->data;
+  }
 
   /**
    * @brief Get black height of tree

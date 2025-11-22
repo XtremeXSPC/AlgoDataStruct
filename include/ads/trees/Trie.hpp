@@ -284,8 +284,19 @@ public:
   auto operator=(const Trie&) -> Trie& = delete;
 
   // Enable move
-  Trie(Trie&&) noexcept                    = default;
-  auto operator=(Trie&&) noexcept -> Trie& = default;
+  Trie(Trie&& other) noexcept : root_(std::move(other.root_)), word_count_(other.word_count_) {
+    other.root_       = std::make_unique<TrieNode>();
+    other.word_count_ = 0;
+  }
+  auto operator=(Trie&& other) noexcept -> Trie& {
+    if (this != &other) {
+      root_       = std::move(other.root_);
+      word_count_ = other.word_count_;
+      other.root_ = std::make_unique<TrieNode>();
+      other.word_count_ = 0;
+    }
+    return *this;
+  }
 
   /**
    * @brief Insert a word into the trie
