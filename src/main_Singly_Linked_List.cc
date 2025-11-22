@@ -16,14 +16,14 @@
 #include <utility>
 
 #include "../include/ads/lists/Singly_Linked_List.hpp"
-#include "ads/support/ConsoleColors.hpp"
+#include "support/Terminal_Colors.hpp"
 
 using ads::list::ListException;
 using ads::list::SinglyLinkedList;
 
 template <typename T>
 void print_list(const SinglyLinkedList<T>& list, const std::string& label) {
-  std::cout << CYAN << label << RESET << " (size " << list.size() << "): ";
+  std::cout << ANSI_CYAN << label << ANSI_RESET << " (size " << list.size() << "): ";
   for (const auto& v : list) {
     std::cout << v << ' ';
   }
@@ -31,7 +31,7 @@ void print_list(const SinglyLinkedList<T>& list, const std::string& label) {
 }
 
 void demo_basics() {
-  std::cout << BOLD << BLUE << "\n-- Basic push/pop --" << RESET << '\n';
+  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Basic push/pop --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<int> list;
   list.push_front(3);
@@ -49,7 +49,7 @@ void demo_basics() {
 }
 
 void demo_emplace_and_reverse() {
-  std::cout << BOLD << BLUE << "\n-- Emplace and reverse --" << RESET << '\n';
+  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Emplace and reverse --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<std::string> words;
   words.emplace_front("World");
@@ -62,7 +62,7 @@ void demo_emplace_and_reverse() {
 }
 
 void demo_move_semantics() {
-  std::cout << BOLD << BLUE << "\n-- Move semantics --" << RESET << '\n';
+  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Move semantics --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<int> original;
   for (int i = 1; i <= 5; ++i) {
@@ -81,27 +81,27 @@ void demo_move_semantics() {
 }
 
 void demo_exceptions() {
-  std::cout << BOLD << BLUE << "\n-- Exception handling --" << RESET << '\n';
+  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Exception handling --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<int> empty;
   try {
     empty.front();
   } catch (const ListException& e) {
-    std::cout << YELLOW << "front() threw as expected: " << e.what() << RESET << '\n';
+    std::cout << ANSI_YELLOW << "front() threw as expected: " << e.what() << ANSI_RESET << '\n';
   }
 }
 
 auto main() -> int {
-  std::cout << BOLD << BLUE << "=================================\n" << RESET;
-  std::cout << BOLD << "  Singly Linked List Demo\n" << RESET;
-  std::cout << BOLD << BLUE << "=================================\n" << RESET;
+  std::cout << ANSI_BOLD << ANSI_BLUE << "=================================\n" << ANSI_RESET;
+  std::cout << ANSI_BOLD << "  Singly Linked List Demo\n" << ANSI_RESET;
+  std::cout << ANSI_BOLD << ANSI_BLUE << "=================================\n" << ANSI_RESET;
 
   demo_basics();
   demo_emplace_and_reverse();
   demo_move_semantics();
   demo_exceptions();
 
-  std::cout << BOLD << BLUE << "\nDone. Run ENABLE_TESTING=ON to execute the full unit tests.\n" << RESET;
+  std::cout << ANSI_BOLD << ANSI_BLUE << "\nDone. Run ENABLE_TESTING=ON to execute the full unit tests.\n" << ANSI_RESET;
   return 0;
 }
 
