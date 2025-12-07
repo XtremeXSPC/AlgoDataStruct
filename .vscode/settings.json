@@ -212,5 +212,7 @@
     "valarray": "cpp",
     "variant": "cpp",
     "queue": "cpp"
-  }
+  },
+  "sarif-viewer.connectToGithubCodeScanning": "off",
+  "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json"
 }
