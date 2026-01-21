@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Linked_Queue.tpp
  * @author Costantino Lombardi
@@ -9,13 +9,13 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #include "../../../include/ads/queues/Linked_Queue.hpp"
 
 namespace ads::queue {
 
-//===------------------- LinkedQueue implementation --------------------===//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
 LinkedQueue<T>::LinkedQueue() noexcept : front_(nullptr), rear_(nullptr), size_(0) {
@@ -48,6 +48,7 @@ auto LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept -> LinkedQueue<T>& 
   return *this;
 }
 
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 template <typename T>
 void LinkedQueue<T>::enqueue(const T& value) {
   emplace(value);
@@ -85,6 +86,7 @@ auto LinkedQueue<T>::emplace(Args&&... args) -> T& {
   return data_ref;
 }
 
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 template <typename T>
 void LinkedQueue<T>::dequeue() {
   if (is_empty()) {
@@ -102,6 +104,7 @@ void LinkedQueue<T>::dequeue() {
   size_--;
 }
 
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
 template <typename T>
 auto LinkedQueue<T>::front() -> T& {
   if (is_empty()) {
@@ -134,6 +137,7 @@ auto LinkedQueue<T>::rear() const -> const T& {
   return rear_->data;
 }
 
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 template <typename T>
 auto LinkedQueue<T>::is_empty() const noexcept -> bool {
   return front_ == nullptr;
@@ -157,4 +161,4 @@ void LinkedQueue<T>::clear() noexcept {
 
 } // namespace ads::queue
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

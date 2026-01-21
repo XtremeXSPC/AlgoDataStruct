@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Singly_Linked_List.tpp
  * @author Costantino Lombardi
@@ -9,13 +9,13 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #include "../../../include/ads/lists/Singly_Linked_List.hpp"
 
 namespace ads::lists {
 
-//========== ITERATOR IMPLEMENTATION ==========//
+//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::iterator::operator*() const -> reference {
@@ -42,7 +42,7 @@ auto SinglyLinkedList<T>::iterator::operator++(int) -> iterator {
   return temp;
 }
 
-//========== CONST_ITERATOR IMPLEMENTATION ==========//
+//===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::const_iterator::operator*() const -> reference {
@@ -69,7 +69,7 @@ auto SinglyLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
   return temp;
 }
 
-//========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
 SinglyLinkedList<T>::SinglyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
@@ -100,7 +100,7 @@ auto SinglyLinkedList<T>::operator=(SinglyLinkedList&& other) noexcept -> Singly
   return *this;
 }
 
-//========== INSERTION OPERATIONS ==========//
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::push_front(const T& value) -> void {
@@ -192,7 +192,7 @@ auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   return ref;
 }
 
-//========== REMOVAL OPERATIONS ==========//
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::pop_front() -> void {
@@ -230,7 +230,7 @@ auto SinglyLinkedList<T>::pop_back() -> void {
   --size_;
 }
 
-//========== ACCESS OPERATIONS ==========//
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::front() -> T& {
@@ -264,7 +264,7 @@ auto SinglyLinkedList<T>::back() const -> const T& {
   return tail_->data;
 }
 
-//========== QUERY OPERATIONS ==========//
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::is_empty() const noexcept -> bool {
@@ -286,7 +286,7 @@ auto SinglyLinkedList<T>::clear() noexcept -> void {
   size_ = 0;
 }
 
-//========== UTILITY OPERATIONS ==========//
+//===--------------------------- UTILITY OPERATIONS ----------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::reverse() noexcept -> void {
@@ -308,7 +308,7 @@ auto SinglyLinkedList<T>::reverse() noexcept -> void {
   head_ = std::move(prev);
 }
 
-//========== ITERATOR OPERATIONS ==========//
+//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::begin() -> iterator {
@@ -342,4 +342,4 @@ auto SinglyLinkedList<T>::cend() const -> const_iterator {
 
 } // namespace ads::lists
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

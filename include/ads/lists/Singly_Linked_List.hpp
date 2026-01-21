@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Singly_Linked_List.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 
 #ifndef SINGLY_LINKED_LIST_HPP
@@ -42,7 +42,7 @@ private:
   struct Node;
 
 public:
-  //========== ITERATOR CLASS ==========//
+  //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
    * @brief Forward iterator for SinglyLinkedList.
    *
@@ -72,9 +72,12 @@ public:
     friend class SinglyLinkedList<T>;
   };
 
-  //========== CONST_ITERATOR CLASS ==========//
+  //===------------------------- CONST_ITERATOR CLASS --------------------------===//
   /**
    * @brief Const forward iterator for SinglyLinkedList.
+   *
+   * @details Supports only forward iteration (no operator--).
+   *          Complies with std::forward_iterator_tag requirements.
    */
   class const_iterator {
   public:
@@ -99,7 +102,7 @@ public:
     friend class SinglyLinkedList<T>;
   };
 
-  //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
+  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
   /**
    * @brief Constructs an empty list.
@@ -129,11 +132,11 @@ public:
    */
   auto operator=(SinglyLinkedList&& other) noexcept -> SinglyLinkedList&;
 
-  // Disable copy constructor and copy assignment
+  // Copy constructor and assignment are disabled.
   SinglyLinkedList(const SinglyLinkedList&)                    = delete;
   auto operator=(const SinglyLinkedList&) -> SinglyLinkedList& = delete;
 
-  //========== INSERTION OPERATIONS ==========//
+  //====------------------------ INSERTION OPERATIONS -------------------------====//
 
   /**
    * @brief Inserts an element at the front of the list.
@@ -183,7 +186,7 @@ public:
   template <typename... Args>
   auto emplace_back(Args&&... args) -> T&;
 
-  //========== REMOVAL OPERATIONS ==========//
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
   /**
    * @brief Removes the first element from the list.
@@ -200,7 +203,7 @@ public:
    */
   auto pop_back() -> void override;
 
-  //========== ACCESS OPERATIONS ==========//
+  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
   /**
    * @brief Returns a reference to the first element.
@@ -234,7 +237,7 @@ public:
    */
   auto back() const -> const T& override;
 
-  //========== QUERY OPERATIONS ==========//
+  //====-------------------------- QUERY OPERATIONS ---------------------------====//
 
   /**
    * @brief Checks if the list is empty.
@@ -256,7 +259,7 @@ public:
    */
   auto clear() noexcept -> void override;
 
-  //========== UTILITY OPERATIONS ==========//
+  //====------------------------- UTILITY OPERATIONS --------------------------====//
 
   /**
    * @brief Reverses the order of elements in the list.
@@ -265,7 +268,7 @@ public:
    */
   auto reverse() noexcept -> void;
 
-  //========== ITERATOR OPERATIONS ==========//
+  //====------------------------- ITERATOR OPERATIONS -------------------------====//
 
   /**
    * @brief Returns an iterator to the beginning of the list.
@@ -310,6 +313,7 @@ public:
   auto cend() const -> const_iterator;
 
 private:
+  //====---------------------------- INTERNAL NODE ----------------------------====//
   /**
    * @brief Internal node structure.
    *
@@ -331,6 +335,7 @@ private:
 
 } // namespace ads::lists
 
+// Include for the template implementation.
 #include "../../../src/ads/lists/Singly_Linked_List.tpp"
 
 #endif // SINGLY_LINKED_LIST_HPP

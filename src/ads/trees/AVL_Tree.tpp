@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file AVL_Tree.tpp
  * @author Costantino Lombardi
@@ -9,16 +9,14 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #pragma once
 #include "../../../include/ads/trees/AVL_Tree.hpp"
 
 namespace ads::trees {
 
-//============================================================================//
-// CONSTRUCTORS AND ASSIGNMENT
-//============================================================================//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
 AVLTree<T>::AVLTree() : root_(nullptr), size_(0) {
@@ -39,9 +37,7 @@ auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
   return *this;
 }
 
-//============================================================================//
-// HEIGHT MANAGEMENT
-//============================================================================//
+//===---------------------------- HEIGHT MANAGEMENT ----------------------------===//
 
 template <typename T>
 auto AVLTree<T>::get_height(const Node* node) const noexcept -> int {
@@ -60,9 +56,7 @@ auto AVLTree<T>::get_balance_factor(const Node* node) const noexcept -> int {
   return node ? get_height(node->left.get()) - get_height(node->right.get()) : 0;
 }
 
-//============================================================================//
-// ROTATION OPERATIONS
-//============================================================================//
+//===--------------------------- ROTATION OPERATIONS ---------------------------===//
 
 template <typename T>
 auto AVLTree<T>::rotate_right(std::unique_ptr<Node> y) -> std::unique_ptr<Node> {
@@ -116,9 +110,7 @@ auto AVLTree<T>::rotate_right_left(std::unique_ptr<Node> node) -> std::unique_pt
   return rotate_left(std::move(node));
 }
 
-//============================================================================//
-// BALANCING
-//============================================================================//
+//===-------------------------------- BALANCING --------------------------------===//
 
 template <typename T>
 auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
@@ -156,9 +148,7 @@ auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
   return node;
 }
 
-//============================================================================//
-// INSERT OPERATIONS
-//============================================================================//
+//===---------------------------- INSERT OPERATIONS ----------------------------===//
 
 template <typename T>
 auto AVLTree<T>::insert(const T& value) -> bool {
@@ -210,9 +200,7 @@ auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inse
   return balance(std::move(node));
 }
 
-//============================================================================//
-// REMOVE OPERATIONS
-//============================================================================//
+//===---------------------------- REMOVE OPERATIONS ----------------------------===//
 
 template <typename T>
 auto AVLTree<T>::remove(const T& value) -> bool {
@@ -284,9 +272,7 @@ auto AVLTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node
   return min_node;
 }
 
-//============================================================================//
-// SEARCH OPERATIONS
-//============================================================================//
+//===---------------------------- SEARCH OPERATIONS ----------------------------===//
 
 template <typename T>
 auto AVLTree<T>::contains(const T& value) const -> bool {
@@ -342,9 +328,7 @@ auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
   return node;
 }
 
-//============================================================================//
-// TREE PROPERTIES
-//============================================================================//
+//===----------------------------- TREE PROPERTIES -----------------------------===//
 
 template <typename T>
 auto AVLTree<T>::is_empty() const noexcept -> bool {
@@ -394,9 +378,7 @@ auto AVLTree<T>::is_balanced_helper(const Node* node) const noexcept -> bool {
   return is_balanced_helper(node->left.get()) && is_balanced_helper(node->right.get());
 }
 
-//============================================================================//
-// TRAVERSAL OPERATIONS
-//============================================================================//
+//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <typename T>
 void AVLTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
@@ -470,9 +452,7 @@ void AVLTree<T>::post_order_helper(const Node* node, const std::function<void(co
   visit(node->data);
 }
 
-//============================================================================//
-// ITERATOR IMPLEMENTATION
-//============================================================================//
+//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <typename T>
 AVLTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
@@ -572,4 +552,4 @@ auto AVLTree<T>::cend() const -> iterator {
 
 } // namespace ads::trees
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

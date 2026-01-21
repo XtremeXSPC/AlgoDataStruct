@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Array_Stack.tpp
  * @author Costantino Lombardi
@@ -9,13 +9,13 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #include "../../../include/ads/stacks/Array_Stack.hpp"
 
 namespace ads::stack {
 
-//===------------------- ArrayStack implementation --------------------===//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
@@ -43,6 +43,7 @@ auto ArrayStack<T>::operator=(ArrayStack&& other) noexcept -> ArrayStack<T>& {
   return *this;
 }
 
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 template <typename T>
 void ArrayStack<T>::push(const T& value) {
   emplace(value);
@@ -69,6 +70,7 @@ auto ArrayStack<T>::emplace(Args&&... args) -> T& {
   return *top_ptr;
 }
 
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 template <typename T>
 void ArrayStack<T>::pop() {
   if (is_empty()) {
@@ -93,6 +95,7 @@ void ArrayStack<T>::pop() {
   }
 }
 
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
 template <typename T>
 auto ArrayStack<T>::top() -> T& {
   if (is_empty()) {
@@ -109,6 +112,7 @@ auto ArrayStack<T>::top() const -> const T& {
   return data_[size_ - 1];
 }
 
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 template <typename T>
 auto ArrayStack<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
@@ -128,6 +132,7 @@ void ArrayStack<T>::clear() noexcept {
   }
 }
 
+//===--------------------------- CAPACITY MANAGEMENT ---------------------------===//
 template <typename T>
 void ArrayStack<T>::reserve(size_t n) {
   if (n > capacity_) {
@@ -192,4 +197,4 @@ void ArrayStack<T>::reallocate(size_t new_capacity) {
 
 } // namespace ads::stack
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

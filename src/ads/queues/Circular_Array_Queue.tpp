@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Circular_Array_Queue.tpp
  * @author Costantino Lombardi
@@ -9,13 +9,13 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #include "../../../include/ads/queues/Circular_Array_Queue.hpp"
 
 namespace ads::queue {
 
-//===------------------- CircularArrayQueue implementation --------------------===//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
@@ -56,6 +56,7 @@ auto CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept -> Ci
   return *this;
 }
 
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 template <typename T>
 void CircularArrayQueue<T>::enqueue(const T& value) {
   emplace(value);
@@ -83,6 +84,8 @@ auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
   return *rear_ptr;
 }
 
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+
 template <typename T>
 void CircularArrayQueue<T>::dequeue() {
   if (is_empty()) {
@@ -105,6 +108,8 @@ void CircularArrayQueue<T>::dequeue() {
     }
   }
 }
+
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
 template <typename T>
 auto CircularArrayQueue<T>::front() -> T& {
@@ -140,6 +145,8 @@ auto CircularArrayQueue<T>::rear() const -> const T& {
   return data_[rear_element_index];
 }
 
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
+
 template <typename T>
 auto CircularArrayQueue<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
@@ -161,6 +168,8 @@ void CircularArrayQueue<T>::clear() noexcept {
   front_ = 0;
   rear_  = 0;
 }
+
+//===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
 template <typename T>
 void CircularArrayQueue<T>::reserve(size_t n) {
