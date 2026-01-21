@@ -18,20 +18,26 @@
 #include "../include/ads/lists/Singly_Linked_List.hpp"
 #include "support/Terminal_Colors.hpp"
 
+using std::cerr;
+using std::cout;
+using std::exception;
+using std::string;
+using std::to_string;
+
 using ads::list::ListException;
 using ads::list::SinglyLinkedList;
 
 template <typename T>
-void print_list(const SinglyLinkedList<T>& list, const std::string& label) {
-  std::cout << ANSI_CYAN << label << ANSI_RESET << " (size " << list.size() << "): ";
+void print_list(const SinglyLinkedList<T>& list, const string& label) {
+  cout << ANSI_CYAN << label << ANSI_RESET << " (size " << list.size() << "): ";
   for (const auto& v : list) {
-    std::cout << v << ' ';
+    cout << v << ' ';
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 void demo_basics() {
-  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Basic push/pop --" << ANSI_RESET << '\n';
+  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Basic push/pop --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<int> list;
   list.push_front(3);
@@ -41,7 +47,7 @@ void demo_basics() {
   list.push_back(5);
 
   print_list(list, "After pushes");
-  std::cout << "front=" << list.front() << " back=" << list.back() << '\n';
+  cout << "front=" << list.front() << " back=" << list.back() << '\n';
 
   list.pop_front();
   list.pop_back();
@@ -49,9 +55,9 @@ void demo_basics() {
 }
 
 void demo_emplace_and_reverse() {
-  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Emplace and reverse --" << ANSI_RESET << '\n';
+  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Emplace and reverse --" << ANSI_RESET << '\n';
 
-  SinglyLinkedList<std::string> words;
+  SinglyLinkedList<string> words;
   words.emplace_front("World");
   words.emplace_front("Hello");
   words.emplace_back("!");
@@ -62,7 +68,7 @@ void demo_emplace_and_reverse() {
 }
 
 void demo_move_semantics() {
-  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Move semantics --" << ANSI_RESET << '\n';
+  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Move semantics --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<int> original;
   for (int i = 1; i <= 5; ++i) {
@@ -81,27 +87,27 @@ void demo_move_semantics() {
 }
 
 void demo_exceptions() {
-  std::cout << ANSI_BOLD << ANSI_BLUE << "\n-- Exception handling --" << ANSI_RESET << '\n';
+  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Exception handling --" << ANSI_RESET << '\n';
 
   SinglyLinkedList<int> empty;
   try {
     empty.front();
   } catch (const ListException& e) {
-    std::cout << ANSI_YELLOW << "front() threw as expected: " << e.what() << ANSI_RESET << '\n';
+    cout << ANSI_YELLOW << "front() threw as expected: " << e.what() << ANSI_RESET << '\n';
   }
 }
 
 auto main() -> int {
-  std::cout << ANSI_BOLD << ANSI_BLUE << "=================================\n" << ANSI_RESET;
-  std::cout << ANSI_BOLD << "  Singly Linked List Demo\n" << ANSI_RESET;
-  std::cout << ANSI_BOLD << ANSI_BLUE << "=================================\n" << ANSI_RESET;
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "          SINGLY LINKED LIST - COMPREHENSIVE DEMO           \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   demo_basics();
   demo_emplace_and_reverse();
   demo_move_semantics();
   demo_exceptions();
 
-  std::cout << ANSI_BOLD << ANSI_BLUE << "\nDone. Run ENABLE_TESTING=ON to execute the full unit tests.\n" << ANSI_RESET;
+  cout << ANSI_BOLD << ANSI_BLUE << "\nDone. Run ENABLE_TESTING=ON to execute the full unit tests.\n" << ANSI_RESET;
   return 0;
 }
 

@@ -17,10 +17,17 @@
 
 #include "../include/ads/queues/Priority_Queue.hpp"
 
+using std::cerr;
+using std::cout;
+using std::exception;
+using std::string;
+using std::to_string;
+using std::vector;
+
 using namespace ads::queue;
 
-void print_separator(const std::string& title) {
-  std::cout << "\n========== " << title << " ==========\n";
+void print_separator(const string& title) {
+  cout << "\n========== " << title << " ==========\n";
 }
 
 //========== BASIC DEMOS ==========//
@@ -30,10 +37,10 @@ void demo_priority_queue_basic() {
 
   PriorityQueue<int> pq;
 
-  std::cout << "Empty queue created. empty(): " << std::boolalpha << pq.empty() << '\n';
-  std::cout << "Size: " << pq.size() << '\n';
+  cout << "Empty queue created. empty(): " << std::boolalpha << pq.empty() << '\n';
+  cout << "Size: " << pq.size() << '\n';
 
-  std::cout << "\nPushing elements: 5, 3, 7, 1, 9, 2\n";
+  cout << "\nPushing elements: 5, 3, 7, 1, 9, 2\n";
   pq.push(5);
   pq.push(3);
   pq.push(7);
@@ -41,24 +48,24 @@ void demo_priority_queue_basic() {
   pq.push(9);
   pq.push(2);
 
-  std::cout << "Size: " << pq.size() << '\n';
-  std::cout << "Top (max): " << pq.top() << '\n';
+  cout << "Size: " << pq.size() << '\n';
+  cout << "Top (max): " << pq.top() << '\n';
 
-  std::cout << "\nExtracting all elements (should be sorted descending for max-heap):\n";
+  cout << "\nExtracting all elements (should be sorted descending for max-heap):\n";
   while (!pq.empty()) {
-    std::cout << pq.top() << ' ';
+    cout << pq.top() << ' ';
     pq.pop();
   }
-  std::cout << '\n';
-  std::cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
+  cout << '\n';
+  cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
 }
 
 void demo_priority_queue_min_heap() {
-  print_separator("Priority Queue - Min-Heap with std::greater");
+  print_separator("Priority Queue - Min-Heap with greater");
 
   PriorityQueue<int, std::greater<int>> min_pq;
 
-  std::cout << "Pushing elements: 5, 3, 7, 1, 9, 2\n";
+  cout << "Pushing elements: 5, 3, 7, 1, 9, 2\n";
   min_pq.push(5);
   min_pq.push(3);
   min_pq.push(7);
@@ -66,36 +73,36 @@ void demo_priority_queue_min_heap() {
   min_pq.push(9);
   min_pq.push(2);
 
-  std::cout << "Top (min): " << min_pq.top() << '\n';
+  cout << "Top (min): " << min_pq.top() << '\n';
 
-  std::cout << "\nExtracting all elements (should be sorted ascending for min-heap):\n";
+  cout << "\nExtracting all elements (should be sorted ascending for min-heap):\n";
   while (!min_pq.empty()) {
-    std::cout << min_pq.top() << ' ';
+    cout << min_pq.top() << ' ';
     min_pq.pop();
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 void demo_priority_queue_from_vector() {
   print_separator("Priority Queue - Construction from Vector");
 
-  std::vector<int> data = {15, 10, 20, 8, 12, 25, 18};
-  std::cout << "Original vector: ";
+  vector<int> data = {15, 10, 20, 8, 12, 25, 18};
+  cout << "Original vector: ";
   for (int val : data) {
-    std::cout << val << ' ';
+    cout << val << ' ';
   }
-  std::cout << '\n';
+  cout << '\n';
 
   PriorityQueue<int> pq(data);
-  std::cout << "Queue size: " << pq.size() << '\n';
-  std::cout << "Top (max): " << pq.top() << '\n';
+  cout << "Queue size: " << pq.size() << '\n';
+  cout << "Top (max): " << pq.top() << '\n';
 
-  std::cout << "Extracting all elements:\n";
+  cout << "Extracting all elements:\n";
   while (!pq.empty()) {
-    std::cout << pq.top() << ' ';
+    cout << pq.top() << ' ';
     pq.pop();
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 void demo_priority_queue_initializer_list() {
@@ -103,15 +110,15 @@ void demo_priority_queue_initializer_list() {
 
   PriorityQueue<int> pq = {3, 1, 4, 1, 5, 9, 2, 6};
 
-  std::cout << "Created from initializer list: {3, 1, 4, 1, 5, 9, 2, 6}\n";
-  std::cout << "Size: " << pq.size() << ", Top: " << pq.top() << '\n';
+  cout << "Created from initializer list: {3, 1, 4, 1, 5, 9, 2, 6}\n";
+  cout << "Size: " << pq.size() << ", Top: " << pq.top() << '\n';
 
-  std::cout << "All elements: ";
+  cout << "All elements: ";
   while (!pq.empty()) {
-    std::cout << pq.top() << ' ';
+    cout << pq.top() << ' ';
     pq.pop();
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 void demo_priority_queue_move_semantics() {
@@ -122,28 +129,28 @@ void demo_priority_queue_move_semantics() {
     pq1.push(i * 10);
   }
 
-  std::cout << "PQ1 size: " << pq1.size() << ", top: " << pq1.top() << '\n';
+  cout << "PQ1 size: " << pq1.size() << ", top: " << pq1.top() << '\n';
 
-  std::cout << "\nMoving pq1 to pq2 (move constructor)...\n";
+  cout << "\nMoving pq1 to pq2 (move constructor)...\n";
   PriorityQueue<int> pq2(std::move(pq1));
 
-  std::cout << "PQ2 size: " << pq2.size() << ", top: " << pq2.top() << '\n';
-  std::cout << "PQ1 size after move: " << pq1.size() << '\n';
+  cout << "PQ2 size: " << pq2.size() << ", top: " << pq2.top() << '\n';
+  cout << "PQ1 size after move: " << pq1.size() << '\n';
 
   PriorityQueue<int> pq3;
   pq3.push(99);
 
-  std::cout << "\nMoving pq2 to pq3 (move assignment)...\n";
+  cout << "\nMoving pq2 to pq3 (move assignment)...\n";
   pq3 = std::move(pq2);
 
-  std::cout << "PQ3 size: " << pq3.size() << ", top: " << pq3.top() << '\n';
-  std::cout << "PQ2 size after move: " << pq2.size() << '\n';
+  cout << "PQ3 size: " << pq3.size() << ", top: " << pq3.top() << '\n';
+  cout << "PQ2 size after move: " << pq2.size() << '\n';
 }
 
 void demo_priority_queue_emplace() {
   print_separator("Priority Queue - Emplace Operations");
 
-  PriorityQueue<std::string> pq;
+  PriorityQueue<string> pq;
 
   pq.emplace("World");
   pq.emplace("Hello");
@@ -151,12 +158,12 @@ void demo_priority_queue_emplace() {
   pq.emplace("Algorithms");
   pq.emplace("Data");
 
-  std::cout << "Queue size: " << pq.size() << '\n';
-  std::cout << "Top: " << pq.top() << '\n';
+  cout << "Queue size: " << pq.size() << '\n';
+  cout << "Top: " << pq.top() << '\n';
 
-  std::cout << "All strings in priority order:\n";
+  cout << "All strings in priority order:\n";
   while (!pq.empty()) {
-    std::cout << pq.top() << '\n';
+    cout << pq.top() << '\n';
     pq.pop();
   }
 }
@@ -168,16 +175,16 @@ void demo_priority_queue_exception_handling() {
 
   try {
     pq.top();
-    std::cout << "ERROR: top() should throw on empty queue\n";
+    cout << "ERROR: top() should throw on empty queue\n";
   } catch (const QueueException& e) {
-    std::cout << "Caught expected exception for top(): " << e.what() << '\n';
+    cout << "Caught expected exception for top(): " << e.what() << '\n';
   }
 
   try {
     pq.pop();
-    std::cout << "ERROR: pop() should throw on empty queue\n";
+    cout << "ERROR: pop() should throw on empty queue\n";
   } catch (const QueueException& e) {
-    std::cout << "Caught expected exception for pop(): " << e.what() << '\n';
+    cout << "Caught expected exception for pop(): " << e.what() << '\n';
   }
 }
 
@@ -186,27 +193,27 @@ void demo_priority_queue_sorted_elements() {
 
   PriorityQueue<int> pq = {8, 3, 10, 1, 6, 14, 4, 7, 13};
 
-  std::cout << "Original queue size: " << pq.size() << '\n';
-  std::cout << "Extracting all elements in sorted order:\n";
+  cout << "Original queue size: " << pq.size() << '\n';
+  cout << "Extracting all elements in sorted order:\n";
 
   auto sorted = pq.sorted_elements();
 
-  std::cout << "Sorted (descending): ";
+  cout << "Sorted (descending): ";
   for (int val : sorted) {
-    std::cout << val << ' ';
+    cout << val << ' ';
   }
-  std::cout << '\n';
+  cout << '\n';
 
-  std::cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
+  cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
 }
 
 //========== PRACTICAL APPLICATIONS ==========//
 
 struct Task {
-  std::string name;
+  string name;
   int         priority;
 
-  Task(std::string n, int p) : name(std::move(n)), priority(p) {}
+  Task(string n, int p) : name(std::move(n)), priority(p) {}
 };
 
 // Comparator for tasks (higher priority number = higher priority)
@@ -227,20 +234,20 @@ void demo_task_scheduling() {
   task_queue.emplace("Deploy to production", 9);
   task_queue.emplace("Update documentation", 3);
 
-  std::cout << "Tasks in execution order (by priority):\n";
+  cout << "Tasks in execution order (by priority):\n";
   int task_number = 1;
   while (!task_queue.empty()) {
     const Task& task = task_queue.top();
-    std::cout << task_number++ << ". [Priority " << task.priority << "] " << task.name << '\n';
+    cout << task_number++ << ". [Priority " << task.priority << "] " << task.name << '\n';
     task_queue.pop();
   }
 }
 
 struct Event {
-  std::string name;
+  string name;
   double      timestamp;
 
-  Event(std::string n, double t) : name(std::move(n)), timestamp(t) {}
+  Event(string n, double t) : name(std::move(n)), timestamp(t) {}
 };
 
 struct EventCompare {
@@ -260,10 +267,10 @@ void demo_event_simulation() {
   event_queue.emplace("Cache invalidation", 1.8);
   event_queue.emplace("Request received", 0.5);
 
-  std::cout << "Events in chronological order:\n";
+  cout << "Events in chronological order:\n";
   while (!event_queue.empty()) {
     const Event& event = event_queue.top();
-    std::cout << "[t=" << event.timestamp << "s] " << event.name << '\n';
+    cout << "[t=" << event.timestamp << "s] " << event.name << '\n';
     event_queue.pop();
   }
 }
@@ -275,15 +282,15 @@ void demo_top_k_elements() {
   const int                          k = 5;
   PriorityQueue<int, std::greater<>> min_heap; // Min-heap
 
-  std::vector<int> stream = {12, 5, 787, 1, 23, 100, 34, 56, 89, 45, 678, 234, 98, 345, 567};
+  vector<int> stream = {12, 5, 787, 1, 23, 100, 34, 56, 89, 45, 678, 234, 98, 345, 567};
 
-  std::cout << "Stream: ";
+  cout << "Stream: ";
   for (int val : stream) {
-    std::cout << val << ' ';
+    cout << val << ' ';
   }
-  std::cout << '\n';
+  cout << '\n';
 
-  std::cout << "\nFinding top " << k << " largest elements...\n";
+  cout << "\nFinding top " << k << " largest elements...\n";
 
   for (int val : stream) {
     if (min_heap.size() < static_cast<size_t>(k)) {
@@ -294,12 +301,12 @@ void demo_top_k_elements() {
     }
   }
 
-  std::cout << "Top " << k << " largest elements (ascending order):\n";
+  cout << "Top " << k << " largest elements (ascending order):\n";
   auto result = min_heap.sorted_elements();
   for (int val : result) {
-    std::cout << val << ' ';
+    cout << val << ' ';
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 //========== PERFORMANCE DEMOS ==========//
@@ -311,7 +318,7 @@ void demo_priority_queue_large() {
   PriorityQueue<int> pq;
   pq.reserve(N);
 
-  std::cout << "Inserting " << N << " elements...\n";
+  cout << "Inserting " << N << " elements...\n";
   auto start = std::chrono::high_resolution_clock::now();
 
   for (int i = N; i > 0; --i) {
@@ -321,11 +328,11 @@ void demo_priority_queue_large() {
   auto end      = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  std::cout << "Insertion time: " << duration.count() << " ms\n";
-  std::cout << "Queue size: " << pq.size() << '\n';
-  std::cout << "Top element: " << pq.top() << '\n';
+  cout << "Insertion time: " << duration.count() << " ms\n";
+  cout << "Queue size: " << pq.size() << '\n';
+  cout << "Top element: " << pq.top() << '\n';
 
-  std::cout << "\nExtracting all elements...\n";
+  cout << "\nExtracting all elements...\n";
   start = std::chrono::high_resolution_clock::now();
 
   int count = 0;
@@ -337,22 +344,22 @@ void demo_priority_queue_large() {
   end      = std::chrono::high_resolution_clock::now();
   duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  std::cout << "Extraction time: " << duration.count() << " ms\n";
-  std::cout << "Elements extracted: " << count << '\n';
+  cout << "Extraction time: " << duration.count() << " ms\n";
+  cout << "Elements extracted: " << count << '\n';
 }
 
 void demo_heapify_construction_performance() {
   print_separator("Priority Queue - Heapify Construction Performance");
 
   const int        N = 100000;
-  std::vector<int> data;
+  vector<int> data;
   data.reserve(N);
 
   for (int i = 0; i < N; ++i) {
     data.push_back(i);
   }
 
-  std::cout << "Constructing priority queue from vector of " << N << " elements...\n";
+  cout << "Constructing priority queue from vector of " << N << " elements...\n";
   auto start = std::chrono::high_resolution_clock::now();
 
   PriorityQueue<int> pq(data);
@@ -360,16 +367,16 @@ void demo_heapify_construction_performance() {
   auto end      = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  std::cout << "Heapify construction time: " << duration.count() << " ms\n";
-  std::cout << "Queue size: " << pq.size() << ", Top: " << pq.top() << '\n';
+  cout << "Heapify construction time: " << duration.count() << " ms\n";
+  cout << "Queue size: " << pq.size() << ", Top: " << pq.top() << '\n';
 }
 
 //========== MAIN ==========//
 
 int main() {
-  std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║       PRIORITY QUEUE - COMPREHENSIVE DEMO PROGRAM       ║\n";
-  std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "            PRIORITY QUEUE - COMPREHENSIVE DEMO             \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
     // Basic tests
@@ -391,13 +398,13 @@ int main() {
     demo_priority_queue_large();
     demo_heapify_construction_performance();
 
-    std::cout << "\n";
-    std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-    std::cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
-    std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+    cout << "\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
-  } catch (const std::exception& e) {
-    std::cerr << "\nTest failed with exception: " << e.what() << '\n';
+  } catch (const exception& e) {
+    cerr << "\nTest failed with exception: " << e.what() << '\n';
     return 1;
   }
 

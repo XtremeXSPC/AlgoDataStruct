@@ -17,19 +17,26 @@
 #include "../include/ads/graphs/Graph_Adjacency_List.hpp"
 #include "../include/ads/graphs/Graph_Adjacency_Matrix.hpp"
 
+using std::cerr;
+using std::cout;
+using std::exception;
+using std::string;
+using std::to_string;
+using std::vector;
+
 using namespace ads::graph;
 
-void print_separator(const std::string& title) {
-  std::cout << "\n========== " << title << " ==========\n";
+void print_separator(const string& title) {
+  cout << "\n=====---------- " << title << " ----------=====\n";
 }
 
 template <typename T>
-void print_vector(const std::vector<T>& vec, const std::string& prefix = "") {
-  std::cout << prefix;
+void print_vector(const vector<T>& vec, const string& prefix = "") {
+  cout << prefix;
   for (const auto& elem : vec) {
-    std::cout << elem << " ";
+    cout << elem << " ";
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 //========== BASIC DEMOS ==========//
@@ -38,48 +45,48 @@ void demo_matrix_construction() {
   print_separator("Matrix - Construction and Properties");
 
   GraphAdjacencyMatrix<int> graph(false);
-  std::cout << "Created undirected graph matrix\n";
-  std::cout << "Empty: " << std::boolalpha << graph.is_empty() << '\n';
-  std::cout << "Directed: " << graph.is_directed() << '\n';
-  std::cout << "Vertices: " << graph.num_vertices() << '\n';
-  std::cout << "Edges: " << graph.num_edges() << '\n';
+  cout << "Created undirected graph matrix\n";
+  cout << "Empty: " << std::boolalpha << graph.is_empty() << '\n';
+  cout << "Directed: " << graph.is_directed() << '\n';
+  cout << "Vertices: " << graph.num_vertices() << '\n';
+  cout << "Edges: " << graph.num_edges() << '\n';
 }
 
 void demo_matrix_operations() {
   print_separator("Matrix - Basic Operations");
 
-  GraphAdjacencyMatrix<std::string> graph(false);
+  GraphAdjacencyMatrix<string> graph(false);
 
   auto v0 = graph.add_vertex("A");
   auto v1 = graph.add_vertex("B");
   auto v2 = graph.add_vertex("C");
   auto v3 = graph.add_vertex("D");
 
-  std::cout << "Added 4 vertices\n";
-  std::cout << "Number of vertices: " << graph.num_vertices() << '\n';
+  cout << "Added 4 vertices\n";
+  cout << "Number of vertices: " << graph.num_vertices() << '\n';
 
   graph.add_edge(v0, v1, 1.5);
   graph.add_edge(v0, v2, 2.0);
   graph.add_edge(v1, v3, 3.0);
   graph.add_edge(v2, v3, 4.0);
 
-  std::cout << "Added 4 edges\n";
-  std::cout << "Number of edges: " << graph.num_edges() << '\n';
+  cout << "Added 4 edges\n";
+  cout << "Number of edges: " << graph.num_edges() << '\n';
 
-  std::cout << "\nEdge lookups (O(1) for matrix):\n";
-  std::cout << "Has edge A->B: " << std::boolalpha << graph.has_edge(v0, v1) << '\n';
-  std::cout << "Has edge B->A: " << graph.has_edge(v1, v0) << " (undirected)\n";
-  std::cout << "Has edge A->D: " << graph.has_edge(v0, v3) << '\n';
+  cout << "\nEdge lookups (O(1) for matrix):\n";
+  cout << "Has edge A->B: " << std::boolalpha << graph.has_edge(v0, v1) << '\n';
+  cout << "Has edge B->A: " << graph.has_edge(v1, v0) << " (undirected)\n";
+  cout << "Has edge A->D: " << graph.has_edge(v0, v3) << '\n';
 
   auto weight = graph.get_edge_weight(v0, v1);
-  std::cout << "\nEdge A->B weight: " << (weight ? std::to_string(*weight) : "none") << '\n';
+  cout << "\nEdge A->B weight: " << (weight ? to_string(*weight) : "none") << '\n';
 
-  std::cout << "\nNeighbors of A: ";
+  cout << "\nNeighbors of A: ";
   auto neighbors = graph.get_neighbors(v0);
   for (auto n : neighbors) {
-    std::cout << graph.get_vertex_data(n) << " ";
+    cout << graph.get_vertex_data(n) << " ";
   }
-  std::cout << '\n';
+  cout << '\n';
 }
 
 void demo_matrix_traversal() {
@@ -98,17 +105,17 @@ void demo_matrix_traversal() {
   graph.add_edge(2, 5);
   graph.add_edge(3, 4);
 
-  std::cout << "Graph with 6 vertices created\n";
+  cout << "Graph with 6 vertices created\n";
 
-  std::cout << "\nBFS from vertex 0:\n";
+  cout << "\nBFS from vertex 0:\n";
   auto bfs_result = graph.bfs(0);
   print_vector(bfs_result, "Traversal order: ");
 
-  std::cout << "\nDFS from vertex 0:\n";
+  cout << "\nDFS from vertex 0:\n";
   auto dfs_result = graph.dfs(0);
   print_vector(dfs_result, "Traversal order: ");
 
-  std::cout << "\nPath from 0 to 5:\n";
+  cout << "\nPath from 0 to 5:\n";
   auto path = graph.find_path(0, 5);
   if (path) {
     print_vector(*path, "Path: ");
@@ -128,13 +135,13 @@ void demo_matrix_connected_components() {
   graph.add_edge(1, 2);
   graph.add_edge(3, 4);
 
-  std::cout << "Graph with 6 vertices, 3 components\n";
+  cout << "Graph with 6 vertices, 3 components\n";
 
   auto components = graph.connected_components();
-  std::cout << "Number of connected components: " << components.size() << '\n';
+  cout << "Number of connected components: " << components.size() << '\n';
 
   for (size_t i = 0; i < components.size(); ++i) {
-    std::cout << "Component " << i + 1 << ": ";
+    cout << "Component " << i + 1 << ": ";
     print_vector(components[i]);
   }
 }
@@ -151,14 +158,14 @@ void compare_performance() {
   GraphAdjacencyMatrix<int> matrix_graph(false);
 
   // Add vertices
-  std::cout << "Adding " << N << " vertices...\n";
+  cout << "Adding " << N << " vertices...\n";
   for (size_t i = 0; i < N; ++i) {
     list_graph.add_vertex(static_cast<int>(i));
     matrix_graph.add_vertex(static_cast<int>(i));
   }
 
   // Create sparse graph: each vertex connected to 5 neighbors
-  std::cout << "Creating sparse graph (5 edges per vertex)...\n";
+  cout << "Creating sparse graph (5 edges per vertex)...\n";
   for (size_t i = 0; i < N; ++i) {
     for (size_t j = 1; j <= 5 && i + j < N; ++j) {
       list_graph.add_edge(i, i + j);
@@ -166,10 +173,10 @@ void compare_performance() {
     }
   }
 
-  std::cout << "Total edges: " << list_graph.num_edges() << '\n';
+  cout << "Total edges: " << list_graph.num_edges() << '\n';
 
   // Test 1: Edge lookup
-  std::cout << "\n[Test 1] Edge lookup (checking 10000 edges):\n";
+  cout << "\n[Test 1] Edge lookup (checking 10000 edges):\n";
 
   auto            start = std::chrono::high_resolution_clock::now();
   volatile size_t count = 0;
@@ -181,7 +188,7 @@ void compare_performance() {
   }
   auto end       = std::chrono::high_resolution_clock::now();
   auto list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  List:   " << list_time << " µs (O(degree) lookup)\n";
+  cout << "  List:   " << list_time << " µs (O(degree) lookup)\n";
 
   start = std::chrono::high_resolution_clock::now();
   count = 0;
@@ -194,32 +201,32 @@ void compare_performance() {
 
   end              = std::chrono::high_resolution_clock::now();
   auto matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  Matrix: " << matrix_time << " µs (O(1) lookup)\n";
-  std::cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << " ("
-            << (100.0 * std::abs(static_cast<double>(matrix_time) - static_cast<double>(list_time))
+  cout << "  Matrix: " << matrix_time << " µs (O(1) lookup)\n";
+  cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << " ("
+            << (100.0 * abs(static_cast<double>(matrix_time) - static_cast<double>(list_time))
                 / std::max(static_cast<double>(matrix_time), static_cast<double>(list_time)))
             << "% faster)\n";
 
   // Test 2: BFS
-  std::cout << "\n[Test 2] BFS traversal:\n";
+  cout << "\n[Test 2] BFS traversal:\n";
 
   start         = std::chrono::high_resolution_clock::now();
   auto list_bfs = list_graph.bfs(0);
 
   end       = std::chrono::high_resolution_clock::now();
   list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  List:   " << list_time << " µs (visited " << list_bfs.size() << " vertices)\n";
+  cout << "  List:   " << list_time << " µs (visited " << list_bfs.size() << " vertices)\n";
 
   start           = std::chrono::high_resolution_clock::now();
   auto matrix_bfs = matrix_graph.bfs(0);
 
   end         = std::chrono::high_resolution_clock::now();
   matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  Matrix: " << matrix_time << " µs (visited " << matrix_bfs.size() << " vertices)\n";
-  std::cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
+  cout << "  Matrix: " << matrix_time << " µs (visited " << matrix_bfs.size() << " vertices)\n";
+  cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
   // Test 3: Neighbor iteration
-  std::cout << "\n[Test 3] Iterating neighbors (first 100 vertices):\n";
+  cout << "\n[Test 3] Iterating neighbors (first 100 vertices):\n";
 
   start = std::chrono::high_resolution_clock::now();
   for (size_t i = 0; i < 100 && i < N; ++i) {
@@ -229,7 +236,7 @@ void compare_performance() {
 
   end       = std::chrono::high_resolution_clock::now();
   list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  List:   " << list_time << " µs (O(degree) iteration)\n";
+  cout << "  List:   " << list_time << " µs (O(degree) iteration)\n";
 
   start = std::chrono::high_resolution_clock::now();
   for (size_t i = 0; i < 100 && i < N; ++i) {
@@ -239,28 +246,28 @@ void compare_performance() {
 
   end         = std::chrono::high_resolution_clock::now();
   matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  Matrix: " << matrix_time << " µs (O(V) iteration)\n";
-  std::cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
+  cout << "  Matrix: " << matrix_time << " µs (O(V) iteration)\n";
+  cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
   // Memory usage estimation
-  std::cout << "\n[Memory Usage] Estimated for sparse graph:\n";
+  cout << "\n[Memory Usage] Estimated for sparse graph:\n";
   size_t list_memory   = N * sizeof(int) + list_graph.num_edges() * 2 * (sizeof(size_t) + sizeof(double));
   size_t matrix_memory = N * sizeof(int) + N * N * sizeof(std::optional<double>);
-  std::cout << "  List:   ~" << list_memory / 1024 << " KB (O(V + E))\n";
-  std::cout << "  Matrix: ~" << matrix_memory / 1024 << " KB (O(V²))\n";
-  std::cout << "  Winner: List (Matrix uses " << (100 * matrix_memory / list_memory) << "% more memory)\n";
+  cout << "  List:   ~" << list_memory / 1024 << " KB (O(V + E))\n";
+  cout << "  Matrix: ~" << matrix_memory / 1024 << " KB (O(V²))\n";
+  cout << "  Winner: List (Matrix uses " << (100 * matrix_memory / list_memory) << "% more memory)\n";
 
-  std::cout << "\nConclusion for sparse graphs:\n";
-  std::cout << "  - Matrix: Better for O(1) edge lookup\n";
-  std::cout << "  - List:   Better for memory efficiency and neighbor iteration\n";
+  cout << "\nConclusion for sparse graphs:\n";
+  cout << "  - Matrix: Better for O(1) edge lookup\n";
+  cout << "  - List:   Better for memory efficiency and neighbor iteration\n";
 }
 
 //========== MAIN ==========//
 
 int main() {
-  std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║   GRAPH ADJACENCY MATRIX - COMPREHENSIVE DEMO PROGRAM   ║\n";
-  std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "          GRAPH ADJACENCY MATRIX - EXAMPLES TESTS           \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
     // Basic tests
@@ -272,13 +279,13 @@ int main() {
     // Performance comparison
     compare_performance();
 
-    std::cout << "\n";
-    std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-    std::cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
-    std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+    cout << "\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
-  } catch (const std::exception& e) {
-    std::cerr << "\nTest failed with exception: " << e.what() << '\n';
+  } catch (const exception& e) {
+    cerr << "\nTest failed with exception: " << e.what() << '\n';
     return 1;
   }
 

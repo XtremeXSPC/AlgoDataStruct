@@ -22,7 +22,9 @@
 
 using std::cerr;
 using std::cout;
+using std::exception;
 using std::string;
+using std::to_string;
 using std::vector;
 
 using ads::list::DoublyLinkedList;
@@ -203,7 +205,7 @@ void demo_iterators() {
   print_list(list, "after modification");
 
   // Collecting into vector
-  cout << "\nCollecting into std::vector:\n  ";
+  cout << "\nCollecting into vector:\n  ";
   vector<int> vec(list.begin(), list.end());
   cout << "Vector contents: ";
   for (int v : vec) {
@@ -363,9 +365,9 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "========================================\n";
-    cout << "  Doubly Linked List - Comprehensive Demo\n";
-    cout << "========================================\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "          DOUBLY LINKED LIST - COMPREHENSIVE DEMO           \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     demo_basic_operations();
     demo_pop_operations();
@@ -378,11 +380,12 @@ auto main() -> int {
     demo_exceptions();
     demo_edge_cases();
 
-    cout << "\n========================================\n";
-    cout << "  All Demos Completed Successfully!\n";
-    cout << "========================================\n";
+    cout << "\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
-  } catch (const std::exception& e) {
+  } catch (const exception& e) {
     cerr << "\nUnexpected error: " << e.what() << "\n";
     return 1;
   }

@@ -328,9 +328,9 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "========================================\n";
-    cout << "Binary Search Tree - Comprehensive Tests\n";
-    cout << "========================================\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             Binary Search Tree Usage Examples              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     demo_basic_operations();
     demo_search_operations();
@@ -341,9 +341,10 @@ auto main() -> int {
     demo_exceptions();
     demo_edge_cases();
 
-    cout << "\n========================================\n";
-    cout << "All Tests Completed Successfully!\n";
-    cout << "========================================\n";
+    cout << "\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             All Tests Completed Successfully!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
   } catch (const exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

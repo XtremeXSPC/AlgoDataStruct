@@ -19,19 +19,29 @@
 #include "../include/ads/graphs/Graph_Adjacency_List.hpp"
 #include "../include/ads/queues/Priority_Queue.hpp"
 
+using std::cerr;
+using std::cout;
+using std::exception;
+using std::string;
+using std::to_string;
+using std::vector;
+using std::pair;
+using std::numeric_limits;
+
+
 using namespace ads::graph;
 using namespace ads::queue;
 
 // City graph vertex data
 struct City {
-  std::string name;
+  string name;
   City() : name("") {}
-  explicit City(const std::string& n) : name(n) {}
+  explicit City(const string& n) : name(n) {}
 };
 
 // Compare nodes by distance for priority queue (min-heap)
 struct DistanceComparator {
-  bool operator()(const std::pair<size_t, double>& a, const std::pair<size_t, double>& b) const {
+  bool operator()(const pair<size_t, double>& a, const pair<size_t, double>& b) const {
     return a.second > b.second; // Min-heap: smaller distance has higher priority
   }
 };
@@ -42,15 +52,15 @@ struct DistanceComparator {
  * @param start Starting vertex index
  * @return Vector of shortest distances from start to all vertices
  */
-std::vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) {
+vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) {
   size_t              n = graph.num_vertices();
-  std::vector<double> dist(n, std::numeric_limits<double>::infinity());
-  std::vector<bool>   visited(n, false);
+  vector<double> dist(n, numeric_limits<double>::infinity());
+  vector<bool>   visited(n, false);
 
   dist[start] = 0.0;
 
   // Priority queue: pair<vertex_index, distance>
-  PriorityQueue<std::pair<size_t, double>, DistanceComparator> pq;
+  PriorityQueue<pair<size_t, double>, DistanceComparator> pq;
   pq.push({start, 0.0});
 
   while (!pq.empty()) {
@@ -79,25 +89,25 @@ std::vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size
 /**
  * @brief Print shortest paths from source to all cities
  */
-void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const std::vector<double>& distances) {
-  std::cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
-  std::cout << "===========================================\n";
+void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const vector<double>& distances) {
+  cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
+  cout << "=====--------------------------------------=====\n";
 
   for (size_t i = 0; i < distances.size(); ++i) {
-    std::cout << "  To " << graph.get_vertex_data(i).name << ": ";
-    if (distances[i] == std::numeric_limits<double>::infinity()) {
-      std::cout << "unreachable\n";
+    cout << "  To " << graph.get_vertex_data(i).name << ": ";
+    if (distances[i] == numeric_limits<double>::infinity()) {
+      cout << "unreachable\n";
     } else {
-      std::cout << distances[i] << " km\n";
+      cout << distances[i] << " km\n";
     }
   }
 }
 
 int main() {
-  std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║        DIJKSTRA'S ALGORITHM - INTEGRATION TEST        ║\n";
-  std::cout << "║        Graph (Adjacency List) + Priority Queue        ║\n";
-  std::cout << "╚═══════════════════════════════════════════════════════╝\n\n";
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "         DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO          \n";
+  cout << "          Graph (Adjacency List) + Priority Queue           \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   // Create a graph of European cities with distances in km
   GraphAdjacencyList<City, double> cities(false); // Undirected graph
@@ -121,34 +131,34 @@ int main() {
   cities.add_edge(munich, zurich, 316); // Munich - Zurich
   cities.add_edge(vienna, zurich, 598); // Vienna - Zurich
 
-  std::cout << "European Cities Road Network:\n";
-  std::cout << "-----------------------------\n";
-  std::cout << "Vertices: " << cities.num_vertices() << "\n";
-  std::cout << "Edges: " << cities.num_edges() << "\n\n";
+  cout << "\nEuropean Cities Road Network:\n";
+  cout << "---------------------------------\n";
+  cout << "Vertices: " << cities.num_vertices() << "\n";
+  cout << "Edges: " << cities.num_edges() << "\n\n";
 
   // Test Dijkstra from different starting cities
-  const std::vector<std::string> test_cities  = {"Rome", "Paris", "Berlin"};
-  const std::vector<size_t>      test_indices = {rome, paris, berlin};
+  const vector<string> test_cities  = {"Rome", "Paris", "Berlin"};
+  const vector<size_t>      test_indices = {rome, paris, berlin};
 
   for (size_t i = 0; i < test_cities.size(); ++i) {
-    std::cout << "\n" << std::string(55, '=') << "\n";
-    std::cout << "Computing shortest paths from " << test_cities[i] << "...\n";
+    cout << "\n" << string(55, '=') << "\n";
+    cout << "Computing shortest paths from " << test_cities[i] << "...\n";
 
     auto distances = dijkstra(cities, test_indices[i]);
     print_shortest_paths(cities, test_indices[i], distances);
   }
 
   // Performance test with larger graph
-  std::cout << "\n\n" << std::string(55, '=') << "\n";
-  std::cout << "Performance Test: Random Graph\n";
-  std::cout << std::string(55, '=') << "\n";
+  cout << "\n\n" << string(55, '=') << "\n";
+  cout << "Performance Test: Random Graph\n";
+  cout << string(55, '=') << "\n";
 
   const size_t                     num_vertices = 1000;
   GraphAdjacencyList<City, double> large_graph(false);
 
   // Add vertices
   for (size_t i = 0; i < num_vertices; ++i) {
-    large_graph.add_vertex(City("City_" + std::to_string(i)));
+    large_graph.add_vertex(City("City_" + to_string(i)));
   }
 
   // Add random edges
@@ -159,26 +169,25 @@ int main() {
     }
   }
 
-  std::cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, " << large_graph.num_edges() << " edges\n";
+  cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, " << large_graph.num_edges() << " edges\n";
 
-  std::cout << "Running Dijkstra from vertex 0...\n";
+  cout << "Running Dijkstra from vertex 0...\n";
   auto start_time = std::chrono::high_resolution_clock::now();
   auto distances  = dijkstra(large_graph, 0);
   auto end_time   = std::chrono::high_resolution_clock::now();
 
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+  cout << "Completed in " << duration.count() / 1000.0 << " ms\n";
+  cout << "Sample distances:\n";
+  cout << "  To vertex 10: " << distances[10] << "\n";
+  cout << "  To vertex 100: " << distances[100] << "\n";
+  cout << "  To vertex 500: " << distances[500] << "\n";
+  cout << "  To vertex 999: " << distances[999] << "\n";
 
-  std::cout << "Completed in " << duration.count() / 1000.0 << " ms\n";
-  std::cout << "Sample distances:\n";
-  std::cout << "  To vertex 10: " << distances[10] << "\n";
-  std::cout << "  To vertex 100: " << distances[100] << "\n";
-  std::cout << "  To vertex 500: " << distances[500] << "\n";
-  std::cout << "  To vertex 999: " << distances[999] << "\n";
-
-  std::cout << "\n";
-  std::cout << "╔═══════════════════════════════════════════════════════╗\n";
-  std::cout << "║       INTEGRATION TEST COMPLETED SUCCESSFULLY!        ║\n";
-  std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+  cout << "\n";
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "           DIJKSTRA'S ALGORITHM TESTS COMPLETED!            \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   return 0;
 }

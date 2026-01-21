@@ -348,9 +348,9 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "========================================\n";
-    cout << " Trie (Prefix Tree) - Comprehensive Demo\n";
-    cout << "========================================\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "          TRIE (PREFIX TREE) - COMPREHENSIVE DEMO           \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     demo_basic_operations();
     demo_prefix_operations();
@@ -363,9 +363,9 @@ auto main() -> int {
     demo_edge_cases();
 
     cout << "\n";
-    cout << "========================================\n";
-    cout << "  All Demos Completed Successfully!\n";
-    cout << "========================================\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
   } catch (const std::exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

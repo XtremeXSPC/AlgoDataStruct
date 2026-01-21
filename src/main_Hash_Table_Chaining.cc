@@ -24,7 +24,9 @@ using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
+using std::to_string;
 using std::vector;
+using std::unordered_map;
 
 using ads::hash::HashTableChaining;
 
@@ -147,7 +149,7 @@ void demo_erase() {
   HashTableChaining<int, string> table;
 
   for (int i = 1; i <= 10; ++i) {
-    table.insert(i, "value_" + std::to_string(i));
+    table.insert(i, "value_" + to_string(i));
   }
 
   print_stats(table, "before erasure");
@@ -315,14 +317,14 @@ void demo_move_semantics() {
   print_stats(table1, "table1");
 
   // Move constructor
-  HashTableChaining<int, string> table2(std::move(table1));
+  HashTableChaining<int, string> table2(move(table1));
   cout << "\nAfter move construction:\n";
   print_stats(table2, "table2");
   cout << "table1 size: " << table1.size() << " (should be 0)\n";
 
   // Move assignment
   HashTableChaining<int, string> table3;
-  table3 = std::move(table2);
+  table3 = move(table2);
   cout << "\nAfter move assignment:\n";
   print_stats(table3, "table3");
   cout << "table2 size: " << table2.size() << " (should be 0)\n";
@@ -351,7 +353,7 @@ void demo_clear() {
   cout << "  table[42] = " << table[42] << '\n';
 }
 
-// Performance comparison with std::unordered_map
+// Performance comparison with unordered_map
 void demo_performance() {
   cout << "\n========== Demo: Performance Comparison ==========\n";
 
@@ -374,10 +376,10 @@ void demo_performance() {
   cout << "  Capacity:   " << our_table.capacity() << '\n';
   cout << "  Load factor: " << our_table.load_factor() << '\n';
 
-  // Test std::unordered_map
+  // Test unordered_map
   start = std::chrono::high_resolution_clock::now();
 
-  std::unordered_map<int, int> std_table;
+  unordered_map<int, int> std_table;
   for (int i = 0; i < N; ++i) {
     std_table[i] = i * 2;
   }
@@ -385,16 +387,16 @@ void demo_performance() {
   end      = std::chrono::high_resolution_clock::now();
   duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  cout << "\nstd::unordered_map:\n";
+  cout << "\nunordered_map:\n";
   cout << "  Insertions: " << duration.count() << " ms\n";
   cout << "  Final size: " << std_table.size() << '\n';
   cout << "  Load factor: " << std_table.load_factor() << '\n';
 }
 
 int main() {
-  cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║      HASH TABLE CHAINING COMPREHENSIVE DEMO PROGRAM      ║\n";
-  cout << "╚════════════════════════════════════════════════════════╝\n";
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "          HASH TABLE CHAINING - COMPREHENSIVE DEMO          \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
     demo_basic_operations();
@@ -412,9 +414,9 @@ int main() {
     demo_performance();
 
     cout << "\n";
-    cout << "╔════════════════════════════════════════════════════════╗\n";
-    cout << "║            ALL DEMOS COMPLETED SUCCESSFULLY!           ║\n";
-    cout << "╚════════════════════════════════════════════════════════╝\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     return 0;
 

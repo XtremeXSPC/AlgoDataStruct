@@ -24,6 +24,7 @@
 
 using std::cerr;
 using std::cout;
+using std::exception;
 using std::string;
 using std::to_string;
 using std::vector;
@@ -346,9 +347,9 @@ void demo_height_comparison() {
 
 auto main() -> int {
   try {
-    cout << "========================================\n";
-    cout << "     B-Tree - Comprehensive Demo\n";
-    cout << "========================================\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "                   B-Tree Usage Examples                    \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     demo_basic_operations();
     demo_node_splitting();
@@ -361,9 +362,10 @@ auto main() -> int {
     demo_clear_reuse();
     demo_height_comparison();
 
-    cout << "\n========================================\n";
-    cout << "  All Demos Completed Successfully!\n";
-    cout << "========================================\n";
+    cout << "\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             All Demos Completed Successfully!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
   } catch (const std::exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

@@ -1,6 +1,6 @@
-# ============================================================================ #
-# ---------- AlgoDataStruct: Data Structures Library Configuration ----------- #
-# ============================================================================ #
+# ================================================================================= #
+# ------------- AlgoDataStruct: Data Structures Library Configuration ------------- #
+# ================================================================================= #
 #
 # This CMake configuration works in tandem with the toolchain files to provide
 # a clean and maintainable build system. The toolchain files handle compiler
@@ -8,10 +8,10 @@
 # settings and target definitions.
 #
 # Key Design Decisions:
-# - Toolchain files (clang-toolchain.cmake, gcc-toolchain.cmake) handle
-#   compiler selection, RPATH, and standard library configuration
-# - This file focuses on project structure, compiler flags, and target creation
-# - Minimal duplication and clear separation of concerns
+#   - Toolchain files (clang-toolchain.cmake, gcc-toolchain.cmake) handle
+#     compiler selection, RPATH, and standard library configuration.
+#   - This file focuses on project structure, compiler flags, and target creation.
+#   - Minimal duplication and clear separation of concerns.
 #
 # Usage:
 #   With Clang (recommended):
@@ -23,7 +23,7 @@
 #   Then build:
 #     cmake --build build
 #
-# ============================================================================ #
+# ================================================================================= #
 
 cmake_minimum_required(VERSION 3.20)
 project(AlgoDataStructProject
@@ -32,7 +32,7 @@ project(AlgoDataStructProject
     DESCRIPTION "Educational data structures library in C++"
 )
 
-# ----------------------------- ANSI Color Codes ----------------------------- #
+# ------------------------------- ANSI Color Codes -------------------------------- #
 # These color codes make the configuration output more readable in the terminal.
 # They work on Unix-like systems and modern Windows terminals.
 if(UNIX OR APPLE OR CMAKE_HOST_WIN32)
@@ -46,7 +46,7 @@ if(UNIX OR APPLE OR CMAKE_HOST_WIN32)
     set(ANSI_CYAN    "${Esc}[36m")
 endif()
 
-# ----------------------- Toolchain Usage Verification ----------------------- #
+# ------------------------- Toolchain Usage Verification -------------------------- #
 # While it's possible to configure without a toolchain file, it's not recommended
 # because CMake's automatic compiler detection may find wrappers (like ccache)
 # instead of the actual compiler, causing issues with clangd and IDE support.
@@ -72,7 +72,7 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE OR CMAKE_TOOLCHAIN_FILE STREQUAL "")
         "Continuing with automatic compiler detection...\n")
 endif()
 
-# ----------------------------- Project Settings ----------------------------- #
+# ------------------------------- Project Settings -------------------------------- #
 # These settings apply to all targets in the project.
 
 # C++20 provides a good balance of modern features and compiler support.
@@ -93,7 +93,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 file(MAKE_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
-# -------------------- Simplified Include Path Detection --------------------- #
+# ----------------------- Simplified Include Path Detection ----------------------- #
 # With toolchain files handling compiler selection, we only need basic
 # include path detection for clangd support. This is much simpler than
 # the original version because we know the compiler is correctly configured.
@@ -157,7 +157,7 @@ endfunction()
 # Run the detection function
 detect_compiler_system_includes(COMPILER_SYSTEM_INCLUDE_PATHS)
 
-# ----------------------- Library Definition: ads_lib ------------------------ #
+# -------------------------- Library Definition: ads_lib -------------------------- #
 #
 # This is a header-only template library. We define it as an INTERFACE library
 # because there are no compiled sources - everything is in headers and .tpp files.
@@ -245,7 +245,7 @@ target_sources(ads_lib
         src/ads/associative/Hash_Map.tpp
 )
 
-# --------------------- Helper Function: Add Executable ---------------------- #
+# ------------------------ Helper Function: Add Executable ------------------------ #
 #
 # This function encapsulates all the logic for creating a test executable.
 # It ensures consistent compiler flags, warning levels, and configuration
@@ -321,7 +321,7 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
     message(STATUS "${ANSI_GREEN}Added test executable: ${TARGET_NAME}${ANSI_RESET}")
 endfunction()
 
-# -------------------------- Main Test Executables --------------------------- #
+# ----------------------------- Main Test Executables ----------------------------- #
 # These are the actual test programs that exercise the data structures library.
 
 # AVL Tree test
@@ -404,7 +404,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
     ads_add_executable(test_trie src/main_Trie.cc)
 endif()
 
-# -------------------------- GoogleTest Integration -------------------------- #
+# ---------------------------- GoogleTest Integration ----------------------------- #
 # GoogleTest support is optional and disabled by default.
 # Enable it with: cmake -DENABLE_TESTING=ON ...
 
@@ -480,7 +480,7 @@ if(ENABLE_TESTING)
     endif()
 endif()
 
-# ----------------------------- Utility Targets ------------------------------ #
+# -------------------------------- Utility Targets -------------------------------- #
 # These targets provide convenience commands for common development tasks.
 
 # Create a symlink to compile_commands.json in the project root.
@@ -503,7 +503,7 @@ if(TARGET test_bst)
     )
 endif()
 
-# -------------------------- Configuration Summary --------------------------- #
+# ----------------------------- Configuration Summary ----------------------------- #
 # Print a nicely formatted summary of the configuration.
 
 message(STATUS "")
@@ -544,5 +544,5 @@ message(STATUS "")
 message(STATUS "${ANSI_BLUE}╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}")
 message(STATUS "")
 
-# ============================================================================ #
+# ================================================================================= #
 # End of CMakeLists.txt

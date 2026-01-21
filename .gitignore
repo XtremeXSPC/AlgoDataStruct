@@ -13,6 +13,9 @@
 /build
 /bin
 
+# Exclude generated documentation
+/docs
+
 # Exclude Google Drive temporary files
 .Google\ Drive
 *.tmp
