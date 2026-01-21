@@ -24,8 +24,8 @@ using std::exception;
 using std::string;
 using std::to_string;
 
-using ads::list::ListException;
-using ads::list::SinglyLinkedList;
+using ads::lists::ListException;
+using ads::lists::SinglyLinkedList;
 
 template <typename T>
 void print_list(const SinglyLinkedList<T>& list, const string& label) {

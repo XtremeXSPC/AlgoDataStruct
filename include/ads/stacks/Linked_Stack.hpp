@@ -107,10 +107,10 @@ private:
   size_t                size_; ///< The current number of elements
 };
 
+} // namespace ads::stack
+
 // Include the implementation file for templates
 #include "../../../src/ads/stacks/Linked_Stack.tpp"
-
-} // namespace ads::stack
 
 #endif // LINKED_STACK_HPP
 

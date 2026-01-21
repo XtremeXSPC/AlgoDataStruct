@@ -11,9 +11,7 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/queues/Priority_Queue.hpp"
-#include <algorithm>
 
 namespace ads::queue {
 

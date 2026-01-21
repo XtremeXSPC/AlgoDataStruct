@@ -303,10 +303,10 @@ private:
   size_t                size_; ///< Number of nodes in the tree
 };
 
+} // namespace ads::trees
+
 // Include the implementation file for templates
 #include "../../../src/ads/trees/Binary_Search_Tree.tpp"
-
-} // namespace ads::trees
 
 #endif // BINARY_SEARCH_TREE_HPP
 

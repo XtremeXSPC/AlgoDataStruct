@@ -15,6 +15,8 @@
 #ifndef GRAPH_ADJACENCY_LIST_HPP
 #define GRAPH_ADJACENCY_LIST_HPP
 
+#include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <queue>
 #include <stack>

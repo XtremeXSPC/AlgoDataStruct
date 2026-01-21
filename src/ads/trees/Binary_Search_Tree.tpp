@@ -11,8 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/trees/Binary_Search_Tree.hpp"
+
+namespace ads::trees {
 
 //===------------------------ Iterator implementation -------------------------===//
 
@@ -445,5 +446,7 @@ template <typename T>
 auto BinarySearchTree<T>::cend() const -> iterator {
   return end();
 }
+
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//
