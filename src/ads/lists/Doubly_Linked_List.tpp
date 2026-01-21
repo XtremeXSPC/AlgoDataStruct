@@ -140,30 +140,6 @@ auto DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept -> Doubly
 
 template <typename T>
 template <typename... Args>
-auto DoublyLinkedList<T>::emplace_back(Args&&... args) {
-  if (!tail_) { // Empty list
-    head_ = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
-    tail_ = head_.get();
-  } else {
-    tail_->next = std::make_unique<Node>(tail_, std::forward<Args>(args)...);
-    tail_       = tail_->next.get();
-  }
-  size_++;
-  return tail_->data;
-}
-
-template <typename T>
-void DoublyLinkedList<T>::push_back(const T& value) {
-  emplace_back(value);
-}
-
-template <typename T>
-void DoublyLinkedList<T>::push_back(T&& value) {
-  emplace_back(std::move(value));
-}
-
-template <typename T>
-template <typename... Args>
 auto DoublyLinkedList<T>::emplace_front(Args&&... args) {
   auto newNode = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
   if (head_) {
@@ -185,6 +161,30 @@ void DoublyLinkedList<T>::push_front(const T& value) {
 template <typename T>
 void DoublyLinkedList<T>::push_front(T&& value) {
   emplace_front(std::move(value));
+}
+
+template <typename T>
+template <typename... Args>
+auto DoublyLinkedList<T>::emplace_back(Args&&... args) {
+  if (!tail_) { // Empty list
+    head_ = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
+    tail_ = head_.get();
+  } else {
+    tail_->next = std::make_unique<Node>(tail_, std::forward<Args>(args)...);
+    tail_       = tail_->next.get();
+  }
+  size_++;
+  return tail_->data;
+}
+
+template <typename T>
+void DoublyLinkedList<T>::push_back(const T& value) {
+  emplace_back(value);
+}
+
+template <typename T>
+void DoublyLinkedList<T>::push_back(T&& value) {
+  emplace_back(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//

@@ -142,18 +142,14 @@ public:
   //====------------------------ INSERTION OPERATIONS -------------------------====//
 
   /**
-   * @brief Inserts an element at the back of the list.
-   * @param value The value to insert (lvalue reference)
+   * @brief Constructs an element in-place at the front of the list.
+   * @tparam Args Types of arguments to forward to T's constructor
+   * @param args Arguments to forward to T's constructor
+   * @return Reference to the newly constructed element
    * @complexity Time O(1), Space O(1)
    */
-  void push_back(const T& value) override;
-
-  /**
-   * @brief Inserts an element at the back of the list (move version).
-   * @param value The value to insert (rvalue reference)
-   * @complexity Time O(1), Space O(1)
-   */
-  void push_back(T&& value) override;
+  template <typename... Args>
+  auto emplace_front(Args&&... args);
 
   /**
    * @brief Inserts an element at the front of the list.
@@ -169,14 +165,31 @@ public:
    */
   void push_front(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
-
   /**
-   * @brief Removes the last element from the list.
-   * @throws ListException if the list is empty
+   * @brief Constructs an element in-place at the back of the list.
+   * @tparam Args Types of arguments to forward to T's constructor
+   * @param args Arguments to forward to T's constructor
+   * @return Reference to the newly constructed element
    * @complexity Time O(1), Space O(1)
    */
-  void pop_back() override;
+  template <typename... Args>
+  auto emplace_back(Args&&... args);
+
+  /**
+   * @brief Inserts an element at the back of the list.
+   * @param value The value to insert (lvalue reference)
+   * @complexity Time O(1), Space O(1)
+   */
+  void push_back(const T& value) override;
+
+  /**
+   * @brief Inserts an element at the back of the list (move version).
+   * @param value The value to insert (rvalue reference)
+   * @complexity Time O(1), Space O(1)
+   */
+  void push_back(T&& value) override;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
   /**
    * @brief Removes the first element from the list.
@@ -184,6 +197,13 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   void pop_front() override;
+
+  /**
+   * @brief Removes the last element from the list.
+   * @throws ListException if the list is empty
+   * @complexity Time O(1), Space O(1)
+   */
+  void pop_back() override;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -235,33 +255,13 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_t override;
 
+  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+
   /**
    * @brief Removes all elements from the list.
    * @complexity Time O(n), Space O(1)
    */
-  void               clear() noexcept override;
-
-  //====------------------------ ADDITIONAL OPERATIONS ------------------------====//
-
-  /**
-   * @brief Constructs an element in-place at the back of the list.
-   * @tparam Args Types of arguments to forward to T's constructor
-   * @param args Arguments to forward to T's constructor
-   * @return Reference to the newly constructed element
-   * @complexity Time O(1), Space O(1)
-   */
-  template <typename... Args>
-  auto emplace_back(Args&&... args);
-
-  /**
-   * @brief Constructs an element in-place at the front of the list.
-   * @tparam Args Types of arguments to forward to T's constructor
-   * @param args Arguments to forward to T's constructor
-   * @return Reference to the newly constructed element
-   * @complexity Time O(1), Space O(1)
-   */
-  template <typename... Args>
-  auto emplace_front(Args&&... args);
+  void clear() noexcept override;
 
   /**
    * @brief Inserts an element before the position indicated by the iterator.

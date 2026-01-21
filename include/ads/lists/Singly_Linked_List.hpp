@@ -139,6 +139,16 @@ public:
   //====------------------------ INSERTION OPERATIONS -------------------------====//
 
   /**
+   * @brief Constructs an element in-place at the front of the list.
+   * @tparam Args Types of arguments to forward to T's constructor
+   * @param args Arguments to forward to T's constructor
+   * @return Reference to the newly constructed element
+   * @complexity Time O(1), Space O(1)
+   */
+  template <typename... Args>
+  auto emplace_front(Args&&... args) -> T&;
+
+  /**
    * @brief Inserts an element at the front of the list.
    * @param value The value to insert (lvalue reference)
    * @complexity Time O(1), Space O(1)
@@ -153,6 +163,16 @@ public:
   auto push_front(T&& value) -> void override;
 
   /**
+   * @brief Constructs an element in-place at the back of the list.
+   * @tparam Args Types of arguments to forward to T's constructor
+   * @param args Arguments to forward to T's constructor
+   * @return Reference to the newly constructed element
+   * @complexity Time O(1), Space O(1)
+   */
+  template <typename... Args>
+  auto emplace_back(Args&&... args) -> T&;
+
+  /**
    * @brief Inserts an element at the back of the list.
    * @param value The value to insert (lvalue reference)
    * @complexity Time O(1), Space O(1)
@@ -165,26 +185,6 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   auto push_back(T&& value) -> void override;
-
-  /**
-   * @brief Constructs an element in-place at the front of the list.
-   * @tparam Args Types of arguments to forward to T's constructor
-   * @param args Arguments to forward to T's constructor
-   * @return Reference to the newly constructed element
-   * @complexity Time O(1), Space O(1)
-   */
-  template <typename... Args>
-  auto emplace_front(Args&&... args) -> T&;
-
-  /**
-   * @brief Constructs an element in-place at the back of the list.
-   * @tparam Args Types of arguments to forward to T's constructor
-   * @param args Arguments to forward to T's constructor
-   * @return Reference to the newly constructed element
-   * @complexity Time O(1), Space O(1)
-   */
-  template <typename... Args>
-  auto emplace_back(Args&&... args) -> T&;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -253,13 +253,13 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_t override;
 
+  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+
   /**
    * @brief Removes all elements from the list.
    * @complexity Time O(n), Space O(1)
    */
   auto clear() noexcept -> void override;
-
-  //====------------------------- UTILITY OPERATIONS --------------------------====//
 
   /**
    * @brief Reverses the order of elements in the list.
@@ -278,18 +278,18 @@ public:
   auto begin() -> iterator;
 
   /**
-   * @brief Returns an iterator to the end of the list.
-   * @return Iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
-  auto end() -> iterator;
-
-  /**
    * @brief Returns a const iterator to the beginning of the list.
    * @return Const iterator to the first element
    * @complexity Time O(1), Space O(1)
    */
   auto begin() const -> const_iterator;
+
+  /**
+   * @brief Returns an iterator to the end of the list.
+   * @return Iterator to one past the last element
+   * @complexity Time O(1), Space O(1)
+   */
+  auto end() -> iterator;
 
   /**
    * @brief Returns a const iterator to the end of the list.
