@@ -16,7 +16,7 @@
 
 #include <cstddef>
 
-namespace ads::list {
+namespace ads::lists {
 
 /**
  * @brief Interface (abstract base class) that defines common operations
@@ -109,7 +109,7 @@ public:
   virtual void clear() = 0;
 };
 
-} // namespace ads::list
+} // namespace ads::lists
 
 #endif // LIST_HPP
 

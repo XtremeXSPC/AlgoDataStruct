@@ -11,8 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/stacks/Array_Stack.hpp"
+
+namespace ads::stack {
 
 //===------------------- ArrayStack implementation --------------------===//
 
@@ -188,5 +189,7 @@ void ArrayStack<T>::reallocate(size_t new_capacity) {
   data_     = std::move(new_data);
   capacity_ = new_capacity;
 }
+
+} // namespace ads::stack
 
 //===--------------------------------------------------------------------------===//

@@ -11,7 +11,6 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/associative/Hash_Map.hpp"
 
 namespace ads::associative {

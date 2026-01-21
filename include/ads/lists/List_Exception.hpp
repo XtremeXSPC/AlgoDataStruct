@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 
-namespace ads::list {
+namespace ads::lists {
 
 /**
  * @brief Base exception for logical errors in list operations.
@@ -30,7 +30,7 @@ public:
   using std::logic_error::logic_error;
 };
 
-} // namespace ads::list
+} // namespace ads::lists
 
 #endif // ADS_EXCEPTION_HPP
 

@@ -388,10 +388,10 @@ private:
   size_t                size_; ///< Number of nodes in the tree
 };
 
+} // namespace ads::trees
+
 // Include the implementation file for templates
 #include "../../../src/ads/trees/AVL_Tree.tpp"
-
-} // namespace ads::trees
 
 #endif // AVL_TREE_HPP
 

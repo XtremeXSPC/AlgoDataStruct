@@ -12,8 +12,9 @@
 //===--------------------------------------------------------------------------===//
 
 #pragma once
-
 #include "../../../include/ads/hash/Hash_Table_Chaining.hpp"
+
+namespace ads::hash {
 
 //============================================================================//
 // CONSTRUCTORS AND ASSIGNMENT
@@ -333,5 +334,7 @@ void HashTableChaining<Key, Value>::check_and_rehash() {
     rehash(capacity_ * kGrowthFactor);
   }
 }
+
+} // namespace ads::hash
 
 //===--------------------------------------------------------------------------===//

@@ -11,9 +11,7 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/heaps/Min_Heap.hpp"
-#include <new>
 
 namespace ads::heap {
 

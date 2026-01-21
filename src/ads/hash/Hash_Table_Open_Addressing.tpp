@@ -12,8 +12,9 @@
 //===--------------------------------------------------------------------------===//
 
 #pragma once
-
 #include "../../../include/ads/hash/Hash_Table_Open_Addressing.hpp"
+
+namespace ads::hash {
 
 //============================================================================//
 // CONSTRUCTORS AND ASSIGNMENT
@@ -423,5 +424,7 @@ void HashTableOpenAddressing<Key, Value>::check_and_rehash() {
     rehash(capacity_ * kGrowthFactor);
   }
 }
+
+} // namespace ads::hash
 
 //===--------------------------------------------------------------------------===//

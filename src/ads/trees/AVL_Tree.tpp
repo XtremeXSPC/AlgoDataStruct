@@ -12,8 +12,9 @@
 //===--------------------------------------------------------------------------===//
 
 #pragma once
-
 #include "../../../include/ads/trees/AVL_Tree.hpp"
+
+namespace ads::trees {
 
 //============================================================================//
 // CONSTRUCTORS AND ASSIGNMENT
@@ -568,5 +569,7 @@ template <typename T>
 auto AVLTree<T>::cend() const -> iterator {
   return iterator();
 }
+
+} // namespace ads::trees
 
 //===--------------------------------------------------------------------------===//

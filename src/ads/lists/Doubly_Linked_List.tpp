@@ -11,8 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
+
+namespace ads::lists {
 
 //===---------------------- Iterator implementation -------------------------====//
 template <typename T>
@@ -392,5 +393,7 @@ template <typename T>
 auto DoublyLinkedList<T>::cend() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return end();
 }
+
+} // namespace ads::lists
 
 //===--------------------------------------------------------------------------===//

@@ -11,8 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/queues/Circular_Array_Queue.hpp"
+
+namespace ads::queue {
 
 //===------------------- CircularArrayQueue implementation --------------------===//
 
@@ -226,5 +227,7 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   front_    = 0;
   rear_     = size_;
 }
+
+} // namespace ads::queue
 
 //===--------------------------------------------------------------------------===//

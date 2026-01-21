@@ -140,10 +140,10 @@ private:
   static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain
 };
 
+} // namespace ads::stack
+
 // Include the implementation file for templates
 #include "../../../src/ads/stacks/Array_Stack.tpp"
-
-} // namespace ads::stack
 
 #endif // ARRAY_STACK_HPP
 

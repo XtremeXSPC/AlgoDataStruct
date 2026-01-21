@@ -339,10 +339,10 @@ private:
   static constexpr size_t kGrowthFactor         = 2;
 };
 
+} // namespace ads::hash
+
 // Include the implementation file for templates
 #include "../../../src/ads/hash/Hash_Table_Open_Addressing.tpp"
-
-} // namespace ads::hash
 
 #endif // HASH_TABLE_OPEN_ADDRESSING_HPP
 

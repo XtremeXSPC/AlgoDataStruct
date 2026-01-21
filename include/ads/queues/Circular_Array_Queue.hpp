@@ -165,10 +165,10 @@ private:
   static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain
 };
 
+} // namespace ads::queue
+
 // Include the implementation file for templates
 #include "../../../src/ads/queues/Circular_Array_Queue.tpp"
-
-} // namespace ads::queue
 
 #endif // CIRCULAR_ARRAY_QUEUE_HPP
 

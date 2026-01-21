@@ -11,8 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/stacks/Linked_Stack.hpp"
+
+namespace ads::stack {
 
 //===------------------- LinkedStack implementation --------------------===//
 
@@ -120,5 +121,7 @@ void LinkedStack<T>::clear() noexcept {
   }
   size_ = 0;
 }
+
+} // namespace ads::stack
 
 //===--------------------------------------------------------------------------===//
