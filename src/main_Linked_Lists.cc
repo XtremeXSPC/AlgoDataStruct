@@ -2,7 +2,7 @@
 /**
  * @file main_Linked_Lists.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for DoublyLinkedList implementation
+ * @brief Comprehensive demo program for DoublyLinkedList implementation.
  * @version 0.2
  * @date 2025-11-21
  *

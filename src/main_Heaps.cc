@@ -2,11 +2,14 @@
 /**
  * @file main_Heaps.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for MinHeap and MaxHeap classes
+ * @brief Comprehensive demo program for MinHeap and MaxHeap classes.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the MinHeap and MaxHeap data structures,
+ * showcasing their insertion, extraction, and utility methods.
  */
 //===--------------------------------------------------------------------------===//
 

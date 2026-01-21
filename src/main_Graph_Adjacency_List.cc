@@ -2,11 +2,14 @@
 /**
  * @file main_Graph_Adjacency_List.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for GraphAdjacencyList class
+ * @brief Comprehensive demo program for GraphAdjacencyList class.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the GraphAdjacencyList data structure,
+  * showcasing its construction, vertex/edge management, and traversal algorithms.
  */
 //===--------------------------------------------------------------------------===//
 

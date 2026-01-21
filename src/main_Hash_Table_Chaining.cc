@@ -2,12 +2,14 @@
 /**
  * @file main_Hash_Table_Chaining.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for Hash Table Chaining implementation
+ * @brief Comprehensive demo program for Hash Table Chaining implementation.
  * @version 0.1
  * @date 2025-11-20
  *
  * @copyright MIT License 2025
  *
+ * This program demonstrates the usage of the Hash Table with Chaining data structure,
+ * showcasing its insertion, access, updates, and deletion operations.
  */
 //===--------------------------------------------------------------------------===//
 
@@ -25,8 +27,8 @@ using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 using std::unordered_map;
+using std::vector;
 
 using ads::hash::HashTableChaining;
 
@@ -317,14 +319,14 @@ void demo_move_semantics() {
   print_stats(table1, "table1");
 
   // Move constructor
-  HashTableChaining<int, string> table2(move(table1));
+  HashTableChaining<int, string> table2(std::move(table1));
   cout << "\nAfter move construction:\n";
   print_stats(table2, "table2");
   cout << "table1 size: " << table1.size() << " (should be 0)\n";
 
   // Move assignment
   HashTableChaining<int, string> table3;
-  table3 = move(table2);
+  table3 = std::move(table2);
   cout << "\nAfter move assignment:\n";
   print_stats(table3, "table3");
   cout << "table2 size: " << table2.size() << " (should be 0)\n";

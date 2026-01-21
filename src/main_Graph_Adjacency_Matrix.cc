@@ -2,11 +2,16 @@
 /**
  * @file main_Graph_Adjacency_Matrix.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for GraphAdjacencyMatrix class with performance comparison
+ * @brief Comprehensive demo program for GraphAdjacencyMatrix class with
+ *        performance comparison.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the GraphAdjacencyMatrix data structure,
+ * showcasing its construction, vertex/edge management, traversal algorithms,
+ * and performance comparison with GraphAdjacencyList.
  */
 //===--------------------------------------------------------------------------===//
 
@@ -178,7 +183,8 @@ void compare_performance() {
   // Test 1: Edge lookup
   cout << "\n[Test 1] Edge lookup (checking 10000 edges):\n";
 
-  auto            start = std::chrono::high_resolution_clock::now();
+  auto start = std::chrono::high_resolution_clock::now();
+
   volatile size_t count = 0;
   for (size_t i = 0; i < N && i < 10000; ++i) {
     for (size_t j = 0; j < 10 && j < N; ++j) {
@@ -186,10 +192,14 @@ void compare_performance() {
         count = count + 1;
     }
   }
-  auto end       = std::chrono::high_resolution_clock::now();
+
+  auto end = std::chrono::high_resolution_clock::now();
+
+  // Measure time.
   auto list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  List:   " << list_time << " µs (O(degree) lookup)\n";
 
+  // Matrix lookup.
   start = std::chrono::high_resolution_clock::now();
   count = 0;
   for (size_t i = 0; i < N && i < 10000; ++i) {
@@ -199,25 +209,28 @@ void compare_performance() {
     }
   }
 
-  end              = std::chrono::high_resolution_clock::now();
+  end = std::chrono::high_resolution_clock::now();
+  // Measure time.
   auto matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  Matrix: " << matrix_time << " µs (O(1) lookup)\n";
   cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << " ("
-            << (100.0 * abs(static_cast<double>(matrix_time) - static_cast<double>(list_time))
-                / std::max(static_cast<double>(matrix_time), static_cast<double>(list_time)))
-            << "% faster)\n";
+       << (100.0 * std::abs(static_cast<double>(matrix_time) - static_cast<double>(list_time))
+           / std::max(static_cast<double>(matrix_time), static_cast<double>(list_time)))
+       << "% faster)\n";
 
   // Test 2: BFS
   cout << "\n[Test 2] BFS traversal:\n";
 
-  start         = std::chrono::high_resolution_clock::now();
+  start = std::chrono::high_resolution_clock::now();
+
   auto list_bfs = list_graph.bfs(0);
 
   end       = std::chrono::high_resolution_clock::now();
   list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  List:   " << list_time << " µs (visited " << list_bfs.size() << " vertices)\n";
 
-  start           = std::chrono::high_resolution_clock::now();
+  start = std::chrono::high_resolution_clock::now();
+
   auto matrix_bfs = matrix_graph.bfs(0);
 
   end         = std::chrono::high_resolution_clock::now();

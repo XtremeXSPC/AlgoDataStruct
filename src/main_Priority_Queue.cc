@@ -2,11 +2,14 @@
 /**
  * @file main_Priority_Queue.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for PriorityQueue class
+ * @brief Comprehensive demo program for PriorityQueue class.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the PriorityQueue data structure,
+ * showcasing various operations such as insertion, extraction, and move semantics.
  */
 //===--------------------------------------------------------------------------===//
 
@@ -211,7 +214,7 @@ void demo_priority_queue_sorted_elements() {
 
 struct Task {
   string name;
-  int         priority;
+  int    priority;
 
   Task(string n, int p) : name(std::move(n)), priority(p) {}
 };
@@ -245,7 +248,7 @@ void demo_task_scheduling() {
 
 struct Event {
   string name;
-  double      timestamp;
+  double timestamp;
 
   Event(string n, double t) : name(std::move(n)), timestamp(t) {}
 };
@@ -351,7 +354,7 @@ void demo_priority_queue_large() {
 void demo_heapify_construction_performance() {
   print_separator("Priority Queue - Heapify Construction Performance");
 
-  const int        N = 100000;
+  const int   N = 100000;
   vector<int> data;
   data.reserve(N);
 

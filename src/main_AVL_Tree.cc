@@ -2,12 +2,14 @@
 /**
  * @file main_AVL_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for AVL Tree implementation
+ * @brief Comprehensive demo program for AVL Tree implementation.
  * @version 0.1
  * @date 2025-11-20
  *
  * @copyright MIT License 2025
  *
+ * This program demonstrates the usage of the AVL Tree data structure,
+ * showcasing its self-balancing properties through various rotations.
  */
 //===--------------------------------------------------------------------------===//
 

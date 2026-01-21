@@ -2,11 +2,14 @@
 /**
  * @file main_Hash_Map.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for HashMap class with iterators
+ * @brief Comprehensive demo program for HashMap class with iterators.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates the usage of the HashMap data structure, showcasing
+ * its insertion, access, iteration, and utility methods.
  */
 //===--------------------------------------------------------------------------===//
 
@@ -148,7 +151,7 @@ void demo_word_frequency() {
   HashMap<string, int> frequency;
 
   std::istringstream iss(text);
-  string        word;
+  string             word;
   while (iss >> word) {
     frequency[word]++;
   }
@@ -160,7 +163,7 @@ void demo_word_frequency() {
   }
 
   cout << "\nMost frequent word(s):\n";
-  int         max_count = 0;
+  int    max_count = 0;
   string most_frequent;
 
   for (const auto& [w, count] : frequency) {
@@ -183,13 +186,13 @@ void demo_hashmap_move_semantics() {
 
   cout << "Map1 size: " << map1.size() << '\n';
 
-  HashMap<int, string> map2(move(map1));
+  HashMap<int, string> map2(std::move(map1));
   cout << "After move to map2:\n";
   cout << "  Map2 size: " << map2.size() << '\n';
   cout << "  Map1 size: " << map1.size() << '\n';
 
   HashMap<int, string> map3;
-  map3 = move(map2);
+  map3 = std::move(map2);
   cout << "After move assign to map3:\n";
   cout << "  Map3 size: " << map3.size() << '\n';
 }

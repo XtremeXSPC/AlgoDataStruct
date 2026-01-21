@@ -2,7 +2,7 @@
 /**
  * @file main_B_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for B-Tree implementation
+ * @brief Comprehensive demo program for B-Tree implementation.
  * @version 1.0
  * @date 2025-11-21
  *
