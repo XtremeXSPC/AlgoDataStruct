@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Linked_Queue.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 
 #ifndef LINKED_QUEUE_HPP
@@ -44,21 +44,25 @@ private:
   struct Node;
 
 public:
-  //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
+  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
-  /** @brief Constructs an empty queue. */
+  /**
+   * @brief Constructs an empty queue.
+   * @complexity Time O(1), Space O(1)
+   */
   LinkedQueue() noexcept;
 
-  /** @brief Destructor. */
+  /**
+   * @brief Destructor. Empties the queue and deallocates all nodes.
+   * @complexity Time O(n), Space O(1)
+   * @note Uses iterative deallocation to avoid stack overflow.
+   */
   ~LinkedQueue() override;
-
-  // Copy constructor and assignment are disabled (move-only type)
-  LinkedQueue(const LinkedQueue&)                    = delete;
-  auto operator=(const LinkedQueue&) -> LinkedQueue& = delete;
 
   /**
    * @brief Move constructor.
    * @param other The queue from which to move resources.
+   * @complexity Time O(1), Space O(1)
    */
   LinkedQueue(LinkedQueue&& other) noexcept;
 
@@ -66,39 +70,115 @@ public:
    * @brief Move assignment operator.
    * @param other The queue from which to move resources.
    * @return A reference to this instance.
+   * @complexity Time O(n), Space O(1)
    */
   auto operator=(LinkedQueue&& other) noexcept -> LinkedQueue&;
 
-  //========== INTERFACE INHERITED FROM Queue<T> ==========//
+  // Copy constructor and assignment are disabled (move-only type).
+  LinkedQueue(const LinkedQueue&)                    = delete;
+  auto operator=(const LinkedQueue&) -> LinkedQueue& = delete;
 
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
+
+  /**
+   * @brief Adds an element to the rear of the queue (copy).
+   * @param value The value to enqueue.
+   * @complexity Time O(1), Space O(1)
+   */
   void enqueue(const T& value) override;
+
+  /**
+   * @brief Adds an element to the rear of the queue (move).
+   * @param value The value to enqueue.
+   * @complexity Time O(1), Space O(1)
+   */
   void enqueue(T&& value) override;
-  void dequeue() override;
-
-  auto front() -> T& override;
-  auto rear() -> T& override;
-
-  auto front() const -> const T& override;
-  auto rear() const -> const T& override;
-
-  [[nodiscard]] auto is_empty() const noexcept -> bool override;
-  [[nodiscard]] auto size() const noexcept -> size_t override;
-
-  void clear() noexcept override;
-
-  //=========== ADDITIONAL FUNCTIONALITY ==========//
 
   /**
    * @brief Constructs an element in-place at the rear of the queue.
    * @tparam Args Types of arguments to forward to the constructor of T.
    * @param args Arguments to forward to the constructor of T.
    * @return Reference to the newly constructed element.
+   * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
 
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Removes the element at the front of the queue.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  void dequeue() override;
+
+  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Returns a reference to the front element.
+   * @return Reference to the front element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto front() -> T& override;
+
+  /**
+   * @brief Returns a const reference to the front element.
+   * @return Const reference to the front element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto front() const -> const T& override;
+
+  /**
+   * @brief Returns a reference to the rear element.
+   * @return Reference to the rear element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto rear() -> T& override;
+
+  /**
+   * @brief Returns a const reference to the rear element.
+   * @return Const reference to the rear element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto rear() const -> const T& override;
+
+  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+
+  /**
+   * @brief Checks if the queue is empty.
+   * @return true if the queue is empty, false otherwise.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+
+  /**
+   * @brief Returns the number of elements in the queue.
+   * @return The number of elements.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+
+  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+
+  /**
+   * @brief Removes all elements from the queue.
+   * @complexity Time O(n), Space O(1)
+   */
+  void clear() noexcept override;
+
 private:
-  //================ INTERNAL NODE ================//
+  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  /**
+   * @brief Internal node structure.
+   *
+   * @details Each node contains data and a unique_ptr to the next node.
+   *          The unique_ptr provides automatic memory management.
+   */
   struct Node {
     T                     data;
     std::unique_ptr<Node> next;
@@ -107,8 +187,8 @@ private:
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
   };
 
-  //================ DATA MEMBERS ================//
-  std::unique_ptr<Node> front_; ///< Pointer to the front node
+  //===----------------------------- DATA MEMBERS ------------------------------===//
+  std::unique_ptr<Node> front_; ///< Pointer to the front node (owns the node)
   Node*                 rear_;  ///< Raw pointer to the rear node (non-owning)
   size_t                size_;  ///< The current number of elements
 };
@@ -120,4 +200,4 @@ private:
 
 #endif // LINKED_QUEUE_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

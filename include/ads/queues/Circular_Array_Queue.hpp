@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Circular_Array_Queue.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 
 #ifndef CIRCULAR_ARRAY_QUEUE_HPP
@@ -43,25 +43,26 @@ namespace ads::queue {
 template <typename T>
 class CircularArrayQueue : public Queue<T> {
 public:
-  //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
+  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
   /**
    * @brief Constructs an empty queue with optional initial capacity.
    * @param initial_capacity The initial capacity (default: 16).
    * @throws std::bad_alloc if memory allocation fails.
+   * @complexity Time O(1), Space O(initial_capacity)
    */
   explicit CircularArrayQueue(size_t initial_capacity = 16);
 
-  /** @brief Destructor. */
+  /**
+   * @brief Destructor. Empties the queue and deallocates all elements.
+   * @complexity Time O(n), Space O(1)
+   */
   ~CircularArrayQueue() override;
-
-  // Copy constructor and assignment are disabled (move-only type)
-  CircularArrayQueue(const CircularArrayQueue&)                    = delete;
-  auto operator=(const CircularArrayQueue&) -> CircularArrayQueue& = delete;
 
   /**
    * @brief Move constructor.
    * @param other The queue from which to move resources.
+   * @complexity Time O(1), Space O(1)
    */
   CircularArrayQueue(CircularArrayQueue&& other) noexcept;
 
@@ -69,38 +70,115 @@ public:
    * @brief Move assignment operator.
    * @param other The queue from which to move resources.
    * @return A reference to this instance.
+   * @complexity Time O(n), Space O(1)
    */
   auto operator=(CircularArrayQueue&& other) noexcept -> CircularArrayQueue&;
 
-  //========== INTERFACE INHERITED FROM Queue<T> ==========//
+  // Copy constructor and assignment are disabled (move-only type).
+  CircularArrayQueue(const CircularArrayQueue&)                    = delete;
+  auto operator=(const CircularArrayQueue&) -> CircularArrayQueue& = delete;
 
-  void enqueue(const T& value) override;
-  void enqueue(T&& value) override;
-  void dequeue() override;
-
-  auto front() -> T& override;
-  auto front() const -> const T& override;
-  auto rear() -> T& override;
-  auto rear() const -> const T& override;
-
-  [[nodiscard]] auto is_empty() const noexcept -> bool override;
-  [[nodiscard]] auto size() const noexcept -> size_t override;
-  void               clear() noexcept override;
-
-  //=========== ADDITIONAL FUNCTIONALITY ==========//
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
    * @brief Constructs an element in-place at the rear of the queue.
    * @tparam Args Types of arguments to forward to the constructor of T.
    * @param args Arguments to forward to the constructor of T.
    * @return Reference to the newly constructed element.
+   * @complexity Time O(1) amortized, Space O(1)
+   * @note May trigger a resize with O(n) time.
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
 
   /**
+   * @brief Adds an element to the rear of the queue (copy).
+   * @param value The value to enqueue.
+   * @complexity Time O(1) amortized, Space O(1)
+   * @note May trigger a resize with O(n) time.
+   */
+  void enqueue(const T& value) override;
+
+  /**
+   * @brief Adds an element to the rear of the queue (move).
+   * @param value The value to enqueue.
+   * @complexity Time O(1) amortized, Space O(1)
+   * @note May trigger a resize with O(n) time.
+   */
+  void enqueue(T&& value) override;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Removes the element at the front of the queue.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1) amortized, Space O(1)
+   * @note May trigger a shrink with O(n) time.
+   */
+  void dequeue() override;
+
+  /**
+   * @brief Removes all elements from the queue.
+   * @complexity Time O(n), Space O(1)
+   */
+  void clear() noexcept override;
+
+  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Returns a reference to the front element.
+   * @return Reference to the front element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto front() -> T& override;
+
+  /**
+   * @brief Returns a const reference to the front element.
+   * @return Const reference to the front element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto front() const -> const T& override;
+
+  /**
+   * @brief Returns a reference to the rear element.
+   * @return Reference to the rear element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto rear() -> T& override;
+
+  /**
+   * @brief Returns a const reference to the rear element.
+   * @return Const reference to the rear element.
+   * @throws QueueUnderflowException if the queue is empty.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto rear() const -> const T& override;
+
+  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+
+  /**
+   * @brief Checks if the queue is empty.
+   * @return true if the queue is empty, false otherwise.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+
+  /**
+   * @brief Returns the number of elements in the queue.
+   * @return The number of elements.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+
+  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+
+  /**
    * @brief Returns the current capacity of the internal array.
    * @return The number of elements that can be stored without reallocation.
+   * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto capacity() const noexcept -> size_t { return capacity_; }
 
@@ -108,6 +186,7 @@ public:
    * @brief Reserves capacity for at least n elements.
    * @param n The minimum capacity to reserve.
    * @throws std::bad_alloc if memory allocation fails.
+   * @complexity Time O(n) if reallocation occurs, Space O(n)
    */
   void reserve(size_t n);
 
@@ -115,11 +194,12 @@ public:
    * @brief Shrinks the capacity to match the current size.
    * @details This can be used to release unused memory.
    * @throws std::bad_alloc if memory allocation fails.
+   * @complexity Time O(n), Space O(n)
    */
   void shrink_to_fit();
 
 private:
-  //================ INTERNAL HELPERS ================//
+  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
   /**
    * @brief Calculates the next index in the circular buffer.
@@ -145,31 +225,36 @@ private:
 
   /**
    * @brief Grows the internal array when capacity is reached.
+   * @throws QueueOverflowException if capacity would overflow.
+   * @complexity Time O(n), Space O(n)
    */
   void grow();
 
   /**
    * @brief Reallocates the internal array to new_capacity.
    * @param new_capacity The new capacity.
+   * @throws std::bad_alloc if memory allocation fails.
+   * @complexity Time O(n), Space O(n)
    */
   void reallocate(size_t new_capacity);
 
-  //================ DATA MEMBERS ================//
-  std::unique_ptr<T[], void (*)(T*)> data_;     ///< The dynamic array holding queue elements
-  size_t                             front_;    ///< Index of the front element
-  size_t                             rear_;     ///< Index where the next element will be inserted
-  size_t                             size_;     ///< The current number of elements
-  size_t                             capacity_; ///< The current capacity of the array
+  //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  static constexpr size_t kGrowthFactor = 2; ///< Growth factor for dynamic resizing
-  static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain
+  std::unique_ptr<T[], void (*)(T*)> data_;     ///< The dynamic array holding queue elements.
+  size_t                             front_;    ///< Index of the front element.
+  size_t                             rear_;     ///< Index where the next element will be inserted.
+  size_t                             size_;     ///< The current number of elements.
+  size_t                             capacity_; ///< The current capacity of the array.
+
+  static constexpr size_t kGrowthFactor = 2; ///< Growth factor for dynamic resizing.
+  static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain.
 };
 
 } // namespace ads::queue
 
-// Include the implementation file for templates
+// Include the implementation file for templates.
 #include "../../../src/ads/queues/Circular_Array_Queue.tpp"
 
 #endif // CIRCULAR_ARRAY_QUEUE_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
