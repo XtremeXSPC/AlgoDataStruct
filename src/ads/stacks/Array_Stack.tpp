@@ -14,8 +14,6 @@
 
 #include "../../../include/ads/stacks/Array_Stack.hpp"
 
-using namespace ads::stack;
-
 //===------------------- ArrayStack implementation --------------------===//
 
 template <typename T>
@@ -146,13 +144,12 @@ void ArrayStack<T>::shrink_to_fit() {
 
 template <typename T>
 void ArrayStack<T>::grow() {
-  size_t new_capacity = capacity_ * kGrowthFactor;
-
-  // Handle potential overflow
-  if (new_capacity < capacity_) {
+  // Check for overflow BEFORE multiplication
+  if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw StackOverflowException("Stack capacity overflow");
   }
 
+  size_t new_capacity = capacity_ * kGrowthFactor;
   reallocate(new_capacity);
 }
 
@@ -162,17 +159,28 @@ void ArrayStack<T>::reallocate(size_t new_capacity) {
   std::unique_ptr<T[], void (*)(T*)> new_data(
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
-  // Move elements to new array
-  for (size_t i = 0; i < size_; ++i) {
-    // Use move construction if T is nothrow move constructible
-    if constexpr (std::is_nothrow_move_constructible_v<T>) {
-      new (new_data.get() + i) T(std::move(data_[i]));
-    } else {
-      // Use copy construction as fallback for exception safety
-      new (new_data.get() + i) T(data_[i]);
+  // Move/copy elements to new array with exception safety
+  size_t constructed_count = 0;
+  try {
+    for (; constructed_count < size_; ++constructed_count) {
+      // Use move construction if T is nothrow move constructible
+      if constexpr (std::is_nothrow_move_constructible_v<T>) {
+        new (new_data.get() + constructed_count) T(std::move(data_[constructed_count]));
+      } else {
+        // Use copy construction as fallback for exception safety
+        new (new_data.get() + constructed_count) T(data_[constructed_count]);
+      }
     }
+  } catch (...) {
+    // Destroy already-constructed elements in new array
+    for (size_t i = 0; i < constructed_count; ++i) {
+      new_data[i].~T();
+    }
+    throw;
+  }
 
-    // Destroy the old element
+  // Destroy old elements only after all new elements are constructed
+  for (size_t i = 0; i < size_; ++i) {
     data_[i].~T();
   }
 

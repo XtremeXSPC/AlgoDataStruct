@@ -14,8 +14,6 @@
 
 #include "../../../include/ads/queues/Linked_Queue.hpp"
 
-using namespace ads::queue;
-
 //===------------------- LinkedQueue implementation --------------------===//
 
 template <typename T>
