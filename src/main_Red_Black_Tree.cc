@@ -306,9 +306,9 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "========================================\n";
-    cout << "  Red-Black Tree - Comprehensive Demo\n";
-    cout << "========================================\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "            RED-BLACK TREE - COMPREHENSIVE DEMO             \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     demo_basic_operations();
     demo_sequential_insertions();
@@ -320,9 +320,10 @@ auto main() -> int {
     demo_clear_reuse();
     demo_edge_cases();
 
-    cout << "\n========================================\n";
-    cout << "  All Demos Completed Successfully!\n";
-    cout << "========================================\n";
+    cout << "\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
   } catch (const std::exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

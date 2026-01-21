@@ -1,6 +1,6 @@
-# ============================================================================ #
-# ------------- CMake Toolchain File for Clang (AlgoDataStruct) -------------- #
-# ============================================================================ #
+# ================================================================================= #
+# ---------------- CMake Toolchain File for Clang (AlgoDataStruct) ---------------- #
+# ================================================================================= #
 #
 # Description:
 #   This toolchain file configures CMake to use LLVM Clang as the compiler
@@ -17,7 +17,7 @@
 #   cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build
 #   cmake --build build
 #
-# ============================================================================ #
+# ================================================================================= #
 
 # Prevent duplicate execution of this toolchain file.
 if(DEFINED _CLANG_TOOLCHAIN_LOADED)
@@ -27,7 +27,7 @@ set(_CLANG_TOOLCHAIN_LOADED TRUE)
 
 message(STATUS "==> Using Clang Toolchain for AlgoDataStruct")
 
-# ----------------------------- Platform Detection --------------------------- #
+# ------------------------------ Platform Detection ------------------------------- #
 if(APPLE)
     set(PLATFORM_NAME "macOS")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -40,7 +40,7 @@ endif()
 
 message(STATUS "    Platform: ${PLATFORM_NAME}")
 
-# ----------------------- Compiler Search and Validation --------------------- #
+# ------------------------ Compiler Search and Validation ------------------------- #
 # Check for cached Clang path from previous configuration.
 if(DEFINED CACHE{CACHED_CLANG_EXECUTABLE} AND EXISTS "${CACHED_CLANG_EXECUTABLE}")
     set(CLANG_EXECUTABLE "${CACHED_CLANG_EXECUTABLE}")
@@ -107,7 +107,7 @@ else()
     endif()
 endif()
 
-# -------------------------- Compiler Not Found Error ------------------------ #
+# --------------------------- Compiler Not Found Error ---------------------------- #
 if(NOT CLANG_EXECUTABLE)
     message(FATAL_ERROR
         "\n"
@@ -156,7 +156,7 @@ if(NOT CLANG_EXECUTABLE)
     endif()
 endif()
 
-# ---------------------- Compiler Version Verification ----------------------- #
+# ------------------------- Compiler Version Verification ------------------------- #
 # Query the compiler to verify it's actually Clang and get version info.
 execute_process(
     COMMAND ${CLANG_EXECUTABLE} --version
@@ -193,7 +193,7 @@ else()
     set(IS_LLVM_CLANG TRUE)
 endif()
 
-# ------------------------- Find Matching C Compiler ------------------------- #
+# --------------------------- Find Matching C Compiler ---------------------------- #
 # Find the corresponding clang (C compiler) to match clang++ (C++).
 get_filename_component(CLANG_DIR ${CLANG_EXECUTABLE} DIRECTORY)
 get_filename_component(CLANG_NAME ${CLANG_EXECUTABLE} NAME)
@@ -228,12 +228,12 @@ else()
     message(STATUS "    C Compiler: ${C_COMPILER_PATH}")
 endif()
 
-# ----------------------- Set CMake Compiler Variables ----------------------- #
+# ------------------------- Set CMake Compiler Variables -------------------------- #
 # Force CMake to use the found compilers.
 set(CMAKE_C_COMPILER   ${C_COMPILER_PATH}  CACHE PATH "C compiler"   FORCE)
 set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE} CACHE PATH "C++ compiler" FORCE)
 
-# ------------------- macOS-Specific libc++ Configuration -------------------- #
+# ---------------------- macOS-Specific libc++ Configuration ---------------------- #
 # On macOS with LLVM Clang, we need to explicitly configure libc++ paths
 # and RPATH to avoid runtime linking issues.
 if(APPLE AND IS_LLVM_CLANG)
@@ -282,7 +282,7 @@ elseif(APPLE AND IS_APPLE_CLANG)
     message(STATUS "    Using system libc++ (AppleClang default)")
 endif()
 
-# ------------------------ C++ Standard Configuration ------------------------ #
+# -------------------------- C++ Standard Configuration --------------------------- #
 # AlgoDataStruct uses C++20 for good balance of features and portability.
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard" FORCE)
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require C++ standard" FORCE)
@@ -293,7 +293,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20" CACHE STRING "" FORCE)
 
 message(STATUS "    C++ Standard: C++20")
 
-# -------------------------- Success Summary Message ------------------------- #
+# ---------------------------- Success Summary Message ---------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
 message(STATUS "║            Clang Toolchain Successfully Configured            ║")
@@ -314,5 +314,5 @@ endif()
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "")
 
-# ============================================================================ #
+# ================================================================================= #
 # End of Clang Toolchain File.

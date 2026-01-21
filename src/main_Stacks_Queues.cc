@@ -20,7 +20,12 @@
 #include "../include/ads/stacks/Array_Stack.hpp"
 #include "../include/ads/stacks/Linked_Stack.hpp"
 
-using namespace std;
+using std::cerr;
+using std::cout;
+using std::exception;
+using std::string;
+using std::to_string;
+using std::vector;
 
 // Helper function to demonstrate polymorphic usage
 template <typename T>
@@ -93,25 +98,25 @@ void performance_comparison() {
     ads::stack::ArrayStack<int>  array_stack;
     ads::stack::LinkedStack<int> linked_stack;
 
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
       array_stack.push(i);
     }
     for (int i = 0; i < iterations; ++i) {
       array_stack.pop();
     }
-    auto end            = chrono::high_resolution_clock::now();
-    auto array_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+    auto end            = std::chrono::high_resolution_clock::now();
+    auto array_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    start = chrono::high_resolution_clock::now();
+    start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
       linked_stack.push(i);
     }
     for (int i = 0; i < iterations; ++i) {
       linked_stack.pop();
     }
-    end                  = chrono::high_resolution_clock::now();
-    auto linked_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+    end                  = std::chrono::high_resolution_clock::now();
+    auto linked_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
     cout << "Stack Performance (" << iterations << " push/pop operations):\n";
     cout << "  ArrayStack:  " << array_duration.count() << " ms\n";
@@ -123,25 +128,25 @@ void performance_comparison() {
     ads::queue::CircularArrayQueue<int> array_queue;
     ads::queue::LinkedQueue<int>        linked_queue;
 
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
       array_queue.enqueue(i);
     }
     for (int i = 0; i < iterations; ++i) {
       array_queue.dequeue();
     }
-    auto end            = chrono::high_resolution_clock::now();
-    auto array_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+    auto end            = std::chrono::high_resolution_clock::now();
+    auto array_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    start = chrono::high_resolution_clock::now();
+    start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
       linked_queue.enqueue(i);
     }
     for (int i = 0; i < iterations; ++i) {
       linked_queue.dequeue();
     }
-    end                  = chrono::high_resolution_clock::now();
-    auto linked_duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+    end                  = std::chrono::high_resolution_clock::now();
+    auto linked_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
     cout << "\nQueue Performance (" << iterations << " enqueue/dequeue operations):\n";
     cout << "  CircularArrayQueue: " << array_duration.count() << " ms\n";

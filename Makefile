@@ -13,6 +13,11 @@
 #   make reconfigure      - Clean and reconfigure
 #   make test             - Configure with testing enabled and run tests
 #
+# Documentation commands:
+#   make docs             - Generate Doxygen documentation
+#   make docs-open        - Generate and open documentation in browser
+#   make docs-clean       - Remove generated documentation
+#
 # Specific configuration commands:
 #   make configure-clang  - Configure with Clang (recommended)
 #   make configure-gcc    - Configure with GCC
@@ -43,7 +48,7 @@ TEST_EXECUTABLE := $(BUILD_DIR)/bin/$(TARGET)
 # Declare all targets as phony (not real files)
 .PHONY: all build run clean configure configure-clang configure-gcc \
 	configure-debug configure-release configure-sanitize reconfigure test help \
-	symlink check
+	symlink check docs docs-open docs-clean
 
 # ------------------------------- Main Targets ------------------------------- #
 # 'all' target: full configuration and build
@@ -204,6 +209,42 @@ check:
 	fi
 	@echo "✓ All required files present"
 
+# ------------------------------ Documentation -------------------------------- #
+# Documentation directory
+DOCS_DIR := docs
+
+# Generate documentation with Doxygen
+docs:
+	@echo "Generating documentation with Doxygen..."
+	@if ! command -v doxygen &> /dev/null; then \
+		echo "Error: Doxygen is not installed."; \
+		echo "Install with: sudo pacman -S doxygen graphviz"; \
+		exit 1; \
+	fi
+	doxygen Doxyfile
+	@echo ""
+	@echo "✓ Documentation generated in $(DOCS_DIR)/html/"
+	@echo "  Open $(DOCS_DIR)/html/index.html in your browser"
+	@echo ""
+
+# Generate and open documentation
+docs-open: docs
+	@echo "Opening documentation..."
+	@if command -v xdg-open &> /dev/null; then \
+		xdg-open $(DOCS_DIR)/html/index.html; \
+	elif command -v open &> /dev/null; then \
+		open $(DOCS_DIR)/html/index.html; \
+	else \
+		echo "Could not detect browser opener."; \
+		echo "Open $(DOCS_DIR)/html/index.html manually"; \
+	fi
+
+# Remove generated documentation
+docs-clean:
+	@echo "Removing documentation directory..."
+	rm -rf $(DOCS_DIR)
+	@echo "✓ Documentation cleaned"
+
 # -------------------------- Help and Documentation -------------------------- #
 # Show all available commands with descriptions
 help:
@@ -225,6 +266,11 @@ help:
 	@echo "  make configure-gcc     - Configure with GCC"
 	@echo "  make configure-debug   - Configure Debug build"
 	@echo "  make configure-release - Configure Release build"
+	@echo ""
+	@echo "Documentation:"
+	@echo "  make docs         - Generate Doxygen documentation"
+	@echo "  make docs-open    - Generate and open documentation"
+	@echo "  make docs-clean   - Remove generated documentation"
 	@echo ""
 	@echo "Utility:"
 	@echo "  make symlink      - Create symlink for compile_commands.json"
