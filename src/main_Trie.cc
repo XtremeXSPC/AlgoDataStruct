@@ -2,14 +2,14 @@
 /**
  * @file main_Trie.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for Trie (Prefix Tree) implementation
+ * @brief Comprehensive demo program for Trie (Prefix Tree) implementation.
  * @version 1.0
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  *
- * This program demonstrates the usage of the Trie data structure,
- * showcasing prefix-based operations, autocomplete, and string manipulation.
+ * This program demonstrates the usage of the Trie data structure, showcasing
+ * prefix-based operations, autocomplete, and string manipulation.
  */
 //===--------------------------------------------------------------------------===//
 
