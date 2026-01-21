@@ -69,7 +69,7 @@ auto SinglyLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
   return temp;
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
 SinglyLinkedList<T>::SinglyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
@@ -103,6 +103,22 @@ auto SinglyLinkedList<T>::operator=(SinglyLinkedList&& other) noexcept -> Singly
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename T>
+template <typename... Args>
+auto SinglyLinkedList<T>::emplace_front(Args&&... args) -> T& {
+  auto new_node  = std::make_unique<Node>(std::forward<Args>(args)...);
+  T&   ref       = new_node->data;
+  new_node->next = std::move(head_);
+  head_          = std::move(new_node);
+
+  if (size_ == 0) {
+    tail_ = head_.get();
+  }
+
+  ++size_;
+  return ref;
+}
+
+template <typename T>
 auto SinglyLinkedList<T>::push_front(const T& value) -> void {
   auto new_node  = std::make_unique<Node>(value);
   new_node->next = std::move(head_);
@@ -126,6 +142,24 @@ auto SinglyLinkedList<T>::push_front(T&& value) -> void {
   }
 
   ++size_;
+}
+
+template <typename T>
+template <typename... Args>
+auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
+  auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
+  T&   ref      = new_node->data;
+
+  if (is_empty()) {
+    head_ = std::move(new_node);
+    tail_ = head_.get();
+  } else {
+    tail_->next = std::move(new_node);
+    tail_       = tail_->next.get();
+  }
+
+  ++size_;
+  return ref;
 }
 
 template <typename T>
@@ -156,40 +190,6 @@ auto SinglyLinkedList<T>::push_back(T&& value) -> void {
   }
 
   ++size_;
-}
-
-template <typename T>
-template <typename... Args>
-auto SinglyLinkedList<T>::emplace_front(Args&&... args) -> T& {
-  auto new_node  = std::make_unique<Node>(std::forward<Args>(args)...);
-  T&   ref       = new_node->data;
-  new_node->next = std::move(head_);
-  head_          = std::move(new_node);
-
-  if (size_ == 0) {
-    tail_ = head_.get();
-  }
-
-  ++size_;
-  return ref;
-}
-
-template <typename T>
-template <typename... Args>
-auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
-  auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
-  T&   ref      = new_node->data;
-
-  if (is_empty()) {
-    head_ = std::move(new_node);
-    tail_ = head_.get();
-  } else {
-    tail_->next = std::move(new_node);
-    tail_       = tail_->next.get();
-  }
-
-  ++size_;
-  return ref;
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
@@ -276,6 +276,8 @@ auto SinglyLinkedList<T>::size() const noexcept -> size_t {
   return size_;
 }
 
+//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+
 template <typename T>
 auto SinglyLinkedList<T>::clear() noexcept -> void {
   // Iterative deallocation to avoid stack overflow with large lists
@@ -285,8 +287,6 @@ auto SinglyLinkedList<T>::clear() noexcept -> void {
   tail_ = nullptr;
   size_ = 0;
 }
-
-//===--------------------------- UTILITY OPERATIONS ----------------------------===//
 
 template <typename T>
 auto SinglyLinkedList<T>::reverse() noexcept -> void {
@@ -316,13 +316,13 @@ auto SinglyLinkedList<T>::begin() -> iterator {
 }
 
 template <typename T>
-auto SinglyLinkedList<T>::end() -> iterator {
-  return iterator(nullptr, this);
+auto SinglyLinkedList<T>::begin() const -> const_iterator {
+  return const_iterator(head_.get(), this);
 }
 
 template <typename T>
-auto SinglyLinkedList<T>::begin() const -> const_iterator {
-  return const_iterator(head_.get(), this);
+auto SinglyLinkedList<T>::end() -> iterator {
+  return iterator(nullptr, this);
 }
 
 template <typename T>
