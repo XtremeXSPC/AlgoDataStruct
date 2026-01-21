@@ -71,7 +71,7 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    iterator() = default;
+    iterator() : current_(nullptr) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;

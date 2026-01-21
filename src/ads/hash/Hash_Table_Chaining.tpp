@@ -15,8 +15,6 @@
 
 #include "../../../include/ads/hash/Hash_Table_Chaining.hpp"
 
-using ads::hash::HashTableChaining;
-
 //============================================================================//
 // CONSTRUCTORS AND ASSIGNMENT
 //============================================================================//

@@ -101,10 +101,9 @@ auto MaxHeap<T>::emplace(Args&&... args) -> T& {
 
   // Construct element in-place using placement new
   new (&data_[size_]) T(std::forward<Args>(args)...);
-  heapify_up(size_);
-  T& ref = data_[size_];
+  size_t final_index = heapify_up(size_);
   ++size_;
-  return ref;
+  return data_[final_index];
 }
 
 //========== REMOVAL OPERATIONS ==========//
@@ -197,7 +196,7 @@ auto MaxHeap<T>::increase_key(size_t index, const T& new_value) -> void {
 //========== PRIVATE HELPER METHODS ==========//
 
 template <typename T>
-auto MaxHeap<T>::heapify_up(size_t index) -> void {
+auto MaxHeap<T>::heapify_up(size_t index) -> size_t {
   while (index > 0) {
     size_t parent_idx = parent(index);
 
@@ -209,6 +208,7 @@ auto MaxHeap<T>::heapify_up(size_t index) -> void {
     std::swap(data_[index], data_[parent_idx]);
     index = parent_idx;
   }
+  return index;
 }
 
 template <typename T>
@@ -253,12 +253,31 @@ template <typename T>
 auto MaxHeap<T>::grow() -> void {
   size_t new_capacity = capacity_ * kGrowthFactor;
 
+  // Check for overflow
+  if (new_capacity < capacity_) {
+    throw HeapException("MaxHeap capacity overflow");
+  }
+
   // Allocate new array
   T* new_data = static_cast<T*>(::operator new(new_capacity * sizeof(T)));
 
-  // Move elements to new array
+  // Move elements to new array with exception safety
+  size_t moved_count = 0;
+  try {
+    for (; moved_count < size_; ++moved_count) {
+      new (&new_data[moved_count]) T(std::move(data_[moved_count]));
+    }
+  } catch (...) {
+    // Destroy already-moved elements in new array
+    for (size_t i = 0; i < moved_count; ++i) {
+      new_data[i].~T();
+    }
+    ::operator delete(new_data);
+    throw;
+  }
+
+  // Destroy old elements
   for (size_t i = 0; i < size_; ++i) {
-    new (&new_data[i]) T(std::move(data_[i]));
     data_[i].~T();
   }
 
