@@ -1,6 +1,6 @@
-# ============================================================================ #
-# -------------- CMake Toolchain File for GCC (AlgoDataStruct) --------------- #
-# ============================================================================ #
+# ================================================================================= #
+# ----------------- CMake Toolchain File for GCC (AlgoDataStruct) ----------------- #
+# ================================================================================= #
 #
 # Description:
 #   This toolchain file configures CMake to use GCC as the compiler for the
@@ -17,7 +17,7 @@
 #   cmake -DCMAKE_TOOLCHAIN_FILE=gcc-toolchain.cmake -B build
 #   cmake --build build
 #
-# ============================================================================ #
+# ================================================================================= #
 
 # Prevent duplicate execution of this toolchain file.
 if(DEFINED _GCC_TOOLCHAIN_LOADED)
@@ -27,7 +27,7 @@ set(_GCC_TOOLCHAIN_LOADED TRUE)
 
 message(STATUS "==> Using GCC Toolchain for AlgoDataStruct")
 
-# ---------------------------- Platform Detection ---------------------------- #
+# ------------------------------ Platform Detection ------------------------------- #
 if(APPLE)
     set(PLATFORM_NAME "macOS")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -40,7 +40,7 @@ endif()
 
 message(STATUS "    Platform: ${PLATFORM_NAME}")
 
-# ---------------------- Compiler Search and Validation ---------------------- #
+# ------------------------ Compiler Search and Validation ------------------------- #
 # Check for cached GCC path from previous configuration.
 if(DEFINED CACHE{CACHED_GCC_EXECUTABLE} AND EXISTS "${CACHED_GCC_EXECUTABLE}")
     set(GCC_EXECUTABLE "${CACHED_GCC_EXECUTABLE}")
@@ -125,7 +125,7 @@ else()
     endif()
 endif()
 
-# ------------------------- Compiler Not Found Error ------------------------- #
+# --------------------------- Compiler Not Found Error ---------------------------- #
 if(NOT GCC_EXECUTABLE)
     message(FATAL_ERROR
         "\n"
@@ -176,7 +176,7 @@ if(NOT GCC_EXECUTABLE)
     endif()
 endif()
 
-# ---------------------- Compiler Version Verification ----------------------- #
+# ------------------------- Compiler Version Verification ------------------------- #
 # Query the compiler to verify it's actually GCC and get version info.
 execute_process(
     COMMAND ${GCC_EXECUTABLE} --version
@@ -193,7 +193,7 @@ if(NOT GCC_VERSION_RESULT EQUAL 0)
         "Error: ${GCC_VERSION_ERROR}")
 endif()
 
-# -------------------- Detect Clang Masquerading as GCC --------------------- #
+# ----------------------- Detect Clang Masquerading as GCC ------------------------ #
 # On macOS, /usr/bin/g++ is often just Clang pretending to be GCC.
 # We need to detect this and find the real GCC instead.
 if(GCC_VERSION_OUTPUT MATCHES "clang" OR GCC_VERSION_OUTPUT MATCHES "Apple")
@@ -243,7 +243,7 @@ if(GCC_VERSION_OUTPUT MATCHES "clang" OR GCC_VERSION_OUTPUT MATCHES "Apple")
     endif()
 endif()
 
-# ----------------------- Extract and Validate Version ----------------------- #
+# ------------------------- Extract and Validate Version -------------------------- #
 # Parse GCC version from output.
 # Try multiple patterns for robustness across different GCC installations.
 if(GCC_VERSION_OUTPUT MATCHES "gcc.*([0-9]+\\.[0-9]+\\.[0-9]+)")
@@ -280,7 +280,7 @@ else()
     set(GCC_VERSION "unknown")
 endif()
 
-# ------------------------- Find Matching C Compiler ------------------------- #
+# --------------------------- Find Matching C Compiler ---------------------------- #
 # Find the corresponding gcc (C compiler) to match g++ (C++).
 get_filename_component(GCC_DIR ${GCC_EXECUTABLE} DIRECTORY)
 get_filename_component(GCC_NAME ${GCC_EXECUTABLE} NAME)
@@ -341,7 +341,7 @@ else()
     endif()
 endif()
 
-# ----------------------- Set CMake Compiler Variables ----------------------- #
+# ------------------------- Set CMake Compiler Variables -------------------------- #
 # Force CMake to use the found compilers.
 set(CMAKE_C_COMPILER   ${C_COMPILER_PATH} CACHE PATH "C compiler"   FORCE)
 set(CMAKE_CXX_COMPILER ${GCC_EXECUTABLE}  CACHE PATH "C++ compiler" FORCE)
@@ -350,7 +350,7 @@ set(CMAKE_CXX_COMPILER ${GCC_EXECUTABLE}  CACHE PATH "C++ compiler" FORCE)
 set(CMAKE_C_COMPILER_ID "GNU" CACHE STRING "C compiler ID" FORCE)
 set(CMAKE_CXX_COMPILER_ID "GNU" CACHE STRING "C++ compiler ID" FORCE)
 
-# ------------------ macOS-Specific libstdc++ Configuration ------------------ #
+# -------------------- macOS-Specific libstdc++ Configuration --------------------- #
 # On macOS, GCC uses libstdc++ instead of libc++.
 # We need to be explicit about this.
 if(APPLE)
@@ -359,7 +359,7 @@ if(APPLE)
     message(STATUS "    Using libstdc++ (GCC's standard library)")
 endif()
 
-# ------------------------ C++ Standard Configuration ------------------------ #
+# -------------------------- C++ Standard Configuration --------------------------- #
 # AlgoDataStruct uses C++20 for good balance of features and portability.
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard" FORCE)
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require C++ standard" FORCE)
@@ -370,7 +370,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20" CACHE STRING "" FORCE)
 
 message(STATUS "    C++ Standard: C++20")
 
-# ------------------------- Success Summary Message -------------------------- #
+# ---------------------------- Success Summary Message ---------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
 message(STATUS "║             GCC Toolchain Successfully Configured             ║")
@@ -389,5 +389,5 @@ endif()
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "")
 
-# ============================================================================ #
+# ================================================================================= #
 # End of GCC Toolchain File.

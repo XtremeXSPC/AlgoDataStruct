@@ -24,6 +24,7 @@ using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
+using std::to_string;
 using std::vector;
 
 using ads::hash::HashTableChaining;
@@ -298,14 +299,14 @@ void demo_move_semantics() {
   print_stats(table1, "table1");
 
   // Move constructor
-  HashTableOpenAddressing<int, string> table2(std::move(table1));
+  HashTableOpenAddressing<int, string> table2(move(table1));
   cout << "\nAfter move construction:\n";
   print_stats(table2, "table2");
   cout << "table1 size: " << table1.size() << " (should be 0)\n";
 
   // Move assignment
   HashTableOpenAddressing<int, string> table3;
-  table3 = std::move(table2);
+  table3 = move(table2);
   cout << "\nAfter move assignment:\n";
   print_stats(table3, "table3");
   cout << "table2 size: " << table2.size() << " (should be 0)\n";
@@ -405,9 +406,9 @@ void demo_edge_cases() {
 }
 
 int main() {
-  cout << "╔════════════════════════════════════════════════════════╗\n";
-  cout << "║     HASH TABLE OPEN ADDRESSING COMPREHENSIVE TEST      ║\n";
-  cout << "╚════════════════════════════════════════════════════════╝\n";
+  cout << "╔═══----------------------------------------------------═══╗\n";
+  cout << "      HASH TABLE OPEN ADDRESSING - COMPREHENSIVE DEMO       \n";
+  cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
     demo_basic_operations();
@@ -424,9 +425,9 @@ int main() {
     demo_edge_cases();
 
     cout << "\n";
-    cout << "╔════════════════════════════════════════════════════════╗\n";
-    cout << "║           ALL DEMOS COMPLETED SUCCESSFULLY!            ║\n";
-    cout << "╚════════════════════════════════════════════════════════╝\n";
+    cout << "╔═══----------------------------------------------------═══╗\n";
+    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
+    cout << "╚═══----------------------------------------------------═══╝\n";
 
     return 0;
 
