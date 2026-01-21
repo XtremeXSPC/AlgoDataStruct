@@ -53,18 +53,18 @@ public:
   LinkedQueue() noexcept;
 
   /**
-   * @brief Destructor. Empties the queue and deallocates all nodes.
-   * @complexity Time O(n), Space O(1)
-   * @note Uses iterative deallocation to avoid stack overflow.
-   */
-  ~LinkedQueue() override;
-
-  /**
    * @brief Move constructor.
    * @param other The queue from which to move resources.
    * @complexity Time O(1), Space O(1)
    */
   LinkedQueue(LinkedQueue&& other) noexcept;
+
+  /**
+   * @brief Destructor. Empties the queue and deallocates all nodes.
+   * @complexity Time O(n), Space O(1)
+   * @note Uses iterative deallocation to avoid stack overflow.
+   */
+  ~LinkedQueue() override;
 
   /**
    * @brief Move assignment operator.
@@ -112,6 +112,12 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   void dequeue() override;
+
+  /**
+   * @brief Removes all elements from the queue.
+   * @complexity Time O(n), Space O(1)
+   */
+  void clear() noexcept override;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -162,14 +168,6 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto size() const noexcept -> size_t override;
-
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
-
-  /**
-   * @brief Removes all elements from the queue.
-   * @complexity Time O(n), Space O(1)
-   */
-  void clear() noexcept override;
 
 private:
   //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//

@@ -106,6 +106,17 @@ void LinkedQueue<T>::dequeue() {
   size_--;
 }
 
+template <typename T>
+void LinkedQueue<T>::clear() noexcept {
+  // Iterative destruction to avoid potential stack overflow
+  // with recursive unique_ptr destruction
+  while (front_) {
+    front_ = std::move(front_->next);
+  }
+  rear_ = nullptr;
+  size_ = 0;
+}
+
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
 template <typename T>
@@ -150,19 +161,6 @@ auto LinkedQueue<T>::is_empty() const noexcept -> bool {
 template <typename T>
 auto LinkedQueue<T>::size() const noexcept -> size_t {
   return size_;
-}
-
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
-
-template <typename T>
-void LinkedQueue<T>::clear() noexcept {
-  // Iterative destruction to avoid potential stack overflow
-  // with recursive unique_ptr destruction
-  while (front_) {
-    front_ = std::move(front_->next);
-  }
-  rear_ = nullptr;
-  size_ = 0;
 }
 
 } // namespace ads::queue
