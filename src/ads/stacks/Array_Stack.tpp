@@ -21,7 +21,7 @@ template <typename T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
     data_(
         static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
-        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter
+        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
     size_(0), capacity_(initial_capacity) {
 }
 
@@ -44,15 +44,6 @@ auto ArrayStack<T>::operator=(ArrayStack&& other) noexcept -> ArrayStack<T>& {
 }
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
-template <typename T>
-void ArrayStack<T>::push(const T& value) {
-  emplace(value);
-}
-
-template <typename T>
-void ArrayStack<T>::push(T&& value) {
-  emplace(std::move(value));
-}
 
 template <typename T>
 template <typename... Args>
@@ -70,32 +61,53 @@ auto ArrayStack<T>::emplace(Args&&... args) -> T& {
   return *top_ptr;
 }
 
+template <typename T>
+void ArrayStack<T>::push(const T& value) {
+  emplace(value);
+}
+
+template <typename T>
+void ArrayStack<T>::push(T&& value) {
+  emplace(std::move(value));
+}
+
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+
 template <typename T>
 void ArrayStack<T>::pop() {
   if (is_empty()) {
     throw StackUnderflowException("Cannot pop from empty stack");
   }
 
-  // Explicitly destroy the top element
+  // Explicitly destroy the top element.
   size_--;
   data_[size_].~T();
 
-  // Optional: shrink the array if it's significantly underutilized
-  // This prevents memory waste after many pops
+  // Optional: shrink the array if it's significantly underutilized.
+  // This prevents memory waste after many pops.
   if (size_ > 0 && size_ * 4 <= capacity_ && capacity_ > kMinCapacity) {
     size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
       reallocate(new_capacity);
     } catch (const std::bad_alloc&) {
-      // If reallocation fails, continue with current capacity
+      // If reallocation fails, continue with current capacity.
       // This is a non-critical optimization - the stack remains functional
-      // with the current (larger) capacity
+      // with the current (larger) capacity.
     }
   }
 }
 
+template <typename T>
+void ArrayStack<T>::clear() noexcept {
+  // Explicitly destroy all elements.
+  while (size_ > 0) {
+    size_--;
+    data_[size_].~T();
+  }
+}
+
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
+
 template <typename T>
 auto ArrayStack<T>::top() -> T& {
   if (is_empty()) {
@@ -113,6 +125,7 @@ auto ArrayStack<T>::top() const -> const T& {
 }
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
+
 template <typename T>
 auto ArrayStack<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
@@ -123,16 +136,8 @@ auto ArrayStack<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
-void ArrayStack<T>::clear() noexcept {
-  // Explicitly destroy all elements
-  while (size_ > 0) {
-    size_--;
-    data_[size_].~T();
-  }
-}
-
 //===--------------------------- CAPACITY MANAGEMENT ---------------------------===//
+
 template <typename T>
 void ArrayStack<T>::reserve(size_t n) {
   if (n > capacity_) {
@@ -150,7 +155,7 @@ void ArrayStack<T>::shrink_to_fit() {
 
 template <typename T>
 void ArrayStack<T>::grow() {
-  // Check for overflow BEFORE multiplication
+  // Check for overflow BEFORE multiplication.
   if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw StackOverflowException("Stack capacity overflow");
   }
@@ -159,38 +164,40 @@ void ArrayStack<T>::grow() {
   reallocate(new_capacity);
 }
 
+//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+
 template <typename T>
 void ArrayStack<T>::reallocate(size_t new_capacity) {
-  // Allocate raw memory with custom deleter
+  // Allocate raw memory with custom deleter.
   std::unique_ptr<T[], void (*)(T*)> new_data(
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
-  // Move/copy elements to new array with exception safety
+  // Move/copy elements to new array with exception safety.
   size_t constructed_count = 0;
   try {
     for (; constructed_count < size_; ++constructed_count) {
-      // Use move construction if T is nothrow move constructible
+      // Use move construction if T is nothrow move constructible.
       if constexpr (std::is_nothrow_move_constructible_v<T>) {
         new (new_data.get() + constructed_count) T(std::move(data_[constructed_count]));
       } else {
-        // Use copy construction as fallback for exception safety
+        // Use copy construction as fallback for exception safety.
         new (new_data.get() + constructed_count) T(data_[constructed_count]);
       }
     }
   } catch (...) {
-    // Destroy already-constructed elements in new array
+    // Destroy already-constructed elements in new array.
     for (size_t i = 0; i < constructed_count; ++i) {
       new_data[i].~T();
     }
     throw;
   }
 
-  // Destroy old elements only after all new elements are constructed
+  // Destroy old elements only after all new elements are constructed.
   for (size_t i = 0; i < size_; ++i) {
     data_[i].~T();
   }
 
-  // Replace the old array with the new one
+  // Replace the old array with the new one.
   data_     = std::move(new_data);
   capacity_ = new_capacity;
 }

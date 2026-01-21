@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Stack.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #ifndef STACK_HPP
 #define STACK_HPP
@@ -30,7 +30,7 @@ namespace ads::stack {
 template <typename T>
 class Stack {
 public:
-  // Virtual destructor is mandatory for polymorphic base classes
+  // A virtual destructor is mandatory in polymorphic base classes.
   virtual ~Stack() = default;
 
   /**
@@ -88,4 +88,4 @@ public:
 
 #endif // STACK_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
