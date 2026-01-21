@@ -2,12 +2,14 @@
 /**
  * @file main Stacks_Queues.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for Stack and Queue implementations
+ * @brief Comprehensive demo program for Stack and Queue implementations.
  * @version 0.1
  * @date 2025-01-15
  *
  * @copyright MIT License 2025
  *
+ * This program demonstrates the usage of Stack and Queue data structures, showcasing
+ * their operations and performance comparison.
  */
 //===--------------------------------------------------------------------------===//
 

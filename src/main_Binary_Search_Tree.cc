@@ -2,12 +2,14 @@
 /**
  * @file main_Binary_Search_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive test program for Binary Search Tree implementation
+ * @brief Comprehensive test program for Binary Search Tree implementation.
  * @version 0.1
  * @date 2025-10-15
  *
  * @copyright MIT License 2025
  *
+ * This program demonstrates the usage of the Binary Search Tree data structure,
+  * showcasing its insertion, search, traversal, and removal operations.
  */
 //===--------------------------------------------------------------------------===//
 

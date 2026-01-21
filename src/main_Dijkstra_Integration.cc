@@ -2,11 +2,14 @@
 /**
  * @file main_Dijkstra_Integration.cc
  * @author Costantino Lombardi
- * @brief Integration test: Dijkstra's algorithm using Graph + PriorityQueue
+ * @brief Dijkstra's algorithm using Graph + PriorityQueue.
  * @version 0.1
  * @date 2025-11-20
  *
  * @copyright MIT License 2025
+ *
+ * This program demonstrates Dijkstra's shortest path algorithm using the
+ * GraphAdjacencyList and PriorityQueue classes.
  */
 //===--------------------------------------------------------------------------===//
 
@@ -22,12 +25,11 @@
 using std::cerr;
 using std::cout;
 using std::exception;
+using std::numeric_limits;
+using std::pair;
 using std::string;
 using std::to_string;
 using std::vector;
-using std::pair;
-using std::numeric_limits;
-
 
 using namespace ads::graph;
 using namespace ads::queue;
@@ -53,7 +55,7 @@ struct DistanceComparator {
  * @return Vector of shortest distances from start to all vertices
  */
 vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) {
-  size_t              n = graph.num_vertices();
+  size_t         n = graph.num_vertices();
   vector<double> dist(n, numeric_limits<double>::infinity());
   vector<bool>   visited(n, false);
 
@@ -138,7 +140,7 @@ int main() {
 
   // Test Dijkstra from different starting cities
   const vector<string> test_cities  = {"Rome", "Paris", "Berlin"};
-  const vector<size_t>      test_indices = {rome, paris, berlin};
+  const vector<size_t> test_indices = {rome, paris, berlin};
 
   for (size_t i = 0; i < test_cities.size(); ++i) {
     cout << "\n" << string(55, '=') << "\n";
