@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Queue.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
@@ -31,7 +31,7 @@ namespace ads::queue {
 template <typename T>
 class Queue {
 public:
-  // Virtual destructor is mandatory for polymorphic base classes
+  // A virtual destructor is mandatory in polymorphic base classes.
   virtual ~Queue() = default;
 
   /**
@@ -103,4 +103,4 @@ public:
 
 #endif // QUEUE_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

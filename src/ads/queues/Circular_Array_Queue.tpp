@@ -15,13 +15,13 @@
 
 namespace ads::queue {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
     data_(
         static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
-        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter
+        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
     front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
 }
 
@@ -57,6 +57,24 @@ auto CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept -> Ci
 }
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
+
+template <typename T>
+template <typename... Args>
+auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
+  if (is_full()) {
+    grow();
+  }
+
+  // Construct the element in-place at the rear position.
+  T* rear_ptr = &data_[rear_];
+  new (rear_ptr) T(std::forward<Args>(args)...);
+
+  rear_ = next_index(rear_);
+  size_++;
+
+  return *rear_ptr;
+}
+
 template <typename T>
 void CircularArrayQueue<T>::enqueue(const T& value) {
   emplace(value);
@@ -67,23 +85,6 @@ void CircularArrayQueue<T>::enqueue(T&& value) {
   emplace(std::move(value));
 }
 
-template <typename T>
-template <typename... Args>
-auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
-  if (is_full()) {
-    grow();
-  }
-
-  // Construct the element in-place at the rear position
-  T* rear_ptr = &data_[rear_];
-  new (rear_ptr) T(std::forward<Args>(args)...);
-
-  rear_ = next_index(rear_);
-  size_++;
-
-  return *rear_ptr;
-}
-
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <typename T>
@@ -92,21 +93,33 @@ void CircularArrayQueue<T>::dequeue() {
     throw QueueUnderflowException("Cannot dequeue from empty queue");
   }
 
-  // Explicitly destroy the front element
+  // Explicitly destroy the front element.
   data_[front_].~T();
 
   front_ = next_index(front_);
   size_--;
 
-  // Optional: shrink if significantly underutilized
+  // Optional: shrink if significantly underutilized.
   if (size_ > 0 && size_ * 4 <= capacity_ && capacity_ > kMinCapacity) {
     size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
       reallocate(new_capacity);
     } catch (...) {
-      // If reallocation fails, continue with current capacity
+      // If reallocation fails, continue with current capacity.
     }
   }
+}
+
+template <typename T>
+void CircularArrayQueue<T>::clear() noexcept {
+  // Explicitly destroy all elements in the queue.
+  while (!is_empty()) {
+    data_[front_].~T();
+    front_ = next_index(front_);
+    size_--;
+  }
+  front_ = 0;
+  rear_  = 0;
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
@@ -157,18 +170,6 @@ auto CircularArrayQueue<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
-void CircularArrayQueue<T>::clear() noexcept {
-  // Explicitly destroy all elements in the queue
-  while (!is_empty()) {
-    data_[front_].~T();
-    front_ = next_index(front_);
-    size_--;
-  }
-  front_ = 0;
-  rear_  = 0;
-}
-
 //===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
 template <typename T>
@@ -188,7 +189,7 @@ void CircularArrayQueue<T>::shrink_to_fit() {
 
 template <typename T>
 void CircularArrayQueue<T>::grow() {
-  // Check for overflow BEFORE multiplication
+  // Check for overflow BEFORE multiplication.
   if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw QueueOverflowException("Queue capacity overflow");
   }
@@ -203,7 +204,7 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   std::unique_ptr<T[], void (*)(T*)> new_data(
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
-  // Copy elements to new array in logical order with exception safety
+  // Copy elements to new array in logical order with exception safety.
   size_t constructed_count = 0;
   size_t current           = front_;
 
@@ -217,14 +218,14 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
       current = next_index(current);
     }
   } catch (...) {
-    // Destroy already-constructed elements in new array
+    // Destroy already-constructed elements in new array.
     for (size_t i = 0; i < constructed_count; ++i) {
       new_data[i].~T();
     }
     throw;
   }
 
-  // Destroy old elements only after all new elements are constructed
+  // Destroy old elements only after all new elements are constructed.
   current = front_;
   for (size_t i = 0; i < size_; ++i) {
     data_[current].~T();

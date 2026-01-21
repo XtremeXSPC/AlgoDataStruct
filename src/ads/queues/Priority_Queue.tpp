@@ -73,14 +73,19 @@ auto PriorityQueue<T, Compare>::pop() -> void {
     throw QueueException("Cannot pop from empty priority queue");
   }
 
-  // Move last element to root
+  // Move last element to root.
   heap_[0] = std::move(heap_.back());
   heap_.pop_back();
 
-  // Restore heap property if queue not empty
+  // Restore heap property if queue not empty.
   if (!empty()) {
     heapify_down(0);
   }
+}
+
+template <typename T, typename Compare>
+auto PriorityQueue<T, Compare>::clear() noexcept -> void {
+  heap_.clear();
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
@@ -113,11 +118,6 @@ auto PriorityQueue<T, Compare>::size() const noexcept -> size_t {
   return heap_.size();
 }
 
-template <typename T, typename Compare>
-auto PriorityQueue<T, Compare>::clear() noexcept -> void {
-  heap_.clear();
-}
-
 //===--------------------------- UTILITY OPERATIONS ----------------------------===//
 
 template <typename T, typename Compare>
@@ -130,7 +130,7 @@ auto PriorityQueue<T, Compare>::sorted_elements() -> std::vector<T> {
   std::vector<T> result;
   result.reserve(heap_.size());
 
-  // Extract elements one by one (they will be in sorted order)
+  // Extract elements one by one (they will be in sorted order).
   while (!empty()) {
     result.push_back(std::move(heap_[0]));
     pop();
@@ -146,12 +146,12 @@ auto PriorityQueue<T, Compare>::heapify_up(size_t index) -> void {
   while (index > 0) {
     size_t parent_index = parent(index);
 
-    // If heap property is satisfied, we're done
+    // If heap property is satisfied, we're done.
     if (!comp_(heap_[parent_index], heap_[index])) {
       break;
     }
 
-    // Swap with parent and continue
+    // Swap with parent and continue.
     std::swap(heap_[index], heap_[parent_index]);
     index = parent_index;
   }
@@ -166,7 +166,7 @@ auto PriorityQueue<T, Compare>::heapify_down(size_t index) -> void {
     size_t left_index  = left_child(index);
     size_t right_index = right_child(index);
 
-    // Find the largest among node, left child, and right child
+    // Find the largest among node, left child, and right child.
     if (left_index < heap_size && comp_(heap_[largest], heap_[left_index])) {
       largest = left_index;
     }
@@ -175,12 +175,12 @@ auto PriorityQueue<T, Compare>::heapify_down(size_t index) -> void {
       largest = right_index;
     }
 
-    // If heap property is satisfied, we're done
+    // If heap property is satisfied, we're done.
     if (largest == index) {
       break;
     }
 
-    // Swap with largest child and continue
+    // Swap with largest child and continue.
     std::swap(heap_[index], heap_[largest]);
     index = largest;
   }
@@ -188,12 +188,12 @@ auto PriorityQueue<T, Compare>::heapify_down(size_t index) -> void {
 
 template <typename T, typename Compare>
 auto PriorityQueue<T, Compare>::build_heap() -> void {
-  // Bottom-up heapification for O(n) construction
+  // Bottom-up heapification for O(n) construction.
   if (heap_.size() <= 1) {
     return;
   }
 
-  // Start from last non-leaf node and heapify down
+  // Start from last non-leaf node and heapify down.
   for (int i = static_cast<int>(heap_.size() / 2) - 1; i >= 0; --i) {
     heapify_down(static_cast<size_t>(i));
   }
