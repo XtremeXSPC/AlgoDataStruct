@@ -17,7 +17,7 @@
 
 #include "../include/ads/lists/Doubly_Linked_List.hpp"
 
-using namespace ads::list;
+using namespace ads::lists;
 
 // Test fixture to initeratorialize a clean list for each test
 class DoublyLinkedListTest : public ::testing::Test {

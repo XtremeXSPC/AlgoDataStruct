@@ -15,7 +15,7 @@
 
 #include "../include/ads/lists/Singly_Linked_List.hpp"
 
-using namespace ads::list;
+using namespace ads::lists;
 
 // Test fixture for SinglyLinkedList
 class SinglyLinkedListTest : public ::testing::Test {
