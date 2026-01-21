@@ -15,6 +15,7 @@
 #ifndef LINKED_QUEUE_HPP
 #define LINKED_QUEUE_HPP
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -112,10 +113,10 @@ private:
   size_t                size_;  ///< The current number of elements
 };
 
+} // namespace ads::queue
+
 // Include the implementation file for templates
 #include "../../../src/ads/queues/Linked_Queue.tpp"
-
-} // namespace ads::queue
 
 #endif // LINKED_QUEUE_HPP
 

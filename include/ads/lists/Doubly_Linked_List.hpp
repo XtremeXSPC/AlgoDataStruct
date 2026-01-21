@@ -21,12 +21,12 @@
 
 #include "List.hpp"
 #include "List_Exception.hpp"
-namespace ads::list {
+namespace ads::lists {
 
 /**
  * @brief An implementation of a doubly linked list.
  *
- * @details This class implements the `ads::list::List<T>` interface using
+ * @details This class implements the `ads::lists::List<T>` interface using
  *          a doubly linked node structure. It offers constant time (O(1))
  *          insertion and deletion at the beginning and end, and
  *          constant time if you have an iterator to the position.
@@ -176,10 +176,10 @@ private:
   size_t                size_;
 };
 
+} // namespace ads::lists
+
 // Include the implementation file for templates
 #include "../../../src/ads/lists/Doubly_Linked_List.tpp"
-
-} // namespace ads::list
 
 #endif // DOUBLY_LINKED_LIST_HPP
 

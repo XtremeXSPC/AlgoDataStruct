@@ -11,8 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/queues/Linked_Queue.hpp"
+
+namespace ads::queue {
 
 //===------------------- LinkedQueue implementation --------------------===//
 
@@ -153,5 +154,7 @@ void LinkedQueue<T>::clear() noexcept {
   rear_ = nullptr;
   size_ = 0;
 }
+
+} // namespace ads::queue
 
 //===--------------------------------------------------------------------------===//

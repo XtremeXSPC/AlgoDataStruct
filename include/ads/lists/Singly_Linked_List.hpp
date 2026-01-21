@@ -22,12 +22,12 @@
 #include "List.hpp"
 #include "List_Exception.hpp"
 
-namespace ads::list {
+namespace ads::lists {
 
 /**
  * @brief An implementation of a singly linked list.
  *
- * @details This class implements the `ads::list::List<T>` interface using
+ * @details This class implements the `ads::lists::List<T>` interface using
  *          a singly linked node structure. Each node has a pointer only to
  *          the next node (not the previous). It offers constant time (O(1))
  *          insertion and deletion at the front, and constant time insertion
@@ -329,7 +329,7 @@ private:
   size_t                size_; ///< Number of elements in the list
 };
 
-} // namespace ads::list
+} // namespace ads::lists
 
 #include "../../../src/ads/lists/Singly_Linked_List.tpp"
 

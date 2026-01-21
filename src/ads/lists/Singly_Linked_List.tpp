@@ -11,10 +11,9 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/lists/Singly_Linked_List.hpp"
 
-namespace ads::list {
+namespace ads::lists {
 
 //========== ITERATOR IMPLEMENTATION ==========//
 
@@ -341,6 +340,6 @@ auto SinglyLinkedList<T>::cend() const -> const_iterator {
   return const_iterator(nullptr, this);
 }
 
-} // namespace ads::list
+} // namespace ads::lists
 
 //===--------------------------------------------------------------------------===//

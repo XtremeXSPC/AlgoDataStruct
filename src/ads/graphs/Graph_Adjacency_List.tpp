@@ -11,9 +11,7 @@
  */
 //===--------------------------------------------------------------------------===//
 #pragma once
-
 #include "../../../include/ads/graphs/Graph_Adjacency_List.hpp"
-#include <algorithm>
 
 namespace ads::graph {
 

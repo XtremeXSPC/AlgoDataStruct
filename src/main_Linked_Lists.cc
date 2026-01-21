@@ -27,8 +27,8 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::list::DoublyLinkedList;
-using ads::list::ListException;
+using ads::lists::DoublyLinkedList;
+using ads::lists::ListException;
 
 // Helper function to print the list contents
 template <typename T>

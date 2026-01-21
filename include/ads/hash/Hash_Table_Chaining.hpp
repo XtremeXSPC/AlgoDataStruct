@@ -285,10 +285,10 @@ private:
   static constexpr size_t kGrowthFactor         = 2;
 };
 
+} // namespace ads::hash
+
 // Include the implementation file for templates
 #include "../../../src/ads/hash/Hash_Table_Chaining.tpp"
-
-} // namespace ads::hash
 
 #endif // HASH_TABLE_CHAINING_HPP
 
