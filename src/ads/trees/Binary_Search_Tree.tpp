@@ -14,9 +14,6 @@
 
 #include "../../../include/ads/trees/Binary_Search_Tree.hpp"
 
-using ads::trees::BinarySearchTree;
-using std::move;
-
 //===------------------------ Iterator implementation -------------------------===//
 
 template <typename T>

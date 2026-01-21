@@ -16,6 +16,7 @@
 #define CIRCULAR_ARRAY_QUEUE_HPP
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <new>
 #include <utility>

@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <new>
 #include <utility>

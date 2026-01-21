@@ -14,8 +14,6 @@
 
 #include "../../../include/ads/lists/Doubly_Linked_List.hpp"
 
-using namespace ads::list;
-
 //===---------------------- Iterator implementation -------------------------====//
 template <typename T>
 auto DoublyLinkedList<T>::iterator::operator*() const -> typename DoublyLinkedList<T>::iterator::reference {
@@ -43,7 +41,10 @@ auto DoublyLinkedList<T>::iterator::operator++(int) -> typename DoublyLinkedList
 template <typename T>
 auto DoublyLinkedList<T>::iterator::operator--() -> typename DoublyLinkedList<T>::iterator& {
   if (node_ptr_ == nullptr) { // -- from end()
-    node_ptr_ = list_ptr_->tail_;
+    // Decrementing end() requires a valid list pointer
+    if (list_ptr_ != nullptr) {
+      node_ptr_ = list_ptr_->tail_;
+    }
   } else {
     node_ptr_ = node_ptr_->prev;
   }
@@ -84,7 +85,10 @@ auto DoublyLinkedList<T>::const_iterator::operator++(int) -> typename DoublyLink
 template <typename T>
 auto DoublyLinkedList<T>::const_iterator::operator--() -> typename DoublyLinkedList<T>::const_iterator& {
   if (node_ptr_ == nullptr) { // -- from cend()
-    node_ptr_ = list_ptr_->tail_;
+    // Decrementing cend() requires a valid list pointer
+    if (list_ptr_ != nullptr) {
+      node_ptr_ = list_ptr_->tail_;
+    }
   } else {
     node_ptr_ = node_ptr_->prev;
   }

@@ -15,9 +15,6 @@
 
 #include "../../../include/ads/hash/Hash_Table_Open_Addressing.hpp"
 
-using ads::hash::HashTableOpenAddressing;
-using ads::hash::ProbingStrategy;
-
 //============================================================================//
 // CONSTRUCTORS AND ASSIGNMENT
 //============================================================================//

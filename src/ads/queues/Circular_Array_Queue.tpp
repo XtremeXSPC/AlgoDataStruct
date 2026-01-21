@@ -14,8 +14,6 @@
 
 #include "../../../include/ads/queues/Circular_Array_Queue.hpp"
 
-using namespace ads::queue;
-
 //===------------------- CircularArrayQueue implementation --------------------===//
 
 template <typename T>
@@ -180,13 +178,12 @@ void CircularArrayQueue<T>::shrink_to_fit() {
 
 template <typename T>
 void CircularArrayQueue<T>::grow() {
-  size_t new_capacity = capacity_ * kGrowthFactor;
-
-  // Handle potential overflow
-  if (new_capacity < capacity_) {
+  // Check for overflow BEFORE multiplication
+  if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw QueueOverflowException("Queue capacity overflow");
   }
 
+  size_t new_capacity = capacity_ * kGrowthFactor;
   reallocate(new_capacity);
 }
 
@@ -196,20 +193,32 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   std::unique_ptr<T[], void (*)(T*)> new_data(
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
-  // Copy elements to new array in logical order
-  size_t new_index = 0;
-  size_t current   = front_;
+  // Copy elements to new array in logical order with exception safety
+  size_t constructed_count = 0;
+  size_t current           = front_;
 
-  for (size_t i = 0; i < size_; ++i) {
-    if constexpr (std::is_nothrow_move_constructible_v<T>) {
-      new (new_data.get() + new_index) T(std::move(data_[current]));
-    } else {
-      new (new_data.get() + new_index) T(data_[current]);
+  try {
+    for (; constructed_count < size_; ++constructed_count) {
+      if constexpr (std::is_nothrow_move_constructible_v<T>) {
+        new (new_data.get() + constructed_count) T(std::move(data_[current]));
+      } else {
+        new (new_data.get() + constructed_count) T(data_[current]);
+      }
+      current = next_index(current);
     }
+  } catch (...) {
+    // Destroy already-constructed elements in new array
+    for (size_t i = 0; i < constructed_count; ++i) {
+      new_data[i].~T();
+    }
+    throw;
+  }
 
+  // Destroy old elements only after all new elements are constructed
+  current = front_;
+  for (size_t i = 0; i < size_; ++i) {
     data_[current].~T();
     current = next_index(current);
-    new_index++;
   }
 
   data_     = std::move(new_data);

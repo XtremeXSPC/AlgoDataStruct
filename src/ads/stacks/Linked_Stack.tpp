@@ -14,8 +14,6 @@
 
 #include "../../../include/ads/stacks/Linked_Stack.hpp"
 
-using namespace ads::stack;
-
 //===------------------- LinkedStack implementation --------------------===//
 
 template <typename T>
