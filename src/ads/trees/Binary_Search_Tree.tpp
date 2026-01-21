@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Binary_Search_Tree.tpp
  * @author Costantino Lombardi
@@ -9,13 +9,13 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #include "../../../include/ads/trees/Binary_Search_Tree.hpp"
 
 namespace ads::trees {
 
-//===------------------------ Iterator implementation -------------------------===//
+//===------------------------- Iterator implementation -------------------------===//
 
 template <typename T>
 BinarySearchTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
@@ -79,7 +79,7 @@ auto BinarySearchTree<T>::iterator::operator!=(const iterator& other) const -> b
   return current_ != other.current_;
 }
 
-//===--------------------- BinarySearchTree implementation --------------------===//
+//===--------------------- BinarySearchTree implementation ---------------------===//
 
 template <typename T>
 BinarySearchTree<T>::BinarySearchTree() : root_(nullptr), size_(0) {
@@ -100,7 +100,7 @@ auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> Binary
   return *this;
 }
 
-//===------------------------ Modification operations -------------------------===//
+//===------------------------- Modification operations -------------------------===//
 
 template <typename T>
 auto BinarySearchTree<T>::insert(const T& value) -> bool {
@@ -217,7 +217,7 @@ void BinarySearchTree<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===--------------------------- Search operations ----------------------------===//
+//===---------------------------- Search operations ----------------------------===//
 
 template <typename T>
 auto BinarySearchTree<T>::contains(const T& value) const -> bool {
@@ -311,7 +311,7 @@ auto BinarySearchTree<T>::predecessor(const T& value) const -> const T* {
   return predecessor ? &predecessor->data : nullptr;
 }
 
-//===---------------------------- Tree properties -----------------------------===//
+//===----------------------------- Tree properties -----------------------------===//
 
 template <typename T>
 auto BinarySearchTree<T>::is_empty() const noexcept -> bool {
@@ -340,7 +340,7 @@ auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int 
   return 1 + std::max(left_height, right_height);
 }
 
-//===-------------------------- Traversal operations --------------------------===//
+//===-------------------------- Traversal operations ---------------------------===//
 
 template <typename T>
 void BinarySearchTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
@@ -415,7 +415,7 @@ void BinarySearchTree<T>::level_order_traversal(const std::function<void(const T
   }
 }
 
-//===---------------------------- Iterator access -----------------------------===//
+//===----------------------------- Iterator access -----------------------------===//
 
 template <typename T>
 auto BinarySearchTree<T>::begin() -> iterator {
@@ -449,4 +449,4 @@ auto BinarySearchTree<T>::cend() const -> iterator {
 
 } // namespace ads::trees
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Linked_Stack.tpp
  * @author Costantino Lombardi
@@ -9,13 +9,13 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 #pragma once
 #include "../../../include/ads/stacks/Linked_Stack.hpp"
 
 namespace ads::stack {
 
-//===------------------- LinkedStack implementation --------------------===//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
 LinkedStack<T>::LinkedStack() noexcept : head_(nullptr), size_(0) {
@@ -45,6 +45,7 @@ auto LinkedStack<T>::operator=(LinkedStack&& other) noexcept -> LinkedStack<T>& 
   return *this;
 }
 
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 template <typename T>
 void LinkedStack<T>::push(const T& value) {
   emplace(value);
@@ -75,6 +76,7 @@ auto LinkedStack<T>::emplace(Args&&... args) -> T& {
   return data_ref;
 }
 
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 template <typename T>
 void LinkedStack<T>::pop() {
   if (is_empty()) {
@@ -86,6 +88,7 @@ void LinkedStack<T>::pop() {
   size_--;
 }
 
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
 template <typename T>
 auto LinkedStack<T>::top() -> T& {
   if (is_empty()) {
@@ -102,6 +105,7 @@ auto LinkedStack<T>::top() const -> const T& {
   return head_->data;
 }
 
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 template <typename T>
 auto LinkedStack<T>::is_empty() const noexcept -> bool {
   return head_ == nullptr;
@@ -124,4 +128,4 @@ void LinkedStack<T>::clear() noexcept {
 
 } // namespace ads::stack
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
