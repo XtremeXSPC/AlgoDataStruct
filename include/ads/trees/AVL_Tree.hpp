@@ -329,13 +329,14 @@ private:
    */
   struct Node {
     T   data;
-    int height; ///< Height of subtree rooted at this node.
+    int height = 1; ///< Height of subtree rooted at this node.
 
-    std::unique_ptr<Node> left;
-    std::unique_ptr<Node> right;
+    std::unique_ptr<Node> left  = nullptr;
+    std::unique_ptr<Node> right = nullptr;
 
     template <typename... Args>
-    explicit Node(Args&&... args) : data(std::forward<Args>(args)...), height(1), left(nullptr), right(nullptr) {}
+      requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
+    explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
   //===============================================================================//

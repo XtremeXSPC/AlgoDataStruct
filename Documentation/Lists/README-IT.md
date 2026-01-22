@@ -24,7 +24,7 @@ struct Node {
     T data;
     std::unique_ptr<Node> next;
     Node* prev; // Puntatore non proprietario
-    
+
     // Costruttore variadico per l'emplace
     template <typename... Args>
     Node(Node* p, Args&&... args);
@@ -81,15 +81,15 @@ Gli iteratori sono compatibili con gli algoritmi STL e abilitano l'uso dei `rang
 
 ### Complessità Computazionale
 
-| Operazione | Complessità Temporale | Note |
-|---|---|---|
-| `push_front` / `push_back` | O(1) | Inserimento costante in testa/coda. |
-| `pop_front` / `pop_back` | O(1) | Rimozione costante da testa/coda. |
-| `insert` (con iteratore) | O(1) | Complessità costante data la posizione. |
-| `erase` (con iteratore) | O(1) | Complessità costante data la posizione. |
-| `size` / `is_empty` | O(1) | Tempo costante grazie al caching della dimensione. |
-| `reverse` | O(n) | Scansione lineare della lista. |
-| `clear` | O(n) | Deve deallocare tutti i nodi. |
+| Operazione                 | Complessità Temporale | Note                                               |
+| -------------------------- | --------------------- | -------------------------------------------------- |
+| `push_front` / `push_back` | O(1)                  | Inserimento costante in testa/coda.                |
+| `pop_front` / `pop_back`   | O(1)                  | Rimozione costante da testa/coda.                  |
+| `insert` (con iteratore)   | O(1)                  | Complessità costante data la posizione.            |
+| `erase` (con iteratore)    | O(1)                  | Complessità costante data la posizione.            |
+| `size` / `is_empty`        | O(1)                  | Tempo costante grazie al caching della dimensione. |
+| `reverse`                  | O(n)                  | Scansione lineare della lista.                     |
+| `clear`                    | O(n)                  | Deve deallocare tutti i nodi.                      |
 
 ## Conclusioni
 
