@@ -10,10 +10,11 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 #include "../../../include/ads/heaps/Min_Heap.hpp"
 
-namespace ads::heap {
+namespace ads::heaps {
 
 //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
 

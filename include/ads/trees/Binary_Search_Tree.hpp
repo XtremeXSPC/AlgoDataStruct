@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Binary_Search_Tree.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,8 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef BINARY_SEARCH_TREE_HPP
@@ -47,7 +48,8 @@ namespace ads::trees {
  *          Memory management is automated via std::unique_ptr, ensuring no memory leaks.
  *          The tree is move-only to prevent expensive deep copies.
  *
- * @tparam T The type of data to store. Must be copyable and support operator< and operator==.
+ * @tparam T The type of data to store.
+ *         Must be copyable and support "operator<" and "operator==".
  */
 template <typename T>
 class BinarySearchTree : public BinaryTree<T> {
@@ -55,7 +57,7 @@ private:
   struct Node;
 
 public:
-  //========== ITERATOR CLASS ==========//
+  //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
    * @brief Forward iterator for in-order traversal of the BST.
    *
@@ -83,78 +85,185 @@ public:
   private:
     friend class BinarySearchTree<T>;
 
-    // Private constructor used by begin() to initialize the iterator
-    explicit iterator(Node* root);
-
-    // Stack to maintain the path during in-order traversal
+    // Stack to maintain the path during in-order traversal.
     std::stack<Node*> stack_;
     Node*             current_;
 
-    // Helper to push all left children onto the stack
+    // Private constructor used by begin() to initialize the iterator.
+    explicit iterator(Node* root);
+
+    // Helper to push all left children onto the stack.
     void push_left(Node* node);
   };
 
-  //========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
+  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
-  /** @brief Constructs an empty binary search tree. */
+  /**
+   * @brief Constructs an empty binary search tree.
+   * @complexity Time O(1), Space O(1)
+   */
   BinarySearchTree();
-
-  /** @brief Destructor. Empties the tree and deallocates all nodes. */
-  ~BinarySearchTree() override = default;
-
-  // Copy constructor and assignment are disabled (move-only type)
-  BinarySearchTree(const BinarySearchTree&)                    = delete;
-  auto operator=(const BinarySearchTree&) -> BinarySearchTree& = delete;
 
   /**
    * @brief Move constructor.
    * @param other The tree from which to move resources.
+   * @complexity Time O(1), Space O(1)
    */
   BinarySearchTree(BinarySearchTree&& other) noexcept;
+
+  /**
+   * @brief Destructor. Empties the tree and deallocates all nodes.
+   * @complexity Time O(n), Space O(1)
+   */
+  ~BinarySearchTree() override = default;
 
   /**
    * @brief Move assignment operator.
    * @param other The tree from which to move resources.
    * @return A reference to this instance.
+   * @complexity Time O(n), Space O(1)
    */
   auto operator=(BinarySearchTree&& other) noexcept -> BinarySearchTree&;
 
-  //========== INTERFACE INHERITED FROM BinaryTree<T> ==========//
+  // Copy constructor and assignment are disabled (move-only type).
+  BinarySearchTree(const BinarySearchTree&)                    = delete;
+  auto operator=(const BinarySearchTree&) -> BinarySearchTree& = delete;
 
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
+
+  /**
+   * @brief Inserts a value into the tree (copy).
+   * @param value The value to insert.
+   * @return true if the value was inserted, false if it already exists.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
+   */
   auto insert(const T& value) -> bool override;
+
+  /**
+   * @brief Inserts a value into the tree (move).
+   * @param value The r-value to move.
+   * @return true if the value was inserted, false if it already exists.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
+   */
   auto insert(T&& value) -> bool override;
-  auto remove(const T& value) -> bool override;
-  void clear() noexcept override;
-
-  [[nodiscard]] auto contains(const T& value) const -> bool override;
-  [[nodiscard]] auto find_min() const -> const T& override;
-  [[nodiscard]] auto find_max() const -> const T& override;
-
-  [[nodiscard]] auto is_empty() const noexcept -> bool override;
-  [[nodiscard]] auto size() const noexcept -> size_t override;
-  [[nodiscard]] auto height() const noexcept -> int override;
-
-  void in_order_traversal(const std::function<void(const T&)>& visit) const override;
-  void pre_order_traversal(const std::function<void(const T&)>& visit) const override;
-  void post_order_traversal(const std::function<void(const T&)>& visit) const override;
-  void level_order_traversal(const std::function<void(const T&)>& visit) const override;
-
-  //=========== ADDITIONAL BST-SPECIFIC FUNCTIONALITY ==========//
 
   /**
    * @brief Constructs an element in-place in the tree.
    * @tparam Args Types of arguments to forward to the constructor of T.
    * @param args Arguments to forward to the constructor of T.
    * @return true if the element was inserted, false if it already exists.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> bool;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Removes a value from the tree.
+   * @param value The value to remove.
+   * @return true if the value was found and removed, false otherwise.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
+   */
+  auto remove(const T& value) -> bool override;
+
+  /**
+   * @brief Removes all elements from the tree.
+   * @complexity Time O(n), Space O(1)
+   */
+  void clear() noexcept override;
+
+  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+
+  /**
+   * @brief Checks if the tree is empty.
+   * @return true if the tree contains no elements.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+
+  /**
+   * @brief Returns the number of elements in the tree.
+   * @return The number of nodes in the tree.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto size() const noexcept -> size_t override;
+
+  /**
+   * @brief Returns the height of the tree.
+   * @return Height of the tree (empty tree = -1).
+   * @complexity Time O(n), Space O(h)
+   */
+  [[nodiscard]] auto height() const noexcept -> int override;
+
+  /**
+   * @brief Checks if a value exists in the tree.
+   * @param value The value to search for.
+   * @return true if the value exists, false otherwise.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
+   */
+  [[nodiscard]] auto contains(const T& value) const -> bool override;
+
+  /**
+   * @brief Finds and returns the minimum value in the tree.
+   * @return Const reference to the minimum value.
+   * @throws EmptyTreeException if the tree is empty.
+   * @complexity Time O(h), Space O(1)
+   */
+  [[nodiscard]] auto find_min() const -> const T& override;
+
+  /**
+   * @brief Finds and returns the maximum value in the tree.
+   * @return Const reference to the maximum value.
+   * @throws EmptyTreeException if the tree is empty.
+   * @complexity Time O(h), Space O(1)
+   */
+  [[nodiscard]] auto find_max() const -> const T& override;
+
+  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+
+  /**
+   * @brief Performs an in-order traversal of the tree.
+   * @param visit Function to call for each element.
+   * @complexity Time O(n), Space O(h)
+   */
+  void in_order_traversal(const std::function<void(const T&)>& visit) const override;
+
+  /**
+   * @brief Performs a pre-order traversal of the tree.
+   * @param visit Function to call for each element.
+   * @complexity Time O(n), Space O(h)
+   */
+  void pre_order_traversal(const std::function<void(const T&)>& visit) const override;
+
+  /**
+   * @brief Performs a post-order traversal of the tree.
+   * @param visit Function to call for each element.
+   * @complexity Time O(n), Space O(h)
+   */
+  void post_order_traversal(const std::function<void(const T&)>& visit) const override;
+
+  /**
+   * @brief Performs a level-order traversal of the tree.
+   * @param visit Function to call for each element.
+   * @complexity Time O(n), Space O(n)
+   */
+  void level_order_traversal(const std::function<void(const T&)>& visit) const override;
+
+  //===----------------- ADDITIONAL BST-SPECIFIC FUNCTIONALITY -----------------===//
 
   /**
    * @brief Returns the successor of a given value.
    * @details The successor is the smallest value greater than the given value.
    * @param value The value whose successor to find.
    * @return const T* Pointer to the successor, or nullptr if no successor exists.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
    */
   [[nodiscard]] auto successor(const T& value) const -> const T*;
 
@@ -163,49 +272,57 @@ public:
    * @details The predecessor is the largest value smaller than the given value.
    * @param value The value whose predecessor to find.
    * @return const T* Pointer to the predecessor, or nullptr if no predecessor exists.
+   * @complexity Time O(h), Space O(h) due to recursion.
+   * @note Worst-case O(n), average-case O(log n).
    */
   [[nodiscard]] auto predecessor(const T& value) const -> const T*;
 
-  //=========== ITERATOR ACCESS ===========//
+  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
   /**
    * @brief Returns an iterator to the beginning (smallest element).
    * @return iterator pointing to the smallest element in the tree.
+   * @complexity Time O(h), Space O(h)
    */
   auto begin() -> iterator;
 
   /**
-   * @brief Returns an iterator to the end (past the last element).
-   * @return iterator representing the end of the iteration.
-   */
-  auto end() -> iterator;
-
-  /**
    * @brief Returns a const iterator to the beginning.
    * @return const iterator pointing to the smallest element.
+   * @complexity Time O(h), Space O(h)
    */
   auto begin() const -> iterator;
 
   /**
+   * @brief Returns an iterator to the end (past the last element).
+   * @return iterator representing the end of the iteration.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto end() -> iterator;
+
+  /**
    * @brief Returns a const iterator to the end.
    * @return const iterator representing the end of the iteration.
+   * @complexity Time O(1), Space O(1)
    */
   auto end() const -> iterator;
 
   /**
    * @brief Returns a const iterator to the beginning.
    * @return const iterator pointing to the smallest element.
+   * @complexity Time O(h), Space O(h)
    */
   auto cbegin() const -> iterator;
 
   /**
    * @brief Returns a const iterator to the end.
    * @return const iterator representing the end of the iteration.
+   * @complexity Time O(1), Space O(1)
    */
   auto cend() const -> iterator;
 
 private:
-  //================ INTERNAL NODE STRUCTURE ================//
+  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
   /**
    * @brief Internal node structure for the BST.
    *
@@ -214,14 +331,16 @@ private:
    */
   struct Node {
     T                     data;
-    std::unique_ptr<Node> left;
-    std::unique_ptr<Node> right;
+    std::unique_ptr<Node> left  = nullptr;
+    std::unique_ptr<Node> right = nullptr;
 
     template <typename... Args>
-    explicit Node(Args&&... args) : data(std::forward<Args>(args)...), left(nullptr), right(nullptr) {}
+      requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
+    explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
-  //================ INTERNAL HELPER METHODS ================//
+  //===============================================================================//
+  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
   /**
    * @brief Recursive helper for inserting a value.
@@ -247,6 +366,8 @@ private:
    * @return unique_ptr to the detached minimum node.
    */
   auto detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node>;
+
+  //===---------------------------- SEARCH HELPERS -----------------------------===//
 
   /**
    * @brief Recursive helper for searching.
@@ -277,6 +398,8 @@ private:
    */
   auto height_helper(const Node* node) const noexcept -> int;
 
+  //===--------------------------- TRAVERSAL HELPERS ---------------------------===//
+
   /**
    * @brief Recursive helper for in-order traversal.
    * @param node Current node being visited.
@@ -298,16 +421,17 @@ private:
    */
   void post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
-  //================ DATA MEMBERS ================//
-  std::unique_ptr<Node> root_; ///< Root of the tree
-  size_t                size_; ///< Number of nodes in the tree
+  //===----------------------------- DATA MEMBERS ------------------------------===//
+
+  std::unique_ptr<Node> root_; ///< Root of the tree.
+  size_t                size_; ///< Number of nodes in the tree.
 };
 
 } // namespace ads::trees
 
-// Include the implementation file for templates
+// Include the implementation file for templates.
 #include "../../../src/ads/trees/Binary_Search_Tree.tpp"
 
 #endif // BINARY_SEARCH_TREE_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef MIN_HEAP_HPP
@@ -23,7 +24,7 @@
 
 #include "Heap_Exception.hpp"
 
-namespace ads::heap {
+namespace ads::heaps {
 
 /**
  * @brief A binary min heap implemented using an array
@@ -241,7 +242,7 @@ private:
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
 };
 
-} // namespace ads::heap
+} // namespace ads::heaps
 
 #include "../../../src/ads/heaps/Min_Heap.tpp"
 

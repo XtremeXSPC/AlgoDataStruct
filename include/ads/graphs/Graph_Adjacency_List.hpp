@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef GRAPH_ADJACENCY_LIST_HPP
@@ -24,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-namespace ads::graph {
+namespace ads::graphs {
 
 /**
  * @brief Exception class for graph operations

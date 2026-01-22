@@ -26,7 +26,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using namespace ads::graph;
+using namespace ads::graphs;
 
 void print_separator(const string& title) {
   cout << "\n=====---------- " << title << " ----------=====\n";

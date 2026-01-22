@@ -10,10 +10,11 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 #include "../../../include/ads/queues/Linked_Queue.hpp"
 
-namespace ads::queue {
+namespace ads::queues {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 

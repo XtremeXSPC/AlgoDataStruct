@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef MAX_HEAP_HPP
@@ -23,7 +24,7 @@
 
 #include "Heap_Exception.hpp"
 
-namespace ads::heap {
+namespace ads::heaps {
 
 /**
  * @brief A binary max heap implemented using an array

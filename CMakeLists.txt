@@ -78,7 +78,7 @@ endif()
 # C++20 provides a good balance of modern features and compiler support.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)  # Disable GNU extensions for portability
+set(CMAKE_CXX_EXTENSIONS OFF)  # Disable GNU extensions for portability.
 
 # Generate compile_commands.json for clangd and other tools.
 # This is essential for IDE support and code navigation.
@@ -111,7 +111,7 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
     execute_process(
         COMMAND ${CMAKE_CXX_COMPILER} -E -x c++ -v /dev/null
         OUTPUT_VARIABLE COMPILER_OUTPUT
-        ERROR_VARIABLE COMPILER_OUTPUT  # Compilers often print to stderr
+        ERROR_VARIABLE COMPILER_OUTPUT  # Compilers often print to stderr.
         RESULT_VARIABLE EXIT_CODE
         TIMEOUT 5
     )
@@ -122,16 +122,16 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
         set(IS_PARSING_INCLUDES FALSE)
 
         foreach(line ${OUTPUT_LINES})
-            # Start of include path section
+            # Start of include path section.
             if(line MATCHES "^#include.*search starts here:")
                 set(IS_PARSING_INCLUDES TRUE)
-            # End of include path section
+            # End of include path section.
             elseif(line MATCHES "^End of search list.")
                 break()
-            # Parse actual include paths
+            # Parse actual include paths.
             elseif(IS_PARSING_INCLUDES)
                 string(STRIP "${line}" path)
-                # Exclude framework directories on macOS (they're not regular headers)
+                # Exclude framework directories on macOS (they're not regular headers).
                 if(IS_DIRECTORY "${path}" AND NOT path MATCHES "\\(framework directory\\)")
                     list(APPEND DETECTED_PATHS "${path}")
                 endif()
@@ -139,7 +139,7 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
         endforeach()
     endif()
 
-    # Cache results for faster reconfiguration
+    # Cache results for faster reconfiguration.
     if(DETECTED_PATHS)
         list(REMOVE_DUPLICATES DETECTED_PATHS)
         set(COMPILER_SYSTEM_INCLUDES_CACHED "${DETECTED_PATHS}" CACHE INTERNAL
@@ -154,7 +154,7 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
     endif()
 endfunction()
 
-# Run the detection function
+# Run the detection function.
 detect_compiler_system_includes(COMPILER_SYSTEM_INCLUDE_PATHS)
 
 # -------------------------- Library Definition: ads_lib -------------------------- #
@@ -181,46 +181,46 @@ target_sources(ads_lib
         FILE_SET HEADERS
         BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
         FILES
-            # List interface
+            # List interface.
             include/ads/lists/List.hpp
             include/ads/lists/List_Exception.hpp
             include/ads/lists/Doubly_Linked_List.hpp
             include/ads/lists/Singly_Linked_List.hpp
 
-            # Stack interface and implementations
+            # Stack interface and implementations.
             include/ads/stacks/Stack.hpp
             include/ads/stacks/Stack_Exception.hpp
             include/ads/stacks/Array_Stack.hpp
             include/ads/stacks/Linked_Stack.hpp
 
-            # Queue interface and implementations
+            # Queue interface and implementations.
             include/ads/queues/Queue.hpp
             include/ads/queues/Queue_Exception.hpp
             include/ads/queues/Circular_Array_Queue.hpp
             include/ads/queues/Linked_Queue.hpp
             include/ads/queues/Priority_Queue.hpp
 
-            # Binary Tree interface and implementations
+            # Binary Tree interface and implementations.
             include/ads/trees/Binary_Tree.hpp
             include/ads/trees/Binary_Tree_Exception.hpp
             include/ads/trees/Binary_Search_Tree.hpp
             include/ads/trees/AVL_Tree.hpp
 
-            # Heap implementations
+            # Heap implementations.
             include/ads/heaps/Heap_Exception.hpp
             include/ads/heaps/Min_Heap.hpp
             include/ads/heaps/Max_Heap.hpp
 
-            # Hash Table implementations
+            # Hash Table implementations.
             include/ads/hash/Hash_Table_Exception.hpp
             include/ads/hash/Hash_Table_Chaining.hpp
             include/ads/hash/Hash_Table_Open_Addressing.hpp
 
-            # Graph implementations
+            # Graph implementations.
             include/ads/graphs/Graph_Adjacency_List.hpp
             include/ads/graphs/Graph_Adjacency_Matrix.hpp
 
-            # Associative structures
+            # Associative structures.
             include/ads/associative/Hash_Map.hpp
 
     # Template implementations (.tpp files)
@@ -234,8 +234,11 @@ target_sources(ads_lib
         src/ads/queues/Circular_Array_Queue.tpp
         src/ads/queues/Linked_Queue.tpp
         src/ads/queues/Priority_Queue.tpp
-        src/ads/trees/Binary_Search_Tree.tpp
+        src/ads/trees/Trie.tpp
+        src/ads/trees/B_Tree.tpp
+        src/ads/trees/Red_Black_Tree.tpp
         src/ads/trees/AVL_Tree.tpp
+        src/ads/trees/Binary_Search_Tree.tpp
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
         src/ads/hash/Hash_Table_Chaining.tpp
@@ -252,7 +255,7 @@ target_sources(ads_lib
 # across all test programs.
 #
 function(ads_add_executable TARGET_NAME SOURCE_FILE)
-    # Create the executable target
+    # Create the executable target.
     add_executable(${TARGET_NAME} ${SOURCE_FILE})
 
     # Link with our header-only library.
@@ -277,23 +280,23 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
     target_compile_options(${TARGET_NAME} PRIVATE
         ${COMMON_WARNINGS}
 
-        # Debug configuration: No optimization, full debug info
+        # Debug configuration: No optimization, full debug info.
         $<$<CONFIG:Debug>:-g -O0>
 
-        # Release configuration: Maximum optimization, no debug info
+        # Release configuration: Maximum optimization, no debug info.
         $<$<CONFIG:Release>:-O3 -DNDEBUG>
 
-        # Sanitizer configuration (if using sanitizer build type)
+        # Sanitizer configuration (if using sanitizer build type).
         $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
     )
 
-    # Compiler-specific definitions for enhanced debugging
+    # Compiler-specific definitions for enhanced debugging.
     target_compile_definitions(${TARGET_NAME} PRIVATE
-        # For GCC in Debug mode, enable STL debug mode
-        # This adds runtime checks for iterators and containers
+        # For GCC in Debug mode, enable STL debug mode.
+        # This adds runtime checks for iterators and containers.
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:GNU>>:_GLIBCXX_DEBUG>
 
-        # For Clang/libc++, enable extensive hardening checks
+        # For Clang/libc++, enable extensive hardening checks.
         $<$<CXX_COMPILER_ID:Clang,AppleClang>:_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE>
     )
 
@@ -308,100 +311,100 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
     endif()
 
     # ------------------------- Linker Configuration ------------------------- #
-    # Configuration-specific linker flags
+    # Configuration-specific linker flags.
     target_link_options(${TARGET_NAME} PRIVATE
-        # Link sanitizer libraries for Sanitize builds
+        # Link sanitizer libraries for Sanitize builds.
         $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
 
-        # Strip symbols in Release builds to reduce executable size
+        # Strip symbols in Release builds to reduce executable size.
         $<$<CONFIG:Release>:-s>
     )
 
-    # Print a status message when the target is added
+    # Print a status message when the target is added.
     message(STATUS "${ANSI_GREEN}Added test executable: ${TARGET_NAME}${ANSI_RESET}")
 endfunction()
 
 # ----------------------------- Main Test Executables ----------------------------- #
 # These are the actual test programs that exercise the data structures library.
 
-# AVL Tree test
+# AVL Tree test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_AVL_Tree.cc")
-    ads_add_executable(test_avl src/main_AVL_Tree.cc)
+    ads_add_executable(test_AVL src/main_AVL_Tree.cc)
 endif()
 
-# Binary B-Tree test
+# Binary B-Tree test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_B_Tree.cc")
-    ads_add_executable(test_bbt src/main_B_Tree.cc)
+    ads_add_executable(test_BBT src/main_B_Tree.cc)
 endif()
 
-# Binary Search Tree test
+# Binary Search Tree test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Binary_Search_Tree.cc")
-    ads_add_executable(test_bst src/main_Binary_Search_Tree.cc)
+    ads_add_executable(test_BST src/main_Binary_Search_Tree.cc)
 endif()
 
-# Dijkstra Integration test (Graph + PriorityQueue)
+# Dijkstra Integration test (Graph + PriorityQueue).
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dijkstra_Integration.cc")
-    ads_add_executable(test_dijkstra src/main_Dijkstra_Integration.cc)
+    ads_add_executable(test_Dijkstra src/main_Dijkstra_Integration.cc)
 endif()
 
-# Graph Adjacency List test
+# Graph Adjacency List test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Graph_Adjacency_List.cc")
-    ads_add_executable(test_graph_adj_list src/main_Graph_Adjacency_List.cc)
+    ads_add_executable(test_Graph_ADJ_List src/main_Graph_Adjacency_List.cc)
 endif()
 
-# Graph Adjacency Matrix test
+# Graph Adjacency Matrix test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Graph_Adjacency_Matrix.cc")
-    ads_add_executable(test_graph_adj_matrix src/main_Graph_Adjacency_Matrix.cc)
+    ads_add_executable(test_Graph_ADJ_Matrix src/main_Graph_Adjacency_Matrix.cc)
 endif()
 
-# HashMap test
+# HashMap test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Map.cc")
-    ads_add_executable(test_hashmap src/main_Hash_Map.cc)
+    ads_add_executable(test_HashMap src/main_Hash_Map.cc)
 endif()
 
-# Hash Table Chaining test
+# Hash Table Chaining test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Chaining.cc")
-    ads_add_executable(test_hash_chaining src/main_Hash_Table_Chaining.cc)
+    ads_add_executable(test_Hash_Chaining src/main_Hash_Table_Chaining.cc)
 endif()
 
-# Hash Table Open Addressing test
+# Hash Table Open Addressing test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Table_Open_Addressing.cc")
-    ads_add_executable(test_hash_open_addr src/main_Hash_Table_Open_Addressing.cc)
+    ads_add_executable(test_Hash_Open_Addr src/main_Hash_Table_Open_Addressing.cc)
 endif()
 
-# Heaps test
+# Heaps test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Heaps.cc")
-    ads_add_executable(test_heaps src/main_Heaps.cc)
+    ads_add_executable(test_Heaps src/main_Heaps.cc)
 endif()
 
-# Linked Lists test
+# Linked Lists test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Linked_Lists.cc")
-    ads_add_executable(test_lists src/main_Linked_Lists.cc)
+    ads_add_executable(test_Lists src/main_Linked_Lists.cc)
 endif()
 
-# Priority Queue test
+# Priority Queue test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
-    ads_add_executable(test_priority_queue src/main_Priority_Queue.cc)
+    ads_add_executable(test_Priority_Queue src/main_Priority_Queue.cc)
 endif()
 
-# Red Black Tree test
+# Red Black Tree test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Red_Black_Tree.cc")
-    ads_add_executable(test_rbt src/main_Red_Black_Tree.cc)
+    ads_add_executable(test_RBT src/main_Red_Black_Tree.cc)
 endif()
 
-# Singly Linked List test
+# Singly Linked List test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
-    ads_add_executable(test_singly_list src/main_Singly_Linked_List.cc)
+    ads_add_executable(test_Singly_List src/main_Singly_Linked_List.cc)
 endif()
 
-# Stacks and Queues test
+# Stacks and Queues test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
-    ads_add_executable(test_stacks_queues src/main_Stacks_Queues.cc)
+    ads_add_executable(test_Stacks_Queues src/main_Stacks_Queues.cc)
 endif()
 
-# Trie test
+# Trie test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
-    ads_add_executable(test_trie src/main_Trie.cc)
+    ads_add_executable(test_Trie src/main_Trie.cc)
 endif()
 
 # ---------------------------- GoogleTest Integration ----------------------------- #
@@ -413,7 +416,7 @@ option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 if(ENABLE_TESTING)
     enable_testing()
 
-    # Download and configure GoogleTest using FetchContent
+    # Download and configure GoogleTest using FetchContent.
     include(FetchContent)
     FetchContent_Declare(
       googletest
@@ -421,16 +424,16 @@ if(ENABLE_TESTING)
       DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
 
-    # Configure GoogleTest to work with MSVC's runtime library
+    # Configure GoogleTest to work with MSVC's runtime library.
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
     FetchContent_MakeAvailable(googletest)
 
-    # Collect all test source files
+    # Collect all test source files.
     set(TEST_SOURCES "")
 
-    # Add test files if they exist
+    # Add test files if they exist.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
         list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
     endif()
@@ -465,13 +468,13 @@ if(ENABLE_TESTING)
         list(APPEND TEST_SOURCES tests/Test_HashTables.cpp)
     endif()
 
-    # Create test executable if we have test files
+    # Create test executable if we have test files.
     if(TEST_SOURCES)
         add_executable(runTests ${TEST_SOURCES})
         target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
         target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
 
-        # Register tests with CTest
+        # Register tests with CTest.
         include(GoogleTest)
         gtest_discover_tests(runTests)
 
@@ -493,11 +496,11 @@ add_custom_target(symlink_compile_commands
     VERBATIM
 )
 
-# Convenience 'run' target that builds and runs the BST test
-if(TARGET test_bst)
+# Convenience 'run' target that builds and runs the BST test.
+if(TARGET test_BST)
     add_custom_target(run
-        COMMAND $<TARGET_FILE:test_bst>
-        DEPENDS test_bst
+        COMMAND $<TARGET_FILE:test_BST>
+        DEPENDS test_BST
         COMMENT "${ANSI_CYAN}Running Binary Search Tree tests${ANSI_RESET}"
         USES_TERMINAL
     )
@@ -512,7 +515,7 @@ message(STATUS "${ANSI_BLUE}║${ANSI_RESET}            AlgoDataStruct - Configu
 message(STATUS "${ANSI_BLUE}╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}")
 message(STATUS "")
 
-# Display toolchain information
+# Display toolchain information.
 if(CMAKE_TOOLCHAIN_FILE)
     get_filename_component(TOOLCHAIN_NAME ${CMAKE_TOOLCHAIN_FILE} NAME)
     message(STATUS "  ${ANSI_CYAN}Toolchain${ANSI_RESET}      : ${TOOLCHAIN_NAME}")
@@ -525,7 +528,7 @@ message(STATUS "  ${ANSI_CYAN}Compiler Path${ANSI_RESET}  : ${CMAKE_CXX_COMPILER
 message(STATUS "  ${ANSI_CYAN}Build Type${ANSI_RESET}     : ${CMAKE_BUILD_TYPE}")
 message(STATUS "  ${ANSI_CYAN}C++ Standard${ANSI_RESET}   : C++${CMAKE_CXX_STANDARD}")
 
-# Report on clangd support
+# Report on clangd support.
 if(COMPILER_SYSTEM_INCLUDE_PATHS)
     list(LENGTH COMPILER_SYSTEM_INCLUDE_PATHS PATH_COUNT)
     message(STATUS "  ${ANSI_CYAN}Clangd Support${ANSI_RESET} : ${ANSI_GREEN}✓ (${PATH_COUNT} include paths)${ANSI_RESET}")
@@ -533,7 +536,7 @@ else()
     message(STATUS "  ${ANSI_CYAN}Clangd Support${ANSI_RESET} : ${ANSI_YELLOW}⚠ No include paths detected${ANSI_RESET}")
 endif()
 
-# Report on testing
+# Report on testing.
 if(ENABLE_TESTING)
     message(STATUS "  ${ANSI_CYAN}Testing${ANSI_RESET}        : ${ANSI_GREEN}Enabled (GoogleTest)${ANSI_RESET}")
 else()

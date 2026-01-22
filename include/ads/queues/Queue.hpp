@@ -10,13 +10,15 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
+
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
 #include <cstddef>
 
-namespace ads::queue {
+namespace ads::queues {
 
 /**
  * @brief Abstract base class that defines common operations for a queue data structure.
@@ -99,7 +101,7 @@ public:
   virtual void clear() noexcept = 0;
 };
 
-} // namespace ads::queue
+} // namespace ads::queues
 
 #endif // QUEUE_HPP
 

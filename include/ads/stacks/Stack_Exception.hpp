@@ -10,6 +10,7 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef STACK_EXCEPTION_HPP
@@ -17,7 +18,7 @@
 
 #include <stdexcept>
 
-namespace ads::stack {
+namespace ads::stacks {
 
 /**
  * @brief Exception thrown for logical errors in stack operations.
