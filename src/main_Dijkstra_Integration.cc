@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Dijkstra_Integration.cc
  * @author Costantino Lombardi
@@ -11,7 +11,7 @@
  * This program demonstrates Dijkstra's shortest path algorithm using the
  * GraphAdjacencyList and PriorityQueue classes.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
 #include <iostream>
@@ -34,34 +34,36 @@ using std::vector;
 using namespace ads::graphs;
 using namespace ads::queues;
 
-// City graph vertex data
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// City graph vertex data.
 struct City {
   string name;
   City() : name("") {}
-  explicit City(const string& n) : name(n) {}
+  explicit City(string n) : name(std::move(n)) {}
 };
 
-// Compare nodes by distance for priority queue (min-heap)
+// Compare nodes by distance for priority queue (min-heap).
 struct DistanceComparator {
-  bool operator()(const pair<size_t, double>& a, const pair<size_t, double>& b) const {
+  auto operator()(const pair<size_t, double>& a, const pair<size_t, double>& b) const -> bool {
     return a.second > b.second; // Min-heap: smaller distance has higher priority
   }
 };
 
 /**
- * @brief Dijkstra's shortest path algorithm
- * @param graph The graph to search
- * @param start Starting vertex index
- * @return Vector of shortest distances from start to all vertices
+ * @brief Dijkstra's shortest path algorithm.
+ * @param graph The graph to search.
+ * @param start Starting vertex index.
+ * @return Vector of shortest distances from start to all vertices.
  */
-vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) {
+auto dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) -> vector<double> {
   size_t         n = graph.num_vertices();
   vector<double> dist(n, numeric_limits<double>::infinity());
   vector<bool>   visited(n, false);
 
   dist[start] = 0.0;
 
-  // Priority queue: pair<vertex_index, distance>
+  // Priority queue: pair<vertex_index, distance>.
   PriorityQueue<pair<size_t, double>, DistanceComparator> pq;
   pq.push({start, 0.0});
 
@@ -70,11 +72,11 @@ vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size_t st
     pq.pop();
 
     if (visited[u]) {
-      continue; // Already processed this vertex
+      continue; // Already processed this vertex.
     }
     visited[u] = true;
 
-    // Relax edges from u
+    // Relax edges from 'u'.
     for (const auto& [neighbor, weight] : graph.get_neighbors_with_weights(u)) {
       double new_dist = dist[u] + weight;
 
@@ -89,9 +91,12 @@ vector<double> dijkstra(const GraphAdjacencyList<City, double>& graph, size_t st
 }
 
 /**
- * @brief Print shortest paths from source to all cities
+ * @brief Print shortest paths from source to all cities.
+ * @param graph The graph.
+ * @param source The source vertex index.
+ * @param distances Vector of distances.
  */
-void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const vector<double>& distances) {
+auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const vector<double>& distances) -> void {
   cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
   cout << "=====--------------------------------------=====\n";
 
@@ -105,16 +110,18 @@ void print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t 
   }
 }
 
-int main() {
+//===------------------------------ MAIN FUNCTION ------------------------------===//
+
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "         DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO          \n";
   cout << "          Graph (Adjacency List) + Priority Queue           \n";
   cout << "╚═══----------------------------------------------------═══╝\n";
 
-  // Create a graph of European cities with distances in km
-  GraphAdjacencyList<City, double> cities(false); // Undirected graph
+  // Create a graph of European cities with distances in km.
+  GraphAdjacencyList<City, double> cities(false); // Undirected graph.
 
-  // Add cities
+  // Add cities.
   size_t rome   = cities.add_vertex(City("Rome"));
   size_t milan  = cities.add_vertex(City("Milan"));
   size_t paris  = cities.add_vertex(City("Paris"));
@@ -123,7 +130,7 @@ int main() {
   size_t vienna = cities.add_vertex(City("Vienna"));
   size_t zurich = cities.add_vertex(City("Zurich"));
 
-  // Add roads (edges) with distances
+  // Add roads (edges) with distances.
   cities.add_edge(rome, milan, 572);    // Rome - Milan
   cities.add_edge(milan, paris, 851);   // Milan - Paris
   cities.add_edge(milan, zurich, 277);  // Milan - Zurich
@@ -138,7 +145,7 @@ int main() {
   cout << "Vertices: " << cities.num_vertices() << "\n";
   cout << "Edges: " << cities.num_edges() << "\n\n";
 
-  // Test Dijkstra from different starting cities
+  // Test Dijkstra from different starting cities.
   const vector<string> test_cities  = {"Rome", "Paris", "Berlin"};
   const vector<size_t> test_indices = {rome, paris, berlin};
 
@@ -150,7 +157,7 @@ int main() {
     print_shortest_paths(cities, test_indices[i], distances);
   }
 
-  // Performance test with larger graph
+  // Performance test with larger graph.
   cout << "\n\n" << string(55, '=') << "\n";
   cout << "Performance Test: Random Graph\n";
   cout << string(55, '=') << "\n";
@@ -158,12 +165,12 @@ int main() {
   const size_t                     num_vertices = 1000;
   GraphAdjacencyList<City, double> large_graph(false);
 
-  // Add vertices
+  // Add vertices.
   for (size_t i = 0; i < num_vertices; ++i) {
-    large_graph.add_vertex(City("City_" + to_string(i)));
+    large_graph.add_vertex(City(std::format("City_{}", i)));
   }
 
-  // Add random edges
+  // Add random edges.
   for (size_t i = 0; i < num_vertices; ++i) {
     // Connect to next 5 vertices (circular)
     for (size_t j = 1; j <= 5 && i + j < num_vertices; ++j) {
@@ -179,7 +186,7 @@ int main() {
   auto end_time   = std::chrono::high_resolution_clock::now();
 
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-  cout << "Completed in " << duration.count() / 1000.0 << " ms\n";
+  cout << "Completed in " << static_cast<double>(duration.count()) / 1000.0 << " ms\n";
   cout << "Sample distances:\n";
   cout << "  To vertex 10: " << distances[10] << "\n";
   cout << "  To vertex 100: " << distances[100] << "\n";
@@ -193,4 +200,5 @@ int main() {
 
   return 0;
 }
+
 //===--------------------------------------------------------------------------===//

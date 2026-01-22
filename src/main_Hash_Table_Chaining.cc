@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Hash_Table_Chaining.cc
  * @author Costantino Lombardi
@@ -11,9 +11,10 @@
  * This program demonstrates the usage of the Hash Table with Chaining data structure,
  * showcasing its insertion, access, updates, and deletion operations.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
+#include <format>
 #include <iostream>
 #include <random>
 #include <string>
@@ -30,9 +31,11 @@ using std::to_string;
 using std::unordered_map;
 using std::vector;
 
-using ads::hash::HashTableChaining;
+using namespace ads::hash;
 
-// Helper function to print hash table statistics
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print hash table statistics.
 template <typename Key, typename Value>
 void print_stats(const HashTableChaining<Key, Value>& table, const string& name) {
   cout << "Hash Table '" << name << "':\n";
@@ -43,7 +46,9 @@ void print_stats(const HashTableChaining<Key, Value>& table, const string& name)
   cout << "  Empty:       " << (table.is_empty() ? "Yes" : "No") << '\n';
 }
 
-// Test basic insertion and access
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Test basic insertion and access.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations ==========\n";
 
@@ -58,19 +63,21 @@ void demo_basic_operations() {
 
   print_stats(table, "after insertions");
 
-  // Test access
+  // Test access.
   cout << "\nAccessing values:\n";
   cout << "  table[1] = " << table.at(1) << '\n';
   cout << "  table[3] = " << table.at(3) << '\n';
   cout << "  table[5] = " << table.at(5) << '\n';
 
-  // Test contains
+  // Test contains.
   cout << "\nTesting contains():\n";
   cout << "  Contains 3? " << (table.contains(3) ? "Yes" : "No") << '\n';
   cout << "  Contains 10? " << (table.contains(10) ? "Yes" : "No") << '\n';
 }
 
-// Test update existing keys
+//===------------------------------ UPDATES DEMO -------------------------------===//
+
+// Test update existing keys.
 void demo_updates() {
   cout << "\n========== Demo: Updates ==========\n";
 
@@ -84,7 +91,7 @@ void demo_updates() {
   cout << "  apple: " << table["apple"] << '\n';
   cout << "  banana: " << table["banana"] << '\n';
 
-  // Update existing keys
+  // Update existing keys.
   cout << "\nUpdating values:\n";
   table.insert("apple", 10);
   table["banana"] = 15;
@@ -96,7 +103,9 @@ void demo_updates() {
   print_stats(table, "after updates");
 }
 
-// Test operator[]
+//===----------------------------- OPERATOR[] DEMO -----------------------------===//
+
+// Test operator[].
 void demo_bracket_operator() {
   cout << "\n========== Demo: Operator[] ==========\n";
 
@@ -111,14 +120,16 @@ void demo_bracket_operator() {
   cout << "  second: " << table["second"] << '\n';
   cout << "  third: " << table["third"] << '\n';
 
-  // Access non-existent key (should create with default value)
+  // Access non-existent key (should create with default value).
   cout << "\nAccessing non-existent key 'fourth':\n";
   int value = table["fourth"];
   cout << "  Value: " << value << " (default-constructed)\n";
   cout << "  Table size is now: " << table.size() << '\n';
 }
 
-// Test find()
+//===-------------------------------- FIND DEMO --------------------------------===//
+
+// Test find().
 void demo_find() {
   cout << "\n========== Demo: Find ==========\n";
 
@@ -129,7 +140,7 @@ void demo_find() {
 
   cout << "Testing find():\n";
 
-  auto* result = table.find(20);
+  const auto* result = table.find(20);
   if (result) {
     cout << "  Found key 20: " << *result << '\n';
   } else {
@@ -144,14 +155,16 @@ void demo_find() {
   }
 }
 
-// Test erase
+//===------------------------------- ERASE DEMO --------------------------------===//
+
+// Test erase.
 void demo_erase() {
   cout << "\n========== Demo: Erase ==========\n";
 
   HashTableChaining<int, string> table;
 
   for (int i = 1; i <= 10; ++i) {
-    table.insert(i, "value_" + to_string(i));
+    table.insert(i, std::format("value_{}", i));
   }
 
   print_stats(table, "before erasure");
@@ -166,18 +179,21 @@ void demo_erase() {
 
   print_stats(table, "after erasure");
 
-  // Verify remaining keys
+  // Verify remaining keys.
   cout << "\nVerifying remaining keys:\n";
   for (int i = 1; i <= 10; ++i) {
     cout << "  Contains " << i << "? " << (table.contains(i) ? "Yes" : "No") << '\n';
   }
 }
 
-// Test rehashing
+//===----------------------------- REHASHING DEMO ------------------------------===//
+
+// Test rehashing.
 void demo_rehashing() {
   cout << "\n========== Demo: Rehashing ==========\n";
 
-  HashTableChaining<int, int> table(4, 0.75f); // Small initial capacity
+  // Small initial capacity.
+  HashTableChaining<int, int> table(4, 0.75f);
 
   cout << "Initial state:\n";
   print_stats(table, "empty table");
@@ -192,7 +208,7 @@ void demo_rehashing() {
 
   print_stats(table, "after insertions with auto-rehash");
 
-  // Verify all values are still accessible after rehashing
+  // Verify all values are still accessible after rehashing.
   cout << "\nVerifying all values after rehashing:\n";
   bool all_found = true;
   for (int i = 1; i <= 20; ++i) {
@@ -206,7 +222,9 @@ void demo_rehashing() {
   }
 }
 
-// Test reserve()
+//===------------------------------ RESERVE DEMO -------------------------------===//
+
+// Test reserve.
 void demo_reserve() {
   cout << "\n========== Demo: Reserve ==========\n";
 
@@ -218,7 +236,7 @@ void demo_reserve() {
   table.reserve(100);
   cout << "New capacity: " << table.capacity() << '\n';
 
-  // Insert many elements without triggering rehash
+  // Insert many elements without triggering rehash.
   cout << "\nInserting 50 elements:\n";
   for (int i = 0; i < 50; ++i) {
     table.insert(i, "value");
@@ -228,7 +246,7 @@ void demo_reserve() {
   print_stats(table, "after reserve and insertions");
 }
 
-// Test with custom types
+// Test with custom types.
 struct Person {
   string name;
   int    age;
@@ -239,6 +257,9 @@ struct Person {
   bool operator==(const Person& other) const { return name == other.name && age == other.age; }
 };
 
+//===---------------------------- CUSTOM TYPES DEMO ----------------------------===//
+
+// Test with custom types.
 void demo_custom_types() {
   cout << "\n========== Demo: Custom Types ==========\n";
 
@@ -256,7 +277,9 @@ void demo_custom_types() {
   print_stats(table, "custom types table");
 }
 
-// Test collisions (intentional)
+//===------------------------- COLLISION HANDLING DEMO -------------------------===//
+
+// Test collisions (intentional).
 void demo_collisions() {
   cout << "\n========== Demo: Collision Handling ==========\n";
 
@@ -264,7 +287,7 @@ void demo_collisions() {
   HashTableChaining<int, string> table(4);
 
   cout << "Inserting values that will collide (capacity=4):\n";
-  // Keys 0, 4, 8, 12 will all hash to the same bucket (0)
+  // Keys 0, 4, 8, 12 will all hash to the same bucket (0),
   table.insert(0, "zero");
   table.insert(4, "four");
   table.insert(8, "eight");
@@ -279,7 +302,9 @@ void demo_collisions() {
   cout << "  table[12] = " << table[12] << '\n';
 }
 
-// Test exception handling
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Test exception handling.
 void demo_exceptions() {
   cout << "\n========== Demo: Exception Handling ==========\n";
 
@@ -287,7 +312,7 @@ void demo_exceptions() {
   table.insert(1, "one");
   table.insert(2, "two");
 
-  // Test at() with non-existent key
+  // Test at() with non-existent key.
   cout << "Testing at() with non-existent key:\n";
   try {
     table.at(100);
@@ -296,7 +321,7 @@ void demo_exceptions() {
     cout << "  Caught exception: " << e.what() << '\n';
   }
 
-  // Test invalid max_load_factor
+  // Test invalid max_load_factor.
   cout << "\nTesting set_max_load_factor with invalid value:\n";
   try {
     table.set_max_load_factor(-0.5f);
@@ -306,7 +331,9 @@ void demo_exceptions() {
   }
 }
 
-// Test move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -318,13 +345,13 @@ void demo_move_semantics() {
   cout << "Original table:\n";
   print_stats(table1, "table1");
 
-  // Move constructor
+  // Move constructor.
   HashTableChaining<int, string> table2(std::move(table1));
   cout << "\nAfter move construction:\n";
   print_stats(table2, "table2");
   cout << "table1 size: " << table1.size() << " (should be 0)\n";
 
-  // Move assignment
+  // Move assignment.
   HashTableChaining<int, string> table3;
   table3 = std::move(table2);
   cout << "\nAfter move assignment:\n";
@@ -332,7 +359,9 @@ void demo_move_semantics() {
   cout << "table2 size: " << table2.size() << " (should be 0)\n";
 }
 
-// Test clear()
+//===------------------------------- CLEAR DEMO --------------------------------===//
+
+// Test clear().
 void demo_clear() {
   cout << "\n========== Demo: Clear ==========\n";
 
@@ -355,13 +384,15 @@ void demo_clear() {
   cout << "  table[42] = " << table[42] << '\n';
 }
 
-// Performance comparison with unordered_map
+//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+
+// Performance comparison with unordered_map.
 void demo_performance() {
   cout << "\n========== Demo: Performance Comparison ==========\n";
 
   const int N = 100000;
 
-  // Test our hash table
+  // Test our hash table.
   auto start = std::chrono::high_resolution_clock::now();
 
   HashTableChaining<int, int> our_table;
@@ -378,7 +409,7 @@ void demo_performance() {
   cout << "  Capacity:   " << our_table.capacity() << '\n';
   cout << "  Load factor: " << our_table.load_factor() << '\n';
 
-  // Test unordered_map
+  // Test unordered_map.
   start = std::chrono::high_resolution_clock::now();
 
   unordered_map<int, int> std_table;
@@ -395,7 +426,9 @@ void demo_performance() {
   cout << "  Load factor: " << std_table.load_factor() << '\n';
 }
 
-int main() {
+//===------------------------------ MAIN FUNCTION ------------------------------===//
+
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "          HASH TABLE CHAINING - COMPREHENSIVE DEMO          \n";
   cout << "╚═══----------------------------------------------------═══╝\n";

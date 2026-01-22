@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Doubly_Linked_List.cc
  * @author Costantino Lombardi
@@ -12,7 +12,7 @@
  * showcasing various operations such as insertion, deletion, iteration,
  * and move semantics.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <iostream>
 #include <string>
@@ -27,10 +27,11 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::lists::DoublyLinkedList;
-using ads::lists::ListException;
+using namespace ads::lists;
 
-// Helper function to print the list contents
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print the list contents.
 template <typename T>
 void print_list(const DoublyLinkedList<T>& list, const string& name) {
   cout << "List '" << name << "' (size: " << list.size() << "):\n";
@@ -57,7 +58,9 @@ void print_list(const DoublyLinkedList<T>& list, const string& name) {
   cout << "\n";
 }
 
-// Demo: Basic push operations
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Demo: Basic push operations.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations ==========\n";
 
@@ -66,25 +69,27 @@ void demo_basic_operations() {
   cout << "Creating empty list...\n";
   cout << "  Size: " << list.size() << ", Empty: " << (list.is_empty() ? "yes" : "no") << "\n";
 
-  // Push back operations
+  // Push back operations.
   cout << "\nPushing elements to back: 10, 20, 30\n";
   list.push_back(10);
   list.push_back(20);
   list.push_back(30);
   print_list(list, "after push_back");
 
-  // Push front operations
+  // Push front operations.
   cout << "\nPushing elements to front: 5, 0\n";
   list.push_front(5);
   list.push_front(0);
   print_list(list, "after push_front");
 
-  // Access front and back
+  // Access front and back.
   cout << "\nFront element: " << list.front() << "\n";
   cout << "Back element: " << list.back() << "\n";
 }
 
-// Demo: Pop operations
+//===--------------------------- POP OPERATIONS DEMO ---------------------------===//
+
+// Demo: Pop operations.
 void demo_pop_operations() {
   cout << "\n========== Demo: Pop Operations ==========\n";
 
@@ -105,7 +110,9 @@ void demo_pop_operations() {
   print_list(list, "after pop_back");
 }
 
-// Demo: Insert and erase operations
+//===--------------------- INSERT & ERASE OPERATIONS DEMO ----------------------===//
+
+// Demo: Insert and erase operations.
 void demo_insert_erase() {
   cout << "\n========== Demo: Insert and Erase ==========\n";
 
@@ -115,14 +122,14 @@ void demo_insert_erase() {
   list.push_back(40);
   print_list(list, "original");
 
-  // Insert in the middle
+  // Insert in the middle.
   cout << "\nInserting 20 at position 1 (before 30):\n";
   auto it = list.begin();
   ++it; // Point to 30
   list.insert(it, 20);
   print_list(list, "after insert");
 
-  // Erase from the middle
+  // Erase from the middle.
   cout << "\nErasing element at position 2 (value 30):\n";
   it = list.begin();
   ++it;
@@ -131,18 +138,20 @@ void demo_insert_erase() {
   cout << "  Iterator now points to: " << *it << "\n";
   print_list(list, "after erase");
 
-  // Insert at beginning
+  // Insert at beginning.
   cout << "\nInserting 5 at the beginning:\n";
   list.insert(list.begin(), 5);
   print_list(list, "after insert at begin");
 
-  // Insert at end
+  // Insert at end.
   cout << "\nInserting 50 at the end:\n";
   list.insert(list.end(), 50);
   print_list(list, "after insert at end");
 }
 
-// Demo: Emplace operations
+//===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+
+// Demo: Emplace operations.
 void demo_emplace() {
   cout << "\n========== Demo: Emplace Operations ==========\n";
 
@@ -166,7 +175,9 @@ void demo_emplace() {
   }
 }
 
-// Demo: Iterators
+//===------------------------------ ITERATOR DEMO ------------------------------===//
+
+// Demo: Iterators.
 void demo_iterators() {
   cout << "\n========== Demo: Iterators ==========\n";
 
@@ -175,21 +186,21 @@ void demo_iterators() {
     list.push_back(i);
   }
 
-  // Range-based for loop
+  // Range-based for loop.
   cout << "Using range-based for loop:\n  ";
   for (const int& value : list) {
     cout << value << " ";
   }
   cout << "\n";
 
-  // Explicit iterator usage
+  // Explicit iterator usage.
   cout << "\nUsing explicit iterators:\n  ";
   for (auto it = list.begin(); it != list.end(); ++it) {
     cout << *it << " ";
   }
   cout << "\n";
 
-  // Const iterators
+  // Const iterators.
   const auto& const_list = list;
   cout << "\nUsing const iterators:\n  ";
   for (auto it = const_list.cbegin(); it != const_list.cend(); ++it) {
@@ -197,14 +208,14 @@ void demo_iterators() {
   }
   cout << "\n";
 
-  // Modifying through iterator
+  // Modifying through iterator.
   cout << "\nModifying elements through iterator (doubling values):\n";
   for (int& value : list) {
     value *= 2;
   }
   print_list(list, "after modification");
 
-  // Collecting into vector
+  // Collecting into vector.
   cout << "\nCollecting into vector:\n  ";
   vector<int> vec(list.begin(), list.end());
   cout << "Vector contents: ";
@@ -214,7 +225,9 @@ void demo_iterators() {
   cout << "\n";
 }
 
-// Demo: Reverse operation
+//===------------------------------ REVERSE DEMO -------------------------------===//
+
+// Demo: Reverse operation.
 void demo_reverse() {
   cout << "\n========== Demo: Reverse ==========\n";
 
@@ -227,11 +240,11 @@ void demo_reverse() {
   list.reverse();
   print_list(list, "reversed");
 
-  // Reverse again
+  // Reverse again.
   list.reverse();
   print_list(list, "reversed again (back to original)");
 
-  // Edge case: single element
+  // Edge case: single element.
   DoublyLinkedList<int> single;
   single.push_back(42);
   cout << "\nSingle element before reverse: " << single.front() << "\n";
@@ -239,7 +252,9 @@ void demo_reverse() {
   cout << "Single element after reverse: " << single.front() << "\n";
 }
 
-// Demo: Move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Demo: Move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -251,13 +266,13 @@ void demo_move_semantics() {
   cout << "Original list:\n";
   print_list(list1, "list1");
 
-  // Move constructor
+  // Move constructor.
   cout << "\nMove constructing list2 from list1:\n";
   DoublyLinkedList<int> list2 = std::move(list1);
   print_list(list1, "list1 (should be empty)");
   print_list(list2, "list2 (should have data)");
 
-  // Move assignment
+  // Move assignment.
   DoublyLinkedList<int> list3;
   list3.push_back(99);
   list3.push_back(100);
@@ -271,7 +286,9 @@ void demo_move_semantics() {
   print_list(list3, "list3 (should have list2's data)");
 }
 
-// Demo: Clear and reuse
+//===------------------------------- CLEAR DEMO --------------------------------===//
+
+// Demo: Clear and reuse.
 void demo_clear() {
   cout << "\n========== Demo: Clear and Reuse ==========\n";
 
@@ -285,14 +302,16 @@ void demo_clear() {
   cout << "\nAfter clear:\n";
   cout << "  Size: " << list.size() << ", Empty: " << (list.is_empty() ? "yes" : "no") << "\n";
 
-  // Reuse after clear
+  // Reuse after clear.
   cout << "\nReusing list after clear:\n";
   list.push_back(100);
   list.push_back(200);
   print_list(list, "after reuse");
 }
 
-// Demo: Exception handling
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Demo: Exception handling.
 void demo_exceptions() {
   cout << "\n========== Demo: Exception Handling ==========\n";
 
@@ -333,11 +352,13 @@ void demo_exceptions() {
   }
 }
 
-// Demo: Edge cases
+//===----------------------------- EDGE CASES DEMO -----------------------------===//
+
+// Demo: Edge cases.
 void demo_edge_cases() {
   cout << "\n========== Demo: Edge Cases ==========\n";
 
-  // Single element list
+  // Single element list.
   DoublyLinkedList<int> single;
   single.push_back(42);
   cout << "Single element list:\n";
@@ -345,12 +366,12 @@ void demo_edge_cases() {
   cout << "  Front: " << single.front() << ", Back: " << single.back() << "\n";
   cout << "  Front == Back? " << (single.front() == single.back() ? "yes" : "no") << "\n";
 
-  // Pop from single element list
+  // Pop from single element list.
   single.pop_back();
   cout << "\nAfter popping single element:\n";
   cout << "  Size: " << single.size() << ", Empty: " << (single.is_empty() ? "yes" : "no") << "\n";
 
-  // Large list
+  // Large list.
   cout << "\nLarge list test (1000 elements):\n";
   DoublyLinkedList<int> large;
   for (int i = 0; i < 1000; ++i) {
@@ -362,6 +383,8 @@ void demo_edge_cases() {
   large.reverse();
   cout << "  After reverse - Front: " << large.front() << ", Back: " << large.back() << "\n";
 }
+
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   try {
@@ -392,3 +415,5 @@ auto main() -> int {
 
   return 0;
 }
+
+//===--------------------------------------------------------------------------===//

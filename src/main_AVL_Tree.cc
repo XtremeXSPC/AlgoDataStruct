@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_AVL_Tree.cc
  * @author Costantino Lombardi
@@ -8,10 +8,10 @@
  *
  * @copyright MIT License 2025
  *
- * This program demonstrates the usage of the AVL Tree data structure,
- * showcasing its self-balancing properties through various rotations.
+ * This program demonstrates the usage of the AVL Tree data structure,showcasing its
+ * self-balancing properties through various rotations.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
 #include <iostream>
@@ -29,10 +29,11 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::trees::AVLTree;
-using ads::trees::BinarySearchTree;
+using namespace ads::trees;
 
-// Helper function to print tree contents via in-order traversal
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print tree contents via in-order traversal.
 template <typename T>
 void print_avl_tree(const AVLTree<T>& tree, const string& name) {
   cout << "AVL Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height()
@@ -48,13 +49,15 @@ void print_avl_tree(const AVLTree<T>& tree, const string& name) {
   cout << '\n';
 }
 
-// Test basic insertion and traversals
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Test basic insertion and traversals.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations ==========\n";
 
   AVLTree<int> avl;
 
-  // Test insertion
+  // Test insertion.
   cout << "Inserting values: 50, 30, 70, 20, 40, 60, 80\n";
   avl.insert(50);
   avl.insert(30);
@@ -66,7 +69,7 @@ void demo_basic_operations() {
 
   print_avl_tree(avl, "avl");
 
-  // Test different traversals
+  // Test different traversals.
   cout << "\nDifferent traversals:\n";
 
   cout << "  Pre-order:  ";
@@ -81,14 +84,16 @@ void demo_basic_operations() {
   avl.level_order_traversal([](const int& value) -> void { cout << value << " "; });
   cout << '\n';
 
-  // Test duplicates
+  // Test duplicates.
   cout << "\nTrying to insert duplicate (40): ";
   bool inserted = avl.insert(40);
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
   print_avl_tree(avl, "avl after duplicate attempt");
 }
 
-// Test Left-Left (LL) rotation
+//===----------------------------- ROTATION DEMOS ------------------------------===//
+
+// Test Left-Left (LL) rotation.
 void demo_ll_rotation() {
   cout << "\n========== Demo: Left-Left (LL) Rotation ==========\n";
 
@@ -114,7 +119,7 @@ void demo_ll_rotation() {
   cout << "  10  30\n\n";
 }
 
-// Test Right-Right (RR) rotation
+// Test Right-Right (RR) rotation.
 void demo_rr_rotation() {
   cout << "\n========== Demo: Right-Right (RR) Rotation ==========\n";
 
@@ -140,7 +145,7 @@ void demo_rr_rotation() {
   cout << "  10  30\n\n";
 }
 
-// Test Left-Right (LR) rotation
+// Test Left-Right (LR) rotation.
 void demo_lr_rotation() {
   cout << "\n========== Demo: Left-Right (LR) Rotation ==========\n";
 
@@ -166,7 +171,7 @@ void demo_lr_rotation() {
   cout << "  10  30\n\n";
 }
 
-// Test Right-Left (RL) rotation
+// Test Right-Left (RL) rotation.
 void demo_rl_rotation() {
   cout << "\n========== Demo: Right-Left (RL) Rotation ==========\n";
 
@@ -192,13 +197,15 @@ void demo_rl_rotation() {
   cout << "  10  30\n\n";
 }
 
-// Test search operations
+//===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
+
+// Test search operations.
 void demo_search_operations() {
   cout << "\n========== Demo: Search Operations ==========\n";
 
   AVLTree<int> avl;
 
-  // Build a tree
+  // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     avl.insert(val);
@@ -206,24 +213,26 @@ void demo_search_operations() {
 
   print_avl_tree(avl, "avl");
 
-  // Test contains
+  // Test contains.
   cout << "\nTesting contains():\n";
   cout << "  Contains 40? " << (avl.contains(40) ? "Yes" : "No") << '\n';
   cout << "  Contains 100? " << (avl.contains(100) ? "Yes" : "No") << '\n';
 
-  // Test min/max
+  // Test min/max.
   cout << "\nTesting find_min() and find_max():\n";
   cout << "  Minimum: " << avl.find_min() << '\n';
   cout << "  Maximum: " << avl.find_max() << '\n';
 }
 
-// Test remove operations
+//===---------------------------- REMOVE OPERATIONS ----------------------------===//
+
+// Test remove operations.
 void demo_remove_operations() {
   cout << "\n========== Demo: Remove Operations ==========\n";
 
   AVLTree<int> avl;
 
-  // Build a tree
+  // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 65, 75, 90};
   for (int val : values) {
     avl.insert(val);
@@ -231,32 +240,34 @@ void demo_remove_operations() {
 
   print_avl_tree(avl, "avl before removals");
 
-  // Remove leaf node
+  // Remove leaf node.
   cout << "\nRemoving leaf node (10):\n";
   avl.remove(10);
   print_avl_tree(avl, "avl after removing 10");
   cout << "Still balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 
-  // Remove node with one child
+  // Remove node with one child.
   cout << "\nRemoving node with one child (90):\n";
   avl.remove(90);
   print_avl_tree(avl, "avl after removing 90");
   cout << "Still balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 
-  // Remove node with two children
+  // Remove node with two children.
   cout << "\nRemoving node with two children (30):\n";
   avl.remove(30);
   print_avl_tree(avl, "avl after removing 30");
   cout << "Still balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 
-  // Remove root
+  // Remove root.
   cout << "\nRemoving root node (50):\n";
   avl.remove(50);
   print_avl_tree(avl, "avl after removing root");
   cout << "Still balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 }
 
-// Test iterator
+//===------------------------------ ITERATOR DEMO ------------------------------===//
+
+// Test iterator.
 void demo_iterator() {
   cout << "\n========== Demo: Iterator ==========\n";
 
@@ -274,7 +285,9 @@ void demo_iterator() {
   cout << '\n';
 }
 
-// Test move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -286,13 +299,13 @@ void demo_move_semantics() {
   cout << "Original tree:\n";
   print_avl_tree(avl1, "avl1");
 
-  // Move constructor
+  // Move constructor.
   AVLTree<int> avl2(std::move(avl1));
   cout << "\nAfter move construction:\n";
   print_avl_tree(avl2, "avl2");
   cout << "avl1 size after move: " << avl1.size() << " (should be 0)\n";
 
-  // Move assignment
+  // Move assignment.
   AVLTree<int> avl3;
   avl3 = std::move(avl2);
   cout << "\nAfter move assignment:\n";
@@ -300,7 +313,9 @@ void demo_move_semantics() {
   cout << "avl2 size after move: " << avl2.size() << " (should be 0)\n";
 }
 
-// Test with large sorted sequence (worst case for unbalanced BST)
+//===-------------------------- SORTED SEQUENCE DEMO ---------------------------===//
+
+// Test with large sorted sequence (worst case for unbalanced BST).
 void demo_sorted_sequence() {
   cout << "\n========== Demo: Sorted Sequence (AVL vs BST) ==========\n";
 
@@ -310,7 +325,7 @@ void demo_sorted_sequence() {
   const int N = 1000;
   cout << "Inserting sorted sequence from 1 to " << N << "\n\n";
 
-  // Insert into both trees
+  // Insert into both trees.
   for (int i = 1; i <= N; ++i) {
     avl.insert(i);
     bst.insert(i);
@@ -329,13 +344,15 @@ void demo_sorted_sequence() {
   cout << "This demonstrates why balancing is crucial!\n";
 }
 
-// Performance test: AVL vs BST
+//===------------------------- PERFORMANCE COMPARISON --------------------------===//
+
+// Performance test: AVL vs BST.
 void demo_performance() {
   cout << "\n========== Demo: Performance Comparison ==========\n";
 
   const int N = 10000;
 
-  // Random number generator
+  // Random number generator.
   std::random_device              rd;
   std::mt19937                    gen(rd());
   std::uniform_int_distribution<> dis(1, N * 10);
@@ -346,7 +363,7 @@ void demo_performance() {
     random_values.push_back(dis(gen));
   }
 
-  // Test AVL Tree
+  // Test AVL Tree.
   auto start = std::chrono::high_resolution_clock::now();
 
   AVLTree<int> avl;
@@ -362,7 +379,7 @@ void demo_performance() {
   cout << "  Height:  " << avl.height() << '\n';
   cout << "  Balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 
-  // Test BST
+  // Test BST.
   start = std::chrono::high_resolution_clock::now();
 
   BinarySearchTree<int> bst;
@@ -381,13 +398,15 @@ void demo_performance() {
   cout << "but AVL guarantees O(log n) even in the worst case.\n";
 }
 
-// Test edge cases
+//===----------------------------- EDGE CASES DEMO -----------------------------===//
+
+// Test edge cases.
 void demo_edge_cases() {
   cout << "\n========== Demo: Edge Cases ==========\n";
 
   AVLTree<int> avl;
 
-  // Test operations on empty tree
+  // Test operations on empty tree.
   cout << "Testing operations on empty tree:\n";
   cout << "  is_empty(): " << (avl.is_empty() ? "true" : "false") << '\n';
   cout << "  size(): " << avl.size() << '\n';
@@ -396,7 +415,7 @@ void demo_edge_cases() {
   cout << "  contains(42): " << (avl.contains(42) ? "true" : "false") << '\n';
   cout << "  remove(42): " << (avl.remove(42) ? "true" : "false") << '\n';
 
-  // Test find_min/max on empty tree
+  // Test find_min/max on empty tree.
   cout << "\nTesting find_min() on empty tree (should throw):\n";
   try {
     [[maybe_unused]] auto min_val = avl.find_min();
@@ -405,12 +424,12 @@ void demo_edge_cases() {
     cout << "  Caught exception: " << e.what() << '\n';
   }
 
-  // Test single element
+  // Test single element.
   cout << "\nTesting single element:\n";
   avl.insert(42);
   print_avl_tree(avl, "avl with single element");
 
-  // Test clear
+  // Test clear.
   cout << "\nTesting clear():\n";
   [[maybe_unused]] bool inserted1 = avl.insert(10);
   [[maybe_unused]] bool inserted2 = avl.insert(20);
@@ -419,6 +438,8 @@ void demo_edge_cases() {
   avl.clear();
   cout << "After clear: size=" << avl.size() << ", is_empty=" << avl.is_empty() << '\n';
 }
+
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
@@ -452,4 +473,4 @@ auto main() -> int {
   }
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

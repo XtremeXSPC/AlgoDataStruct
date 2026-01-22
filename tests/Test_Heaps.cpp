@@ -16,7 +16,7 @@
 #include "../include/ads/heaps/Max_Heap.hpp"
 #include "../include/ads/heaps/Min_Heap.hpp"
 
-using namespace ads::heap;
+using namespace ads::heaps;
 
 // ==================== MinHeap Tests ==================== //
 

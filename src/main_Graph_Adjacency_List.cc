@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Graph_Adjacency_List.cc
  * @author Costantino Lombardi
@@ -9,11 +9,12 @@
  * @copyright MIT License 2025
  *
  * This program demonstrates the usage of the GraphAdjacencyList data structure,
-  * showcasing its construction, vertex/edge management, and traversal algorithms.
+ * showcasing its construction, vertex/edge management, and traversal algorithms.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -28,6 +29,9 @@ using std::vector;
 
 using namespace ads::graphs;
 
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Print a separator with title.
 void print_separator(const string& title) {
   cout << "\n=====---------- " << title << " ----------=====\n";
 }
@@ -41,25 +45,29 @@ void print_vector(const vector<T>& vec, const string& prefix = "") {
   cout << '\n';
 }
 
-//========== BASIC DEMOS ==========//
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
+// Test construction and basic properties.
 void demo_graph_construction() {
   print_separator("Graph - Construction and Basic Properties");
 
-  // Undirected graph
+  // Undirected graph.
   GraphAdjacencyList<int> g_undirected(false);
   cout << "Created undirected graph\n";
-  cout << "Empty: " << std::boolalpha << g_undirected.is_empty() << '\n';
-  cout << "Directed: " << g_undirected.is_directed() << '\n';
+  cout << std::format("Empty: {}\n", g_undirected.is_empty());
+  cout << std::format("Directed: {}\n", g_undirected.is_directed());
   cout << "Vertices: " << g_undirected.num_vertices() << '\n';
   cout << "Edges: " << g_undirected.num_edges() << '\n';
 
-  // Directed graph
+  // Directed graph.
   GraphAdjacencyList<int> g_directed(true);
   cout << "\nCreated directed graph\n";
   cout << "Directed: " << g_directed.is_directed() << '\n';
 }
 
+//===----------------------- VERTEX AND EDGE OPERATIONS ------------------------===//
+
+// Test adding vertices.
 void demo_graph_add_vertices() {
   print_separator("Graph - Adding Vertices");
 
@@ -77,10 +85,11 @@ void demo_graph_add_vertices() {
   cout << "Vertex 2 data: " << graph.get_vertex_data(v2) << '\n';
   cout << "Vertex 3 data: " << graph.get_vertex_data(v3) << '\n';
 
-  cout << "\nHas vertex 0: " << std::boolalpha << graph.has_vertex(v0) << '\n';
-  cout << "Has vertex 10: " << graph.has_vertex(10) << '\n';
+  cout << std::format("\nHas vertex 0: {}\n", graph.has_vertex(v0));
+  cout << std::format("Has vertex 10: {}\n", graph.has_vertex(10));
 }
 
+// Test adding edges in undirected graph.
 void demo_graph_add_edges_undirected() {
   print_separator("Graph - Adding Edges (Undirected)");
 
@@ -105,9 +114,9 @@ void demo_graph_add_edges_undirected() {
   cout << "Number of edges: " << graph.num_edges() << '\n';
 
   cout << "\nEdge checks:\n";
-  cout << "Has edge 0->1: " << std::boolalpha << graph.has_edge(v0, v1) << '\n';
-  cout << "Has edge 1->0: " << graph.has_edge(v1, v0) << " (undirected)\n";
-  cout << "Has edge 0->3: " << graph.has_edge(v0, v3) << '\n';
+  cout << std::format("Has edge 0->1: {}\n", graph.has_edge(v0, v1));
+  cout << std::format("Has edge 1->0: {} (undirected)\n", graph.has_edge(v1, v0));
+  cout << std::format("Has edge 0->3: {}\n", graph.has_edge(v0, v3));
 
   cout << "\nEdge weights:\n";
   auto w1 = graph.get_edge_weight(v0, v1);
@@ -121,6 +130,7 @@ void demo_graph_add_edges_undirected() {
   }
 }
 
+// Test adding edges in directed graph.
 void demo_graph_add_edges_directed() {
   print_separator("Graph - Adding Edges (Directed)");
 
@@ -146,12 +156,15 @@ void demo_graph_add_edges_directed() {
   cout << "Number of edges: " << graph.num_edges() << '\n';
 
   cout << "\nEdge checks (directed):\n";
-  cout << "Has edge 0->1: " << std::boolalpha << graph.has_edge(v0, v1) << '\n';
-  cout << "Has edge 1->0: " << graph.has_edge(v1, v0) << " (reverse)\n";
-  cout << "Has edge 1->3: " << graph.has_edge(v1, v3) << '\n';
-  cout << "Has edge 3->1: " << graph.has_edge(v3, v1) << " (reverse)\n";
+  cout << std::format("Has edge 0->1: {}\n", graph.has_edge(v0, v1));
+  cout << std::format("Has edge 1->0: {} (reverse)\n", graph.has_edge(v1, v0));
+  cout << std::format("Has edge 1->3: {}\n", graph.has_edge(v1, v3));
+  cout << std::format("Has edge 3->1: {} (reverse)\n", graph.has_edge(v3, v1));
 }
 
+//===----------------------- NEIGHBORS AND REMOVAL DEMO ------------------------===//
+
+// Test getting neighbors.
 void demo_graph_neighbors() {
   print_separator("Graph - Getting Neighbors");
 
@@ -183,6 +196,9 @@ void demo_graph_neighbors() {
   }
 }
 
+//===------------------------- REMOVAL OPERATIONS DEMO -------------------------===//
+
+// Test removing edges.
 void demo_graph_remove_edge() {
   print_separator("Graph - Removing Edges");
 
@@ -197,25 +213,26 @@ void demo_graph_remove_edge() {
   graph.add_edge(v0, v2);
 
   cout << "Initial graph: " << graph.num_edges() << " edges\n";
-  cout << "Has edge 0->1: " << std::boolalpha << graph.has_edge(v0, v1) << '\n';
+  cout << std::format("Has edge 0->1: {}\n", graph.has_edge(v0, v1));
 
   graph.remove_edge(v0, v1);
   cout << "\nAfter removing edge 0->1:\n";
   cout << "Number of edges: " << graph.num_edges() << '\n';
-  cout << "Has edge 0->1: " << graph.has_edge(v0, v1) << '\n';
-  cout << "Has edge 1->0: " << graph.has_edge(v1, v0) << " (undirected)\n";
+  cout << std::format("Has edge 0->1: {}\n", graph.has_edge(v0, v1));
+  cout << std::format("Has edge 1->0: {} (undirected)\n", graph.has_edge(v1, v0));
 }
 
-//========== TRAVERSAL ALGORITHM DEMOS ==========//
+//===------------------------- REMOVAL OPERATIONS DEMO -------------------------===//
 
+// Test removing vertices.
 void demo_graph_bfs() {
   print_separator("Graph - Breadth-First Search (BFS)");
 
   GraphAdjacencyList<int> graph(false);
 
-  // Create a more complex graph
+  // Create a more complex graph:
   //     0 ---- 1 ---- 2
-  //     |     |       |
+  //     |      |      |
   //     3 ---- 4      5
 
   auto v0 = graph.add_vertex(0);
@@ -243,12 +260,15 @@ void demo_graph_bfs() {
   print_vector(bfs_result, "Traversal order: ");
 }
 
+//===------------------------- DEPTH-FIRST SEARCH DEMO -------------------------===//
+
+// Test depth-first search.
 void demo_graph_dfs() {
   print_separator("Graph - Depth-First Search (DFS)");
 
   GraphAdjacencyList<int> graph(false);
 
-  // Same graph as BFS test
+  // Same graph as BFS test.
   auto v0 = graph.add_vertex(0);
   auto v1 = graph.add_vertex(1);
   auto v2 = graph.add_vertex(2);
@@ -274,12 +294,15 @@ void demo_graph_dfs() {
   print_vector(dfs_result, "Traversal order: ");
 }
 
+//===---------------------------- PATH FINDING DEMO ----------------------------===//
+
+// Test path finding.
 void demo_graph_path_finding() {
   print_separator("Graph - Path Finding");
 
   GraphAdjacencyList<string> graph(false);
 
-  // Create a graph representing cities
+  // Create a graph representing cities.
   auto london    = graph.add_vertex("London");
   auto paris     = graph.add_vertex("Paris");
   auto berlin    = graph.add_vertex("Berlin");
@@ -287,7 +310,7 @@ void demo_graph_path_finding() {
   auto madrid    = graph.add_vertex("Madrid");
   auto amsterdam = graph.add_vertex("Amsterdam");
 
-  // Add connections
+  // Add connections.
   graph.add_edge(london, paris);
   graph.add_edge(london, amsterdam);
   graph.add_edge(paris, berlin);
@@ -324,10 +347,13 @@ void demo_graph_path_finding() {
   }
 
   cout << "\nConnectivity checks:\n";
-  cout << "London connected to Rome: " << std::boolalpha << graph.is_connected(london, rome) << '\n';
-  cout << "Madrid connected to Berlin: " << std::boolalpha << graph.is_connected(madrid, berlin) << '\n';
+  cout << std::format("London connected to Rome: {}\n", graph.is_connected(london, rome));
+  cout << std::format("Madrid connected to Berlin: {}\n", graph.is_connected(madrid, berlin));
 }
 
+//===------------------------ CONNECTED COMPONENTS DEMO ------------------------===//
+
+// Test connected components.
 void demo_graph_connected_components() {
   print_separator("Graph - Connected Components");
 
@@ -358,6 +384,9 @@ void demo_graph_connected_components() {
   }
 }
 
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_graph_move_semantics() {
   print_separator("Graph - Move Semantics");
 
@@ -374,7 +403,7 @@ void demo_graph_move_semantics() {
   GraphAdjacencyList<int> graph2(std::move(graph1));
 
   cout << "Graph2: " << graph2.num_vertices() << " vertices, " << graph2.num_edges() << " edges\n";
-  cout << "Graph1 after move: " << graph1.num_vertices() << " vertices\n";
+  cout << "Graph1 after move: (moved-from state)\n";
 
   GraphAdjacencyList<int> graph3(false);
   cout << "\nMoving graph2 to graph3 (move assignment)...\n";
@@ -383,6 +412,9 @@ void demo_graph_move_semantics() {
   cout << "Graph3: " << graph3.num_vertices() << " vertices, " << graph3.num_edges() << " edges\n";
 }
 
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Test exception handling.
 void demo_graph_exception_handling() {
   print_separator("Graph - Exception Handling");
 
@@ -412,8 +444,9 @@ void demo_graph_exception_handling() {
   }
 }
 
-//========== PERFORMANCE DEMOS ==========//
+//===---------------------------- PERFORMANCE DEMO -----------------------------===//
 
+// Test performance on large graph.
 void demo_graph_large_performance() {
   print_separator("Graph - Large Dataset Performance");
 
@@ -435,7 +468,7 @@ void demo_graph_large_performance() {
   start = std::chrono::high_resolution_clock::now();
 
   for (size_t i = 0; i < N; ++i) {
-    // Connect each vertex to 5 neighbors
+    // Connect each vertex to 5 neighbors.
     for (size_t j = 1; j <= 5; ++j) {
       if (i + j < N) {
         graph.add_edge(i, i + j);
@@ -469,15 +502,15 @@ void demo_graph_large_performance() {
   cout << "Vertices visited: " << dfs_result.size() << '\n';
 }
 
-//========== MAIN ==========//
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
-int main() {
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "        GRAPH ADJACENCY LIST - EXAMPLES FOR TESTING         \n";
   cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
-    // Basic tests
+    // Basic tests.
     demo_graph_construction();
     demo_graph_add_vertices();
     demo_graph_add_edges_undirected();
@@ -485,17 +518,17 @@ int main() {
     demo_graph_neighbors();
     demo_graph_remove_edge();
 
-    // Traversal algorithm tests
+    // Traversal algorithm tests.
     demo_graph_bfs();
     demo_graph_dfs();
     demo_graph_path_finding();
     demo_graph_connected_components();
 
-    // Advanced tests
+    // Advanced tests.
     demo_graph_move_semantics();
     demo_graph_exception_handling();
 
-    // Performance tests
+    // Performance tests.
     demo_graph_large_performance();
 
     cout << "\n";
@@ -510,4 +543,5 @@ int main() {
 
   return 0;
 }
+
 //===--------------------------------------------------------------------------===//
