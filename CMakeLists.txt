@@ -327,9 +327,29 @@ endfunction()
 # ----------------------------- Main Test Executables ----------------------------- #
 # These are the actual test programs that exercise the data structures library.
 
-# AVL Tree test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_AVL_Tree.cc")
-    ads_add_executable(test_AVL src/main_AVL_Tree.cc)
+# Singly Linked List test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
+    ads_add_executable(test_Singly__Linked_List src/main_Singly_Linked_List.cc)
+endif()
+
+# Linked Lists test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Doubly_Linked_List.cc")
+    ads_add_executable(test_Doubly__Linked_List src/main_Doubly_Linked_List.cc)
+endif()
+
+# Stacks and Queues test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
+    ads_add_executable(test_Stacks_Queues src/main_Stacks_Queues.cc)
+endif()
+
+# Priority Queue test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
+    ads_add_executable(test_Priority_Queue src/main_Priority_Queue.cc)
+endif()
+
+# Binary Search Tree test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Binary_Search_Tree.cc")
+    ads_add_executable(test_BST src/main_Binary_Search_Tree.cc)
 endif()
 
 # Binary B-Tree test.
@@ -337,9 +357,19 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_B_Tree.cc")
     ads_add_executable(test_BBT src/main_B_Tree.cc)
 endif()
 
-# Binary Search Tree test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Binary_Search_Tree.cc")
-    ads_add_executable(test_BST src/main_Binary_Search_Tree.cc)
+# AVL Tree test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_AVL_Tree.cc")
+    ads_add_executable(test_AVL src/main_AVL_Tree.cc)
+endif()
+
+# Red Black Tree test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Red_Black_Tree.cc")
+    ads_add_executable(test_RBT src/main_Red_Black_Tree.cc)
+endif()
+
+# Trie test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
+    ads_add_executable(test_Trie src/main_Trie.cc)
 endif()
 
 # Dijkstra Integration test (Graph + PriorityQueue).
@@ -377,36 +407,6 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Heaps.cc")
     ads_add_executable(test_Heaps src/main_Heaps.cc)
 endif()
 
-# Linked Lists test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Linked_Lists.cc")
-    ads_add_executable(test_Lists src/main_Linked_Lists.cc)
-endif()
-
-# Priority Queue test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
-    ads_add_executable(test_Priority_Queue src/main_Priority_Queue.cc)
-endif()
-
-# Red Black Tree test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Red_Black_Tree.cc")
-    ads_add_executable(test_RBT src/main_Red_Black_Tree.cc)
-endif()
-
-# Singly Linked List test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
-    ads_add_executable(test_Singly_List src/main_Singly_Linked_List.cc)
-endif()
-
-# Stacks and Queues test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
-    ads_add_executable(test_Stacks_Queues src/main_Stacks_Queues.cc)
-endif()
-
-# Trie test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
-    ads_add_executable(test_Trie src/main_Trie.cc)
-endif()
-
 # ---------------------------- GoogleTest Integration ----------------------------- #
 # GoogleTest support is optional and disabled by default.
 # Enable it with: cmake -DENABLE_TESTING=ON ...
@@ -434,11 +434,11 @@ if(ENABLE_TESTING)
     set(TEST_SOURCES "")
 
     # Add test files if they exist.
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
-        list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
-    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_SinglyLinkedList.cpp")
         list(APPEND TEST_SOURCES tests/Test_SinglyLinkedList.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
+      list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BinarySearchTree.cpp")
         list(APPEND TEST_SOURCES tests/Test_BinarySearchTree.cpp)

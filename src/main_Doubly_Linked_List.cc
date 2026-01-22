@@ -1,6 +1,6 @@
 //===--------------------------------------------------------------------------===//
 /**
- * @file main_Linked_Lists.cc
+ * @file main_Doubly_Linked_List.cc
  * @author Costantino Lombardi
  * @brief Comprehensive demo program for DoublyLinkedList implementation.
  * @version 0.2
