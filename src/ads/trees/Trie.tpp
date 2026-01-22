@@ -29,12 +29,7 @@ auto Trie<UseMap>::TrieNode::has_children() const -> bool {
   if constexpr (UseMap) {
     return !children.empty();
   } else {
-    for (const auto& child : children) {
-      if (child != nullptr) {
-        return true;
-      }
-    }
-    return false;
+    return std::ranges::any_of(children, [](const auto& child) { return child != nullptr; });
   }
 }
 
