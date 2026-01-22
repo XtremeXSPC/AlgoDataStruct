@@ -15,6 +15,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include <atomic>
 #include <chrono>
 #include <format>
 #include <iostream>
@@ -165,6 +166,43 @@ void demo_matrix_connected_components() {
 
 //===------------------------- PERFORMANCE COMPARISON --------------------------===//
 
+// Measure edge lookup time.
+template <typename GraphType>
+auto measure_edge_lookup(GraphType& graph, size_t N, std::atomic<size_t>& count) -> long long {
+  auto start = std::chrono::high_resolution_clock::now();
+  for (size_t i = 0; i < N && i < 10000; ++i) {
+    for (size_t j = 0; j < 10 && j < N; ++j) {
+      if (graph.has_edge(i, j))
+        count.fetch_add(1, std::memory_order_relaxed);
+    }
+  }
+  auto end = std::chrono::high_resolution_clock::now();
+  return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+}
+
+// Measure BFS time.
+template <typename GraphType>
+auto measure_bfs(GraphType& graph) -> std::pair<long long, size_t> {
+  auto start  = std::chrono::high_resolution_clock::now();
+  auto result = graph.bfs(0);
+  auto end    = std::chrono::high_resolution_clock::now();
+  auto time   = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  return {time, result.size()};
+}
+
+// Measure neighbor iteration time.
+template <typename GraphType>
+auto measure_neighbor_iteration(GraphType& graph, size_t N, std::atomic<size_t>& count) -> long long {
+  auto start = std::chrono::high_resolution_clock::now();
+  for (size_t i = 0; i < 100 && i < N; ++i) {
+    auto neighbors = graph.get_neighbors(i);
+    count.fetch_add(neighbors.size(), std::memory_order_relaxed);
+  }
+  auto end = std::chrono::high_resolution_clock::now();
+  return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+}
+
+// Compare performance between adjacency list and matrix.
 void compare_performance() {
   print_separator("Performance Comparison - List vs Matrix");
 
@@ -174,7 +212,7 @@ void compare_performance() {
   GraphAdjacencyList<int>   list_graph(false);
   GraphAdjacencyMatrix<int> matrix_graph(false);
 
-  // Add vertices
+  // Add vertices.
   cout << "Adding " << N << " vertices...\n";
   for (size_t i = 0; i < N; ++i) {
     list_graph.add_vertex(static_cast<int>(i));
@@ -195,35 +233,12 @@ void compare_performance() {
   // Test 1: Edge lookup.
   cout << "\n[Test 1] Edge lookup (checking 10000 edges):\n";
 
-  auto start = std::chrono::high_resolution_clock::now();
-
-  volatile size_t count = 0;
-  for (size_t i = 0; i < N && i < 10000; ++i) {
-    for (size_t j = 0; j < 10 && j < N; ++j) {
-      if (list_graph.has_edge(i, j))
-        count = count + 1;
-    }
-  }
-
-  auto end = std::chrono::high_resolution_clock::now();
-
-  // Measure time.
-  auto list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  std::atomic<size_t> count{0};
+  auto                list_time = measure_edge_lookup(list_graph, N, count);
   cout << "  List:   " << list_time << " µs (O(degree) lookup)\n";
 
-  // Matrix lookup.
-  start = std::chrono::high_resolution_clock::now();
-  count = 0;
-  for (size_t i = 0; i < N && i < 10000; ++i) {
-    for (size_t j = 0; j < 10 && j < N; ++j) {
-      if (matrix_graph.has_edge(i, j))
-        count = count + 1;
-    }
-  }
-  end = std::chrono::high_resolution_clock::now();
-
-  // Measure time.
-  auto matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  count            = 0;
+  auto matrix_time = measure_edge_lookup(matrix_graph, N, count);
   cout << "  Matrix: " << matrix_time << " µs (O(1) lookup)\n";
   cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << " ("
        << (100.0 * std::abs(static_cast<double>(matrix_time) - static_cast<double>(list_time))
@@ -233,46 +248,25 @@ void compare_performance() {
   // Test 2: BFS.
   cout << "\n[Test 2] BFS traversal:\n";
 
-  start = std::chrono::high_resolution_clock::now();
+  auto [list_bfs_time, list_bfs_count] = measure_bfs(list_graph);
+  cout << "  List:   " << list_bfs_time << " µs (visited " << list_bfs_count << " vertices)\n";
 
-  auto list_bfs = list_graph.bfs(0);
+  auto [matrix_bfs_time, matrix_bfs_count] = measure_bfs(matrix_graph);
+  cout << "  Matrix: " << matrix_bfs_time << " µs (visited " << matrix_bfs_count << " vertices)\n";
 
-  end = std::chrono::high_resolution_clock::now();
-
-  list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  cout << "  List:   " << list_time << " µs (visited " << list_bfs.size() << " vertices)\n";
-
-  start = std::chrono::high_resolution_clock::now();
-
-  auto matrix_bfs = matrix_graph.bfs(0);
-
-  end = std::chrono::high_resolution_clock::now();
-
-  matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  cout << "  Matrix: " << matrix_time << " µs (visited " << matrix_bfs.size() << " vertices)\n";
+  list_time   = list_bfs_time;
+  matrix_time = matrix_bfs_time;
   cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
   // Test 3: Neighbor iteration.
   cout << "\n[Test 3] Iterating neighbors (first 100 vertices):\n";
 
-  start = std::chrono::high_resolution_clock::now();
-  for (size_t i = 0; i < 100 && i < N; ++i) {
-    auto neighbors = list_graph.get_neighbors(i);
-    count          = count + neighbors.size();
-  }
-  end = std::chrono::high_resolution_clock::now();
-
-  list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  count     = 0;
+  list_time = measure_neighbor_iteration(list_graph, N, count);
   cout << "  List:   " << list_time << " µs (O(degree) iteration)\n";
 
-  start = std::chrono::high_resolution_clock::now();
-  for (size_t i = 0; i < 100 && i < N; ++i) {
-    auto neighbors = matrix_graph.get_neighbors(i);
-    count          = count + neighbors.size();
-  }
-  end = std::chrono::high_resolution_clock::now();
-
-  matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  count       = 0;
+  matrix_time = measure_neighbor_iteration(matrix_graph, N, count);
   cout << "  Matrix: " << matrix_time << " µs (O(V) iteration)\n";
   cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
