@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Hash_Map.cc
  * @author Costantino Lombardi
@@ -11,8 +11,9 @@
  * This program demonstrates the usage of the HashMap data structure, showcasing
  * its insertion, access, iteration, and utility methods.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
+#include <format>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -27,10 +28,16 @@ using std::vector;
 
 using namespace ads::associative;
 
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Print a separator with title.
 void print_separator(const string& title) {
   cout << "\n=====---------- " << title << " ----------=====\n";
 }
 
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Test basic insertion and access.
 void demo_hashmap_basic() {
   print_separator("HashMap - Basic Operations");
 
@@ -46,10 +53,13 @@ void demo_hashmap_basic() {
   cout << "Bob's score: " << scores.at("Bob") << '\n';
 
   cout << "\nContains checks:\n";
-  cout << "Contains 'Alice': " << std::boolalpha << scores.contains("Alice") << '\n';
-  cout << "Contains 'David': " << scores.contains("David") << '\n';
+  cout << std::format("Contains 'Alice': {}\n", scores.contains("Alice"));
+  cout << std::format("Contains 'David': {}\n", scores.contains("David"));
 }
 
+//===----------------------------- ITERATION DEMO ------------------------------===//
+
+// Test iteration over entries.
 void demo_hashmap_iteration() {
   print_separator("HashMap - Range-Based For Loop");
 
@@ -66,6 +76,9 @@ void demo_hashmap_iteration() {
   }
 }
 
+//===----------------------- INSERTION AND EMPLACE DEMO ------------------------===//
+
+// Test insert and emplace methods.
 void demo_hashmap_insert_emplace() {
   print_separator("HashMap - Insert and Emplace");
 
@@ -88,6 +101,9 @@ void demo_hashmap_insert_emplace() {
   }
 }
 
+//===-------------------------- ERASE OPERATIONS DEMO --------------------------===//
+
+// Test erase method.
 void demo_hashmap_erase() {
   print_separator("HashMap - Erase Operations");
 
@@ -112,6 +128,9 @@ void demo_hashmap_erase() {
   }
 }
 
+//===-------------------------- UTILITY METHODS DEMO ---------------------------===//
+
+// Test keys, values, and entries methods.
 void demo_hashmap_utility_methods() {
   print_separator("HashMap - Utility Methods (keys, values, entries)");
 
@@ -143,6 +162,9 @@ void demo_hashmap_utility_methods() {
   }
 }
 
+//===------------------------ APPLICATION EXAMPLE DEMO -------------------------===//
+
+// Application: Word frequency counter.
 void demo_word_frequency() {
   print_separator("Application - Word Frequency Counter");
 
@@ -176,6 +198,9 @@ void demo_word_frequency() {
   cout << "  '" << most_frequent << "' appears " << max_count << " times\n";
 }
 
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_hashmap_move_semantics() {
   print_separator("HashMap - Move Semantics");
 
@@ -189,7 +214,6 @@ void demo_hashmap_move_semantics() {
   HashMap<int, string> map2(std::move(map1));
   cout << "After move to map2:\n";
   cout << "  Map2 size: " << map2.size() << '\n';
-  cout << "  Map1 size: " << map1.size() << '\n';
 
   HashMap<int, string> map3;
   map3 = std::move(map2);
@@ -197,7 +221,9 @@ void demo_hashmap_move_semantics() {
   cout << "  Map3 size: " << map3.size() << '\n';
 }
 
-int main() {
+//===------------------------------ MAIN FUNCTION ------------------------------===//
+
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "           HASH MAP - COMPREHENSIVE DEMO PROGRAM            \n";
   cout << "╚═══----------------------------------------------------═══╝\n";
@@ -223,4 +249,5 @@ int main() {
 
   return 0;
 }
+
 //===--------------------------------------------------------------------------===//

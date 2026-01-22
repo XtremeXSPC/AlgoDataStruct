@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Singly_Linked_List.cc
  * @author Costantino Lombardi
@@ -8,7 +8,7 @@
  *
  * This file is a quick visual demo, not a test suite. Unit tests live in /tests.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <exception>
 #include <iostream>
@@ -24,9 +24,11 @@ using std::exception;
 using std::string;
 using std::to_string;
 
-using ads::lists::ListException;
-using ads::lists::SinglyLinkedList;
+using namespace ads::lists;
 
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print the list contents.
 template <typename T>
 void print_list(const SinglyLinkedList<T>& list, const string& label) {
   cout << ANSI_CYAN << label << ANSI_RESET << " (size " << list.size() << "): ";
@@ -36,6 +38,9 @@ void print_list(const SinglyLinkedList<T>& list, const string& label) {
   cout << '\n';
 }
 
+//===----------------------------- DEMO FUNCTIONS ------------------------------===//
+
+// Basic push/pop demo.
 void demo_basics() {
   cout << ANSI_BOLD << ANSI_BLUE << "\n-- Basic push/pop --" << ANSI_RESET << '\n';
 
@@ -54,6 +59,9 @@ void demo_basics() {
   print_list(list, "After pop_front + pop_back");
 }
 
+//===------------------------ EMPLACE AND REVERSE DEMO -------------------------===//
+
+// Emplace and reverse demo.
 void demo_emplace_and_reverse() {
   cout << ANSI_BOLD << ANSI_BLUE << "\n-- Emplace and reverse --" << ANSI_RESET << '\n';
 
@@ -67,6 +75,9 @@ void demo_emplace_and_reverse() {
   print_list(words, "After reverse");
 }
 
+//===-------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Move semantics demo.
 void demo_move_semantics() {
   cout << ANSI_BOLD << ANSI_BLUE << "\n-- Move semantics --" << ANSI_RESET << '\n';
 
@@ -86,6 +97,9 @@ void demo_move_semantics() {
   print_list(assigned, "Moved (assignment)");
 }
 
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Test exception handling.
 void demo_exceptions() {
   cout << ANSI_BOLD << ANSI_BLUE << "\n-- Exception handling --" << ANSI_RESET << '\n';
 
@@ -96,6 +110,8 @@ void demo_exceptions() {
     cout << ANSI_YELLOW << "front() threw as expected: " << e.what() << ANSI_RESET << '\n';
   }
 }
+
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";

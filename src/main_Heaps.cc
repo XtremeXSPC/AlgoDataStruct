@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Heaps.cc
  * @author Costantino Lombardi
@@ -11,7 +11,7 @@
  * This program demonstrates the usage of the MinHeap and MaxHeap data structures,
  * showcasing their insertion, extraction, and utility methods.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <format>
 #include <iostream>
@@ -31,12 +31,16 @@ using std::vector;
 
 using namespace ads::heaps;
 
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Print a separator with title.
 void print_separator(const string& title) {
   cout << "\n=====---------- " << title << " ----------=====\n";
 }
 
-//========== MIN HEAP DEMOS ==========//
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
+// Min Heap basic operations.
 void demo_min_heap_basic() {
   print_separator("Min Heap - Basic Operations");
 
@@ -61,9 +65,12 @@ void demo_min_heap_basic() {
     cout << heap.extract_min() << ' ';
   }
   cout << '\n';
-  cout << "Heap is now empty: " << std::boolalpha << heap.is_empty() << '\n';
+  cout << std::format("Heap is now empty: {}\n", heap.is_empty());
 }
 
+//===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
+
+// Min Heap construction from vector.
 void demo_min_heap_from_vector() {
   print_separator("Min Heap - Construction from Vector");
 
@@ -85,6 +92,9 @@ void demo_min_heap_from_vector() {
   cout << '\n';
 }
 
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Min Heap move semantics.
 void demo_min_heap_move_semantics() {
   print_separator("Min Heap - Move Semantics");
 
@@ -111,6 +121,9 @@ void demo_min_heap_move_semantics() {
   cout << "Heap2 size after move: " << heap2.size() << '\n';
 }
 
+//===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+
+// Min Heap emplace operations.
 void demo_min_heap_emplace() {
   print_separator("Min Heap - Emplace Operations");
 
@@ -130,6 +143,9 @@ void demo_min_heap_emplace() {
   }
 }
 
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Min Heap exception handling.
 void demo_min_heap_exception_handling() {
   print_separator("Min Heap - Exception Handling");
 
@@ -150,6 +166,9 @@ void demo_min_heap_exception_handling() {
   }
 }
 
+//===--------------------------- LARGE DATASET DEMO ----------------------------===//
+
+// Min Heap large dataset test.
 void demo_min_heap_large() {
   print_separator("Min Heap - Large Dataset");
 
@@ -175,15 +194,16 @@ void demo_min_heap_large() {
   cout << "Size after clear: " << heap.size() << '\n';
 }
 
-//========== MAX HEAP DEMOS ==========//
+//===----------------------------- MAX HEAP DEMOS ------------------------------===//
 
+// Max Heap basic operations.
 void demo_max_heap_basic() {
   print_separator("Max Heap - Basic Operations");
 
   MaxHeap<int> heap;
 
-  cout << "Empty heap created. is_empty(): " << std::boolalpha << heap.is_empty() << '\n';
-  cout << "Size: " << heap.size() << ", Capacity: " << heap.capacity() << '\n';
+  cout << std::format("Empty heap created. is_empty(): {}\n", heap.is_empty());
+  cout << std::format("Size: {}, Capacity: {}\n", heap.size(), heap.capacity());
 
   cout << "\nInserting elements: 5, 3, 7, 1, 9, 2\n";
   heap.insert(5);
@@ -201,9 +221,12 @@ void demo_max_heap_basic() {
     cout << heap.extract_max() << ' ';
   }
   cout << '\n';
-  cout << "Heap is now empty: " << std::boolalpha << heap.is_empty() << '\n';
+  cout << std::format("Heap is now empty: {}\n", heap.is_empty());
 }
 
+//===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
+
+// Max Heap construction from vector.
 void demo_max_heap_from_vector() {
   print_separator("Max Heap - Construction from Vector");
 
@@ -225,6 +248,9 @@ void demo_max_heap_from_vector() {
   cout << '\n';
 }
 
+//===------------------------ HEAPSORT APPLICATION DEMO ------------------------===//
+
+// Max Heap heapsort application.
 void demo_max_heap_heapsort() {
   print_separator("Max Heap - Heapsort Application");
 
@@ -235,7 +261,7 @@ void demo_max_heap_heapsort() {
   }
   cout << '\n';
 
-  // Build max heap
+  // Build max heap.
   MaxHeap<int> heap(data);
 
   cout << "Sorted (ascending) using max heap:\n";
@@ -244,13 +270,16 @@ void demo_max_heap_heapsort() {
     sorted.push_back(heap.extract_max());
   }
 
-  // Reverse to get ascending order
+  // Reverse to get ascending order.
   for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
     cout << *it << ' ';
   }
   cout << '\n';
 }
 
+//===-------------------------- HEAP COMPARISON DEMO ---------------------------===//
+
+// Compare Min Heap and Max Heap.
 void demo_heap_comparison() {
   print_separator("Heap Comparison - Min vs Max");
 
@@ -281,13 +310,15 @@ void demo_heap_comparison() {
   cout << '\n';
 }
 
-int main() {
+//===------------------------------ MAIN FUNCTION ------------------------------===//
+
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "         MIN HEAP AND MAX HEAP - COMPREHENSIVE DEMO         \n";
   cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
-    // Min Heap tests
+    // Min Heap tests.
     demo_min_heap_basic();
     demo_min_heap_from_vector();
     demo_min_heap_move_semantics();
@@ -295,16 +326,17 @@ int main() {
     demo_min_heap_exception_handling();
     demo_min_heap_large();
 
-    // Max Heap tests
+    // Max Heap tests.
     demo_max_heap_basic();
     demo_max_heap_from_vector();
     demo_max_heap_heapsort();
 
-    // Comparison
+    // Comparison.
     demo_heap_comparison();
 
     print_separator("ALL DEMOS COMPLETED SUCCESSFULLY");
     return 0;
+
   } catch (const exception& e) {
     cerr << "\n!!! UNEXPECTED EXCEPTION !!!\n";
     cerr << "What: " << e.what() << '\n';

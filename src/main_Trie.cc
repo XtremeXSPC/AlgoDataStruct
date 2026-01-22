@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Trie.cc
  * @author Costantino Lombardi
@@ -11,7 +11,7 @@
  * This program demonstrates the usage of the Trie data structure, showcasing
  * prefix-based operations, autocomplete, and string manipulation.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
 #include <iostream>
@@ -28,7 +28,9 @@ using std::vector;
 
 using TrieType = ads::trees::Trie<>;
 
-// Helper function to print trie statistics
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print trie statistics.
 void print_trie_stats(const TrieType& trie, const string& name) {
   cout << "Trie '" << name << "' (size: " << trie.size() << "):\n";
 
@@ -51,7 +53,9 @@ void print_trie_stats(const TrieType& trie, const string& name) {
   cout << '\n';
 }
 
-// Demo: Basic operations
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Test basic insertion and search.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations ==========\n";
 
@@ -60,7 +64,7 @@ void demo_basic_operations() {
   cout << "Creating empty Trie...\n";
   cout << "  Size: " << trie.size() << ", Empty: " << (trie.is_empty() ? "yes" : "no") << "\n";
 
-  // Insert words
+  // Insert words.
   cout << "\nInserting words: hello, world, help, heap, hero\n";
   trie.insert("hello");
   trie.insert("world");
@@ -70,14 +74,14 @@ void demo_basic_operations() {
 
   print_trie_stats(trie, "trie");
 
-  // Search for words
+  // Search for words.
   cout << "\nSearching for words:\n";
   cout << "  Contains 'hello'? " << (trie.search("hello") ? "Yes" : "No") << '\n';
   cout << "  Contains 'help'? " << (trie.search("help") ? "Yes" : "No") << '\n';
   cout << "  Contains 'hel'? " << (trie.search("hel") ? "Yes" : "No") << " (prefix only)\n";
   cout << "  Contains 'helper'? " << (trie.search("helper") ? "Yes" : "No") << '\n';
 
-  // Duplicate insertion
+  // Duplicate insertion.
   cout << "\nTrying to insert duplicate 'hello': ";
   size_t before_size = trie.size();
   trie.insert("hello");
@@ -85,13 +89,15 @@ void demo_basic_operations() {
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-// Demo: Prefix operations
+//===------------------------- PREFIX OPERATIONS DEMO --------------------------===//
+
+// Test prefix operations.
 void demo_prefix_operations() {
   cout << "\n========== Demo: Prefix Operations ==========\n";
 
   TrieType trie;
 
-  // Insert words with common prefixes
+  // Insert words with common prefixes.
   vector<string> words = {"apple", "application", "apply", "apt", "banana", "band", "bandana"};
   for (const auto& word : words) {
     trie.insert(word);
@@ -99,14 +105,14 @@ void demo_prefix_operations() {
 
   print_trie_stats(trie, "trie");
 
-  // Test starts_with
+  // Test starts_with.
   cout << "\nTesting starts_with():\n";
   cout << "  Starts with 'app'? " << (trie.starts_with("app") ? "Yes" : "No") << '\n';
   cout << "  Starts with 'ban'? " << (trie.starts_with("ban") ? "Yes" : "No") << '\n';
   cout << "  Starts with 'cat'? " << (trie.starts_with("cat") ? "Yes" : "No") << '\n';
   cout << "  Starts with 'apple'? " << (trie.starts_with("apple") ? "Yes" : "No") << '\n';
 
-  // Get words with prefix
+  // Get words with prefix.
   cout << "\nWords starting with 'app':\n  ";
   auto app_words = trie.get_all_words_with_prefix("app");
   for (const auto& word : app_words) {
@@ -122,13 +128,15 @@ void demo_prefix_operations() {
   cout << '\n';
 }
 
-// Demo: Autocomplete functionality
+//===---------------------------- AUTOCOMPLETE DEMO ----------------------------===//
+
+// Test autocomplete functionality.
 void demo_autocomplete() {
   cout << "\n========== Demo: Autocomplete ==========\n";
 
   TrieType trie;
 
-  // Insert a vocabulary
+  // Insert a vocabulary.
   vector<string> vocabulary = {"car",   "card",     "care",   "careful",     "carefully", "careless",  "carpet", "carpool", "cat",
                                "catch", "category", "cattle", "celebration", "cell",      "cellphone", "center", "central"};
 
@@ -138,7 +146,7 @@ void demo_autocomplete() {
 
   cout << "Vocabulary loaded: " << trie.size() << " words\n";
 
-  // Simulate autocomplete
+  // Simulate autocomplete.
   auto autocomplete = [&trie](const string& prefix) {
     cout << "\nAutocomplete for '" << prefix << "':\n";
     auto suggestions = trie.get_all_words_with_prefix(prefix);
@@ -158,7 +166,9 @@ void demo_autocomplete() {
   autocomplete("xyz");
 }
 
-// Demo: Word counting
+//===--------------------------- WORD COUNTING DEMO ----------------------------===//
+
+// Test word counting with prefix.
 void demo_word_counting() {
   cout << "\n========== Demo: Word Counting ==========\n";
 
@@ -172,7 +182,7 @@ void demo_word_counting() {
 
   print_trie_stats(trie, "trie");
 
-  // Count words with prefix
+  // Count words with prefix.
   cout << "\nCounting words with prefix:\n";
   cout << "  Words starting with 'test': " << trie.count_words_with_prefix("test") << '\n';
   cout << "  Words starting with 'the': " << trie.count_words_with_prefix("the") << '\n';
@@ -180,7 +190,9 @@ void demo_word_counting() {
   cout << "  Words starting with 'xyz': " << trie.count_words_with_prefix("xyz") << '\n';
 }
 
-// Demo: Remove operations
+//===------------------------- REMOVE OPERATIONS DEMO --------------------------===//
+
+// Test remove operations.
 void demo_remove_operations() {
   cout << "\n========== Demo: Remove Operations ==========\n";
 
@@ -193,14 +205,14 @@ void demo_remove_operations() {
 
   print_trie_stats(trie, "original trie");
 
-  // Remove a word that's a prefix of another
+  // Remove a word that's a prefix of another.
   cout << "\nRemoving 'car' (prefix of 'card', 'care', 'careful'):\n";
   trie.remove("car");
   cout << "  Contains 'car'? " << (trie.search("car") ? "Yes" : "No") << '\n';
   cout << "  Contains 'card'? " << (trie.search("card") ? "Yes" : "No") << '\n';
   cout << "  Starts with 'car'? " << (trie.starts_with("car") ? "Yes" : "No") << '\n';
 
-  // Remove a longer word
+  // Remove a longer word.
   cout << "\nRemoving 'careful':\n";
   trie.remove("careful");
   cout << "  Contains 'careful'? " << (trie.search("careful") ? "Yes" : "No") << '\n';
@@ -209,7 +221,9 @@ void demo_remove_operations() {
   print_trie_stats(trie, "after removals");
 }
 
-// Demo: Move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -221,14 +235,14 @@ void demo_move_semantics() {
   cout << "Original trie:\n";
   print_trie_stats(trie1, "trie1");
 
-  // Move constructor
+  // Move constructor.
   TrieType trie2 = std::move(trie1);
 
   cout << "\nAfter move construction:\n";
   print_trie_stats(trie1, "trie1 (should be empty)");
   print_trie_stats(trie2, "trie2 (should have the data)");
 
-  // Move assignment
+  // Move assignment.
   TrieType trie3;
   trie3.insert("test");
 
@@ -242,7 +256,9 @@ void demo_move_semantics() {
   print_trie_stats(trie3, "trie3 (should have trie2's data)");
 }
 
-// Demo: Performance with large dataset
+//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+
+// Test performance.
 void demo_performance() {
   cout << "\n========== Demo: Performance ==========\n";
 
@@ -264,7 +280,7 @@ void demo_performance() {
   cout << "  Time: " << duration.count() << " ms\n";
   cout << "  Size: " << trie.size() << "\n";
 
-  // Search performance
+  // Search performance.
   cout << "\nSearching for all " << N << " words...\n";
   start = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < N; ++i) {
@@ -275,7 +291,7 @@ void demo_performance() {
 
   cout << "  Time: " << duration.count() << " ms\n";
 
-  // Prefix search performance
+  // Prefix search performance.
   cout << "\nSearching for words with prefix 'word1'...\n";
   start          = std::chrono::high_resolution_clock::now();
   auto word1_set = trie.get_all_words_with_prefix("word1");
@@ -286,7 +302,9 @@ void demo_performance() {
   cout << "  Found: " << word1_set.size() << " words\n";
 }
 
-// Demo: Case sensitivity
+//===------------------------- CASE SENSITIVITY DEMO --------------------------===//
+
+// Test case sensitivity.
 void demo_case_sensitivity() {
   cout << "\n========== Demo: Case Sensitivity ==========\n";
 
@@ -306,13 +324,15 @@ void demo_case_sensitivity() {
   cout << "  Contains 'HeLLo'? " << (trie.search("HeLLo") ? "Yes" : "No") << '\n';
 }
 
-// Demo: Edge cases
+//===----------------------------- EDGE CASES DEMO -----------------------------===//
+
+// Edge cases.
 void demo_edge_cases() {
   cout << "\n========== Demo: Edge Cases ==========\n";
 
   TrieType trie;
 
-  // Empty string
+  // Empty string.
   cout << "Testing empty string:\n";
   try {
     trie.insert("");
@@ -322,21 +342,21 @@ void demo_edge_cases() {
   }
   cout << "  Contains ''? " << (trie.search("") ? "Yes" : "No") << '\n';
 
-  // Single character words
+  // Single character words.
   cout << "\nSingle character words:\n";
   trie.insert("a");
   trie.insert("b");
   trie.insert("c");
   cout << "  Inserted 'a', 'b', 'c', size: " << trie.size() << '\n';
 
-  // Long word
+  // Long word.
   string long_word = "supercalifragilisticexpialidocious";
   cout << "\nLong word:\n";
   trie.insert(long_word);
   cout << "  Inserted '" << long_word << "'\n";
   cout << "  Contains it? " << (trie.search(long_word) ? "Yes" : "No") << '\n';
 
-  // Clear and reuse
+  // Clear and reuse.
   cout << "\nClearing and reusing trie:\n";
   trie.clear();
   cout << "  After clear - Size: " << trie.size() << ", Empty: " << (trie.is_empty() ? "yes" : "no") << '\n';
@@ -345,6 +365,8 @@ void demo_edge_cases() {
   trie.insert("words");
   print_trie_stats(trie, "trie after reuse");
 }
+
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   try {
@@ -374,3 +396,5 @@ auto main() -> int {
 
   return 0;
 }
+
+//===---------------------------------------------------------------------------===//

@@ -16,7 +16,7 @@
 #include "../include/ads/queues/Circular_Array_Queue.hpp"
 #include "../include/ads/queues/Linked_Queue.hpp"
 
-using namespace ads::queue;
+using namespace ads::queues;
 
 // ==================== CircularArrayQueue Tests ==================== //
 

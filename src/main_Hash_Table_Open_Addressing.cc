@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Hash_Table_Open_Addressing.cc
  * @author Costantino Lombardi
@@ -11,7 +11,7 @@
  * This program demonstrates the usage of the Hash Table with Open Addressing data
  * structure, showcasing its insertion, access, updates, and deletion operations.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
 #include <iostream>
@@ -29,12 +29,12 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::hash::HashTableChaining;
-using ads::hash::HashTableOpenAddressing;
-using ads::hash::ProbingStrategy;
+using namespace ads::hash;
 
-// Helper function to convert probing strategy to string
-string strategy_to_string(ProbingStrategy strategy) {
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to convert probing strategy to string.
+auto strategy_to_string(ProbingStrategy strategy) -> string {
   switch (strategy) {
   case ProbingStrategy::LINEAR:
     return "Linear Probing";
@@ -47,7 +47,7 @@ string strategy_to_string(ProbingStrategy strategy) {
   }
 }
 
-// Helper function to print hash table statistics
+// Helper function to print hash table statistics.
 template <typename Key, typename Value>
 void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string& name) {
   cout << "Hash Table '" << name << "':\n";
@@ -59,7 +59,9 @@ void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string&
   cout << "  Empty:       " << (table.is_empty() ? "Yes" : "No") << '\n';
 }
 
-// Test basic operations with linear probing
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Test basic operations with linear probing.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations (Linear Probing) ==========\n";
 
@@ -74,19 +76,21 @@ void demo_basic_operations() {
 
   print_stats(table, "after insertions");
 
-  // Test access
+  // Test access.
   cout << "\nAccessing values:\n";
   cout << "  table[1] = " << table.at(1) << '\n';
   cout << "  table[3] = " << table.at(3) << '\n';
   cout << "  table[5] = " << table.at(5) << '\n';
 
-  // Test contains
+  // Test contains.
   cout << "\nTesting contains():\n";
   cout << "  Contains 3? " << (table.contains(3) ? "Yes" : "No") << '\n';
   cout << "  Contains 10? " << (table.contains(10) ? "Yes" : "No") << '\n';
 }
 
-// Test all three probing strategies
+//===-------------------- DIFFERENT PROBING STRATEGIES DEMO --------------------===//
+
+// Test all three probing strategies.
 void demo_probing_strategies() {
   cout << "\n========== Demo: Different Probing Strategies ==========\n";
 
@@ -97,12 +101,12 @@ void demo_probing_strategies() {
 
     HashTableOpenAddressing<int, int> table(16, strategy, 0.5f);
 
-    // Insert some values
+    // Insert some values.
     for (int i = 0; i < 10; ++i) {
       table.insert(i, i * 10);
     }
 
-    // Verify all values
+    // Verify all values.
     cout << "  Inserted 10 values\n";
     bool all_found = true;
     for (int i = 0; i < 10; ++i) {
@@ -119,13 +123,15 @@ void demo_probing_strategies() {
   }
 }
 
-// Test tombstone handling (deleted slots)
+//===------------------------- TOMBSTONE HANDLING DEMO -------------------------===//
+
+// Test tombstone handling (deleted slots).
 void demo_tombstones() {
   cout << "\n========== Demo: Tombstone Handling ==========\n";
 
   HashTableOpenAddressing<int, string> table(8, ProbingStrategy::LINEAR, 0.5f);
 
-  // Insert values that will cause collisions
+  // Insert values that will cause collisions.
   cout << "Inserting colliding keys (0, 8, 16):\n";
   table.insert(0, "zero");
   table.insert(8, "eight");
@@ -133,19 +139,19 @@ void demo_tombstones() {
 
   cout << "  All 3 keys inserted\n";
 
-  // Delete middle element
+  // Delete middle element.
   cout << "\nDeleting middle element (key 8):\n";
   bool erased = table.erase(8);
   cout << "  Erase result: " << (erased ? "success" : "failed") << '\n';
 
-  // Verify we can still find the last element
+  // Verify we can still find the last element.
   cout << "\nVerifying key 16 is still accessible:\n";
   cout << "  Contains 16? " << (table.contains(16) ? "Yes (correct)" : "No (ERROR!)") << '\n';
   if (table.contains(16)) {
     cout << "  Value: " << table[16] << '\n';
   }
 
-  // Insert a new value at the tombstone location
+  // Insert a new value at the tombstone location.
   cout << "\nInserting new key 8 (should reuse tombstone slot):\n";
   table.insert(8, "new_eight");
   cout << "  table[8] = " << table[8] << '\n';
@@ -153,7 +159,9 @@ void demo_tombstones() {
   print_stats(table, "after tombstone operations");
 }
 
-// Test updates
+//===------------------------- UPDATE OPERATIONS DEMO --------------------------===//
+
+// Test updates.
 void demo_updates() {
   cout << "\n========== Demo: Updates ==========\n";
 
@@ -179,7 +187,9 @@ void demo_updates() {
   print_stats(table, "after updates");
 }
 
-// Test rehashing
+//===----------------------------- REHASHING DEMO ------------------------------===//
+
+// Test rehashing.
 void demo_rehashing() {
   cout << "\n========== Demo: Rehashing ==========\n";
 
@@ -198,7 +208,7 @@ void demo_rehashing() {
 
   print_stats(table, "after auto-rehash");
 
-  // Verify all values preserved
+  // Verify all values preserved.
   cout << "\nVerifying all values after rehashing:\n";
   bool all_found = true;
   for (int i = 1; i <= 20; ++i) {
@@ -212,11 +222,13 @@ void demo_rehashing() {
   }
 }
 
-// Test with high collision rate
+//===-------------------------- HIGH COLLISIONS DEMO ---------------------------===//
+
+// Test with high collision rate.
 void demo_high_collisions() {
   cout << "\n========== Demo: High Collision Rate ==========\n";
 
-  // Small capacity forces many collisions
+  // Small capacity forces many collisions.
   HashTableOpenAddressing<int, int> table(8, ProbingStrategy::LINEAR, 0.5f);
 
   cout << "Inserting 4 values into table with capacity 8:\n";
@@ -233,7 +245,9 @@ void demo_high_collisions() {
   print_stats(table, "with high collisions");
 }
 
-// Test reserve()
+//===------------------------------ RESERVE DEMO -------------------------------===//
+
+// Test reserve.
 void demo_reserve() {
   cout << "\n========== Demo: Reserve ==========\n";
 
@@ -245,7 +259,7 @@ void demo_reserve() {
   table.reserve(100);
   cout << "New capacity: " << table.capacity() << '\n';
 
-  // Insert many elements
+  // Insert many elements.
   for (int i = 0; i < 40; ++i) {
     table.insert(i, "value");
   }
@@ -254,14 +268,16 @@ void demo_reserve() {
   print_stats(table, "after reserve");
 }
 
-// Test exception handling
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Test exception handling.
 void demo_exceptions() {
   cout << "\n========== Demo: Exception Handling ==========\n";
 
   HashTableOpenAddressing<int, string> table;
   table.insert(1, "one");
 
-  // Test at() with non-existent key
+  // Test at() with non-existent key.
   cout << "Testing at() with non-existent key:\n";
   try {
     table.at(100);
@@ -270,7 +286,7 @@ void demo_exceptions() {
     cout << "  Caught exception: " << e.what() << '\n';
   }
 
-  // Test invalid max_load_factor
+  // Test invalid max_load_factor.
   cout << "\nTesting set_max_load_factor with invalid value (>= 1.0):\n";
   try {
     table.set_max_load_factor(1.5f);
@@ -288,7 +304,9 @@ void demo_exceptions() {
   }
 }
 
-// Test move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -300,13 +318,13 @@ void demo_move_semantics() {
   cout << "Original table:\n";
   print_stats(table1, "table1");
 
-  // Move constructor
+  // Move constructor.
   HashTableOpenAddressing<int, string> table2(std::move(table1));
   cout << "\nAfter move construction:\n";
   print_stats(table2, "table2");
   cout << "table1 size: " << table1.size() << " (should be 0)\n";
 
-  // Move assignment
+  // Move assignment.
   HashTableOpenAddressing<int, string> table3;
   table3 = std::move(table2);
   cout << "\nAfter move assignment:\n";
@@ -314,7 +332,9 @@ void demo_move_semantics() {
   cout << "table2 size: " << table2.size() << " (should be 0)\n";
 }
 
-// Test clear()
+//===------------------------------- CLEAR DEMO --------------------------------===//
+
+// Test clear.
 void demo_clear() {
   cout << "\n========== Demo: Clear ==========\n";
 
@@ -337,13 +357,15 @@ void demo_clear() {
   cout << "  table[42] = " << table[42] << '\n';
 }
 
-// Performance comparison: Open Addressing vs Chaining
+//===----------------------- PERFORMANCE COMPARISON DEMO -----------------------===//
+
+// Performance comparison: Open Addressing vs Chaining.
 void demo_performance_comparison() {
   cout << "\n========== Demo: Performance Comparison ==========\n";
 
   const int N = 50000;
 
-  // Test Open Addressing with different strategies
+  // Test Open Addressing with different strategies.
   vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
@@ -364,7 +386,7 @@ void demo_performance_comparison() {
     cout << "  Load factor: " << table.load_factor() << '\n';
   }
 
-  // Compare with Chaining
+  // Compare with Chaining.
   auto start = std::chrono::high_resolution_clock::now();
 
   HashTableChaining<int, int> chaining_table;
@@ -382,32 +404,36 @@ void demo_performance_comparison() {
   cout << "  Load factor: " << chaining_table.load_factor() << '\n';
 }
 
-// Test edge cases
+//===----------------------------- EDGE CASES DEMO -----------------------------===//
+
+// Test edge cases.
 void demo_edge_cases() {
   cout << "\n========== Demo: Edge Cases ==========\n";
 
   HashTableOpenAddressing<int, int> table;
 
-  // Test operations on empty table
+  // Test operations on empty table.
   cout << "Testing operations on empty table:\n";
   cout << "  is_empty(): " << (table.is_empty() ? "true" : "false") << '\n';
   cout << "  size(): " << table.size() << '\n';
   cout << "  contains(42): " << (table.contains(42) ? "true" : "false") << '\n';
   cout << "  erase(42): " << (table.erase(42) ? "true" : "false") << '\n';
 
-  // Test single element
+  // Test single element.
   cout << "\nTesting single element:\n";
   table.insert(42, 1764);
   print_stats(table, "single element table");
 
-  // Test operator[] with non-existent key
+  // Test operator[] with non-existent key.
   cout << "\nTesting operator[] with non-existent key:\n";
   int value = table[99];
   cout << "  table[99] = " << value << " (default value)\n";
   cout << "  Size after operator[]: " << table.size() << '\n';
 }
 
-int main() {
+//===------------------------------ MAIN FUNCTION ------------------------------===//
+
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "      HASH TABLE OPEN ADDRESSING - COMPREHENSIVE DEMO       \n";
   cout << "╚═══----------------------------------------------------═══╝\n";

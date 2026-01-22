@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Graph_Adjacency_Matrix.cc
  * @author Costantino Lombardi
@@ -10,12 +10,13 @@
  * @copyright MIT License 2025
  *
  * This program demonstrates the usage of the GraphAdjacencyMatrix data structure,
- * showcasing its construction, vertex/edge management, traversal algorithms,
- * and performance comparison with GraphAdjacencyList.
+ * showcasing its construction, vertex/edge management, traversal algorithms, and
+ * performance comparison with GraphAdjacencyList.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -31,6 +32,9 @@ using std::vector;
 
 using namespace ads::graphs;
 
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Print a separator with title.
 void print_separator(const string& title) {
   cout << "\n=====---------- " << title << " ----------=====\n";
 }
@@ -44,19 +48,21 @@ void print_vector(const vector<T>& vec, const string& prefix = "") {
   cout << '\n';
 }
 
-//========== BASIC DEMOS ==========//
+//===------------------------------ MATRIX DEMOS -------------------------------===//
 
+// Test construction and basic properties.
 void demo_matrix_construction() {
   print_separator("Matrix - Construction and Properties");
 
   GraphAdjacencyMatrix<int> graph(false);
   cout << "Created undirected graph matrix\n";
-  cout << "Empty: " << std::boolalpha << graph.is_empty() << '\n';
-  cout << "Directed: " << graph.is_directed() << '\n';
+  cout << std::format("Empty: {}\n", graph.is_empty());
+  cout << std::format("Directed: {}\n", graph.is_directed());
   cout << "Vertices: " << graph.num_vertices() << '\n';
   cout << "Edges: " << graph.num_edges() << '\n';
 }
 
+// Test vertex and edge operations.
 void demo_matrix_operations() {
   print_separator("Matrix - Basic Operations");
 
@@ -79,9 +85,9 @@ void demo_matrix_operations() {
   cout << "Number of edges: " << graph.num_edges() << '\n';
 
   cout << "\nEdge lookups (O(1) for matrix):\n";
-  cout << "Has edge A->B: " << std::boolalpha << graph.has_edge(v0, v1) << '\n';
-  cout << "Has edge B->A: " << graph.has_edge(v1, v0) << " (undirected)\n";
-  cout << "Has edge A->D: " << graph.has_edge(v0, v3) << '\n';
+  cout << std::format("Has edge A->B: {}\n", graph.has_edge(v0, v1));
+  cout << std::format("Has edge B->A: {} (undirected)\n", graph.has_edge(v1, v0));
+  cout << std::format("Has edge A->D: {}\n", graph.has_edge(v0, v3));
 
   auto weight = graph.get_edge_weight(v0, v1);
   cout << "\nEdge A->B weight: " << (weight ? to_string(*weight) : "none") << '\n';
@@ -94,6 +100,9 @@ void demo_matrix_operations() {
   cout << '\n';
 }
 
+//===---------------------------- MATRIX TRAVERSAL -----------------------------===//
+
+// Test traversal algorithms.
 void demo_matrix_traversal() {
   print_separator("Matrix - Graph Traversal");
 
@@ -127,6 +136,9 @@ void demo_matrix_traversal() {
   }
 }
 
+//===----------------------- MATRIX CONNECTED COMPONENTS -----------------------===//
+
+// Test connected components.
 void demo_matrix_connected_components() {
   print_separator("Matrix - Connected Components");
 
@@ -151,14 +163,14 @@ void demo_matrix_connected_components() {
   }
 }
 
-//========== PERFORMANCE COMPARISON ==========//
+//===------------------------- PERFORMANCE COMPARISON --------------------------===//
 
 void compare_performance() {
   print_separator("Performance Comparison - List vs Matrix");
 
   const size_t N = 1000;
 
-  // Create both representations
+  // Create both representations.
   GraphAdjacencyList<int>   list_graph(false);
   GraphAdjacencyMatrix<int> matrix_graph(false);
 
@@ -169,7 +181,7 @@ void compare_performance() {
     matrix_graph.add_vertex(static_cast<int>(i));
   }
 
-  // Create sparse graph: each vertex connected to 5 neighbors
+  // Create sparse graph: each vertex connected to 5 neighbors.
   cout << "Creating sparse graph (5 edges per vertex)...\n";
   for (size_t i = 0; i < N; ++i) {
     for (size_t j = 1; j <= 5 && i + j < N; ++j) {
@@ -180,7 +192,7 @@ void compare_performance() {
 
   cout << "Total edges: " << list_graph.num_edges() << '\n';
 
-  // Test 1: Edge lookup
+  // Test 1: Edge lookup.
   cout << "\n[Test 1] Edge lookup (checking 10000 edges):\n";
 
   auto start = std::chrono::high_resolution_clock::now();
@@ -208,8 +220,8 @@ void compare_performance() {
         count = count + 1;
     }
   }
-
   end = std::chrono::high_resolution_clock::now();
+
   // Measure time.
   auto matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  Matrix: " << matrix_time << " µs (O(1) lookup)\n";
@@ -218,14 +230,15 @@ void compare_performance() {
            / std::max(static_cast<double>(matrix_time), static_cast<double>(list_time)))
        << "% faster)\n";
 
-  // Test 2: BFS
+  // Test 2: BFS.
   cout << "\n[Test 2] BFS traversal:\n";
 
   start = std::chrono::high_resolution_clock::now();
 
   auto list_bfs = list_graph.bfs(0);
 
-  end       = std::chrono::high_resolution_clock::now();
+  end = std::chrono::high_resolution_clock::now();
+
   list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  List:   " << list_time << " µs (visited " << list_bfs.size() << " vertices)\n";
 
@@ -233,12 +246,13 @@ void compare_performance() {
 
   auto matrix_bfs = matrix_graph.bfs(0);
 
-  end         = std::chrono::high_resolution_clock::now();
+  end = std::chrono::high_resolution_clock::now();
+
   matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  Matrix: " << matrix_time << " µs (visited " << matrix_bfs.size() << " vertices)\n";
   cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
-  // Test 3: Neighbor iteration
+  // Test 3: Neighbor iteration.
   cout << "\n[Test 3] Iterating neighbors (first 100 vertices):\n";
 
   start = std::chrono::high_resolution_clock::now();
@@ -246,8 +260,8 @@ void compare_performance() {
     auto neighbors = list_graph.get_neighbors(i);
     count          = count + neighbors.size();
   }
+  end = std::chrono::high_resolution_clock::now();
 
-  end       = std::chrono::high_resolution_clock::now();
   list_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  List:   " << list_time << " µs (O(degree) iteration)\n";
 
@@ -256,13 +270,13 @@ void compare_performance() {
     auto neighbors = matrix_graph.get_neighbors(i);
     count          = count + neighbors.size();
   }
+  end = std::chrono::high_resolution_clock::now();
 
-  end         = std::chrono::high_resolution_clock::now();
   matrix_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   cout << "  Matrix: " << matrix_time << " µs (O(V) iteration)\n";
   cout << "  Winner: " << (matrix_time < list_time ? "Matrix" : "List") << '\n';
 
-  // Memory usage estimation
+  // Memory usage estimation.
   cout << "\n[Memory Usage] Estimated for sparse graph:\n";
   size_t list_memory   = N * sizeof(int) + list_graph.num_edges() * 2 * (sizeof(size_t) + sizeof(double));
   size_t matrix_memory = N * sizeof(int) + N * N * sizeof(std::optional<double>);
@@ -275,21 +289,21 @@ void compare_performance() {
   cout << "  - List:   Better for memory efficiency and neighbor iteration\n";
 }
 
-//========== MAIN ==========//
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
-int main() {
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "          GRAPH ADJACENCY MATRIX - EXAMPLES TESTS           \n";
   cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
-    // Basic tests
+    // Basic tests.
     demo_matrix_construction();
     demo_matrix_operations();
     demo_matrix_traversal();
     demo_matrix_connected_components();
 
-    // Performance comparison
+    // Performance comparison.
     compare_performance();
 
     cout << "\n";
@@ -304,4 +318,5 @@ int main() {
 
   return 0;
 }
-//===--------------------------------------------------------------------------===//
+
+//===---------------------------------------------------------------------------===//

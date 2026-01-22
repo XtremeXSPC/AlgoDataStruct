@@ -16,7 +16,7 @@
 #include "../include/ads/stacks/Array_Stack.hpp"
 #include "../include/ads/stacks/Linked_Stack.hpp"
 
-using namespace ads::stack;
+using namespace ads::stacks;
 
 // ==================== ArrayStack Tests ==================== //
 

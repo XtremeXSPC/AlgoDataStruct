@@ -12,11 +12,10 @@
 
 #include "../include/ads/lists/Singly_Linked_List.hpp"
 
-using ads::list::ListException;
-using ads::list::SinglyLinkedList;
+using namespace ads::lists;
 
 template <typename T>
-std::vector<T> collect_values(const SinglyLinkedList<T>& list) {
+auto collect_values(const SinglyLinkedList<T>& list) -> std::vector<T> {
   std::vector<T> values;
   for (const auto& v : list) {
     values.push_back(v);
@@ -153,7 +152,7 @@ TEST(SinglyLinkedListTest, ConstIterator) {
   }
 
   const SinglyLinkedList<int>& const_list = list;
-  std::vector<int> collected;
+  std::vector<int>             collected;
   for (auto it = const_list.cbegin(); it != const_list.cend(); ++it) {
     collected.push_back(*it);
   }
@@ -171,4 +170,3 @@ TEST(SinglyLinkedListTest, RValueInsertion) {
 
   EXPECT_EQ(collect_values(list), (std::vector<std::string>{"Move1", "Move2"}));
 }
-

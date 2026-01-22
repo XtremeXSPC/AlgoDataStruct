@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Priority_Queue.cc
  * @author Costantino Lombardi
@@ -11,9 +11,10 @@
  * This program demonstrates the usage of the PriorityQueue data structure,
  * showcasing various operations such as insertion, extraction, and move semantics.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
+#include <format>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -29,18 +30,22 @@ using std::vector;
 
 using namespace ads::queues;
 
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Print a separator with title.
 void print_separator(const string& title) {
   cout << "\n========== " << title << " ==========\n";
 }
 
-//========== BASIC DEMOS ==========//
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
+// Priority Queue basic operations.
 void demo_priority_queue_basic() {
   print_separator("Priority Queue - Basic Operations (Max-Heap)");
 
   PriorityQueue<int> pq;
 
-  cout << "Empty queue created. empty(): " << std::boolalpha << pq.empty() << '\n';
+  cout << std::format("Empty queue created. empty(): {}\n", pq.empty());
   cout << "Size: " << pq.size() << '\n';
 
   cout << "\nPushing elements: 5, 3, 7, 1, 9, 2\n";
@@ -60,13 +65,16 @@ void demo_priority_queue_basic() {
     pq.pop();
   }
   cout << '\n';
-  cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
+  cout << std::format("Queue is now empty: {}\n", pq.empty());
 }
 
+//===----------------------------- MIN HEAP DEMOS ------------------------------===//
+
+// Min-Heap Priority Queue operations.
 void demo_priority_queue_min_heap() {
   print_separator("Priority Queue - Min-Heap with greater");
 
-  PriorityQueue<int, std::greater<int>> min_pq;
+  PriorityQueue<int, std::greater<>> min_pq;
 
   cout << "Pushing elements: 5, 3, 7, 1, 9, 2\n";
   min_pq.push(5);
@@ -86,6 +94,9 @@ void demo_priority_queue_min_heap() {
   cout << '\n';
 }
 
+//===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
+
+// Priority Queue construction from vector.
 void demo_priority_queue_from_vector() {
   print_separator("Priority Queue - Construction from Vector");
 
@@ -108,6 +119,9 @@ void demo_priority_queue_from_vector() {
   cout << '\n';
 }
 
+//===------------------- INITIALIZER LIST CONSTRUCTION DEMO --------------------===//
+
+// Priority Queue construction from initializer list.
 void demo_priority_queue_initializer_list() {
   print_separator("Priority Queue - Initializer List Construction");
 
@@ -124,6 +138,9 @@ void demo_priority_queue_initializer_list() {
   cout << '\n';
 }
 
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Priority Queue move semantics.
 void demo_priority_queue_move_semantics() {
   print_separator("Priority Queue - Move Semantics");
 
@@ -138,7 +155,7 @@ void demo_priority_queue_move_semantics() {
   PriorityQueue<int> pq2(std::move(pq1));
 
   cout << "PQ2 size: " << pq2.size() << ", top: " << pq2.top() << '\n';
-  cout << "PQ1 size after move: " << pq1.size() << '\n';
+  // Note: pq1 is in a valid but unspecified state after move.
 
   PriorityQueue<int> pq3;
   pq3.push(99);
@@ -147,9 +164,12 @@ void demo_priority_queue_move_semantics() {
   pq3 = std::move(pq2);
 
   cout << "PQ3 size: " << pq3.size() << ", top: " << pq3.top() << '\n';
-  cout << "PQ2 size after move: " << pq2.size() << '\n';
+  // Note: pq2 is in a valid but unspecified state after move.
 }
 
+//===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+
+// Priority Queue emplace operations.
 void demo_priority_queue_emplace() {
   print_separator("Priority Queue - Emplace Operations");
 
@@ -171,6 +191,9 @@ void demo_priority_queue_emplace() {
   }
 }
 
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Priority Queue exception handling.
 void demo_priority_queue_exception_handling() {
   print_separator("Priority Queue - Exception Handling");
 
@@ -191,6 +214,9 @@ void demo_priority_queue_exception_handling() {
   }
 }
 
+//===--------------------- SORTED ELEMENTS EXTRACTION DEMO ---------------------===//
+
+// Priority Queue sorted elements extraction.
 void demo_priority_queue_sorted_elements() {
   print_separator("Priority Queue - Sorted Elements Extraction");
 
@@ -207,11 +233,12 @@ void demo_priority_queue_sorted_elements() {
   }
   cout << '\n';
 
-  cout << "Queue is now empty: " << std::boolalpha << pq.empty() << '\n';
+  cout << std::format("Queue is now empty: {}\n", pq.empty());
 }
 
-//========== PRACTICAL APPLICATIONS ==========//
+//===---------------------------- APPLICATION DEMOS ----------------------------===//
 
+// Task struct for scheduling demo.
 struct Task {
   string name;
   int    priority;
@@ -219,17 +246,20 @@ struct Task {
   Task(string n, int p) : name(std::move(n)), priority(p) {}
 };
 
-// Comparator for tasks (higher priority number = higher priority)
+// Comparator for tasks (higher priority number = higher priority).
 struct TaskCompare {
   auto operator()(const Task& a, const Task& b) const -> bool { return a.priority < b.priority; }
 };
 
+//===-------------------------- TASK SCHEDULING DEMO ---------------------------===//
+
+// Task scheduling application demo.
 void demo_task_scheduling() {
   print_separator("Application - Task Scheduling");
 
   PriorityQueue<Task, TaskCompare> task_queue;
 
-  // Add tasks with different priorities
+  // Add tasks with different priorities.
   task_queue.emplace("Send email", 2);
   task_queue.emplace("Critical bug fix", 10);
   task_queue.emplace("Coffee break", 1);
@@ -241,11 +271,15 @@ void demo_task_scheduling() {
   int task_number = 1;
   while (!task_queue.empty()) {
     const Task& task = task_queue.top();
-    cout << task_number++ << ". [Priority " << task.priority << "] " << task.name << '\n';
+    cout << task_number << ". [Priority " << task.priority << "] " << task.name << '\n';
+    ++task_number;
     task_queue.pop();
   }
 }
 
+//===-------------------------- EVENT SIMULATION DEMO --------------------------===//
+
+// Event struct for simulation demo.
 struct Event {
   string name;
   double timestamp;
@@ -253,16 +287,18 @@ struct Event {
   Event(string n, double t) : name(std::move(n)), timestamp(t) {}
 };
 
+// Comparator for events (earlier timestamp = higher priority).
 struct EventCompare {
   auto operator()(const Event& a, const Event& b) const -> bool { return a.timestamp > b.timestamp; }
 };
 
+// Event simulation application demo.
 void demo_event_simulation() {
   print_separator("Application - Event Simulation");
 
   PriorityQueue<Event, EventCompare> event_queue;
 
-  // Add events with timestamps (min-heap: earliest events first)
+  // Add events with timestamps (min-heap: earliest events first).
   event_queue.emplace("System startup", 0.0);
   event_queue.emplace("User login", 2.5);
   event_queue.emplace("Database query", 3.1);
@@ -278,10 +314,13 @@ void demo_event_simulation() {
   }
 }
 
+//===--------------------------- TOP-K ELEMENTS DEMO ---------------------------===//
+
+// Top-K largest elements application demo.
 void demo_top_k_elements() {
   print_separator("Application - Top-K Largest Elements");
 
-  // Find top 5 largest elements from a stream using a min-heap of size 5
+  // Find top 5 largest elements from a stream using a min-heap of size 5.
   const int                          k = 5;
   PriorityQueue<int, std::greater<>> min_heap; // Min-heap
 
@@ -312,8 +351,9 @@ void demo_top_k_elements() {
   cout << '\n';
 }
 
-//========== PERFORMANCE DEMOS ==========//
+//===------------------------ LARGE DATASET PERFORMANCE ------------------------===//
 
+// Priority Queue performance with large dataset.
 void demo_priority_queue_large() {
   print_separator("Priority Queue - Large Dataset Performance");
 
@@ -351,6 +391,9 @@ void demo_priority_queue_large() {
   cout << "Elements extracted: " << count << '\n';
 }
 
+//===-------------------- HEAPIFY CONSTRUCTION PERFORMANCE ---------------------===//
+
+// Heapify construction performance demo.
 void demo_heapify_construction_performance() {
   print_separator("Priority Queue - Heapify Construction Performance");
 
@@ -374,15 +417,15 @@ void demo_heapify_construction_performance() {
   cout << "Queue size: " << pq.size() << ", Top: " << pq.top() << '\n';
 }
 
-//========== MAIN ==========//
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
-int main() {
+auto main() -> int {
   cout << "╔═══----------------------------------------------------═══╗\n";
   cout << "            PRIORITY QUEUE - COMPREHENSIVE DEMO             \n";
   cout << "╚═══----------------------------------------------------═══╝\n";
 
   try {
-    // Basic tests
+    // Basic tests.
     demo_priority_queue_basic();
     demo_priority_queue_min_heap();
     demo_priority_queue_from_vector();
@@ -392,12 +435,12 @@ int main() {
     demo_priority_queue_exception_handling();
     demo_priority_queue_sorted_elements();
 
-    // Practical applications
+    // Practical applications.
     demo_task_scheduling();
     demo_event_simulation();
     demo_top_k_elements();
 
-    // Performance tests
+    // Performance tests.
     demo_priority_queue_large();
     demo_heapify_construction_performance();
 
@@ -413,4 +456,5 @@ int main() {
 
   return 0;
 }
-//===--------------------------------------------------------------------------===//
+
+//===---------------------------------------------------------------------------===//
