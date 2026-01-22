@@ -145,27 +145,33 @@ public:
    * @brief Constructs an empty hash map.
    * @param initial_capacity Initial number of buckets.
    * @param max_load_factor Load factor threshold for rehashing.
+   * @complexity Time O(n) to allocate buckets, Space O(n)
+   * @throws ads::hash::InvalidOperationException if max_load_factor <= 0.
    */
   explicit HashMap(size_t initial_capacity = 16, float max_load_factor = 0.75f);
 
   /**
    * @brief Constructs a hash map from an initializer list.
    * @param init Initializer list of key-value pairs.
+   * @complexity Time O(n) average, Space O(n)
    */
   HashMap(std::initializer_list<value_type> init);
 
   /**
    * @brief Move constructor
+   * @complexity Time O(1), Space O(1)
    */
   HashMap(HashMap&& other) noexcept;
 
   /**
    * @brief Destructor
+   * @complexity Time O(n), Space O(1)
    */
   ~HashMap() = default;
 
   /**
    * @brief Move assignment operator.
+   * @complexity Time O(n), Space O(1)
    */
   auto operator=(HashMap&& other) noexcept -> HashMap&;
 
@@ -180,6 +186,7 @@ public:
    * @param key The key to access.
    * @return Reference to the value associated with key.
    * @note If key doesn't exist, inserts it with default-constructed value.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   auto operator[](const Key& key) -> Value&;
 
@@ -187,7 +194,8 @@ public:
    * @brief Access element with bounds checking.
    * @param key The key to access.
    * @return Reference to the value associated with key.
-   * @throws std::out_of_range if key doesn't exist.
+   * @throws ads::hash::KeyNotFoundException if key doesn't exist.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   auto at(const Key& key) -> Value&;
 
@@ -195,7 +203,8 @@ public:
    * @brief Access element with bounds checking (const version).
    * @param key The key to access.
    * @return Const reference to the value associated with key.
-   * @throws std::out_of_range if key doesn't exist.
+   * @throws ads::hash::KeyNotFoundException if key doesn't exist.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   auto at(const Key& key) const -> const Value&;
 
@@ -205,6 +214,7 @@ public:
    * @brief Inserts a key-value pair.
    * @param pair The key-value pair to insert.
    * @return Pair of iterator to element and bool indicating insertion.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   auto insert(const value_type& pair) -> std::pair<iterator, bool>;
 
@@ -212,6 +222,7 @@ public:
    * @brief Inserts a key-value pair (move).
    * @param pair The r-value key-value pair to insert.
    * @return Pair of iterator to element and bool indicating insertion.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   auto insert(value_type&& pair) -> std::pair<iterator, bool>;
 
@@ -219,6 +230,7 @@ public:
    * @brief Constructs element in-place.
    * @param args Arguments to forward to the constructor.
    * @return Pair of iterator to element and bool indicating insertion.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> std::pair<iterator, bool>;
@@ -229,6 +241,7 @@ public:
    * @brief Erases element with given key.
    * @param key The key to erase.
    * @return Number of elements erased (0 or 1).
+   * @complexity Time O(1) average, O(n) worst case.
    */
   auto erase(const Key& key) -> size_t;
 
@@ -236,26 +249,45 @@ public:
    * @brief Erases element at iterator position.
    * @param pos Iterator to element to erase.
    * @return Iterator to next element.
+   * @complexity Time O(1), Space O(1)
+   * @note Undefined behavior if pos does not belong to this map.
    */
   auto erase(iterator pos) -> iterator;
 
   /**
    * @brief Removes all elements.
+   * @complexity Time O(n), Space O(1)
    */
   auto clear() noexcept -> void;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
+  /**
+   * @brief Checks if the map is empty.
+   * @return true if the map contains no elements.
+   * @complexity Time O(1), Space O(1)
+   */
   [[nodiscard]] auto empty() const noexcept -> bool;
 
+  /**
+   * @brief Returns the number of elements in the map.
+   * @return Number of key-value pairs.
+   * @complexity Time O(1), Space O(1)
+   */
   [[nodiscard]] auto size() const noexcept -> size_t;
 
+  /**
+   * @brief Returns the current load factor.
+   * @return size / bucket_count.
+   * @complexity Time O(1), Space O(1)
+   */
   [[nodiscard]] auto load_factor() const noexcept -> float;
 
   /**
    * @brief Finds element with given key.
    * @param key The key to search for.
    * @return Iterator to element or end() if not found.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
   auto find(const Key& key) -> iterator;
@@ -264,6 +296,7 @@ public:
    * @brief Finds element with given key (const version).
    * @param key The key to search for.
    * @return Const iterator to element or end() if not found.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
   auto find(const Key& key) const -> const_iterator;
@@ -272,6 +305,7 @@ public:
    * @brief Checks if key exists.
    * @param key The key to check.
    * @return true if key exists.
+   * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
   auto contains(const Key& key) const -> bool;
@@ -280,6 +314,7 @@ public:
    * @brief Counts elements with given key.
    * @param key The key to count.
    * @return 0 or 1 (no duplicates allowed).
+   * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
   auto count(const Key& key) const -> size_t;
@@ -288,31 +323,67 @@ public:
 
   /**
    * @brief Returns vector of all keys.
+   * @return Vector of keys.
+   * @complexity Time O(n), Space O(n)
    */
   [[nodiscard]] auto keys() const -> std::vector<Key>;
 
   /**
    * @brief Returns vector of all values.
+   * @return Vector of values.
+   * @complexity Time O(n), Space O(n)
    */
   [[nodiscard]] auto values() const -> std::vector<Value>;
 
   /**
    * @brief Returns vector of all key-value pairs.
+   * @return Vector of entries.
+   * @complexity Time O(n), Space O(n)
    */
   [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
+  /**
+   * @brief Returns an iterator to the first element.
+   * @return Iterator to the first element or end() if empty.
+   * @complexity Time O(b) where b is bucket count.
+   */
   auto begin() -> iterator;
 
+  /**
+   * @brief Returns a const iterator to the first element.
+   * @return Const iterator to the first element or end() if empty.
+   * @complexity Time O(b) where b is bucket count.
+   */
   auto begin() const -> const_iterator;
 
+  /**
+   * @brief Returns an iterator to one past the last element.
+   * @return End iterator.
+   * @complexity Time O(1), Space O(1)
+   */
   auto end() -> iterator;
 
+  /**
+   * @brief Returns a const iterator to one past the last element.
+   * @return Const end iterator.
+   * @complexity Time O(1), Space O(1)
+   */
   auto end() const -> const_iterator;
 
+  /**
+   * @brief Returns a const iterator to the beginning.
+   * @return Const iterator to the first element or end() if empty.
+   * @complexity Time O(b) where b is bucket count.
+   */
   auto cbegin() const -> const_iterator;
 
+  /**
+   * @brief Returns a const iterator to the end.
+   * @return Const end iterator.
+   * @complexity Time O(1), Space O(1)
+   */
   auto cend() const -> const_iterator;
 
 private:
@@ -322,8 +393,20 @@ private:
   //===============================================================================//
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
+  /**
+   * @brief Finds an entry in the underlying table (non-const).
+   * @param key The key to search for.
+   * @return Bucket index and iterator to entry (or end of bucket if not found).
+   * @complexity Time O(1) average, O(n) worst case.
+   */
   auto find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator>;
 
+  /**
+   * @brief Finds an entry in the underlying table (const).
+   * @param key The key to search for.
+   * @return Bucket index and const iterator to entry (or end of bucket if not found).
+   * @complexity Time O(1) average, O(n) worst case.
+   */
   auto find_in_table(const Key& key) const -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
 
   // Access to internal table structure (for iterators).
