@@ -10,6 +10,7 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef PRIORITY_QUEUE_HPP
@@ -22,7 +23,7 @@
 
 #include "Queue_Exception.hpp"
 
-namespace ads::queue {
+namespace ads::queues {
 
 /**
  * @brief A priority queue implemented using a binary heap
@@ -45,32 +46,6 @@ namespace ads::queue {
  * @tparam T The type of elements stored in the queue (must be comparable).
  * @tparam Compare Comparison function object (default: std::less<T> for max-heap).
  *
- * @example
- * ```cpp
- * // Max-heap (largest element has highest priority).
- * PriorityQueue<int> max_pq;
- * max_pq.push(3);
- * max_pq.push(1);
- * max_pq.push(5);
- * std::cout << max_pq.top(); // Output: 5
- *
- * // Min-heap (smallest element has highest priority).
- * PriorityQueue<int, std::greater<int>> min_pq;
- * min_pq.push(3);
- * min_pq.push(1);
- * min_pq.push(5);
- * std::cout << min_pq.top(); // Output: 1
- *
- * // Custom comparator for complex types.
- * struct Task {
- *   std::string name;
- *   int priority;
- * };
- * auto task_cmp = [](const Task& a, const Task& b) {
- *   return a.priority < b.priority;
- * };
- * PriorityQueue<Task, decltype(task_cmp)> task_queue(task_cmp);
- * ```
  */
 template <typename T, typename Compare = std::less<T>>
 class PriorityQueue {
@@ -272,7 +247,7 @@ private:
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
 };
 
-} // namespace ads::queue
+} // namespace ads::queues
 
 #include "../../../src/ads/queues/Priority_Queue.tpp"
 

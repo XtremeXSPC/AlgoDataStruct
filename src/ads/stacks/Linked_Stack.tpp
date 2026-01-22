@@ -10,10 +10,11 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 #include "../../../include/ads/stacks/Linked_Stack.hpp"
 
-namespace ads::stack {
+namespace ads::stacks {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 

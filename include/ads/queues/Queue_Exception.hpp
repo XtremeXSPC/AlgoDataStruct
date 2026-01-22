@@ -10,6 +10,7 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef QUEUE_EXCEPTION_HPP
@@ -17,7 +18,7 @@
 
 #include <stdexcept>
 
-namespace ads::queue {
+namespace ads::queues {
 
 /**
  * @brief Exception thrown for logical errors in queue operations.
@@ -51,7 +52,7 @@ public:
   explicit QueueUnderflowException(const char* message) : QueueException(message) {}
 };
 
-} // namespace ads::queue
+} // namespace ads::queues
 
 #endif // QUEUE_EXCEPTION_HPP
 

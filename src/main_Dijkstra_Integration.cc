@@ -31,8 +31,8 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using namespace ads::graph;
-using namespace ads::queue;
+using namespace ads::graphs;
+using namespace ads::queues;
 
 // City graph vertex data
 struct City {

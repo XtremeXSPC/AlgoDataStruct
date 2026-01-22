@@ -13,6 +13,7 @@
  */
 //===--------------------------------------------------------------------------===//
 
+#include <format>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -23,12 +24,12 @@
 using std::cerr;
 using std::cout;
 using std::exception;
+using std::move;
 using std::string;
 using std::to_string;
 using std::vector;
-using std::move;
 
-using namespace ads::heap;
+using namespace ads::heaps;
 
 void print_separator(const string& title) {
   cout << "\n=====---------- " << title << " ----------=====\n";
@@ -41,8 +42,8 @@ void demo_min_heap_basic() {
 
   MinHeap<int> heap;
 
-  cout << "Empty heap created. is_empty(): " << std::boolalpha << heap.is_empty() << '\n';
-  cout << "Size: " << heap.size() << ", Capacity: " << heap.capacity() << '\n';
+  cout << std::format("Empty heap created. is_empty(): {}\n", heap.is_empty());
+  cout << std::format("Size: {}, Capacity: {}\n", heap.size(), heap.capacity());
 
   cout << "\nInserting elements: 5, 3, 7, 1, 9, 2\n";
   heap.insert(5);

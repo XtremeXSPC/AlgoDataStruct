@@ -27,7 +27,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using namespace ads::queue;
+using namespace ads::queues;
 
 void print_separator(const string& title) {
   cout << "\n========== " << title << " ==========\n";

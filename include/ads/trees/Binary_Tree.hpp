@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Binary_Tree.hpp
  * @author Costantino Lombardi
@@ -9,8 +9,10 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
+
 #pragma once
+
 #ifndef BINARY_TREE_HPP
 #define BINARY_TREE_HPP
 
@@ -36,10 +38,10 @@ namespace ads::trees {
 template <typename T>
 class BinaryTree {
 public:
-  // Virtual destructor is mandatory for polymorphic base classes
+  // A virtual destructor is mandatory for polymorphic base classes.
   virtual ~BinaryTree() = default;
 
-  //========== MODIFICATION OPERATIONS ==========//
+  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
 
   /**
    * @brief Inserts a value into the tree (copy).
@@ -68,7 +70,7 @@ public:
    */
   virtual void clear() noexcept = 0;
 
-  //========== SEARCH OPERATIONS ==========//
+  //===--------------------------- SEARCH OPERATIONS ---------------------------===//
 
   /**
    * @brief Checks if a value exists in the tree.
@@ -91,7 +93,7 @@ public:
    */
   [[nodiscard]] virtual auto find_max() const -> const T& = 0;
 
-  //========== TREE PROPERTIES ==========//
+  //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
   /**
    * @brief Checks if the tree is empty.
@@ -115,7 +117,7 @@ public:
    */
   [[nodiscard]] virtual auto height() const noexcept -> int = 0;
 
-  //========== TRAVERSAL OPERATIONS ==========//
+  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
 
   /**
    * @brief Performs an in-order traversal of the tree.
@@ -154,4 +156,4 @@ public:
 
 #endif // BINARY_TREE_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

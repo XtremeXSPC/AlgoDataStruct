@@ -10,6 +10,7 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef LINKED_STACK_HPP
@@ -21,7 +22,7 @@
 #include "Stack.hpp"
 #include "Stack_Exception.hpp"
 
-namespace ads::stack {
+namespace ads::stacks {
 
 /**
  * @brief A stack implementation based on a singly linked list.

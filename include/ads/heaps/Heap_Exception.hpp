@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef HEAP_EXCEPTION_HPP
@@ -18,7 +19,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace ads::heap {
+namespace ads::heaps {
 
 /**
  * @brief Exception class for heap-related errors

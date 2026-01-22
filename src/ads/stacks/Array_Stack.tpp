@@ -10,10 +10,11 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 #include "../../../include/ads/stacks/Array_Stack.hpp"
 
-namespace ads::stack {
+namespace ads::stacks {
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 

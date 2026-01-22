@@ -10,10 +10,11 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 #include "../../../include/ads/queues/Circular_Array_Queue.hpp"
 
-namespace ads::queue {
+namespace ads::queues {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
@@ -238,6 +239,6 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   rear_     = size_;
 }
 
-} // namespace ads::queue
+} // namespace ads::queues
 
 //===--------------------------------------------------------------------------===//
