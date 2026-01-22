@@ -405,6 +405,35 @@ auto HashMap<Key, Value, Hash>::cend() const -> const_iterator {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator> {
+  size_t bucket_idx = table_.hash(key);
+  auto&  bucket     = table_.buckets_[bucket_idx];
+
+  // Search for the key in the bucket.
+  for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+    if (it->first == key) {
+      return {bucket_idx, it};
+    }
+  }
+  return {bucket_idx, bucket.end()};
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) const
+    -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator> {
+  size_t      bucket_idx = table_.hash(key);
+  const auto& bucket     = table_.buckets_[bucket_idx];
+
+  // Search for the key in the bucket.
+  for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+    if (it->first == key) {
+      return {bucket_idx, it};
+    }
+  }
+  return {bucket_idx, bucket.end()};
+}
+
 } // namespace ads::associative
 
 //===--------------------------------------------------------------------------===//
