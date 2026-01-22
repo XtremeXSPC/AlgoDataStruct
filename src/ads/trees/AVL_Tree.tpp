@@ -392,10 +392,8 @@ auto AVLTree<T>::is_balanced_helper(const Node* node) const noexcept -> bool {
     return true;
   }
 
-  int balance = get_balance_factor(node);
-
   // Check if current node is balanced.
-  if (balance < -1 || balance > 1) {
+  if (int balance = get_balance_factor(node); balance < -1 || balance > 1) {
     return false;
   }
 

@@ -162,17 +162,17 @@ Several implementation choices improve performance:
 
 ## Computational Complexity
 
-| Operation | Time Complexity | Notes |
-|-----------|-----------------|-------|
-| push_front | O(1) | Constant insertion at the beginning |
-| push_back | O(1) | Constant insertion at the end thanks to the tail pointer |
-| pop_front | O(1) | Constant removal from the beginning |
-| pop_back | O(1) | Constant removal from the end thanks to the tail pointer |
-| insert | O(1) - O(n) | O(1) for beginning/end, O(n) in the worst case for intermediate positions |
-| erase | O(1) - O(n) | O(1) for beginning/end, O(n) in the worst case for intermediate positions |
-| find | O(n) | Linear search through the list |
-| size | O(1) | Constant time thanks to size caching |
-| clear | O(n) | Must deallocate all nodes |
+| Operation  | Time Complexity | Notes                                                                     |
+| ---------- | --------------- | ------------------------------------------------------------------------- |
+| push_front | O(1)            | Constant insertion at the beginning                                       |
+| push_back  | O(1)            | Constant insertion at the end thanks to the tail pointer                  |
+| pop_front  | O(1)            | Constant removal from the beginning                                       |
+| pop_back   | O(1)            | Constant removal from the end thanks to the tail pointer                  |
+| insert     | O(1) - O(n)     | O(1) for beginning/end, O(n) in the worst case for intermediate positions |
+| erase      | O(1) - O(n)     | O(1) for beginning/end, O(n) in the worst case for intermediate positions |
+| find       | O(n)            | Linear search through the list                                            |
+| size       | O(1)            | Constant time thanks to size caching                                      |
+| clear      | O(n)            | Must deallocate all nodes                                                 |
 
 ## Conclusions
 
@@ -188,27 +188,27 @@ This implementation of the doubly linked list represents an example of modern de
 int main() {
     // Creation and initialization
     ads::DoublyLinkedList<std::string> names = {"Alice", "Bob", "Charlie"};
-    
+
     // Adding elements
     names.push_front("Zack");
     names.push_back("Diana");
-    
+
     // Iteration
     std::cout << "Names: ";
     for (const auto& name : names) {
         std::cout << name << " ";
     }
     std::cout << std::endl;
-    
+
     // Search and modification
     auto it = names.find("Bob");
     if (it != names.end()) {
         *it = "Bobby";
     }
-    
+
     // Printing the modified list
     std::cout << "Modified list: " << names << std::endl;
-    
+
     return 0;
 }
 ```
