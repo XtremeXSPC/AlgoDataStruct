@@ -13,13 +13,12 @@
 
 #include "../include/ads/trees/Binary_Search_Tree.hpp"
 
-using ads::trees::BinarySearchTree;
-using ads::trees::EmptyTreeException;
+using namespace ads::trees;
 using std::string;
 using std::vector;
 
 template <typename T>
-vector<T> collect_in_order(const BinarySearchTree<T>& tree) {
+auto collect_in_order(const BinarySearchTree<T>& tree) -> vector<T> {
   vector<T> values;
   tree.in_order_traversal([&values](const T& value) -> void { values.push_back(value); });
   return values;
@@ -191,4 +190,3 @@ TEST(BinarySearchTreeTest, EdgeCases) {
   EXPECT_EQ(degenerate.size(), 3);
   EXPECT_EQ(degenerate.height(), 1);
 }
-

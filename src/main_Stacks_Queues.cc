@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main Stacks_Queues.cc
  * @author Costantino Lombardi
@@ -11,7 +11,7 @@
  * This program demonstrates the usage of Stack and Queue data structures, showcasing
  * their operations and performance comparison.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <chrono>
 #include <iostream>
@@ -29,20 +29,17 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::queues::CircularArrayQueue;
-using ads::queues::LinkedQueue;
-using ads::queues::Queue;
+using namespace ads::queues;
+using namespace ads::stacks;
 
-using ads::stacks::ArrayStack;
-using ads::stacks::LinkedStack;
-using ads::stacks::Stack;
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
-// Helper function to demonstrate polymorphic usage
+// Helper function to demonstrate polymorphic usage.
 template <typename T>
 void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
   cout << "========== Testing " << stack_type << " ==========\n";
 
-  // Test push operations
+  // Test push operations.
   cout << "Pushing elements: 10, 20, 30\n";
   stack.push(10);
   stack.push(20);
@@ -51,14 +48,14 @@ void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
   cout << "Stack size: " << stack.size() << '\n';
   cout << "Top element: " << stack.top() << '\n';
 
-  // Test pop operations
+  // Test pop operations.
   cout << "\nPopping elements:\n";
   while (!stack.is_empty()) {
     cout << "  Popped: " << stack.top() << " (size: " << stack.size() << ")\n";
     stack.pop();
   }
 
-  // Test exception handling
+  // Test exception handling.
   cout << "\nTesting exception on empty stack...\n";
   try {
     stack.pop();
@@ -67,12 +64,14 @@ void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
   }
 }
 
-// Helper function for queue testing
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Helper function for queue testing.
 template <typename T>
 void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
   cout << "\n========== Testing " << queue_type << " ==========\n";
 
-  // Test enqueue operations
+  // Test enqueue operations.
   cout << "Enqueuing elements: 100, 200, 300\n";
   queue.enqueue(100);
   queue.enqueue(200);
@@ -82,14 +81,14 @@ void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
   cout << "Front element: " << queue.front() << '\n';
   cout << "Rear element: " << queue.rear() << '\n';
 
-  // Test dequeue operations
+  // Test dequeue operations.
   cout << "\nDequeuing elements:\n";
   while (!queue.is_empty()) {
     cout << "  Dequeued: " << queue.front() << " (size: " << queue.size() << ")\n";
     queue.dequeue();
   }
 
-  // Test exception handling
+  // Test exception handling.
   cout << "\nTesting exception on empty queue...\n";
   try {
     queue.dequeue();
@@ -98,12 +97,14 @@ void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
   }
 }
 
-// Performance comparison function
+//===------------------------- PERFORMANCE COMPARISON --------------------------===//
+
+// Performance comparison function.
 void performance_comparison() {
   cout << "\n========== Performance Comparison ==========\n";
   const int iterations = 100000;
 
-  // Stack performance test
+  // Stack performance test.
   {
     ArrayStack<int>  array_stack;
     LinkedStack<int> linked_stack;
@@ -133,7 +134,7 @@ void performance_comparison() {
     cout << "  LinkedStack: " << linked_duration.count() << " ms\n";
   }
 
-  // Queue performance test
+  // Queue performance test.
   {
     CircularArrayQueue<int> array_queue;
     LinkedQueue<int>        linked_queue;
@@ -164,7 +165,9 @@ void performance_comparison() {
   }
 }
 
-// Test emplace functionality with complex types
+//===----------------------- EMPLACE FUNCTIONALITY DEMO ------------------------===//
+
+// Test emplace functionality with complex types.
 void demo_emplace_functionality() {
   cout << "\n========== Testing Emplace with Complex Types ==========\n";
 
@@ -187,23 +190,25 @@ void demo_emplace_functionality() {
   queue.emplace("Diana", 28);
 }
 
+//===------------------------------ MAIN FUNCTION ------------------------------===//
+
 auto main() -> int {
   try {
-    // Test Stack implementations
+    // Test Stack implementations.
     ArrayStack<int>  array_stack;
     LinkedStack<int> linked_stack;
 
     demo_stack_interface(array_stack, "ArrayStack");
     demo_stack_interface(linked_stack, "LinkedStack");
 
-    // Test Queue implementations
+    // Test Queue implementations.
     CircularArrayQueue<int> circular_queue;
     LinkedQueue<int>        linked_queue;
 
     demo_queue_interface(circular_queue, "CircularArrayQueue");
     demo_queue_interface(linked_queue, "LinkedQueue");
 
-    // Test move semantics
+    // Test move semantics.
     cout << "\n========== Testing Move Semantics ==========\n";
     ArrayStack<string> stack1;
     stack1.push("Hello");
@@ -213,10 +218,10 @@ auto main() -> int {
     cout << "After move, stack2 size: " << stack2.size() << '\n';
     cout << "After move, stack1 size: " << stack1.size() << " (should be 0)\n";
 
-    // Test emplace functionality
+    // Test emplace functionality.
     demo_emplace_functionality();
 
-    // Performance comparison
+    // Performance comparison.
     performance_comparison();
 
   } catch (const exception& e) {
@@ -227,3 +232,5 @@ auto main() -> int {
   cout << "\n========== All Tests Completed Successfully ==========\n";
   return 0;
 }
+
+//===---------------------------------------------------------------------------===//

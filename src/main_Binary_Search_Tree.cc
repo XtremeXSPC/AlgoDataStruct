@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Binary_Search_Tree.cc
  * @author Costantino Lombardi
@@ -9,9 +9,9 @@
  * @copyright MIT License 2025
  *
  * This program demonstrates the usage of the Binary Search Tree data structure,
-  * showcasing its insertion, search, traversal, and removal operations.
+ * showcasing its insertion, search, traversal, and removal operations.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <iostream>
 #include <string>
@@ -26,9 +26,11 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::trees::BinarySearchTree;
+using namespace ads::trees;
 
-// Helper function to print tree contents via in-order traversal
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print tree contents via in-order traversal.
 template <typename T>
 void print_tree(const BinarySearchTree<T>& tree, const string& name) {
   cout << "Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
@@ -43,13 +45,15 @@ void print_tree(const BinarySearchTree<T>& tree, const string& name) {
   cout << '\n';
 }
 
-// Test basic insertion and traversals
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Test basic insertion and traversals.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations ==========\n";
 
   BinarySearchTree<int> bst;
 
-  // Test insertion
+  // Test insertion.
   cout << "Inserting values: 50, 30, 70, 20, 40, 60, 80\n";
   bst.insert(50);
   bst.insert(30);
@@ -61,7 +65,7 @@ void demo_basic_operations() {
 
   print_tree(bst, "bst");
 
-  // Test different traversals
+  // Test different traversals.
   cout << "\nDifferent traversals:\n";
 
   cout << "  Pre-order:  ";
@@ -76,20 +80,22 @@ void demo_basic_operations() {
   bst.level_order_traversal([](const int& value) -> void { cout << value << " "; });
   cout << '\n';
 
-  // Test duplicates
+  // Test duplicates.
   cout << "\nTrying to insert duplicate (40): ";
   bool inserted = bst.insert(40);
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
   print_tree(bst, "bst after duplicate attempt");
 }
 
-// Test search operations
+//===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
+
+// Test search operations.
 void demo_search_operations() {
   cout << "\n========== Demo: Search Operations ==========\n";
 
   BinarySearchTree<int> bst;
 
-  // Build a tree
+  // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     bst.insert(val);
@@ -97,17 +103,17 @@ void demo_search_operations() {
 
   print_tree(bst, "bst");
 
-  // Test contains
+  // Test contains.
   cout << "\nTesting contains():\n";
   cout << "  Contains 40? " << (bst.contains(40) ? "Yes" : "No") << '\n';
   cout << "  Contains 55? " << (bst.contains(55) ? "Yes" : "No") << '\n';
   cout << "  Contains 10? " << (bst.contains(10) ? "Yes" : "No") << '\n';
 
-  // Test find_min and find_max
+  // Test find_min and find_max.
   cout << "\nMinimum value: " << bst.find_min() << '\n';
   cout << "Maximum value: " << bst.find_max() << '\n';
 
-  // Test successor and predecessor
+  // Test successor and predecessor.
   cout << "\nTesting successor and predecessor:\n";
   int        demo_val = 40;
   const int* succ     = bst.successor(demo_val);
@@ -123,13 +129,15 @@ void demo_search_operations() {
   cout << "  Predecessor of " << demo_val << ": " << (pred ? to_string(*pred) : "none") << '\n';
 }
 
-// Test removal operations
+//===------------------------- REMOVE OPERATIONS DEMO --------------------------===//
+
+// Test removal operations.
 void demo_removal() {
   cout << "\n========== Demo: Removal Operations ==========\n";
 
   BinarySearchTree<int> bst;
 
-  // Build a tree
+  // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     bst.insert(val);
@@ -137,59 +145,61 @@ void demo_removal() {
 
   print_tree(bst, "original tree");
 
-  // Remove a leaf node
+  // Remove a leaf node.
   cout << "\nRemoving leaf node (10):\n";
   bst.remove(10);
   print_tree(bst, "after removing 10");
 
-  // Remove a node with one child
+  // Remove a node with one child.
   cout << "\nRemoving node with one child (20):\n";
   bst.remove(20);
   print_tree(bst, "after removing 20");
 
-  // Remove a node with two children
+  // Remove a node with two children.
   cout << "\nRemoving node with two children (30):\n";
   bst.remove(30);
   print_tree(bst, "after removing 30");
 
-  // Remove the root
+  // Remove the root.
   cout << "\nRemoving root node (50):\n";
   bst.remove(50);
   print_tree(bst, "after removing root");
 
-  // Try to remove non-existent value
+  // Try to remove non-existent value.
   cout << "\nTrying to remove non-existent value (100): ";
   bool removed = bst.remove(100);
   cout << (removed ? "removed" : "not found (correct behavior)") << '\n';
 }
 
-// Test iterator functionality
+//===----------------------- SORTED SEQUENCE COMPARISON ------------------------===//
+
+// Test iterator functionality.
 void demo_iterators() {
   cout << "\n========== Demo: Iterators ==========\n";
 
   BinarySearchTree<int> bst;
 
-  // Build a tree
+  // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80};
   for (int val : values) {
     bst.insert(val);
   }
 
-  // Test range-based for loop
+  // Test range-based for loop.
   cout << "Using range-based for loop (in-order traversal):\n  ";
   for (const int& value : bst) {
     cout << value << " ";
   }
   cout << '\n';
 
-  // Test explicit iterator usage
+  // Test explicit iterator usage.
   cout << "\nUsing explicit iterators:\n  ";
   for (auto it = bst.begin(); it != bst.end(); ++it) {
     cout << *it << " ";
   }
   cout << '\n';
 
-  // Test collecting values into a vector
+  // Test collecting values into a vector.
   cout << "\nCollecting values into a vector:\n  ";
   vector<int> collected;
   for (const auto& val : bst) {
@@ -202,7 +212,9 @@ void demo_iterators() {
   cout << '\n';
 }
 
-// Test with custom types
+//===---------------------------- CUSTOM TYPES DEMO ----------------------------===//
+
+// Test with custom types.
 void demo_custom_types() {
   cout << "\n========== Demo: Custom Types ==========\n";
 
@@ -220,7 +232,7 @@ void demo_custom_types() {
 
   BinarySearchTree<Person> people;
 
-  // Insert people
+  // Insert people.
   cout << "Inserting people by age:\n";
   people.emplace("Alice", 30);
   people.emplace("Bob", 25);
@@ -235,7 +247,9 @@ void demo_custom_types() {
   cout << "Oldest person: " << people.find_max().name << " (age " << people.find_max().age << ")\n";
 }
 
-// Test move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Test move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -247,14 +261,14 @@ void demo_move_semantics() {
   cout << "Original tree:\n";
   print_tree(bst1, "bst1");
 
-  // Test move constructor
+  // Test move constructor.
   BinarySearchTree<int> bst2 = std::move(bst1);
 
   cout << "\nAfter move construction:\n";
   print_tree(bst1, "bst1 (should be empty)");
   print_tree(bst2, "bst2 (should have the data)");
 
-  // Test move assignment
+  // Test move assignment.
   BinarySearchTree<int> bst3;
   bst3.insert(10);
   bst3.insert(20);
@@ -269,7 +283,9 @@ void demo_move_semantics() {
   print_tree(bst3, "bst3 (should have bst2's data)");
 }
 
-// Test exception handling
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+
+// Test exception handling.
 void demo_exceptions() {
   cout << "\n========== Demo: Exception Handling ==========\n";
 
@@ -294,11 +310,13 @@ void demo_exceptions() {
   }
 }
 
-// Test edge cases
+//===----------------------- SORTED SEQUENCE COMPARISON ------------------------===//
+
+// Test edge cases.
 void demo_edge_cases() {
   cout << "\n========== Demo: Edge Cases ==========\n";
 
-  // Single element tree
+  // Single element tree.
   BinarySearchTree<int> single;
   single.insert(42);
 
@@ -307,7 +325,7 @@ void demo_edge_cases() {
   cout << "  Height: " << single.height() << " (should be 0)\n";
   cout << "  Min: " << single.find_min() << ", Max: " << single.find_max() << '\n';
 
-  // Degenerate tree (essentially a linked list)
+  // Degenerate tree (essentially a linked list).
   BinarySearchTree<int> degenerate;
   for (int i = 1; i <= 5; ++i) {
     degenerate.insert(i);
@@ -317,7 +335,7 @@ void demo_edge_cases() {
   print_tree(degenerate, "degenerate");
   cout << "  Height: " << degenerate.height() << " (equals size-1 for degenerate tree)\n";
 
-  // Clear and reuse
+  // Clear and reuse.
   cout << "\nClearing and reusing tree:\n";
   degenerate.clear();
   cout << "  After clear - Size: " << degenerate.size() << ", Empty: " << (degenerate.is_empty() ? "yes" : "no") << '\n';
@@ -327,6 +345,8 @@ void demo_edge_cases() {
   degenerate.insert(15);
   print_tree(degenerate, "degenerate after reuse");
 }
+
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   try {
@@ -355,3 +375,5 @@ auto main() -> int {
 
   return 0;
 }
+
+//===---------------------------------------------------------------------------===//

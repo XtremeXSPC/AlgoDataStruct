@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file main_Red_Black_Tree.cc
  * @author Costantino Lombardi
@@ -11,7 +11,7 @@
  * This program demonstrates the usage of the Red-Black Tree data structure,
  * showcasing its self-balancing properties and various operations.
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <algorithm>
 #include <chrono>
@@ -28,9 +28,11 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-using ads::trees::Red_Black_Tree;
+using namespace ads::trees;
 
-// Helper function to print tree contents
+//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+
+// Helper function to print tree contents.
 template <typename T>
 void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
   cout << "Red-Black Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
@@ -45,7 +47,9 @@ void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
   cout << '\n';
 }
 
-// Demo: Basic operations
+//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+
+// Demo: Basic operations.
 void demo_basic_operations() {
   cout << "\n========== Demo: Basic Operations ==========\n";
 
@@ -54,7 +58,7 @@ void demo_basic_operations() {
   cout << "Creating empty Red-Black Tree...\n";
   cout << "  Size: " << rbt.size() << ", Empty: " << (rbt.is_empty() ? "yes" : "no") << "\n";
 
-  // Insert elements
+  // Insert elements.
   cout << "\nInserting values: 50, 30, 70, 20, 40, 60, 80\n";
   rbt.insert(50);
   rbt.insert(30);
@@ -66,18 +70,20 @@ void demo_basic_operations() {
 
   print_rbt(rbt, "rbt");
 
-  // Test in-order traversal
+  // Test in-order traversal.
   cout << "\nIn-order traversal (should be sorted):\n  ";
   rbt.in_order_traversal([](const int& value) -> void { cout << value << " "; });
   cout << '\n';
 
-  // Test duplicates
+  // Test duplicates.
   cout << "\nTrying to insert duplicate (40): ";
   bool inserted = rbt.insert(40);
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-// Demo: Sequential insertions
+//===----------------------- SEQUENTIAL INSERTIONS DEMO ------------------------===//
+
+// Demo: Sequential insertions.
 void demo_sequential_insertions() {
   cout << "\n========== Demo: Sequential Insertions ==========\n";
 
@@ -101,13 +107,15 @@ void demo_sequential_insertions() {
   cout << "  Size: " << rbt_desc.size() << ", Height: " << rbt_desc.height() << "\n";
 }
 
-// Demo: Search operations
+//===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
+
+// Demo: Search operations.
 void demo_search_operations() {
   cout << "\n========== Demo: Search Operations ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Build a tree
+  // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     rbt.insert(val);
@@ -115,7 +123,7 @@ void demo_search_operations() {
 
   print_rbt(rbt, "rbt");
 
-  // Test contains/search
+  // Test contains/search.
   cout << "\nSearch operations:\n";
   cout << "  contains(40): " << (rbt.contains(40) ? "found" : "not found") << '\n';
   cout << "  contains(55): " << (rbt.contains(55) ? "found" : "not found") << '\n';
@@ -123,13 +131,15 @@ void demo_search_operations() {
   cout << "  search(100): " << (rbt.search(100) ? "found" : "not found") << '\n';
 }
 
-// Demo: RB-Tree properties validation
+//===------------------------ PROPERTY VALIDATION DEMO -------------------------===//
+
+// Demo: RB-Tree properties validation.
 void demo_property_validation() {
   cout << "\n========== Demo: RB-Tree Properties Validation ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Insert random values
+  // Insert random values.
   vector<int> values = {41, 38, 31, 12, 19, 8, 50, 45, 60, 55, 70};
   cout << "Inserting values: ";
   for (int val : values) {
@@ -146,13 +156,15 @@ void demo_property_validation() {
   cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 }
 
-// Demo: Random insertions
+//===------------------------- RANDOM INSERTIONS DEMO --------------------------===//
+
+// Demo: Random insertions.
 void demo_random_insertions() {
   cout << "\n========== Demo: Random Insertions ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Generate and shuffle values
+  // Generate and shuffle values.
   vector<int> values;
   for (int i = 1; i <= 100; ++i) {
     values.push_back(i);
@@ -172,7 +184,7 @@ void demo_random_insertions() {
   cout << "  Black height: " << rbt.black_height() << '\n';
   cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 
-  // Verify all elements present
+  // Verify all elements present.
   int found_count = 0;
   for (int i = 1; i <= 100; ++i) {
     if (rbt.search(i)) {
@@ -182,7 +194,9 @@ void demo_random_insertions() {
   cout << "  All elements found: " << (found_count == 100 ? "yes" : "no") << '\n';
 }
 
-// Demo: Move semantics
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+
+// Demo: Move semantics.
 void demo_move_semantics() {
   cout << "\n========== Demo: Move Semantics ==========\n";
 
@@ -194,14 +208,14 @@ void demo_move_semantics() {
   cout << "Original tree:\n";
   print_rbt(rbt1, "rbt1");
 
-  // Move constructor
+  // Move constructor.
   Red_Black_Tree<int> rbt2 = std::move(rbt1);
 
   cout << "\nAfter move construction:\n";
   print_rbt(rbt1, "rbt1 (should be empty)");
   print_rbt(rbt2, "rbt2 (should have the data)");
 
-  // Move assignment
+  // Move assignment.
   Red_Black_Tree<int> rbt3;
   rbt3.insert(100);
   rbt3.insert(200);
@@ -216,7 +230,9 @@ void demo_move_semantics() {
   print_rbt(rbt3, "rbt3 (should have rbt2's data)");
 }
 
-// Demo: Performance
+//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+
+// Demo: Performance.
 void demo_performance() {
   cout << "\n========== Demo: Performance ==========\n";
 
@@ -238,7 +254,7 @@ void demo_performance() {
   cout << "  Size: " << rbt.size() << '\n';
   cout << "  Height: " << rbt.height() << " (theoretical O(log n) ~ " << (int)(2 * std::log2(N)) << ")\n";
 
-  // Search performance
+  // Search performance.
   cout << "\nSearching for all " << N << " elements...\n";
   start = std::chrono::high_resolution_clock::now();
   for (int i = 1; i <= N; ++i) {
@@ -250,7 +266,9 @@ void demo_performance() {
   cout << "  Search time: " << search_duration.count() << " ms\n";
 }
 
-// Demo: Clear and reuse
+//===-------------------------- CLEAR AND REUSE DEMO ---------------------------===//
+
+// Demo: Clear and reuse.
 void demo_clear_reuse() {
   cout << "\n========== Demo: Clear and Reuse ==========\n";
 
@@ -274,13 +292,15 @@ void demo_clear_reuse() {
   cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 }
 
-// Demo: Edge cases
+//===----------------------------- EDGE CASES DEMO -----------------------------===//
+
+// Demo: Edge cases.
 void demo_edge_cases() {
   cout << "\n========== Demo: Edge Cases ==========\n";
 
   Red_Black_Tree<int> rbt;
 
-  // Test operations on empty tree
+  // Test operations on empty tree.
   cout << "Testing operations on empty tree:\n";
   cout << "  is_empty(): " << (rbt.is_empty() ? "true" : "false") << '\n';
   cout << "  size(): " << rbt.size() << '\n';
@@ -288,13 +308,13 @@ void demo_edge_cases() {
   cout << "  contains(42): " << (rbt.contains(42) ? "true" : "false") << '\n';
   cout << "  validate_properties(): " << (rbt.validate_properties() ? "true" : "false") << '\n';
 
-  // Test single element
+  // Test single element.
   cout << "\nTesting single element:\n";
   rbt.insert(42);
   print_rbt(rbt, "rbt with single element");
   cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 
-  // Test clear
+  // Test clear.
   cout << "\nTesting clear():\n";
   rbt.insert(10);
   rbt.insert(20);
@@ -303,6 +323,8 @@ void demo_edge_cases() {
   rbt.clear();
   cout << "After clear: size=" << rbt.size() << ", is_empty=" << rbt.is_empty() << '\n';
 }
+
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   try {
@@ -332,3 +354,5 @@ auto main() -> int {
 
   return 0;
 }
+
+//===---------------------------------------------------------------------------===//
