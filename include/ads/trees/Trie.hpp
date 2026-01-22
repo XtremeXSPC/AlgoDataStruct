@@ -16,6 +16,7 @@
 #ifndef TRIE_HPP
 #define TRIE_HPP
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <stdexcept>

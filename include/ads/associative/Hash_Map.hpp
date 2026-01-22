@@ -316,10 +316,11 @@ public:
   auto cend() const -> const_iterator;
 
 private:
+  // Internal hash table storing the key-value pairs.
+  hash::HashTableChaining<Key, Value> table_;
+
   //===============================================================================//
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
-
-  hash::HashTableChaining<Key, Value> table_; ///< Underlying hash table.
 
   auto find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator>;
 
@@ -336,4 +337,5 @@ private:
 #include "../../../src/ads/associative/Hash_Map.tpp"
 
 #endif // HASH_MAP_HPP
+
 //===--------------------------------------------------------------------------===//
