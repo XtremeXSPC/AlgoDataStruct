@@ -19,20 +19,20 @@
   - Circular Array
 
 - **Linked Lists**
-  - Singly Linked List
-  - Doubly Linked List
+  - Singly Linked List ✓ (C++)
+  - Doubly Linked List ✓ (C++)
   - Circular Linked List
   - Skip List
 
 - **Stacks**
-  - Array-based implementation
-  - Linked list-based implementation
+  - Array-based implementation ✓ (C++)
+  - Linked list-based implementation ✓ (C++)
 
 - **Queues**
-  - Simple Queue
-  - Priority Queue
+  - Simple Queue ✓ (C++)
+  - Priority Queue ✓ (C++)
   - Double-ended Queue (Deque)
-  - Circular Queue
+  - Circular Queue ✓ (C++)
 
 </details>
 
@@ -41,21 +41,21 @@
 
 - **Trees**
   - Binary Tree
-  - Binary Search Tree (BST) ✅ (C++)
-  - AVL Tree ✅ (C++)
-  - Red-Black Tree ✅ (C++)
-  - B-Tree ✅ (C++)
+  - Binary Search Tree (BST) ✓ (C++)
+  - AVL Tree ✓ (C++)
+  - Red-Black Tree ✓ (C++)
+  - B-Tree ✓ (C++)
   - B+ Tree
   - 2-3 Tree
   - 2-3-4 Tree
   - Segment Tree
   - Fenwick Tree (Binary Indexed Tree)
-  - Trie (Prefix Tree) ✅ (C++)
+  - Trie (Prefix Tree) ✓ (C++)
   - Suffix Tree
   - Quad-tree and Oct-tree
 
 - **Heaps**
-  - Min/Max Heap ✅ (C++)
+  - Min/Max Heap ✓ (C++)
   - Binary Heap
   - Fibonacci Heap
   - Binomial Heap
@@ -69,7 +69,7 @@
 
 - **Dictionaries/Maps**
   - Dictionary/Map (generic implementation)
-  - HashMap/unordered_map
+  - HashMap/unordered_map ✓ (C++)
   - TreeMap/map (ordered map based on tree)
   - LinkedHashMap (ordered by insertion)
   - MultiMap (map with duplicate keys)
@@ -171,7 +171,7 @@
 
 </details>
 
-(+) *Not implemented yet but I'm working on it!*
+(+) _Not implemented yet but I'm working on it!_
 
 ## Repository Organization
 

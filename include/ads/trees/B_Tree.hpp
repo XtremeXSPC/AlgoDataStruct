@@ -1,42 +1,20 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file B_Tree.hpp
  * @author Costantino Lombardi
- * @brief B-Tree - Multi-way balanced search tree optimized for disk I/O
+ * @brief Declaration of the B-Tree class.
  * @version 1.0
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  *
- * A B-Tree is a self-balancing search tree in which nodes can have multiple keys
- * and more than two children. It's optimized for systems that read/write large
- * blocks of data (databases, file systems).
- *
- * Properties (with minimum degree t):
- * 1. Every node has at most 2t-1 keys
- * 2. Every non-root node has at least t-1 keys
- * 3. Root has at least 1 key (if not empty)
- * 4. All leaves are at the same level
- * 5. A non-leaf node with k keys has k+1 children
- *
- * Advantages:
- * - Optimized for disk I/O (reduces seeks)
- * - Very low height: O(log_t n)
- * - Cache-friendly for large datasets
- * - Used in databases (B+ Tree variant) and file systems
- *
- * Performance:
- * - Search: O(t log_t n)
- * - Insert: O(t log_t n) with at most O(log_t n) splits
- * - Height: O(log_t n) where t is minimum degree
- *
- * Common Values:
- * - t=2: 2-3-4 Tree (each node has 1-3 keys, 2-4 children)
- * - t=3: Each node has 2-5 keys, 3-6 children
- * - t=128: Database block size optimization
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
+
 #pragma once
+
+#ifndef B_TREE_HPP
+#define B_TREE_HPP
 
 #include <algorithm>
 #include <functional>
@@ -51,8 +29,35 @@ namespace ads::trees {
 /**
  * @brief B-Tree implementation
  *
- * @tparam T Type of elements stored (must be comparable with <)
- * @tparam t Minimum degree (t ≥ 2)
+ * @details A B-Tree is a self-balancing search tree in which nodes can have multiple keys
+ *          and more than two children. It's optimized for systems that read/write large
+ *          blocks of data (databases, file systems).
+ *
+ *          Properties (with minimum degree t):
+ *          1. Every node has at most 2t-1 keys.
+ *          2. Every non-root node has at least t-1 keys.
+ *          3. Root has at least 1 key (if not empty).
+ *          4. All leaves are at the same level.
+ *          5. A non-leaf node with k keys has k+1 children.
+ *
+ *          Advantages:
+ *          - Optimized for disk I/O (reduces seeks).
+ *          - Very low height: O(log_t n).
+ *          - Cache-friendly for large datasets.
+ *          - Used in databases (B+ Tree variant) and file systems.
+ *
+ *          Performance:
+ *          - Search: O(t log_t n).
+ *          - Insert: O(t log_t n) with at most O(log_t n) splits.
+ *          - Height: O(log_t n) where t is minimum degree.
+ *
+ *          Common Values:
+ *          - t=2: 2-3-4 Tree (each node has 1-3 keys, 2-4 children).
+ *          - t=3: Each node has 2-5 keys, 3-6 children.
+ *          - t=128: Database block size optimization.
+ *
+ * @tparam T Type of elements stored (must be comparable with <).
+ * @tparam t Minimum degree (t >= 2).
  *
  * @complexity
  * - Insert: O(t log_t n)
@@ -62,433 +67,264 @@ namespace ads::trees {
  */
 template <typename T, int MinDegree = 3>
 class B_Tree {
+public:
+  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+
+  /**
+   * @brief Construct empty B-Tree.
+   * @complexity Time O(1), Space O(1)
+   */
+  B_Tree();
+
+  /**
+   * @brief Destructor (automatic via unique_ptr).
+   * @complexity Time O(n), Space O(1)
+   */
+  ~B_Tree() = default;
+
+  /**
+   * @brief Move constructor.
+   * @param other The tree from which to move resources.
+   * @complexity Time O(1), Space O(1)
+   */
+  B_Tree(B_Tree&& other) noexcept;
+
+  /**
+   * @brief Move assignment operator.
+   * @param other The tree from which to move resources.
+   * @return A reference to this instance.
+   * @complexity Time O(n), Space O(1)
+   */
+  auto operator=(B_Tree&& other) noexcept -> B_Tree&;
+
+  // Copy constructor and assignment are disabled (move-only type).
+  B_Tree(const B_Tree&)                    = delete;
+  auto operator=(const B_Tree&) -> B_Tree& = delete;
+
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
+
+  /**
+   * @brief Insert a key into the tree.
+   *
+   * Performs proactive splitting during descent to ensure parent.
+   * is never full when child needs to split.
+   *
+   * @param key Key to insert.
+   * @return true if inserted, false if duplicate.
+   * @complexity O(t log_t n)
+   */
+  auto insert(const T& key) -> bool;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Clear all keys.
+   * @complexity O(n), Space O(1)
+   */
+  void clear();
+
+  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+
+  /**
+   * @brief Check if tree is empty.
+   * @return true if the tree contains no elements.
+   * @complexity O(1)
+   */
+  [[nodiscard]] auto is_empty() const -> bool;
+
+  /**
+   * @brief Get number of keys in tree.
+   * @return Number of keys in the tree.
+   * @complexity O(1)
+   */
+  [[nodiscard]] auto size() const -> size_t;
+
+  /**
+   * @brief Get height of tree.
+   * @return Height (all leaves at same level).
+   * @complexity O(log_t n)
+   */
+  [[nodiscard]] auto height() const -> int;
+
+  /**
+   * @brief Alias for search.
+   * @param key Key to search.
+   * @return true if found.
+   * @complexity O(t log_t n)
+   */
+  [[nodiscard]] auto contains(const T& key) const -> bool;
+
+  /**
+   * @brief Get smallest key in the tree.
+   * @throws EmptyTreeException if the tree is empty.
+   * @complexity O(log_t n)
+   */
+  [[nodiscard]] auto find_min() const -> const T&;
+
+  /**
+   * @brief Get largest key in the tree.
+   * @throws EmptyTreeException if the tree is empty.
+   * @complexity O(log_t n)
+   */
+  [[nodiscard]] auto find_max() const -> const T&;
+
+  /**
+   * @brief Search for a key.
+   * @param key Key to search.
+   * @return true if found.
+   * @complexity O(t log_t n)
+   */
+  [[nodiscard]] auto search(const T& key) const -> bool;
+
+  //===----------------------- B-TREE SPECIFIC OPERATIONS ----------------------===//
+
+  /**
+   * @brief Get minimum degree.
+   * @return Minimum degree t.
+   * @complexity Time O(1), Space O(1)
+   */
+  static constexpr auto get_min_degree() -> int;
+
+  /**
+   * @brief Get maximum keys per node.
+   * @complexity Time O(1), Space O(1)
+   */
+  static constexpr auto get_max_keys() -> int;
+
+  /**
+   * @brief Get minimum keys per node (except root).
+   * @complexity Time O(1), Space O(1)
+   */
+  static constexpr auto get_min_keys() -> int;
+
+  /**
+   * @brief Count total number of nodes.
+   * @complexity O(n), Space O(h)
+   */
+  [[nodiscard]] auto count_nodes() const -> size_t;
+
+  /**
+   * @brief Validate B-Tree properties.
+   *
+   * Checks:
+   * - Key counts within bounds;
+   * - Keys sorted within nodes;
+   * - All leaves at same level;
+   * - Correct number of children.
+   *
+   * @return true if valid B-Tree.
+   * @complexity O(n), Space O(h)
+   */
+  [[nodiscard]] auto validate_properties() const -> bool;
+
+  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+
+  /**
+   * @brief In-order traversal.
+   * @param visit Function to call for each key.
+   * @complexity O(n), Space O(h)
+   */
+  void in_order_traversal(std::function<void(const T&)> visit) const;
+
 private:
+  //====------------------------------ CONSTANTS -------------------------------===//
+
+  // Check minimum degree.
   static_assert(MinDegree >= 2, "Minimum degree must be at least 2");
 
+  // B-Tree properties.
   static constexpr int t        = MinDegree;
   static constexpr int MAX_KEYS = 2 * t - 1;
   static constexpr int MIN_KEYS = t - 1;
 
+  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+
   /**
-   * @brief Internal node structure
+   * @brief Internal node structure.
    */
   struct Node {
-    std::vector<T>                     keys;     // Sorted keys
-    std::vector<std::unique_ptr<Node>> children; // Child pointers
-    bool                               is_leaf;
-    int                                n; // Current number of keys
+    std::vector<T>                     keys;     // Sorted keys.
+    std::vector<std::unique_ptr<Node>> children; // Child pointers.
 
-    Node(bool leaf) : is_leaf(leaf), n(0) {
-      keys.reserve(MAX_KEYS);
-      if (!leaf) {
-        children.reserve(MAX_KEYS + 1);
-      }
-    }
+    bool is_leaf; // True if leaf node.
+    int  n = 0;   // Current number of keys.
+
+    explicit Node(bool leaf);
   };
 
-  std::unique_ptr<Node> root_;
-  size_t                size_;
+  //===============================================================================//
+  //===------------------------- PRIVATE HELPER METHODS ------------------------===//
 
   /**
-   * @brief Search for key in subtree
-   */
-  auto search_helper(const Node* node, const T& key) const -> bool {
-    if (!node) {
-      return false;
-    }
-
-    // Find first key >= search key
-    int i = 0;
-    while (i < node->n && key > node->keys[i]) {
-      i++;
-    }
-
-    // Check if key found
-    if (i < node->n && key == node->keys[i]) {
-      return true;
-    }
-
-    // If leaf, key not in tree
-    if (node->is_leaf) {
-      return false;
-    }
-
-    // Recurse to appropriate child
-    return search_helper(node->children[i].get(), key);
-  }
-
-  /**
-   * @brief Split full child of parent at given index
+   * @brief Split full child of parent at given index.
    *
    * Splits a full child (2t-1 keys) into two nodes with t-1 keys each,
    * moving the median key up to parent.
    *
-   * @param parent Parent node (not full)
-   * @param index Index of full child in parent
+   * @param parent Parent node (not full).
+   * @param index Index of full child in parent.
    */
-  void split_child(Node* parent, int index) {
-    Node* full_child = parent->children[index].get();
-    auto  new_child  = std::make_unique<Node>(full_child->is_leaf);
-
-    new_child->n = t - 1;
-
-    // Copy upper half of keys to new child
-    for (int j = 0; j < t - 1; j++) {
-      new_child->keys.push_back(full_child->keys[j + t]);
-    }
-
-    // If not leaf, copy upper half of children
-    if (!full_child->is_leaf) {
-      for (int j = 0; j < t; j++) {
-        new_child->children.push_back(std::move(full_child->children[j + t]));
-      }
-    }
-
-    full_child->n = t - 1;
-
-    // Insert new child into parent
-    parent->children.insert(parent->children.begin() + index + 1, std::move(new_child));
-
-    // Move median key up to parent
-    parent->keys.insert(parent->keys.begin() + index, full_child->keys[t - 1]);
-    parent->n++;
-
-    // Trim vectors of full_child
-    full_child->keys.resize(t - 1);
-    if (!full_child->is_leaf) {
-      full_child->children.resize(t);
-    }
-  }
+  void split_child(Node* parent, int index);
 
   /**
-   * @brief Insert key into non-full node
+   * @brief Insert key into non-full node.
    *
-   * @param node Node to insert into (guaranteed not full)
-   * @param key Key to insert
-   * @return true if inserted, false if duplicate
+   * @param node Node to insert into (guaranteed not full).
+   * @param key Key to insert.
+   * @return true if inserted, false if duplicate.
    */
-  auto insert_non_full(Node* node, const T& key) -> bool {
-    int i = node->n - 1;
-
-    if (node->is_leaf) {
-      // Find position and insert
-      while (i >= 0 && key < node->keys[i]) {
-        i--;
-      }
-
-      // Check for duplicate
-      if (i >= 0 && key == node->keys[i]) {
-        return false;
-      }
-
-      // Insert key
-      node->keys.insert(node->keys.begin() + i + 1, key);
-      node->n++;
-      return true;
-
-    } else {
-      // Find child to insert into
-      while (i >= 0 && key < node->keys[i]) {
-        i--;
-      }
-      i++;
-
-      // Check for duplicate at this level
-      if (i > 0 && key == node->keys[i - 1]) {
-        return false;
-      }
-
-      // If child is full, split it
-      if (node->children[i]->n == MAX_KEYS) {
-        split_child(node, i);
-
-        // After split, determine which child to insert into
-        if (key > node->keys[i]) {
-          i++;
-        } else if (key == node->keys[i]) {
-          return false; // Duplicate
-        }
-      }
-
-      return insert_non_full(node->children[i].get(), key);
-    }
-  }
+  auto insert_non_full(Node* node, const T& key) -> bool;
 
   /**
-   * @brief In-order traversal helper
+   * @brief Search for key in subtree.
+   * @param node Current node.
+   * @param key Key to search.
+   * @return true if found.
    */
-  void in_order_helper(const Node* node, std::function<void(const T&)> visit) const {
-    if (!node) {
-      return;
-    }
-
-    for (int i = 0; i < node->n; i++) {
-      // Visit left child
-      if (!node->is_leaf) {
-        in_order_helper(node->children[i].get(), visit);
-      }
-      // Visit key
-      visit(node->keys[i]);
-    }
-
-    // Visit rightmost child
-    if (!node->is_leaf) {
-      in_order_helper(node->children[node->n].get(), visit);
-    }
-  }
+  [[nodiscard]] auto search_helper(const Node* node, const T& key) const -> bool;
 
   /**
-   * @brief Calculate height of tree
+   * @brief Calculate height of tree.
+   * @param node Root of subtree.
+   * @return Height of subtree (-1 if node is nullptr).
    */
-  auto height_helper(const Node* node) const -> int {
-    if (!node) {
-      return -1;
-    }
-    if (node->is_leaf) {
-      return 0;
-    }
-    return 1 + height_helper(node->children[0].get());
-  }
+  [[nodiscard]] auto height_helper(const Node* node) const -> int;
 
   /**
-   * @brief Count nodes in tree
+   * @brief Count nodes in tree.
+   * @param node Current node.
+   * @return Number of nodes in subtree.
    */
-  auto count_nodes_helper(const Node* node) const -> size_t {
-    if (!node) {
-      return 0;
-    }
-
-    size_t count = 1; // This node
-    if (!node->is_leaf) {
-      for (int i = 0; i <= node->n; i++) {
-        count += count_nodes_helper(node->children[i].get());
-      }
-    }
-    return count;
-  }
+  [[nodiscard]] auto count_nodes_helper(const Node* node) const -> size_t;
 
   /**
-   * @brief Validate B-Tree properties
+   * @brief In-order traversal helper.
+   * @param node Current node being visited.
+   * @param visit Function to call for each key.
    */
-  auto validate_helper(const Node* node, int min_keys, int max_keys, int level) const -> bool {
-    if (!node) {
-      return true;
-    }
-
-    // Check number of keys (root is exception for min)
-    if (level > 0 && (node->n < min_keys || node->n > max_keys)) {
-      return false;
-    }
-
-    // Check keys are sorted
-    for (int i = 1; i < node->n; i++) {
-      if (node->keys[i - 1] >= node->keys[i]) {
-        return false;
-      }
-    }
-
-    // If not leaf, check children
-    if (!node->is_leaf) {
-      // Should have n+1 children
-      if (static_cast<int>(node->children.size()) != node->n + 1) {
-        return false;
-      }
-
-      // Recursively validate children
-      for (int i = 0; i <= node->n; i++) {
-        if (!validate_helper(node->children[i].get(), MIN_KEYS, MAX_KEYS, level + 1)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-public:
-  /**
-   * @brief Construct empty B-Tree
-   */
-  B_Tree() : root_(nullptr), size_(0) {}
+  void in_order_helper(const Node* node, std::function<void(const T&)> visit) const;
 
   /**
-   * @brief Destructor (automatic via unique_ptr)
+   * @brief Validate B-Tree properties.
+   * @param node Current node.
+   * @param min_keys Minimum keys required for this node.
+   * @param max_keys Maximum keys allowed for this node.
+   * @param level Current level in the tree.
+   * @return true if subtree is valid.
    */
-  ~B_Tree() = default;
+  [[nodiscard]] auto validate_helper(const Node* node, int min_keys, int max_keys, int level) const -> bool;
 
-  // Disable copy
-  B_Tree(const B_Tree&)                    = delete;
-  auto operator=(const B_Tree&) -> B_Tree& = delete;
+  //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  // Enable move
-  B_Tree(B_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) { other.size_ = 0; }
-  auto operator=(B_Tree&& other) noexcept -> B_Tree& {
-    if (this != &other) {
-      root_ = std::move(other.root_);
-      size_ = other.size_;
-      other.size_ = 0;
-    }
-    return *this;
-  }
-
-  /**
-   * @brief Insert a key into the tree
-   *
-   * Performs proactive splitting during descent to ensure parent
-   * is never full when child needs to split.
-   *
-   * @param key Key to insert
-   * @return true if inserted, false if duplicate
-   * @complexity O(t log_t n)
-   */
-  auto insert(const T& key) -> bool {
-    if (!root_) {
-      root_ = std::make_unique<Node>(true);
-      root_->keys.push_back(key);
-      root_->n = 1;
-      size_++;
-      return true;
-    }
-
-    // If root is full, split it
-    if (root_->n == MAX_KEYS) {
-      auto new_root = std::make_unique<Node>(false);
-      new_root->children.push_back(std::move(root_));
-      split_child(new_root.get(), 0);
-      root_ = std::move(new_root);
-    }
-
-    bool inserted = insert_non_full(root_.get(), key);
-    if (inserted) {
-      size_++;
-    }
-    return inserted;
-  }
-
-  /**
-   * @brief Search for a key
-   * @param key Key to search
-   * @return true if found
-   * @complexity O(t log_t n)
-   */
-  auto search(const T& key) const -> bool { return search_helper(root_.get(), key); }
-
-  /**
-   * @brief Alias for search
-   */
-  auto contains(const T& key) const -> bool { return search(key); }
-
-  /**
-   * @brief Get number of keys in tree
-   * @complexity O(1)
-   */
-  [[nodiscard]] auto size() const -> size_t { return size_; }
-
-  /**
-   * @brief Check if tree is empty
-   * @complexity O(1)
-   */
-  [[nodiscard]] auto is_empty() const -> bool { return size_ == 0; }
-
-  /**
-   * @brief Clear all keys
-   * @complexity O(n)
-   */
-  void clear() {
-    root_.reset();
-    size_ = 0;
-  }
-
-  /**
-   * @brief Get height of tree
-   * @return Height (all leaves at same level)
-   * @complexity O(log_t n)
-   */
-  [[nodiscard]] auto height() const -> int { return height_helper(root_.get()); }
-
-  /**
-   * @brief Get smallest key in the tree
-   * @throws EmptyTreeException if the tree is empty
-   */
-  [[nodiscard]] auto find_min() const -> const T& {
-    if (is_empty()) {
-      throw EmptyTreeException("B-Tree is empty");
-    }
-
-    const Node* node = root_.get();
-    while (!node->is_leaf) {
-      node = node->children.front().get();
-    }
-    return node->keys.front();
-  }
-
-  /**
-   * @brief Get largest key in the tree
-   * @throws EmptyTreeException if the tree is empty
-   */
-  [[nodiscard]] auto find_max() const -> const T& {
-    if (is_empty()) {
-      throw EmptyTreeException("B-Tree is empty");
-    }
-
-    const Node* node = root_.get();
-    while (!node->is_leaf) {
-      node = node->children.back().get();
-    }
-    return node->keys.back();
-  }
-
-  /**
-   * @brief Get minimum degree
-   * @return Minimum degree t
-   */
-  static constexpr auto get_min_degree() -> int { return t; }
-
-  /**
-   * @brief Get maximum keys per node
-   */
-  static constexpr auto get_max_keys() -> int { return MAX_KEYS; }
-
-  /**
-   * @brief Get minimum keys per node (except root)
-   */
-  static constexpr auto get_min_keys() -> int { return MIN_KEYS; }
-
-  /**
-   * @brief Count total number of nodes
-   * @complexity O(n)
-   */
-  [[nodiscard]] auto count_nodes() const -> size_t { return count_nodes_helper(root_.get()); }
-
-  /**
-   * @brief Validate B-Tree properties
-   *
-   * Checks:
-   * - Key counts within bounds
-   * - Keys sorted within nodes
-   * - All leaves at same level
-   * - Correct number of children
-   *
-   * @return true if valid B-Tree
-   * @complexity O(n)
-   */
-  [[nodiscard]] auto validate_properties() const -> bool {
-    if (!root_) {
-      return true;
-    }
-
-    // Root can have 1 to 2t-1 keys
-    return validate_helper(root_.get(), 1, MAX_KEYS, 0);
-  }
-
-  /**
-   * @brief In-order traversal
-   * @param visit Function to call for each key
-   * @complexity O(n)
-   */
-  void in_order_traversal(std::function<void(const T&)> visit) const { in_order_helper(root_.get(), visit); }
+  std::unique_ptr<Node> root_; ///< Root node.
+  size_t                size_; ///< Number of keys in the tree.
 };
 
 } // namespace ads::trees
 
-//===--------------------------------------------------------------------------===//
+// Include the implementation file for templates.
+#include "../../../src/ads/trees/B_Tree.tpp"
+
+#endif // B_TREE_HPP
+
+//===---------------------------------------------------------------------------===//

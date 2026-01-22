@@ -10,6 +10,7 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef CIRCULAR_ARRAY_QUEUE_HPP
@@ -24,7 +25,7 @@
 #include "Queue.hpp"
 #include "Queue_Exception.hpp"
 
-namespace ads::queue {
+namespace ads::queues {
 
 /**
  * @brief A queue implementation based on a circular dynamic array.
@@ -250,7 +251,7 @@ private:
   static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain.
 };
 
-} // namespace ads::queue
+} // namespace ads::queues
 
 // Include the implementation file for templates.
 #include "../../../src/ads/queues/Circular_Array_Queue.tpp"

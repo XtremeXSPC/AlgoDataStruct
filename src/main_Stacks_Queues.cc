@@ -29,9 +29,17 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+using ads::queues::CircularArrayQueue;
+using ads::queues::LinkedQueue;
+using ads::queues::Queue;
+
+using ads::stacks::ArrayStack;
+using ads::stacks::LinkedStack;
+using ads::stacks::Stack;
+
 // Helper function to demonstrate polymorphic usage
 template <typename T>
-void demo_stack_interface(ads::stack::Stack<T>& stack, const string& stack_type) {
+void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
   cout << "========== Testing " << stack_type << " ==========\n";
 
   // Test push operations
@@ -54,14 +62,14 @@ void demo_stack_interface(ads::stack::Stack<T>& stack, const string& stack_type)
   cout << "\nTesting exception on empty stack...\n";
   try {
     stack.pop();
-  } catch (const ads::stack::StackUnderflowException& e) {
+  } catch (const ads::stacks::StackUnderflowException& e) {
     cout << "  Exception caught correctly: " << e.what() << '\n';
   }
 }
 
 // Helper function for queue testing
 template <typename T>
-void demo_queue_interface(ads::queue::Queue<T>& queue, const string& queue_type) {
+void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
   cout << "\n========== Testing " << queue_type << " ==========\n";
 
   // Test enqueue operations
@@ -85,7 +93,7 @@ void demo_queue_interface(ads::queue::Queue<T>& queue, const string& queue_type)
   cout << "\nTesting exception on empty queue...\n";
   try {
     queue.dequeue();
-  } catch (const ads::queue::QueueUnderflowException& e) {
+  } catch (const ads::queues::QueueUnderflowException& e) {
     cout << "  Exception caught correctly: " << e.what() << '\n';
   }
 }
@@ -97,8 +105,8 @@ void performance_comparison() {
 
   // Stack performance test
   {
-    ads::stack::ArrayStack<int>  array_stack;
-    ads::stack::LinkedStack<int> linked_stack;
+    ArrayStack<int>  array_stack;
+    LinkedStack<int> linked_stack;
 
     auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
@@ -127,8 +135,8 @@ void performance_comparison() {
 
   // Queue performance test
   {
-    ads::queue::CircularArrayQueue<int> array_queue;
-    ads::queue::LinkedQueue<int>        linked_queue;
+    CircularArrayQueue<int> array_queue;
+    LinkedQueue<int>        linked_queue;
 
     auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
@@ -167,8 +175,8 @@ void demo_emplace_functionality() {
     Person(string n, int a) : name(std::move(n)), age(a) { cout << "  Constructed: " << name << " (age " << age << ")\n"; }
   };
 
-  ads::stack::ArrayStack<Person>         stack;
-  ads::queue::CircularArrayQueue<Person> queue;
+  ArrayStack<Person>         stack;
+  CircularArrayQueue<Person> queue;
 
   cout << "\nEmplacing into stack:\n";
   stack.emplace("Alice", 25);
@@ -182,26 +190,26 @@ void demo_emplace_functionality() {
 auto main() -> int {
   try {
     // Test Stack implementations
-    ads::stack::ArrayStack<int>  array_stack;
-    ads::stack::LinkedStack<int> linked_stack;
+    ArrayStack<int>  array_stack;
+    LinkedStack<int> linked_stack;
 
     demo_stack_interface(array_stack, "ArrayStack");
     demo_stack_interface(linked_stack, "LinkedStack");
 
     // Test Queue implementations
-    ads::queue::CircularArrayQueue<int> circular_queue;
-    ads::queue::LinkedQueue<int>        linked_queue;
+    CircularArrayQueue<int> circular_queue;
+    LinkedQueue<int>        linked_queue;
 
     demo_queue_interface(circular_queue, "CircularArrayQueue");
     demo_queue_interface(linked_queue, "LinkedQueue");
 
     // Test move semantics
     cout << "\n========== Testing Move Semantics ==========\n";
-    ads::stack::ArrayStack<string> stack1;
+    ArrayStack<string> stack1;
     stack1.push("Hello");
     stack1.push("World");
 
-    ads::stack::ArrayStack<string> stack2 = std::move(stack1);
+    ArrayStack<string> stack2 = std::move(stack1);
     cout << "After move, stack2 size: " << stack2.size() << '\n';
     cout << "After move, stack1 size: " << stack1.size() << " (should be 0)\n";
 

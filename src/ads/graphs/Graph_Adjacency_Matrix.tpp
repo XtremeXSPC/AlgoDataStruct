@@ -10,10 +10,11 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 #include "../../../include/ads/graphs/Graph_Adjacency_Matrix.hpp"
 
-namespace ads::graph {
+namespace ads::graphs {
 
 //========== CONSTRUCTORS AND ASSIGNMENT ==========//
 

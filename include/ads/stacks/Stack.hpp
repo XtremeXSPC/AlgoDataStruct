@@ -10,13 +10,15 @@
  *
  */
 //===---------------------------------------------------------------------------===//
+
 #pragma once
+
 #ifndef STACK_HPP
 #define STACK_HPP
 
 #include <cstddef>
 
-namespace ads::stack {
+namespace ads::stacks {
 
 /**
  * @brief Abstract base class that defines common operations for a stack data structure.
@@ -84,7 +86,7 @@ public:
   virtual void clear() noexcept = 0;
 };
 
-} // namespace ads::stack
+} // namespace ads::stacks
 
 #endif // STACK_HPP
 

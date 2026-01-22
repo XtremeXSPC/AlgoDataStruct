@@ -10,6 +10,7 @@
  *
  */
 //===--------------------------------------------------------------------------===//
+
 #pragma once
 
 #ifndef GRAPH_ADJACENCY_MATRIX_HPP
@@ -24,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-namespace ads::graph {
+namespace ads::graphs {
 
 // Reuse GraphException from Graph_Adjacency_List.hpp
 class GraphMatrixException : public std::runtime_error {
