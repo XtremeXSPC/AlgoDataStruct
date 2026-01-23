@@ -52,7 +52,7 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
-    iterator(size_t index = 0, CircularArrayDeque<T>* deque = nullptr) : index_(index), deque_(deque) {}
+    explicit iterator(size_t index = 0, CircularArrayDeque<T>* deque = nullptr) : index_(index), deque_(deque) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -79,8 +79,8 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    const_iterator(size_t index = 0, const CircularArrayDeque<T>* deque = nullptr) : index_(index), deque_(deque) {}
-    const_iterator(const iterator& it) : index_(it.index_), deque_(it.deque_) {}
+    explicit const_iterator(size_t index = 0, const CircularArrayDeque<T>* deque = nullptr) : index_(index), deque_(deque) {}
+    explicit const_iterator(const iterator& it) : index_(it.index_), deque_(it.deque_) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -297,23 +297,75 @@ public:
 
   //===------------------------- ITERATOR OPERATIONS ---------------------------===//
 
+  /**
+   * @brief Returns an iterator/const_iterator to the beginning of the deque.
+   */
   auto begin() noexcept -> iterator;
-  auto end() noexcept -> iterator;
   auto begin() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns an iterator/const_iterator to the end of the deque.
+   */
+  auto end() noexcept -> iterator;
   auto end() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns a const_iterator to the beginning of the deque.
+   */
   auto cbegin() const noexcept -> const_iterator;
   auto cend() const noexcept -> const_iterator;
 
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
+  /**
+   * @brief Calculates the next index in the circular buffer.
+   * @param index The current index.
+   * @return The next index, wrapping around if necessary.
+   */
   [[nodiscard]] auto next_index(size_t index) const noexcept -> size_t { return (index + 1) % capacity_; }
+
+  /**
+   * @brief Calculates the previous index in the circular buffer.
+   * @param index The current index.
+   * @return The previous index, wrapping around if necessary.
+   */
   [[nodiscard]] auto prev_index(size_t index) const noexcept -> size_t { return (index + capacity_ - 1) % capacity_; }
+
+  /**
+   * @brief Converts a logical offset to a physical index in the circular buffer.
+   * @param offset The logical offset from the front.
+   * @return The physical index in the underlying array.
+   */
   [[nodiscard]] auto index_from_front(size_t offset) const noexcept -> size_t { return (front_ + offset) % capacity_; }
 
+  /**
+   * @brief Accesses the element at the given logical index without bounds checking.
+   * @param index The logical index.
+   * @return Reference to the element.
+   */
   auto element_at(size_t index) -> T&;
+
+  /**
+   * @brief Accesses the element at the given logical index without bounds checking (const).
+   * @param index The logical index.
+   * @return Const reference to the element.
+   */
   auto element_at(size_t index) const -> const T&;
+
+  /**
+   * @brief Ensures the internal array has at least the specified capacity.
+   * @param min_capacity The minimum required capacity.
+   * @complexity Time O(n) if reallocation occurs, Space O(n)
+   * @throws std::bad_alloc if memory allocation fails.
+   */
   auto ensure_capacity(size_t min_capacity) -> void;
+
+  /**
+   * @brief Grows the internal array when full.
+   * @complexity Time O(n), Space O(n)
+   * @throws std::bad_alloc if memory allocation fails.
+   */
   auto reallocate(size_t new_capacity) -> void;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
