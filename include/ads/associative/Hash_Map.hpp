@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "../hash/Hash_Table_Chaining.hpp"
+#include "Dictionary.hpp"
 
 namespace ads::associative {
 
@@ -45,7 +46,7 @@ namespace ads::associative {
  * @tparam Hash The hash function object (default: std::hash<Key>)
  */
 template <typename Key, typename Value, typename Hash = std::hash<Key>>
-class HashMap {
+class HashMap : public Dictionary<Key, Value> {
 public:
   // Type aliases for convenience.
   using key_type    = Key;
@@ -208,6 +209,36 @@ public:
    */
   auto at(const Key& key) const -> const Value&;
 
+  //===------------------------- DICTIONARY INTERFACE ---------------------------===//
+
+  /**
+   * @brief Inserts or updates a key-value pair (copy).
+   * @param key The key to insert.
+   * @param value The value to associate with the key.
+   */
+  auto put(const Key& key, const Value& value) -> void override;
+
+  /**
+   * @brief Inserts or updates a key-value pair (move).
+   * @param key The key to insert.
+   * @param value The value to associate with the key.
+   */
+  auto put(Key&& key, Value&& value) -> void override;
+
+  /**
+   * @brief Retrieves the value associated with a key.
+   * @param key The key to access.
+   * @return Reference to the associated value.
+   */
+  auto get(const Key& key) -> Value& override;
+
+  /**
+   * @brief Retrieves the value associated with a key (const).
+   * @param key The key to access.
+   * @return Const reference to the associated value.
+   */
+  auto get(const Key& key) const -> const Value& override;
+
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
@@ -274,7 +305,7 @@ public:
    * @return Number of key-value pairs.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_t override;
 
   /**
    * @brief Returns the current load factor.
@@ -308,7 +339,14 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
-  auto contains(const Key& key) const -> bool;
+  auto contains(const Key& key) const -> bool override;
+
+  /**
+   * @brief Removes the element with the given key.
+   * @param key The key to remove.
+   * @return true if an element was removed, false otherwise.
+   */
+  auto remove(const Key& key) -> bool override;
 
   /**
    * @brief Counts elements with given key.
