@@ -40,8 +40,8 @@ public:
  */
 class KeyNotFoundException : public HashTableException {
 public:
+  using HashTableException::HashTableException;
   KeyNotFoundException() : HashTableException("Key not found in hash table") {}
-  explicit KeyNotFoundException(const std::string& message) : HashTableException(message) {}
 };
 
 /**
@@ -52,8 +52,8 @@ public:
  */
 class EmptyTableException : public HashTableException {
 public:
+  using HashTableException::HashTableException;
   EmptyTableException() : HashTableException("Operation on empty hash table") {}
-  explicit EmptyTableException(const char* message) : HashTableException(message) {}
 };
 
 /**
@@ -64,8 +64,8 @@ public:
  */
 class InvalidOperationException : public HashTableException {
 public:
+  using HashTableException::HashTableException;
   InvalidOperationException() : HashTableException("Invalid hash table operation") {}
-  explicit InvalidOperationException(const char* message) : HashTableException(message) {}
 };
 
 } // namespace ads::hash

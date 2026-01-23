@@ -27,20 +27,16 @@ namespace ads::heaps {
  * @details This exception is thrown when operations on heap data structures
  *          fail due to precondition violations or invalid states.
  *          Common cases include:
- *          - Attempting to access or remove from an empty heap
- *          - Invalid index operations
- *          - Capacity overflow in fixed-size heaps
+ *            - Attempting to access or remove from an empty heap.
+ *            - Invalid index operations.
+ *            - Capacity overflow in fixed-size heaps.
  */
 class HeapException : public std::runtime_error {
 public:
-  /**
-   * @brief Construct a new Heap Exception object
-   * @param message Description of the error
-   */
-  explicit HeapException(const std::string& message) : std::runtime_error(message) {}
+  using std::runtime_error::runtime_error;
 };
 
-} // namespace ads::heap
+} // namespace ads::heaps
 
 #endif // HEAP_EXCEPTION_HPP
 //===--------------------------------------------------------------------------===//
