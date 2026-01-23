@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "../include/ads/trees/Red_Black_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -51,7 +52,7 @@ void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
 
 // Demo: Basic operations.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   Red_Black_Tree<int> rbt;
 
@@ -85,7 +86,7 @@ void demo_basic_operations() {
 
 // Demo: Sequential insertions.
 void demo_sequential_insertions() {
-  cout << "\n========== Demo: Sequential Insertions ==========\n";
+  ads::demo::print_section("Demo: Sequential Insertions");
 
   cout << "Red-Black Trees maintain balance even with sequential insertions.\n\n";
 
@@ -111,7 +112,7 @@ void demo_sequential_insertions() {
 
 // Demo: Search operations.
 void demo_search_operations() {
-  cout << "\n========== Demo: Search Operations ==========\n";
+  ads::demo::print_section("Demo: Search Operations");
 
   Red_Black_Tree<int> rbt;
 
@@ -135,7 +136,7 @@ void demo_search_operations() {
 
 // Demo: RB-Tree properties validation.
 void demo_property_validation() {
-  cout << "\n========== Demo: RB-Tree Properties Validation ==========\n";
+  ads::demo::print_section("Demo: RB-Tree Properties Validation");
 
   Red_Black_Tree<int> rbt;
 
@@ -160,7 +161,7 @@ void demo_property_validation() {
 
 // Demo: Random insertions.
 void demo_random_insertions() {
-  cout << "\n========== Demo: Random Insertions ==========\n";
+  ads::demo::print_section("Demo: Random Insertions");
 
   Red_Black_Tree<int> rbt;
 
@@ -198,7 +199,7 @@ void demo_random_insertions() {
 
 // Demo: Move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   Red_Black_Tree<int> rbt1;
   for (int i = 1; i <= 10; ++i) {
@@ -234,7 +235,7 @@ void demo_move_semantics() {
 
 // Demo: Performance.
 void demo_performance() {
-  cout << "\n========== Demo: Performance ==========\n";
+  ads::demo::print_section("Demo: Performance");
 
   const int N = 10000;
 
@@ -270,7 +271,7 @@ void demo_performance() {
 
 // Demo: Clear and reuse.
 void demo_clear_reuse() {
-  cout << "\n========== Demo: Clear and Reuse ==========\n";
+  ads::demo::print_section("Demo: Clear and Reuse");
 
   Red_Black_Tree<int> rbt;
 
@@ -296,7 +297,7 @@ void demo_clear_reuse() {
 
 // Demo: Edge cases.
 void demo_edge_cases() {
-  cout << "\n========== Demo: Edge Cases ==========\n";
+  ads::demo::print_section("Demo: Edge Cases");
 
   Red_Black_Tree<int> rbt;
 
@@ -328,9 +329,7 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "            RED-BLACK TREE - COMPREHENSIVE DEMO             \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_header("RED-BLACK TREE - COMPREHENSIVE DEMO");
 
     demo_basic_operations();
     demo_sequential_insertions();
@@ -342,10 +341,7 @@ auto main() -> int {
     demo_clear_reuse();
     demo_edge_cases();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const std::exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

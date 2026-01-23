@@ -21,6 +21,7 @@
 
 #include "../include/ads/graphs/Graph_Adjacency_List.hpp"
 #include "../include/ads/queues/Priority_Queue.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -113,10 +114,8 @@ auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t 
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "         DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO          \n";
-  cout << "          Graph (Adjacency List) + Priority Queue           \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header(
+      {"DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO", "Graph (Adjacency List) + Priority Queue"});
 
   // Create a graph of European cities with distances in km.
   GraphAdjacencyList<City, double> cities(false); // Undirected graph.
@@ -193,12 +192,9 @@ auto main() -> int {
   cout << "  To vertex 500: " << distances[500] << "\n";
   cout << "  To vertex 999: " << distances[999] << "\n";
 
-  cout << "\n";
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "           DIJKSTRA'S ALGORITHM TESTS COMPLETED!            \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_footer("DIJKSTRA'S ALGORITHM TESTS COMPLETED!");
 
   return 0;
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

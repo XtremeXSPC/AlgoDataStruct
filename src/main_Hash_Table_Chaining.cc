@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "../include/ads/hash/Hash_Table_Chaining.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -50,7 +51,7 @@ void print_stats(const HashTableChaining<Key, Value>& table, const string& name)
 
 // Test basic insertion and access.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   HashTableChaining<int, string> table;
 
@@ -79,7 +80,7 @@ void demo_basic_operations() {
 
 // Test update existing keys.
 void demo_updates() {
-  cout << "\n========== Demo: Updates ==========\n";
+  ads::demo::print_section("Demo: Updates");
 
   HashTableChaining<string, int> table;
 
@@ -107,7 +108,7 @@ void demo_updates() {
 
 // Test operator[].
 void demo_bracket_operator() {
-  cout << "\n========== Demo: Operator[] ==========\n";
+  ads::demo::print_section("Demo: Operator[]");
 
   HashTableChaining<string, int> table;
 
@@ -131,7 +132,7 @@ void demo_bracket_operator() {
 
 // Test find().
 void demo_find() {
-  cout << "\n========== Demo: Find ==========\n";
+  ads::demo::print_section("Demo: Find");
 
   HashTableChaining<int, string> table;
   table.insert(10, "ten");
@@ -159,7 +160,7 @@ void demo_find() {
 
 // Test erase.
 void demo_erase() {
-  cout << "\n========== Demo: Erase ==========\n";
+  ads::demo::print_section("Demo: Erase");
 
   HashTableChaining<int, string> table;
 
@@ -190,7 +191,7 @@ void demo_erase() {
 
 // Test rehashing.
 void demo_rehashing() {
-  cout << "\n========== Demo: Rehashing ==========\n";
+  ads::demo::print_section("Demo: Rehashing");
 
   // Small initial capacity.
   HashTableChaining<int, int> table(4, 0.75f);
@@ -226,7 +227,7 @@ void demo_rehashing() {
 
 // Test reserve.
 void demo_reserve() {
-  cout << "\n========== Demo: Reserve ==========\n";
+  ads::demo::print_section("Demo: Reserve");
 
   HashTableChaining<int, string> table;
 
@@ -261,7 +262,7 @@ struct Person {
 
 // Test with custom types.
 void demo_custom_types() {
-  cout << "\n========== Demo: Custom Types ==========\n";
+  ads::demo::print_section("Demo: Custom Types");
 
   HashTableChaining<string, Person> table;
 
@@ -281,7 +282,7 @@ void demo_custom_types() {
 
 // Test collisions (intentional).
 void demo_collisions() {
-  cout << "\n========== Demo: Collision Handling ==========\n";
+  ads::demo::print_section("Demo: Collision Handling");
 
   // Use small capacity to force collisions
   HashTableChaining<int, string> table(4);
@@ -306,7 +307,7 @@ void demo_collisions() {
 
 // Test exception handling.
 void demo_exceptions() {
-  cout << "\n========== Demo: Exception Handling ==========\n";
+  ads::demo::print_section("Demo: Exception Handling");
 
   HashTableChaining<int, string> table;
   table.insert(1, "one");
@@ -335,7 +336,7 @@ void demo_exceptions() {
 
 // Test move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   HashTableChaining<int, string> table1;
   table1.insert(1, "one");
@@ -363,7 +364,7 @@ void demo_move_semantics() {
 
 // Test clear().
 void demo_clear() {
-  cout << "\n========== Demo: Clear ==========\n";
+  ads::demo::print_section("Demo: Clear");
 
   HashTableChaining<int, int> table;
   for (int i = 0; i < 100; ++i) {
@@ -388,7 +389,7 @@ void demo_clear() {
 
 // Performance comparison with unordered_map.
 void demo_performance() {
-  cout << "\n========== Demo: Performance Comparison ==========\n";
+  ads::demo::print_section("Demo: Performance Comparison");
 
   const int N = 100000;
 
@@ -429,9 +430,7 @@ void demo_performance() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "          HASH TABLE CHAINING - COMPREHENSIVE DEMO          \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("HASH TABLE CHAINING - COMPREHENSIVE DEMO");
 
   try {
     demo_basic_operations();
@@ -448,10 +447,7 @@ auto main() -> int {
     demo_clear();
     demo_performance();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
     return 0;
 
@@ -461,4 +457,4 @@ auto main() -> int {
   }
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

@@ -19,6 +19,7 @@
 #include <string>
 
 #include "../include/ads/graphs/Graph_Adjacency_List.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -31,25 +32,12 @@ using namespace ads::graphs;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
-// Print a separator with title.
-void print_separator(const string& title) {
-  cout << "\n=====---------- " << title << " ----------=====\n";
-}
-
-template <typename T>
-void print_vector(const vector<T>& vec, const string& prefix = "") {
-  cout << prefix;
-  for (const auto& elem : vec) {
-    cout << elem << " ";
-  }
-  cout << '\n';
-}
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
 // Test construction and basic properties.
 void demo_graph_construction() {
-  print_separator("Graph - Construction and Basic Properties");
+  ads::demo::print_section("Graph - Construction and Basic Properties");
 
   // Undirected graph.
   GraphAdjacencyList<int> g_undirected(false);
@@ -69,7 +57,7 @@ void demo_graph_construction() {
 
 // Test adding vertices.
 void demo_graph_add_vertices() {
-  print_separator("Graph - Adding Vertices");
+  ads::demo::print_section("Graph - Adding Vertices");
 
   GraphAdjacencyList<string> graph(false);
 
@@ -91,7 +79,7 @@ void demo_graph_add_vertices() {
 
 // Test adding edges in undirected graph.
 void demo_graph_add_edges_undirected() {
-  print_separator("Graph - Adding Edges (Undirected)");
+  ads::demo::print_section("Graph - Adding Edges (Undirected)");
 
   GraphAdjacencyList<int> graph(false);
 
@@ -132,7 +120,7 @@ void demo_graph_add_edges_undirected() {
 
 // Test adding edges in directed graph.
 void demo_graph_add_edges_directed() {
-  print_separator("Graph - Adding Edges (Directed)");
+  ads::demo::print_section("Graph - Adding Edges (Directed)");
 
   GraphAdjacencyList<int> graph(true);
 
@@ -166,7 +154,7 @@ void demo_graph_add_edges_directed() {
 
 // Test getting neighbors.
 void demo_graph_neighbors() {
-  print_separator("Graph - Getting Neighbors");
+  ads::demo::print_section("Graph - Getting Neighbors");
 
   GraphAdjacencyList<char> graph(false);
 
@@ -200,7 +188,7 @@ void demo_graph_neighbors() {
 
 // Test removing edges.
 void demo_graph_remove_edge() {
-  print_separator("Graph - Removing Edges");
+  ads::demo::print_section("Graph - Removing Edges");
 
   GraphAdjacencyList<int> graph(false);
 
@@ -226,7 +214,7 @@ void demo_graph_remove_edge() {
 
 // Test removing vertices.
 void demo_graph_bfs() {
-  print_separator("Graph - Breadth-First Search (BFS)");
+  ads::demo::print_section("Graph - Breadth-First Search (BFS)");
 
   GraphAdjacencyList<int> graph(false);
 
@@ -253,18 +241,18 @@ void demo_graph_bfs() {
 
   cout << "\nBFS from vertex 0:\n";
   auto bfs_result = graph.bfs(v0);
-  print_vector(bfs_result, "Traversal order: ");
+  ads::demo::print_sequence(bfs_result, "Traversal order: ");
 
   cout << "\nBFS from vertex 2:\n";
   bfs_result = graph.bfs(v2);
-  print_vector(bfs_result, "Traversal order: ");
+  ads::demo::print_sequence(bfs_result, "Traversal order: ");
 }
 
 //===------------------------- DEPTH-FIRST SEARCH DEMO -------------------------===//
 
 // Test depth-first search.
 void demo_graph_dfs() {
-  print_separator("Graph - Depth-First Search (DFS)");
+  ads::demo::print_section("Graph - Depth-First Search (DFS)");
 
   GraphAdjacencyList<int> graph(false);
 
@@ -287,18 +275,18 @@ void demo_graph_dfs() {
 
   cout << "\nDFS from vertex 0:\n";
   auto dfs_result = graph.dfs(v0);
-  print_vector(dfs_result, "Traversal order: ");
+  ads::demo::print_sequence(dfs_result, "Traversal order: ");
 
   cout << "\nDFS from vertex 2:\n";
   dfs_result = graph.dfs(v2);
-  print_vector(dfs_result, "Traversal order: ");
+  ads::demo::print_sequence(dfs_result, "Traversal order: ");
 }
 
 //===---------------------------- PATH FINDING DEMO ----------------------------===//
 
 // Test path finding.
 void demo_graph_path_finding() {
-  print_separator("Graph - Path Finding");
+  ads::demo::print_section("Graph - Path Finding");
 
   GraphAdjacencyList<string> graph(false);
 
@@ -355,7 +343,7 @@ void demo_graph_path_finding() {
 
 // Test connected components.
 void demo_graph_connected_components() {
-  print_separator("Graph - Connected Components");
+  ads::demo::print_section("Graph - Connected Components");
 
   GraphAdjacencyList<int> graph(false);
 
@@ -380,7 +368,7 @@ void demo_graph_connected_components() {
 
   for (size_t i = 0; i < components.size(); ++i) {
     cout << "Component " << i + 1 << ": ";
-    print_vector(components[i]);
+    ads::demo::print_sequence(components[i]);
   }
 }
 
@@ -388,7 +376,7 @@ void demo_graph_connected_components() {
 
 // Test move semantics.
 void demo_graph_move_semantics() {
-  print_separator("Graph - Move Semantics");
+  ads::demo::print_section("Graph - Move Semantics");
 
   GraphAdjacencyList<int> graph1(false);
   graph1.add_vertex(0);
@@ -416,7 +404,7 @@ void demo_graph_move_semantics() {
 
 // Test exception handling.
 void demo_graph_exception_handling() {
-  print_separator("Graph - Exception Handling");
+  ads::demo::print_section("Graph - Exception Handling");
 
   GraphAdjacencyList<int> graph(false);
   graph.add_vertex(0);
@@ -448,7 +436,7 @@ void demo_graph_exception_handling() {
 
 // Test performance on large graph.
 void demo_graph_large_performance() {
-  print_separator("Graph - Large Dataset Performance");
+  ads::demo::print_section("Graph - Large Dataset Performance");
 
   const size_t            N = 10000;
   GraphAdjacencyList<int> graph(false);
@@ -505,9 +493,7 @@ void demo_graph_large_performance() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "        GRAPH ADJACENCY LIST - EXAMPLES FOR TESTING         \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("GRAPH ADJACENCY LIST - EXAMPLES FOR TESTING");
 
   try {
     // Basic tests.
@@ -531,10 +517,7 @@ auto main() -> int {
     // Performance tests.
     demo_graph_large_performance();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const exception& e) {
     cerr << "\nTest failed with exception: " << e.what() << '\n';
@@ -544,4 +527,4 @@ auto main() -> int {
   return 0;
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
