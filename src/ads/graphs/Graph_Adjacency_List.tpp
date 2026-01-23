@@ -1,22 +1,22 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Graph_Adjacency_List.tpp
  * @author Costantino Lombardi
- * @brief Implementation of the GraphAdjacencyList class
+ * @brief Implementation of the GraphAdjacencyList class.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #pragma once
 #include "../../../include/ads/graphs/Graph_Adjacency_List.hpp"
 
 namespace ads::graphs {
 
-//========== CONSTRUCTORS AND ASSIGNMENT ==========//
+//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) : vertices_(), is_directed_(is_directed), num_edges_(0) {
@@ -46,7 +46,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::operator=(GraphAdjacencyList&& 
   return *this;
 }
 
-//========== VERTEX OPERATIONS ==========//
+//===---------------------------- VERTEX OPERATIONS ----------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> size_t {
@@ -82,22 +82,22 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::num_vertices() const noexcept -
   return vertices_.size();
 }
 
-//========== EDGE OPERATIONS ==========//
+//===----------------------------- EDGE OPERATIONS -----------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::add_edge(size_t from, size_t to, EdgeWeight weight) -> void {
   validate_vertex(from);
   validate_vertex(to);
 
-  // Check if edge already exists
+  // Check if edge already exists.
   if (!has_edge(from, to)) {
     vertices_[from].adjacency.emplace_back(to, weight);
     ++num_edges_;
 
-    // For undirected graphs, add reverse edge
+    // For undirected graphs, add reverse edge.
     if (!is_directed_ && from != to) {
       vertices_[to].adjacency.emplace_back(from, weight);
-      // Note: num_edges_ is only incremented once for undirected edges
+      // Note: num_edges_ is only incremented once for undirected edges.
     }
   }
 }
@@ -107,7 +107,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
   validate_vertex(from);
   validate_vertex(to);
 
-  // Remove edge from -> to
+  // Remove edge from -> to.
   auto& adj = vertices_[from].adjacency;
   auto  it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
 
@@ -115,7 +115,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
     adj.erase(it);
     --num_edges_;
 
-    // For undirected graphs, remove reverse edge
+    // For undirected graphs, remove reverse edge.
     if (!is_directed_ && from != to) {
       auto& adj_reverse = vertices_[to].adjacency;
       auto  it_reverse =
@@ -159,7 +159,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::num_edges() const noexcept -> s
   return num_edges_;
 }
 
-//========== NAVIGATION OPERATIONS ==========//
+//===-------------------------- NAVIGATION OPERATIONS --------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id) const -> std::vector<size_t> {
@@ -196,7 +196,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::degree(size_t vertex_id) const 
   return vertices_[vertex_id].adjacency.size();
 }
 
-//========== QUERY OPERATIONS ==========//
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::is_directed() const noexcept -> bool {
@@ -208,13 +208,14 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::is_empty() const noexcept -> bo
   return vertices_.empty();
 }
 
+//===----------------------------- CLEAR OPERATION -----------------------------===//
+
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::clear() -> void {
   vertices_.clear();
   num_edges_ = 0;
 }
-
-//========== TRAVERSAL ALGORITHMS ==========//
+//===-------------------------- TRAVERSAL ALGORITHMS ---------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const -> std::vector<size_t> {
@@ -224,7 +225,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const 
   std::vector<bool>   visited(vertices_.size(), false);
   std::queue<size_t>  queue;
 
-  // Start BFS from start_vertex
+  // Start BFS from start_vertex.
   queue.push(start_vertex);
   visited[start_vertex] = true;
 
@@ -233,7 +234,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const 
     queue.pop();
     result.push_back(current);
 
-    // Visit all neighbors
+    // Visit all neighbors.
     for (const auto& edge : vertices_[current].adjacency) {
       if (!visited[edge.destination]) {
         visited[edge.destination] = true;
@@ -270,7 +271,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
   std::vector<size_t> parent(vertices_.size(), SIZE_MAX);
   std::queue<size_t>  queue;
 
-  // BFS to find path
+  // BFS to find path.
   queue.push(from);
   visited[from] = true;
 
@@ -279,7 +280,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
     queue.pop();
 
     if (current == to) {
-      // Reconstruct path
+      // Reconstruct path.
       std::vector<size_t> path;
       size_t              node = to;
 
@@ -293,7 +294,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
       return path;
     }
 
-    // Visit neighbors
+    // Visit neighbors.
     for (const auto& edge : vertices_[current].adjacency) {
       if (!visited[edge.destination]) {
         visited[edge.destination] = true;
@@ -303,7 +304,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
     }
   }
 
-  // No path found
+  // No path found.
   return std::nullopt;
 }
 
@@ -319,7 +320,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const ->
 
   for (size_t i = 0; i < vertices_.size(); ++i) {
     if (!visited[i]) {
-      // Start a new component
+      // Start a new component.
       std::vector<size_t> component;
       std::queue<size_t>  queue;
 
@@ -331,7 +332,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const ->
         queue.pop();
         component.push_back(current);
 
-        // Visit all neighbors
+        // Visit all neighbors.
         for (const auto& edge : vertices_[current].adjacency) {
           if (!visited[edge.destination]) {
             visited[edge.destination] = true;
@@ -347,7 +348,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const ->
   return components;
 }
 
-//========== PRIVATE HELPER METHODS ==========//
+//=================================================================================//
+//===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
@@ -362,7 +364,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, st
   visited[vertex_id] = true;
   result.push_back(vertex_id);
 
-  // Visit all unvisited neighbors
+  // Visit all unvisited neighbors.
   for (const auto& edge : vertices_[vertex_id].adjacency) {
     if (!visited[edge.destination]) {
       dfs_helper(edge.destination, visited, result);
@@ -370,5 +372,6 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, st
   }
 }
 
-} // namespace ads::graph
-//===--------------------------------------------------------------------------===//
+} // namespace ads::graphs
+
+//===---------------------------------------------------------------------------===//
