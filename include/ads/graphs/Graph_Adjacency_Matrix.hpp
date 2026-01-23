@@ -83,7 +83,7 @@ public:
    * @param is_directed If true, creates a directed graph; otherwise undirected.
    * @complexity Time O(V^2), Space O(V^2)
    */
-  GraphAdjacencyMatrix(size_t num_vertices, bool is_directed = false);
+  explicit GraphAdjacencyMatrix(size_t num_vertices, bool is_directed = false);
 
   /**
    * @brief Move constructor.
