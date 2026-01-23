@@ -218,6 +218,7 @@
       "type": "pickString",
       "description": "Select test binary to run",
       "options": [
+        "test_Dynamic_Array",
         "test_Singly_Linked_List",
         "test_Doubly_Linked_List",
         "test_Stacks_Queues",
