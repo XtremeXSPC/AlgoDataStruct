@@ -39,8 +39,8 @@ public:
  */
 class StackOverflowException : public StackException {
 public:
+  using StackException::StackException;
   StackOverflowException() : StackException("Stack overflow: maximum capacity exceeded") {}
-  explicit StackOverflowException(const char* message) : StackException(message) {}
 };
 
 /**
@@ -48,11 +48,11 @@ public:
  */
 class StackUnderflowException : public StackException {
 public:
+  using StackException::StackException;
   StackUnderflowException() : StackException("Stack underflow: operation on empty stack") {}
-  explicit StackUnderflowException(const char* message) : StackException(message) {}
 };
 
-} // namespace ads::stack
+} // namespace ads::stacks
 
 #endif // STACK_EXCEPTION_HPP
 
