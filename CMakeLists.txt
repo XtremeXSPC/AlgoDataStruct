@@ -200,6 +200,7 @@ target_sources(ads_lib
             # Queue interface and implementations.
             include/ads/queues/Queue.hpp
             include/ads/queues/Queue_Exception.hpp
+            include/ads/queues/Circular_Array_Deque.hpp
             include/ads/queues/Circular_Array_Queue.hpp
             include/ads/queues/Linked_Queue.hpp
             include/ads/queues/Priority_Queue.hpp
@@ -225,6 +226,7 @@ target_sources(ads_lib
             include/ads/graphs/Graph_Adjacency_Matrix.hpp
 
             # Associative structures.
+            include/ads/associative/Dictionary.hpp
             include/ads/associative/Hash_Map.hpp
 
     # Template implementations (.tpp files)
@@ -237,6 +239,7 @@ target_sources(ads_lib
         src/ads/stacks/Array_Stack.tpp
         src/ads/stacks/Linked_Stack.tpp
         src/ads/queues/Circular_Array_Queue.tpp
+        src/ads/queues/Circular_Array_Deque.tpp
         src/ads/queues/Linked_Queue.tpp
         src/ads/queues/Priority_Queue.tpp
         src/ads/trees/Trie.tpp
@@ -347,6 +350,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dynamic_Array.cc")
     ads_add_executable(test_Dynamic_Array src/main_Dynamic_Array.cc)
 endif()
 
+# Deque test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Deque.cc")
+    ads_add_executable(test_Deque src/main_Deque.cc)
+endif()
+
 # Stacks and Queues test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
     ads_add_executable(test_Stacks_Queues src/main_Stacks_Queues.cc)
@@ -452,6 +460,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Dynamic_Array.cpp")
         list(APPEND TEST_SOURCES tests/Test_Dynamic_Array.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Deque.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Deque.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BinarySearchTree.cpp")
         list(APPEND TEST_SOURCES tests/Test_BinarySearchTree.cpp)

@@ -36,8 +36,10 @@ DynamicArray<T>::DynamicArray(std::initializer_list<T> values) :
     throw ArrayOverflowException("DynamicArray capacity overflow");
   }
 
+  // Allocate raw memory.
   data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
 
+  // Construct elements from initializer list.
   size_t constructed = 0;
   try {
     for (const auto& value : values) {
@@ -61,8 +63,10 @@ DynamicArray<T>::DynamicArray(size_t count, const T& value) :
     throw ArrayOverflowException("DynamicArray capacity overflow");
   }
 
+  // Allocate raw memory.
   data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
 
+  // Construct elements with the given value.
   size_t constructed = 0;
   try {
     for (; constructed < count; ++constructed) {
@@ -133,18 +137,22 @@ auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T& {
     throw ArrayOutOfRangeException("insert position out of range");
   }
 
+  // Special case: inserting at the end.
   if (index == size_) {
     return emplace_back(std::forward<Args>(args)...);
   }
 
+  // Ensure enough capacity.
   ensure_capacity(size_ + 1);
 
+  // Shift elements right to make space.
   T* data_ptr = data_.get();
   std::construct_at(data_ptr + size_, std::move_if_noexcept(data_ptr[size_ - 1]));
   for (size_t i = size_ - 1; i > index; --i) {
     data_ptr[i] = std::move_if_noexcept(data_ptr[i - 1]);
   }
 
+  // Construct the new element in place.
   data_ptr[index] = T(std::forward<Args>(args)...);
   ++size_;
   return data_ptr[index];
@@ -168,9 +176,11 @@ auto DynamicArray<T>::pop_back() -> void {
     throw ArrayUnderflowException("pop_back on empty array");
   }
 
+  // Destroy the last element.
   std::destroy_at(data_.get() + size_ - 1);
   --size_;
 
+  // Optional: shrink if significantly underutilized.
   if (size_ > 0 && size_ * 4 <= capacity_ && capacity_ > kMinCapacity) {
     const size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
@@ -186,14 +196,17 @@ auto DynamicArray<T>::erase(size_t index) -> void {
     throw ArrayOutOfRangeException("erase position out of range");
   }
 
+  // Shift elements left to fill the gap.
   T* data_ptr = data_.get();
   for (size_t i = index; i + 1 < size_; ++i) {
     data_ptr[i] = std::move_if_noexcept(data_ptr[i + 1]);
   }
 
+  // Destroy the now-unused last element.
   std::destroy_at(data_.get() + size_ - 1);
   --size_;
 
+  // Optional: shrink if significantly underutilized.
   if (size_ > 0 && size_ * 4 <= capacity_ && capacity_ > kMinCapacity) {
     const size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
@@ -321,6 +334,7 @@ template <typename T>
 auto DynamicArray<T>::resize(size_t new_size) -> void
   requires std::default_initializable<T>
 {
+  // Handle shrinking the array.
   if (new_size < size_) {
     for (size_t i = new_size; i < size_; ++i) {
       std::destroy_at(data_.get() + i);
@@ -329,6 +343,7 @@ auto DynamicArray<T>::resize(size_t new_size) -> void
     return;
   }
 
+  // Handle growing the array.
   if (new_size > size_) {
     ensure_capacity(new_size);
     for (size_t i = size_; i < new_size; ++i) {
@@ -427,6 +442,7 @@ auto DynamicArray<T>::ensure_capacity(size_t min_capacity) -> void {
     return;
   }
 
+  // Calculate new capacity with growth factor.
   size_t new_capacity = std::max(capacity_, kMinCapacity);
   while (new_capacity < min_capacity) {
     if (new_capacity > std::numeric_limits<size_t>::max() / kGrowthFactor) {
@@ -435,6 +451,7 @@ auto DynamicArray<T>::ensure_capacity(size_t min_capacity) -> void {
     new_capacity = std::max(new_capacity * kGrowthFactor, kMinCapacity);
   }
 
+  // Reallocate to new capacity.
   reallocate(new_capacity);
 }
 
@@ -444,6 +461,7 @@ auto DynamicArray<T>::grow() -> void {
     throw ArrayOverflowException("DynamicArray capacity overflow");
   }
 
+  // Calculate new capacity and reallocate.
   const size_t new_capacity = std::max(capacity_ * kGrowthFactor, kMinCapacity);
   reallocate(new_capacity);
 }
@@ -454,13 +472,16 @@ auto DynamicArray<T>::reallocate(size_t new_capacity) -> void {
     new_capacity = size_;
   }
 
+  // Check for overflow BEFORE multiplication.
   if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
     throw ArrayOverflowException("DynamicArray capacity overflow");
   }
 
+  // Allocate new memory with custom deleter.
   std::unique_ptr<T[], void (*)(T*)> new_data(
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
+  // Move or copy existing elements to new storage.
   size_t constructed = 0;
   try {
     for (; constructed < size_; ++constructed) {
@@ -471,16 +492,19 @@ auto DynamicArray<T>::reallocate(size_t new_capacity) -> void {
       }
     }
   } catch (...) {
+    // Rollback constructed elements on failure.
     for (size_t i = 0; i < constructed; ++i) {
       std::destroy_at(new_data.get() + i);
     }
     throw;
   }
 
+  // Destroy old elements only after all new elements are constructed.
   for (size_t i = 0; i < size_; ++i) {
     std::destroy_at(data_.get() + i);
   }
 
+  // Update internal state.
   data_     = std::move(new_data);
   capacity_ = new_capacity;
 }
