@@ -21,6 +21,7 @@
 
 #include "../include/ads/trees/AVL_Tree.hpp"
 #include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -53,7 +54,7 @@ void print_avl_tree(const AVLTree<T>& tree, const string& name) {
 
 // Test basic insertion and traversals.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   AVLTree<int> avl;
 
@@ -95,7 +96,7 @@ void demo_basic_operations() {
 
 // Test Left-Left (LL) rotation.
 void demo_ll_rotation() {
-  cout << "\n========== Demo: Left-Left (LL) Rotation ==========\n";
+  ads::demo::print_section("Demo: Left-Left (LL) Rotation");
 
   AVLTree<int> avl;
 
@@ -121,7 +122,7 @@ void demo_ll_rotation() {
 
 // Test Right-Right (RR) rotation.
 void demo_rr_rotation() {
-  cout << "\n========== Demo: Right-Right (RR) Rotation ==========\n";
+  ads::demo::print_section("Demo: Right-Right (RR) Rotation");
 
   AVLTree<int> avl;
 
@@ -147,7 +148,7 @@ void demo_rr_rotation() {
 
 // Test Left-Right (LR) rotation.
 void demo_lr_rotation() {
-  cout << "\n========== Demo: Left-Right (LR) Rotation ==========\n";
+  ads::demo::print_section("Demo: Left-Right (LR) Rotation");
 
   AVLTree<int> avl;
 
@@ -173,7 +174,7 @@ void demo_lr_rotation() {
 
 // Test Right-Left (RL) rotation.
 void demo_rl_rotation() {
-  cout << "\n========== Demo: Right-Left (RL) Rotation ==========\n";
+  ads::demo::print_section("Demo: Right-Left (RL) Rotation");
 
   AVLTree<int> avl;
 
@@ -201,7 +202,7 @@ void demo_rl_rotation() {
 
 // Test search operations.
 void demo_search_operations() {
-  cout << "\n========== Demo: Search Operations ==========\n";
+  ads::demo::print_section("Demo: Search Operations");
 
   AVLTree<int> avl;
 
@@ -228,7 +229,7 @@ void demo_search_operations() {
 
 // Test remove operations.
 void demo_remove_operations() {
-  cout << "\n========== Demo: Remove Operations ==========\n";
+  ads::demo::print_section("Demo: Remove Operations");
 
   AVLTree<int> avl;
 
@@ -269,7 +270,7 @@ void demo_remove_operations() {
 
 // Test iterator.
 void demo_iterator() {
-  cout << "\n========== Demo: Iterator ==========\n";
+  ads::demo::print_section("Demo: Iterator");
 
   AVLTree<int> avl;
 
@@ -289,7 +290,7 @@ void demo_iterator() {
 
 // Test move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   AVLTree<int> avl1;
   avl1.insert(50);
@@ -317,7 +318,7 @@ void demo_move_semantics() {
 
 // Test with large sorted sequence (worst case for unbalanced BST).
 void demo_sorted_sequence() {
-  cout << "\n========== Demo: Sorted Sequence (AVL vs BST) ==========\n";
+  ads::demo::print_section("Demo: Sorted Sequence (AVL vs BST)");
 
   AVLTree<int>          avl;
   BinarySearchTree<int> bst;
@@ -348,7 +349,7 @@ void demo_sorted_sequence() {
 
 // Performance test: AVL vs BST.
 void demo_performance() {
-  cout << "\n========== Demo: Performance Comparison ==========\n";
+  ads::demo::print_section("Demo: Performance Comparison");
 
   const int N = 10000;
 
@@ -402,7 +403,7 @@ void demo_performance() {
 
 // Test edge cases.
 void demo_edge_cases() {
-  cout << "\n========== Demo: Edge Cases ==========\n";
+  ads::demo::print_section("Demo: Edge Cases");
 
   AVLTree<int> avl;
 
@@ -442,9 +443,7 @@ void demo_edge_cases() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "                  AVL TREE USAGE EXAMPLES                   \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("AVL TREE USAGE EXAMPLES");
 
   try {
     demo_basic_operations();
@@ -460,10 +459,7 @@ auto main() -> int {
     demo_performance();
     demo_edge_cases();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
     return 0;
 

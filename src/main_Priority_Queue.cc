@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "../include/ads/queues/Priority_Queue.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -32,16 +33,12 @@ using namespace ads::queues;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
-// Print a separator with title.
-void print_separator(const string& title) {
-  cout << "\n========== " << title << " ==========\n";
-}
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
 // Priority Queue basic operations.
 void demo_priority_queue_basic() {
-  print_separator("Priority Queue - Basic Operations (Max-Heap)");
+  ads::demo::print_section("Priority Queue - Basic Operations (Max-Heap)");
 
   PriorityQueue<int> pq;
 
@@ -72,7 +69,7 @@ void demo_priority_queue_basic() {
 
 // Min-Heap Priority Queue operations.
 void demo_priority_queue_min_heap() {
-  print_separator("Priority Queue - Min-Heap with greater");
+  ads::demo::print_section("Priority Queue - Min-Heap with greater");
 
   PriorityQueue<int, std::greater<>> min_pq;
 
@@ -98,7 +95,7 @@ void demo_priority_queue_min_heap() {
 
 // Priority Queue construction from vector.
 void demo_priority_queue_from_vector() {
-  print_separator("Priority Queue - Construction from Vector");
+  ads::demo::print_section("Priority Queue - Construction from Vector");
 
   vector<int> data = {15, 10, 20, 8, 12, 25, 18};
   cout << "Original vector: ";
@@ -123,7 +120,7 @@ void demo_priority_queue_from_vector() {
 
 // Priority Queue construction from initializer list.
 void demo_priority_queue_initializer_list() {
-  print_separator("Priority Queue - Initializer List Construction");
+  ads::demo::print_section("Priority Queue - Initializer List Construction");
 
   PriorityQueue<int> pq = {3, 1, 4, 1, 5, 9, 2, 6};
 
@@ -142,7 +139,7 @@ void demo_priority_queue_initializer_list() {
 
 // Priority Queue move semantics.
 void demo_priority_queue_move_semantics() {
-  print_separator("Priority Queue - Move Semantics");
+  ads::demo::print_section("Priority Queue - Move Semantics");
 
   PriorityQueue<int> pq1;
   for (int i = 1; i <= 5; ++i) {
@@ -171,7 +168,7 @@ void demo_priority_queue_move_semantics() {
 
 // Priority Queue emplace operations.
 void demo_priority_queue_emplace() {
-  print_separator("Priority Queue - Emplace Operations");
+  ads::demo::print_section("Priority Queue - Emplace Operations");
 
   PriorityQueue<string> pq;
 
@@ -195,7 +192,7 @@ void demo_priority_queue_emplace() {
 
 // Priority Queue exception handling.
 void demo_priority_queue_exception_handling() {
-  print_separator("Priority Queue - Exception Handling");
+  ads::demo::print_section("Priority Queue - Exception Handling");
 
   PriorityQueue<int> pq;
 
@@ -218,7 +215,7 @@ void demo_priority_queue_exception_handling() {
 
 // Priority Queue sorted elements extraction.
 void demo_priority_queue_sorted_elements() {
-  print_separator("Priority Queue - Sorted Elements Extraction");
+  ads::demo::print_section("Priority Queue - Sorted Elements Extraction");
 
   PriorityQueue<int> pq = {8, 3, 10, 1, 6, 14, 4, 7, 13};
 
@@ -255,7 +252,7 @@ struct TaskCompare {
 
 // Task scheduling application demo.
 void demo_task_scheduling() {
-  print_separator("Application - Task Scheduling");
+  ads::demo::print_section("Application - Task Scheduling");
 
   PriorityQueue<Task, TaskCompare> task_queue;
 
@@ -294,7 +291,7 @@ struct EventCompare {
 
 // Event simulation application demo.
 void demo_event_simulation() {
-  print_separator("Application - Event Simulation");
+  ads::demo::print_section("Application - Event Simulation");
 
   PriorityQueue<Event, EventCompare> event_queue;
 
@@ -318,7 +315,7 @@ void demo_event_simulation() {
 
 // Top-K largest elements application demo.
 void demo_top_k_elements() {
-  print_separator("Application - Top-K Largest Elements");
+  ads::demo::print_section("Application - Top-K Largest Elements");
 
   // Find top 5 largest elements from a stream using a min-heap of size 5.
   const int                          k = 5;
@@ -355,7 +352,7 @@ void demo_top_k_elements() {
 
 // Priority Queue performance with large dataset.
 void demo_priority_queue_large() {
-  print_separator("Priority Queue - Large Dataset Performance");
+  ads::demo::print_section("Priority Queue - Large Dataset Performance");
 
   const int          N = 100000;
   PriorityQueue<int> pq;
@@ -395,7 +392,7 @@ void demo_priority_queue_large() {
 
 // Heapify construction performance demo.
 void demo_heapify_construction_performance() {
-  print_separator("Priority Queue - Heapify Construction Performance");
+  ads::demo::print_section("Priority Queue - Heapify Construction Performance");
 
   const int   N = 100000;
   vector<int> data;
@@ -420,9 +417,7 @@ void demo_heapify_construction_performance() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "            PRIORITY QUEUE - COMPREHENSIVE DEMO             \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("PRIORITY QUEUE - COMPREHENSIVE DEMO");
 
   try {
     // Basic tests.
@@ -444,10 +439,7 @@ auto main() -> int {
     demo_priority_queue_large();
     demo_heapify_construction_performance();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const exception& e) {
     cerr << "\nTest failed with exception: " << e.what() << '\n';

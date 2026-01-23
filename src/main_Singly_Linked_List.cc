@@ -16,7 +16,7 @@
 #include <utility>
 
 #include "../include/ads/lists/Singly_Linked_List.hpp"
-#include "support/Terminal_Colors.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -42,7 +42,7 @@ void print_list(const SinglyLinkedList<T>& list, const string& label) {
 
 // Basic push/pop demo.
 void demo_basics() {
-  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Basic push/pop --" << ANSI_RESET << '\n';
+  ads::demo::print_section("Basic push/pop");
 
   SinglyLinkedList<int> list;
   list.push_front(3);
@@ -63,7 +63,7 @@ void demo_basics() {
 
 // Emplace and reverse demo.
 void demo_emplace_and_reverse() {
-  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Emplace and reverse --" << ANSI_RESET << '\n';
+  ads::demo::print_section("Emplace and reverse");
 
   SinglyLinkedList<string> words;
   words.emplace_front("World");
@@ -75,11 +75,11 @@ void demo_emplace_and_reverse() {
   print_list(words, "After reverse");
 }
 
-//===-------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
 // Move semantics demo.
 void demo_move_semantics() {
-  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Move semantics --" << ANSI_RESET << '\n';
+  ads::demo::print_section("Move semantics");
 
   SinglyLinkedList<int> original;
   for (int i = 1; i <= 5; ++i) {
@@ -101,7 +101,7 @@ void demo_move_semantics() {
 
 // Test exception handling.
 void demo_exceptions() {
-  cout << ANSI_BOLD << ANSI_BLUE << "\n-- Exception handling --" << ANSI_RESET << '\n';
+  ads::demo::print_section("Exception handling");
 
   SinglyLinkedList<int> empty;
   try {
@@ -114,17 +114,16 @@ void demo_exceptions() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "          SINGLY LINKED LIST - COMPREHENSIVE DEMO           \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("SINGLY LINKED LIST - COMPREHENSIVE DEMO");
 
   demo_basics();
   demo_emplace_and_reverse();
   demo_move_semantics();
   demo_exceptions();
 
-  cout << ANSI_BOLD << ANSI_BLUE << "\nDone. Run ENABLE_TESTING=ON to execute the full unit tests.\n" << ANSI_RESET;
+  cout << "\n";
+  ads::demo::print_info("Done. Run ENABLE_TESTING=ON to execute the full unit tests.");
   return 0;
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

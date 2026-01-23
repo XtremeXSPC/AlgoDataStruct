@@ -19,6 +19,7 @@
 #include <string>
 
 #include "../include/ads/associative/Hash_Map.hpp"
+#include "support/Demo_Utilities.hpp"
 using std::cerr;
 using std::cout;
 using std::exception;
@@ -30,16 +31,12 @@ using namespace ads::associative;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
-// Print a separator with title.
-void print_separator(const string& title) {
-  cout << "\n=====---------- " << title << " ----------=====\n";
-}
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
 // Test basic insertion and access.
 void demo_hashmap_basic() {
-  print_separator("HashMap - Basic Operations");
+  ads::demo::print_section("HashMap - Basic Operations");
 
   HashMap<string, int> scores;
 
@@ -61,7 +58,7 @@ void demo_hashmap_basic() {
 
 // Test iteration over entries.
 void demo_hashmap_iteration() {
-  print_separator("HashMap - Range-Based For Loop");
+  ads::demo::print_section("HashMap - Range-Based For Loop");
 
   HashMap<string, int> ages = {{"Alice", 25}, {"Bob", 30}, {"Charlie", 28}};
 
@@ -80,7 +77,7 @@ void demo_hashmap_iteration() {
 
 // Test insert and emplace methods.
 void demo_hashmap_insert_emplace() {
-  print_separator("HashMap - Insert and Emplace");
+  ads::demo::print_section("HashMap - Insert and Emplace");
 
   HashMap<int, string> map;
 
@@ -105,7 +102,7 @@ void demo_hashmap_insert_emplace() {
 
 // Test erase method.
 void demo_hashmap_erase() {
-  print_separator("HashMap - Erase Operations");
+  ads::demo::print_section("HashMap - Erase Operations");
 
   HashMap<string, double> prices = {{"apple", 1.20}, {"banana", 0.50}, {"orange", 0.80}, {"grape", 2.50}};
 
@@ -132,7 +129,7 @@ void demo_hashmap_erase() {
 
 // Test keys, values, and entries methods.
 void demo_hashmap_utility_methods() {
-  print_separator("HashMap - Utility Methods (keys, values, entries)");
+  ads::demo::print_section("HashMap - Utility Methods (keys, values, entries)");
 
   HashMap<string, int> inventory = {{"apples", 50}, {"oranges", 30}, {"bananas", 45}, {"grapes", 25}};
 
@@ -166,7 +163,7 @@ void demo_hashmap_utility_methods() {
 
 // Application: Word frequency counter.
 void demo_word_frequency() {
-  print_separator("Application - Word Frequency Counter");
+  ads::demo::print_section("Application - Word Frequency Counter");
 
   string text = "the quick brown fox jumps over the lazy dog the fox was quick";
 
@@ -202,7 +199,7 @@ void demo_word_frequency() {
 
 // Test move semantics.
 void demo_hashmap_move_semantics() {
-  print_separator("HashMap - Move Semantics");
+  ads::demo::print_section("HashMap - Move Semantics");
 
   HashMap<int, string> map1;
   map1[1] = "one";
@@ -224,9 +221,7 @@ void demo_hashmap_move_semantics() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "           HASH MAP - COMPREHENSIVE DEMO PROGRAM            \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("HASH MAP - COMPREHENSIVE DEMO PROGRAM");
 
   try {
     demo_hashmap_basic();
@@ -237,10 +232,7 @@ auto main() -> int {
     demo_word_frequency();
     demo_hashmap_move_semantics();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const exception& e) {
     cerr << "\nTest failed with exception: " << e.what() << '\n';
@@ -250,4 +242,4 @@ auto main() -> int {
   return 0;
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

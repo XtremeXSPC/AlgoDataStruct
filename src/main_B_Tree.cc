@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "../include/ads/trees/B_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -52,7 +53,7 @@ void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
 
 // Demo: Basic operations.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   B_Tree<int, 3> btree; // Minimum degree t=3 (2-5 keys per node).
 
@@ -89,7 +90,7 @@ void demo_basic_operations() {
 
 // Demo: Node splitting.
 void demo_node_splitting() {
-  cout << "\n========== Demo: Node Splitting ==========\n";
+  ads::demo::print_section("Demo: Node Splitting");
 
   cout << "B-Trees split nodes when they become full.\n";
   cout << "With t=2, each node can hold 1-3 keys.\n\n";
@@ -115,7 +116,7 @@ void demo_node_splitting() {
 
 // Demo: Different minimum degrees.
 void demo_different_degrees() {
-  cout << "\n========== Demo: Different Minimum Degrees ==========\n";
+  ads::demo::print_section("Demo: Different Minimum Degrees");
 
   cout << "Higher minimum degree = wider tree = shorter height\n\n";
 
@@ -156,7 +157,7 @@ void demo_different_degrees() {
 
 // Demo: Search and traversal.
 void demo_search_traversal() {
-  cout << "\n========== Demo: Search and Traversal ==========\n";
+  ads::demo::print_section("Demo: Search and Traversal");
 
   B_Tree<int, 3> btree;
 
@@ -182,7 +183,7 @@ void demo_search_traversal() {
 
 // Demo: Random insertions.
 void demo_random_insertions() {
-  cout << "\n========== Demo: Random Insertions ==========\n";
+  ads::demo::print_section("Demo: Random Insertions");
 
   B_Tree<int, 3> btree;
 
@@ -220,7 +221,7 @@ void demo_random_insertions() {
 
 // Demo: Move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   B_Tree<int, 3> btree1;
   for (int i = 1; i <= 20; ++i) {
@@ -256,7 +257,7 @@ void demo_move_semantics() {
 
 // Demo: String type support.
 void demo_string_type() {
-  cout << "\n========== Demo: String Type Support ==========\n";
+  ads::demo::print_section("Demo: String Type Support");
 
   B_Tree<string, 3> btree;
 
@@ -282,7 +283,7 @@ void demo_string_type() {
 
 // Demo: Performance.
 void demo_performance() {
-  cout << "\n========== Demo: Performance ==========\n";
+  ads::demo::print_section("Demo: Performance");
 
   const int N = 10000;
 
@@ -318,7 +319,7 @@ void demo_performance() {
 
 // Demo: Clear and reuse.
 void demo_clear_reuse() {
-  cout << "\n========== Demo: Clear and Reuse ==========\n";
+  ads::demo::print_section("Demo: Clear and Reuse");
 
   B_Tree<int, 3> btree;
 
@@ -344,7 +345,7 @@ void demo_clear_reuse() {
 
 // Demo: Height comparison for large datasets.
 void demo_height_comparison() {
-  cout << "\n========== Demo: Height Comparison ==========\n";
+  ads::demo::print_section("Demo: Height Comparison");
 
   const int N = 1000;
 
@@ -371,9 +372,7 @@ void demo_height_comparison() {
 
 auto main() -> int {
   try {
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "                   B-Tree Usage Examples                    \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_header("B-Tree Usage Examples");
 
     demo_basic_operations();
     demo_node_splitting();
@@ -386,10 +385,7 @@ auto main() -> int {
     demo_clear_reuse();
     demo_height_comparison();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             All Demos Completed Successfully!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const std::exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

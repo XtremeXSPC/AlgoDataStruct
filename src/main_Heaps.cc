@@ -20,6 +20,7 @@
 
 #include "../include/ads/heaps/Max_Heap.hpp"
 #include "../include/ads/heaps/Min_Heap.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -33,16 +34,12 @@ using namespace ads::heaps;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
-// Print a separator with title.
-void print_separator(const string& title) {
-  cout << "\n=====---------- " << title << " ----------=====\n";
-}
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
 // Min Heap basic operations.
 void demo_min_heap_basic() {
-  print_separator("Min Heap - Basic Operations");
+  ads::demo::print_section("Min Heap - Basic Operations");
 
   MinHeap<int> heap;
 
@@ -72,7 +69,7 @@ void demo_min_heap_basic() {
 
 // Min Heap construction from vector.
 void demo_min_heap_from_vector() {
-  print_separator("Min Heap - Construction from Vector");
+  ads::demo::print_section("Min Heap - Construction from Vector");
 
   vector<int> data = {15, 10, 20, 8, 12, 25, 18};
   cout << "Original vector: ";
@@ -96,7 +93,7 @@ void demo_min_heap_from_vector() {
 
 // Min Heap move semantics.
 void demo_min_heap_move_semantics() {
-  print_separator("Min Heap - Move Semantics");
+  ads::demo::print_section("Min Heap - Move Semantics");
 
   MinHeap<int> heap1;
   for (int i = 10; i > 0; --i) {
@@ -125,7 +122,7 @@ void demo_min_heap_move_semantics() {
 
 // Min Heap emplace operations.
 void demo_min_heap_emplace() {
-  print_separator("Min Heap - Emplace Operations");
+  ads::demo::print_section("Min Heap - Emplace Operations");
 
   MinHeap<string> heap;
 
@@ -147,7 +144,7 @@ void demo_min_heap_emplace() {
 
 // Min Heap exception handling.
 void demo_min_heap_exception_handling() {
-  print_separator("Min Heap - Exception Handling");
+  ads::demo::print_section("Min Heap - Exception Handling");
 
   MinHeap<int> heap;
 
@@ -170,7 +167,7 @@ void demo_min_heap_exception_handling() {
 
 // Min Heap large dataset test.
 void demo_min_heap_large() {
-  print_separator("Min Heap - Large Dataset");
+  ads::demo::print_section("Min Heap - Large Dataset");
 
   const int    N = 10000;
   MinHeap<int> heap;
@@ -198,7 +195,7 @@ void demo_min_heap_large() {
 
 // Max Heap basic operations.
 void demo_max_heap_basic() {
-  print_separator("Max Heap - Basic Operations");
+  ads::demo::print_section("Max Heap - Basic Operations");
 
   MaxHeap<int> heap;
 
@@ -228,7 +225,7 @@ void demo_max_heap_basic() {
 
 // Max Heap construction from vector.
 void demo_max_heap_from_vector() {
-  print_separator("Max Heap - Construction from Vector");
+  ads::demo::print_section("Max Heap - Construction from Vector");
 
   vector<int> data = {15, 10, 20, 8, 12, 25, 18};
   cout << "Original vector: ";
@@ -252,7 +249,7 @@ void demo_max_heap_from_vector() {
 
 // Max Heap heapsort application.
 void demo_max_heap_heapsort() {
-  print_separator("Max Heap - Heapsort Application");
+  ads::demo::print_section("Max Heap - Heapsort Application");
 
   vector<int> data = {64, 34, 25, 12, 22, 11, 90};
   cout << "Unsorted array: ";
@@ -281,7 +278,7 @@ void demo_max_heap_heapsort() {
 
 // Compare Min Heap and Max Heap.
 void demo_heap_comparison() {
-  print_separator("Heap Comparison - Min vs Max");
+  ads::demo::print_section("Heap Comparison - Min vs Max");
 
   vector<int> data = {5, 2, 8, 1, 9, 3, 7};
 
@@ -313,9 +310,7 @@ void demo_heap_comparison() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "         MIN HEAP AND MAX HEAP - COMPREHENSIVE DEMO         \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("MIN HEAP AND MAX HEAP - COMPREHENSIVE DEMO");
 
   try {
     // Min Heap tests.
@@ -334,7 +329,7 @@ auto main() -> int {
     // Comparison.
     demo_heap_comparison();
 
-    print_separator("ALL DEMOS COMPLETED SUCCESSFULLY");
+    ads::demo::print_footer();
     return 0;
 
   } catch (const exception& e) {
@@ -344,4 +339,4 @@ auto main() -> int {
   }
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

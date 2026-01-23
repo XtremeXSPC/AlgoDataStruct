@@ -8,7 +8,7 @@
 # Main commands:
 #   make                  - Configure with Clang and build (default)
 #   make build            - Build the project (requires configure first)
-#   make run              - Build and run test_bst
+#   make run              - Build and run test_BST
 #   make clean            - Remove the build directory
 #   make reconfigure      - Clean and reconfigure
 #   make test             - Configure with testing enabled and run tests
@@ -38,7 +38,7 @@ DEFAULT_BUILD_TYPE := Debug
 BUILD_DIR := build
 
 # Main test executable
-TARGET := test_bst
+TARGET := test_BST
 TEST_EXECUTABLE := $(BUILD_DIR)/bin/$(TARGET)
 
 # ------------------------------ Default Target ------------------------------ #
@@ -78,7 +78,7 @@ run: build
 	@echo ""
 	@if [ ! -f "$(TEST_EXECUTABLE)" ]; then \
 		echo "Error: $(TEST_EXECUTABLE) not found."; \
-		echo "Available executables: test_bst, test_lists, test_stacks_queues"; \
+		echo "Available executables: test_BST, test_Singly_Linked_List, test_Stacks_Queues"; \
 		exit 1; \
 	fi
 	@$(TEST_EXECUTABLE)
@@ -256,7 +256,7 @@ help:
 	@echo "Main Commands:"
 	@echo "  make              - Configure with Clang and build (default)"
 	@echo "  make build        - Build the project"
-	@echo "  make run          - Build and run test_bst"
+	@echo "  make run          - Build and run test_BST"
 	@echo "  make clean        - Remove the build directory"
 	@echo "  make reconfigure  - Clean and reconfigure"
 	@echo "  make test         - Configure with testing and run tests"
