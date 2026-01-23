@@ -205,6 +205,28 @@ auto HashMap<Key, Value, Hash>::at(const Key& key) const -> const Value& {
   return table_.at(key);
 }
 
+//===------------------------- DICTIONARY INTERFACE ---------------------------===//
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::put(const Key& key, const Value& value) -> void {
+  table_.insert(key, value);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void {
+  table_.insert(std::move(key), std::move(value));
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::get(const Key& key) -> Value& {
+  return table_.at(key);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::get(const Key& key) const -> const Value& {
+  return table_.at(key);
+}
+
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename Key, typename Value, typename Hash>
@@ -306,6 +328,11 @@ auto HashMap<Key, Value, Hash>::find(const Key& key) const -> const_iterator {
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::contains(const Key& key) const -> bool {
   return table_.contains(key);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::remove(const Key& key) -> bool {
+  return table_.erase(key);
 }
 
 template <typename Key, typename Value, typename Hash>
