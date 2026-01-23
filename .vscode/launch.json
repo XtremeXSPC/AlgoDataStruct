@@ -11,7 +11,7 @@
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": ["command script import /Users/lcs-dev/.lldb/LLDB_Formatters"]
+      "initCommands": ["command script import ${env:HOME}/.lldb/LLDB_Formatters"]
     },
     {
       "name": "(macOS) Debug with MS C/C++",
@@ -29,7 +29,7 @@
       "setupCommands": [
         {
           "description": "Load Custom LLDB Formatters",
-          "text": "command script import /Users/lcs-dev/.lldb/LLDB_Formatters",
+          "text": "command script import ${env:HOME}/.lldb/LLDB_Formatters",
           "ignoreFailures": true
         },
         {
@@ -101,7 +101,7 @@
       "setupCommands": [
         {
           "description": "Load Custom LLDB Formatters (macOS)",
-          "text": "command script import /Users/lcs-dev/.lldb/LLDB_Formatters",
+          "text": "command script import ${env:HOME}/.lldb/LLDB_Formatters",
           "ignoreFailures": true
         },
         {
@@ -123,6 +123,7 @@
       "type": "pickString",
       "description": "Select executable to debug",
       "options": [
+        "test_Dynamic_Array",
         "test_Singly_Linked_List",
         "test_Doubly_Linked_List",
         "test_Stacks_Queues",

@@ -181,6 +181,10 @@ target_sources(ads_lib
         FILE_SET HEADERS
         BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
         FILES
+            # Array implementations.
+            include/ads/arrays/Array_Exception.hpp
+            include/ads/arrays/Dynamic_Array.hpp
+
             # List interface.
             include/ads/lists/List.hpp
             include/ads/lists/List_Exception.hpp
@@ -227,6 +231,7 @@ target_sources(ads_lib
     # These are included by the headers, but we list them here so they
     # appear in IDEs and are tracked for changes.
     INTERFACE
+        src/ads/arrays/Dynamic_Array.tpp
         src/ads/lists/Doubly_Linked_List.tpp
         src/ads/lists/Singly_Linked_List.tpp
         src/ads/stacks/Array_Stack.tpp
@@ -337,6 +342,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Doubly_Linked_List.cc")
     ads_add_executable(test_Doubly__Linked_List src/main_Doubly_Linked_List.cc)
 endif()
 
+# Dynamic Array test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dynamic_Array.cc")
+    ads_add_executable(test_Dynamic_Array src/main_Dynamic_Array.cc)
+endif()
+
 # Stacks and Queues test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
     ads_add_executable(test_Stacks_Queues src/main_Stacks_Queues.cc)
@@ -439,6 +449,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
       list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Dynamic_Array.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Dynamic_Array.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BinarySearchTree.cpp")
         list(APPEND TEST_SOURCES tests/Test_BinarySearchTree.cpp)

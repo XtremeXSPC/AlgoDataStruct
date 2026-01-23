@@ -1,0 +1,490 @@
+//===---------------------------------------------------------------------------===//
+/**
+ * @file Dynamic_Array.tpp
+ * @author Costantino Lombardi
+ * @brief Implementation of template methods for DynamicArray.
+ * @version 0.1
+ * @date 2026-01-23
+ *
+ * @copyright MIT License 2026
+ *
+ */
+//===---------------------------------------------------------------------------===//
+
+#pragma once
+
+#include "../../../include/ads/arrays/Dynamic_Array.hpp"
+
+namespace ads::arrays {
+
+//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+
+template <typename T>
+DynamicArray<T>::DynamicArray(size_t initial_capacity) :
+    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }), size_(0), capacity_(std::max(initial_capacity, kMinCapacity)) {
+  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw ArrayOverflowException("DynamicArray capacity overflow");
+  }
+
+  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+}
+
+template <typename T>
+DynamicArray<T>::DynamicArray(std::initializer_list<T> values) :
+    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }), size_(0), capacity_(std::max(values.size(), kMinCapacity)) {
+  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw ArrayOverflowException("DynamicArray capacity overflow");
+  }
+
+  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+
+  size_t constructed = 0;
+  try {
+    for (const auto& value : values) {
+      std::construct_at(data_.get() + constructed, value);
+      ++constructed;
+    }
+  } catch (...) {
+    for (size_t i = 0; i < constructed; ++i) {
+      std::destroy_at(data_.get() + i);
+    }
+    throw;
+  }
+
+  size_ = values.size();
+}
+
+template <typename T>
+DynamicArray<T>::DynamicArray(size_t count, const T& value) :
+    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }), size_(0), capacity_(std::max(count, kMinCapacity)) {
+  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw ArrayOverflowException("DynamicArray capacity overflow");
+  }
+
+  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+
+  size_t constructed = 0;
+  try {
+    for (; constructed < count; ++constructed) {
+      std::construct_at(data_.get() + constructed, value);
+    }
+  } catch (...) {
+    for (size_t i = 0; i < constructed; ++i) {
+      std::destroy_at(data_.get() + i);
+    }
+    throw;
+  }
+
+  size_ = count;
+}
+
+template <typename T>
+DynamicArray<T>::DynamicArray(DynamicArray&& other) noexcept :
+    data_(std::move(other.data_)), size_(other.size_), capacity_(other.capacity_) {
+  other.size_     = 0;
+  other.capacity_ = 0;
+}
+
+template <typename T>
+DynamicArray<T>::~DynamicArray() {
+  clear();
+}
+
+template <typename T>
+auto DynamicArray<T>::operator=(DynamicArray&& other) noexcept -> DynamicArray<T>& {
+  if (this != &other) {
+    clear();
+    data_           = std::move(other.data_);
+    size_           = other.size_;
+    capacity_       = other.capacity_;
+    other.size_     = 0;
+    other.capacity_ = 0;
+  }
+  return *this;
+}
+
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+
+template <typename T>
+template <typename... Args>
+auto DynamicArray<T>::emplace_back(Args&&... args) -> T& {
+  ensure_capacity(size_ + 1);
+
+  T* element_ptr = data_.get() + size_;
+  std::construct_at(element_ptr, std::forward<Args>(args)...);
+  ++size_;
+  return *element_ptr;
+}
+
+template <typename T>
+auto DynamicArray<T>::push_back(const T& value) -> void {
+  emplace_back(value);
+}
+
+template <typename T>
+auto DynamicArray<T>::push_back(T&& value) -> void {
+  emplace_back(std::move(value));
+}
+
+template <typename T>
+template <typename... Args>
+auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T& {
+  if (index > size_) {
+    throw ArrayOutOfRangeException("insert position out of range");
+  }
+
+  if (index == size_) {
+    return emplace_back(std::forward<Args>(args)...);
+  }
+
+  ensure_capacity(size_ + 1);
+
+  T* data_ptr = data_.get();
+  std::construct_at(data_ptr + size_, std::move_if_noexcept(data_ptr[size_ - 1]));
+  for (size_t i = size_ - 1; i > index; --i) {
+    data_ptr[i] = std::move_if_noexcept(data_ptr[i - 1]);
+  }
+
+  data_ptr[index] = T(std::forward<Args>(args)...);
+  ++size_;
+  return data_ptr[index];
+}
+
+template <typename T>
+auto DynamicArray<T>::insert(size_t index, const T& value) -> void {
+  emplace(index, value);
+}
+
+template <typename T>
+auto DynamicArray<T>::insert(size_t index, T&& value) -> void {
+  emplace(index, std::move(value));
+}
+
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+
+template <typename T>
+auto DynamicArray<T>::pop_back() -> void {
+  if (is_empty()) {
+    throw ArrayUnderflowException("pop_back on empty array");
+  }
+
+  std::destroy_at(data_.get() + size_ - 1);
+  --size_;
+
+  if (size_ > 0 && size_ * 4 <= capacity_ && capacity_ > kMinCapacity) {
+    const size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
+    try {
+      reallocate(new_capacity);
+    } catch (const std::bad_alloc&) {
+    }
+  }
+}
+
+template <typename T>
+auto DynamicArray<T>::erase(size_t index) -> void {
+  if (index >= size_) {
+    throw ArrayOutOfRangeException("erase position out of range");
+  }
+
+  T* data_ptr = data_.get();
+  for (size_t i = index; i + 1 < size_; ++i) {
+    data_ptr[i] = std::move_if_noexcept(data_ptr[i + 1]);
+  }
+
+  std::destroy_at(data_.get() + size_ - 1);
+  --size_;
+
+  if (size_ > 0 && size_ * 4 <= capacity_ && capacity_ > kMinCapacity) {
+    const size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
+    try {
+      reallocate(new_capacity);
+    } catch (const std::bad_alloc&) {
+    }
+  }
+}
+
+template <typename T>
+auto DynamicArray<T>::clear() noexcept -> void {
+  for (size_t i = 0; i < size_; ++i) {
+    std::destroy_at(data_.get() + i);
+  }
+  size_ = 0;
+}
+
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+
+template <typename T>
+auto DynamicArray<T>::operator[](size_t index) -> T& {
+  return data_.get()[index];
+}
+
+template <typename T>
+auto DynamicArray<T>::operator[](size_t index) const -> const T& {
+  return data_.get()[index];
+}
+
+template <typename T>
+auto DynamicArray<T>::at(size_t index) -> T& {
+  if (index >= size_) {
+    throw ArrayOutOfRangeException("index out of range");
+  }
+  return data_.get()[index];
+}
+
+template <typename T>
+auto DynamicArray<T>::at(size_t index) const -> const T& {
+  if (index >= size_) {
+    throw ArrayOutOfRangeException("index out of range");
+  }
+  return data_.get()[index];
+}
+
+template <typename T>
+auto DynamicArray<T>::front() -> T& {
+  if (is_empty()) {
+    throw ArrayUnderflowException("front on empty array");
+  }
+  return data_.get()[0];
+}
+
+template <typename T>
+auto DynamicArray<T>::front() const -> const T& {
+  if (is_empty()) {
+    throw ArrayUnderflowException("front on empty array");
+  }
+  return data_.get()[0];
+}
+
+template <typename T>
+auto DynamicArray<T>::back() -> T& {
+  if (is_empty()) {
+    throw ArrayUnderflowException("back on empty array");
+  }
+  return data_.get()[size_ - 1];
+}
+
+template <typename T>
+auto DynamicArray<T>::back() const -> const T& {
+  if (is_empty()) {
+    throw ArrayUnderflowException("back on empty array");
+  }
+  return data_.get()[size_ - 1];
+}
+
+template <typename T>
+auto DynamicArray<T>::data() noexcept -> T* {
+  return data_.get();
+}
+
+template <typename T>
+auto DynamicArray<T>::data() const noexcept -> const T* {
+  return data_.get();
+}
+
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
+
+template <typename T>
+auto DynamicArray<T>::is_empty() const noexcept -> bool {
+  return size_ == 0;
+}
+
+template <typename T>
+auto DynamicArray<T>::size() const noexcept -> size_t {
+  return size_;
+}
+
+template <typename T>
+auto DynamicArray<T>::capacity() const noexcept -> size_t {
+  return capacity_;
+}
+
+//===--------------------------- CAPACITY OPERATIONS ---------------------------===//
+
+template <typename T>
+auto DynamicArray<T>::reserve(size_t new_capacity) -> void {
+  if (new_capacity > capacity_) {
+    reallocate(new_capacity);
+  }
+}
+
+template <typename T>
+auto DynamicArray<T>::shrink_to_fit() -> void {
+  if (size_ < capacity_) {
+    const size_t new_capacity = std::max(size_, kMinCapacity);
+    if (new_capacity != capacity_) {
+      reallocate(new_capacity);
+    }
+  }
+}
+
+template <typename T>
+auto DynamicArray<T>::resize(size_t new_size) -> void
+  requires std::default_initializable<T>
+{
+  if (new_size < size_) {
+    for (size_t i = new_size; i < size_; ++i) {
+      std::destroy_at(data_.get() + i);
+    }
+    size_ = new_size;
+    return;
+  }
+
+  if (new_size > size_) {
+    ensure_capacity(new_size);
+    for (size_t i = size_; i < new_size; ++i) {
+      std::construct_at(data_.get() + i);
+    }
+    size_ = new_size;
+  }
+}
+
+template <typename T>
+auto DynamicArray<T>::resize(size_t new_size, const T& value) -> void {
+  if (new_size < size_) {
+    for (size_t i = new_size; i < size_; ++i) {
+      std::destroy_at(data_.get() + i);
+    }
+    size_ = new_size;
+    return;
+  }
+
+  if (new_size > size_) {
+    ensure_capacity(new_size);
+    for (size_t i = size_; i < new_size; ++i) {
+      std::construct_at(data_.get() + i, value);
+    }
+    size_ = new_size;
+  }
+}
+
+//===------------------------- ITERATOR OPERATIONS -----------------------------===//
+
+template <typename T>
+auto DynamicArray<T>::begin() noexcept -> iterator {
+  return data_.get();
+}
+
+template <typename T>
+auto DynamicArray<T>::end() noexcept -> iterator {
+  return data_.get() + size_;
+}
+
+template <typename T>
+auto DynamicArray<T>::begin() const noexcept -> const_iterator {
+  return data_.get();
+}
+
+template <typename T>
+auto DynamicArray<T>::end() const noexcept -> const_iterator {
+  return data_.get() + size_;
+}
+
+template <typename T>
+auto DynamicArray<T>::cbegin() const noexcept -> const_iterator {
+  return data_.get();
+}
+
+template <typename T>
+auto DynamicArray<T>::cend() const noexcept -> const_iterator {
+  return data_.get() + size_;
+}
+
+template <typename T>
+auto DynamicArray<T>::rbegin() noexcept -> reverse_iterator {
+  return reverse_iterator(end());
+}
+
+template <typename T>
+auto DynamicArray<T>::rend() noexcept -> reverse_iterator {
+  return reverse_iterator(begin());
+}
+
+template <typename T>
+auto DynamicArray<T>::rbegin() const noexcept -> const_reverse_iterator {
+  return const_reverse_iterator(end());
+}
+
+template <typename T>
+auto DynamicArray<T>::rend() const noexcept -> const_reverse_iterator {
+  return const_reverse_iterator(begin());
+}
+
+template <typename T>
+auto DynamicArray<T>::crbegin() const noexcept -> const_reverse_iterator {
+  return const_reverse_iterator(end());
+}
+
+template <typename T>
+auto DynamicArray<T>::crend() const noexcept -> const_reverse_iterator {
+  return const_reverse_iterator(begin());
+}
+
+//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+
+template <typename T>
+auto DynamicArray<T>::ensure_capacity(size_t min_capacity) -> void {
+  if (min_capacity <= capacity_) {
+    return;
+  }
+
+  size_t new_capacity = std::max(capacity_, kMinCapacity);
+  while (new_capacity < min_capacity) {
+    if (new_capacity > std::numeric_limits<size_t>::max() / kGrowthFactor) {
+      throw ArrayOverflowException("DynamicArray capacity overflow");
+    }
+    new_capacity = std::max(new_capacity * kGrowthFactor, kMinCapacity);
+  }
+
+  reallocate(new_capacity);
+}
+
+template <typename T>
+auto DynamicArray<T>::grow() -> void {
+  if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
+    throw ArrayOverflowException("DynamicArray capacity overflow");
+  }
+
+  const size_t new_capacity = std::max(capacity_ * kGrowthFactor, kMinCapacity);
+  reallocate(new_capacity);
+}
+
+template <typename T>
+auto DynamicArray<T>::reallocate(size_t new_capacity) -> void {
+  if (new_capacity < size_) {
+    new_capacity = size_;
+  }
+
+  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw ArrayOverflowException("DynamicArray capacity overflow");
+  }
+
+  std::unique_ptr<T[], void (*)(T*)> new_data(
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
+
+  size_t constructed = 0;
+  try {
+    for (; constructed < size_; ++constructed) {
+      if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+        std::construct_at(new_data.get() + constructed, std::move(data_[constructed]));
+      } else {
+        std::construct_at(new_data.get() + constructed, data_[constructed]);
+      }
+    }
+  } catch (...) {
+    for (size_t i = 0; i < constructed; ++i) {
+      std::destroy_at(new_data.get() + i);
+    }
+    throw;
+  }
+
+  for (size_t i = 0; i < size_; ++i) {
+    std::destroy_at(data_.get() + i);
+  }
+
+  data_     = std::move(new_data);
+  capacity_ = new_capacity;
+}
+
+} // namespace ads::arrays
+
+//===---------------------------------------------------------------------------===//
