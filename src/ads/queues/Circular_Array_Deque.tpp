@@ -378,7 +378,7 @@ auto CircularArrayDeque<T>::ensure_capacity(size_t min_capacity) -> void {
 template <typename T>
 auto CircularArrayDeque<T>::reallocate(size_t new_capacity) -> void {
   std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Move existing elements to new storage.
   size_t constructed = 0;

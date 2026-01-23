@@ -222,6 +222,7 @@
         "test_Singly_Linked_List",
         "test_Doubly_Linked_List",
         "test_Stacks_Queues",
+        "test_Deque",
         "test_Priority_Queue",
         "test_BST",
         "test_BBT",

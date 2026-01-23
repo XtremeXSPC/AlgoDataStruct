@@ -203,7 +203,7 @@ template <typename T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   // Allocate raw memory with custom deleter.
   std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Copy elements to new array in logical order with exception safety.
   size_t constructed_count = 0;
