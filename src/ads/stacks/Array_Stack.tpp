@@ -171,7 +171,7 @@ template <typename T>
 void ArrayStack<T>::reallocate(size_t new_capacity) {
   // Allocate raw memory with custom deleter.
   std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Move/copy elements to new array with exception safety.
   size_t constructed_count = 0;
