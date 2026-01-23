@@ -7,6 +7,7 @@ Checks: '
   ,performance-*
   ,modernize-*
   ,-performance-avoid-endl
+  ,-modernize-avoid-c-arrays
   '
 
 # Specify a list of warnings to treat as errors. Empty means none.

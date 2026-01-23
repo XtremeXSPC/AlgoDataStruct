@@ -163,10 +163,11 @@ private:
    */
   struct Node {
     T                     data;
-    std::unique_ptr<Node> next;
+    std::unique_ptr<Node> next = nullptr;
 
     template <typename... Args>
-    explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
+      requires(!std::is_same_v<std::remove_cvref_t<Args>..., Node>)
+    explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
@@ -174,7 +175,7 @@ private:
   size_t                size_; ///< The current number of elements.
 };
 
-} // namespace ads::stack
+} // namespace ads::stacks
 
 // Include the implementation file for templates.
 #include "../../../src/ads/stacks/Linked_Stack.tpp"
