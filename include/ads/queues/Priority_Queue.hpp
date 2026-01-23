@@ -26,7 +26,7 @@
 namespace ads::queues {
 
 /**
- * @brief A priority queue implemented using a binary heap
+ * @brief A priority queue implemented using a binary heap.
  *
  * @details This class implements a priority queue where elements are served
  *          based on their priority rather than FIFO order. By default, it

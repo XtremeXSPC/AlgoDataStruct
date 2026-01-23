@@ -188,14 +188,14 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::unique_ptr<Node> front_; ///< Pointer to the front node (owns the node)
-  Node*                 rear_;  ///< Raw pointer to the rear node (non-owning)
-  size_t                size_;  ///< The current number of elements
+  std::unique_ptr<Node> front_; ///< Pointer to the front node (owns the node).
+  Node*                 rear_;  ///< Raw pointer to the rear node (non-owning).
+  size_t                size_;  ///< The current number of elements.
 };
 
 } // namespace ads::queues
 
-// Include the implementation file for templates
+// Include the implementation file for templates.
 #include "../../../src/ads/queues/Linked_Queue.tpp"
 
 #endif // LINKED_QUEUE_HPP

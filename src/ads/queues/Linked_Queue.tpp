@@ -39,7 +39,7 @@ LinkedQueue<T>::LinkedQueue(LinkedQueue&& other) noexcept : front_(std::move(oth
 template <typename T>
 auto LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept -> LinkedQueue<T>& {
   if (this != &other) {
-    clear(); // Clear existing elements first
+    clear(); // Clear existing elements first.
     front_      = std::move(other.front_);
     rear_       = other.rear_;
     size_       = other.size_;
@@ -64,21 +64,21 @@ void LinkedQueue<T>::enqueue(T&& value) {
 template <typename T>
 template <typename... Args>
 auto LinkedQueue<T>::emplace(Args&&... args) -> T& {
-  // Create new node with forwarded arguments
+  // Create new node with forwarded arguments.
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
 
-  // Get reference to data before moving the unique_ptr
+  // Get reference to data before moving the unique_ptr.
   T& data_ref = new_node->data;
 
-  // Get raw pointer to the new node (will become the new rear)
+  // Get raw pointer to the new node (will become the new rear).
   Node* new_rear = new_node.get();
 
   if (is_empty()) {
-    // First element: both front and rear point to it
+    // First element: both front and rear point to it.
     front_ = std::move(new_node);
     rear_  = new_rear;
   } else {
-    // Add to rear: link current rear to new node
+    // Add to rear: link current rear to new node.
     rear_->next = std::move(new_node);
     rear_       = new_rear;
   }
@@ -96,10 +96,10 @@ void LinkedQueue<T>::dequeue() {
     throw QueueUnderflowException("Cannot dequeue from empty queue");
   }
 
-  // Move front to the next node, automatically deallocating the old front
+  // Move front to the next node, automatically deallocating the old front.
   front_ = std::move(front_->next);
 
-  // If queue became empty, update rear
+  // If queue became empty, update rear.
   if (!front_) {
     rear_ = nullptr;
   }
@@ -110,7 +110,7 @@ void LinkedQueue<T>::dequeue() {
 template <typename T>
 void LinkedQueue<T>::clear() noexcept {
   // Iterative destruction to avoid potential stack overflow
-  // with recursive unique_ptr destruction
+  // with recursive unique_ptr destruction.
   while (front_) {
     front_ = std::move(front_->next);
   }

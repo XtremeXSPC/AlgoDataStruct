@@ -170,8 +170,8 @@ private:
   };
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
-  std::unique_ptr<Node> head_; ///< Pointer to the top node (owns the node)
-  size_t                size_; ///< The current number of elements
+  std::unique_ptr<Node> head_; ///< Pointer to the top node (owns the node).
+  size_t                size_; ///< The current number of elements.
 };
 
 } // namespace ads::stack
