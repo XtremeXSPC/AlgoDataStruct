@@ -12,6 +12,7 @@
 # Claude AI files
 .claude/
 docs/Claude/
+Plans/
 
 # Exclude CMake build directories
 /build
