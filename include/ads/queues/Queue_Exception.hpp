@@ -39,8 +39,8 @@ public:
  */
 class QueueOverflowException : public QueueException {
 public:
+  using QueueException::QueueException;
   QueueOverflowException() : QueueException("Queue overflow: maximum capacity exceeded") {}
-  explicit QueueOverflowException(const char* message) : QueueException(message) {}
 };
 
 /**
@@ -48,8 +48,8 @@ public:
  */
 class QueueUnderflowException : public QueueException {
 public:
+  using QueueException::QueueException;
   QueueUnderflowException() : QueueException("Queue underflow: operation on empty queue") {}
-  explicit QueueUnderflowException(const char* message) : QueueException(message) {}
 };
 
 } // namespace ads::queues
