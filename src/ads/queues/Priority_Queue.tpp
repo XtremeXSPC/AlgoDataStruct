@@ -200,5 +200,6 @@ auto PriorityQueue<T, Compare>::build_heap() -> void {
   }
 }
 
-} // namespace ads::queue
+} // namespace ads::queues
+
 //===---------------------------------------------------------------------------===//

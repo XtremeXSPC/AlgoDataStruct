@@ -201,7 +201,7 @@ void CircularArrayQueue<T>::grow() {
 
 template <typename T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
-  // Allocate raw memory with custom deleter
+  // Allocate raw memory with custom deleter.
   std::unique_ptr<T[], void (*)(T*)> new_data(
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
@@ -241,4 +241,4 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
 
 } // namespace ads::queues
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

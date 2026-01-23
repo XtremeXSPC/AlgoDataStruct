@@ -53,8 +53,8 @@ auto ArrayStack<T>::emplace(Args&&... args) -> T& {
     grow();
   }
 
-  // Construct the element in-place at the top of the stack
-  // Using placement new for perfect forwarding
+  // Construct the element in-place at the top of the stack.
+  // Using placement new for perfect forwarding.
   T* top_ptr = &data_[size_];
   new (top_ptr) T(std::forward<Args>(args)...);
   size_++;
