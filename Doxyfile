@@ -16,6 +16,11 @@
 # Project related configuration options
 # ------------------------------------------------------- #
 
+# Custom command aliases for documentation tags.
+# @complexity - Documents time/space complexity of functions.
+# Usage: @complexity Time O(1) average, O(n) worst case.
+ALIASES                = "complexity=@par Complexity"
+
 PROJECT_NAME           = "AlgoDataStruct"
 PROJECT_NUMBER         = "1.0"
 PROJECT_BRIEF          = "A modern C++20 library of data structures and algorithms"
