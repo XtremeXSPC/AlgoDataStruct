@@ -1,22 +1,22 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Min_Heap.tpp
  * @author Costantino Lombardi
- * @brief Implementation of the MinHeap class
+ * @brief Implementation of the MinHeap class.
  * @version 0.1
  * @date 2025-01-20
  *
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #pragma once
 #include "../../../include/ads/heaps/Min_Heap.hpp"
 
 namespace ads::heaps {
 
-//========== CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ==========//
+//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
 MinHeap<T>::MinHeap(size_t initial_capacity) :
@@ -26,19 +26,13 @@ MinHeap<T>::MinHeap(size_t initial_capacity) :
 template <typename T>
 MinHeap<T>::MinHeap(const std::vector<T>& elements) :
     data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))), size_(elements.size()), capacity_(elements.size()) {
-  // Copy elements to the array using placement new
+  // Copy elements to the array using placement new.
   for (size_t i = 0; i < size_; ++i) {
     new (&data_[i]) T(elements[i]);
   }
 
-  // Build heap in O(n) time
+  // Build heap in O(n) time.
   build_heap();
-}
-
-template <typename T>
-MinHeap<T>::~MinHeap() {
-  clear();
-  ::operator delete(data_);
 }
 
 template <typename T>
@@ -46,6 +40,12 @@ MinHeap<T>::MinHeap(MinHeap&& other) noexcept : data_(other.data_), size_(other.
   other.data_     = nullptr;
   other.size_     = 0;
   other.capacity_ = 0;
+}
+
+template <typename T>
+MinHeap<T>::~MinHeap() {
+  clear();
+  ::operator delete(data_);
 }
 
 template <typename T>
@@ -65,7 +65,7 @@ auto MinHeap<T>::operator=(MinHeap&& other) noexcept -> MinHeap& {
   return *this;
 }
 
-//========== INSERTION OPERATIONS ==========//
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename T>
 auto MinHeap<T>::insert(const T& value) -> void {
@@ -73,7 +73,7 @@ auto MinHeap<T>::insert(const T& value) -> void {
     grow();
   }
 
-  // Construct element at the end using placement new
+  // Construct element at the end using placement new.
   new (&data_[size_]) T(value);
   heapify_up(size_);
   ++size_;
@@ -85,7 +85,7 @@ auto MinHeap<T>::insert(T&& value) -> void {
     grow();
   }
 
-  // Construct element at the end using placement new (move version)
+  // Construct element at the end using placement new (move version).
   new (&data_[size_]) T(std::move(value));
   heapify_up(size_);
   ++size_;
@@ -98,7 +98,7 @@ auto MinHeap<T>::emplace(Args&&... args) -> T& {
     grow();
   }
 
-  // Construct element in-place using placement new
+  // Construct element in-place using placement new.
   new (&data_[size_]) T(std::forward<Args>(args)...);
   heapify_up(size_);
   T& ref = data_[size_];
@@ -106,34 +106,7 @@ auto MinHeap<T>::emplace(Args&&... args) -> T& {
   return ref;
 }
 
-//========== REMOVAL OPERATIONS ==========//
-
-template <typename T>
-auto MinHeap<T>::extract_min() -> T {
-  if (is_empty()) {
-    throw HeapException("extract_min() called on empty MinHeap");
-  }
-
-  T min_value = std::move(data_[0]);
-
-  // Move last element to root
-  --size_;
-  if (size_ > 0) {
-    data_[0] = std::move(data_[size_]);
-  }
-
-  // Destroy the last element
-  data_[size_].~T();
-
-  // Restore heap property
-  if (size_ > 0) {
-    heapify_down(0);
-  }
-
-  return min_value;
-}
-
-//========== ACCESS OPERATIONS ==========//
+//===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
 template <typename T>
 auto MinHeap<T>::top() -> T& {
@@ -151,7 +124,34 @@ auto MinHeap<T>::top() const -> const T& {
   return data_[0];
 }
 
-//========== QUERY OPERATIONS ==========//
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+
+template <typename T>
+auto MinHeap<T>::extract_min() -> T {
+  if (is_empty()) {
+    throw HeapException("extract_min() called on empty MinHeap");
+  }
+
+  T min_value = std::move(data_[0]);
+
+  // Move last element to root.
+  --size_;
+  if (size_ > 0) {
+    data_[0] = std::move(data_[size_]);
+  }
+
+  // Destroy the last element.
+  data_[size_].~T();
+
+  // Restore heap property.
+  if (size_ > 0) {
+    heapify_down(0);
+  }
+
+  return min_value;
+}
+
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 
 template <typename T>
 auto MinHeap<T>::is_empty() const noexcept -> bool {
@@ -170,14 +170,14 @@ auto MinHeap<T>::capacity() const noexcept -> size_t {
 
 template <typename T>
 auto MinHeap<T>::clear() noexcept -> void {
-  // Explicitly destroy all elements
+  // Explicitly destroy all elements.
   for (size_t i = 0; i < size_; ++i) {
     data_[i].~T();
   }
   size_ = 0;
 }
 
-//========== ADVANCED OPERATIONS ==========//
+//===--------------------------- ADVANCED OPERATIONS ---------------------------===//
 
 template <typename T>
 auto MinHeap<T>::decrease_key(size_t index, const T& new_value) -> void {
@@ -193,7 +193,8 @@ auto MinHeap<T>::decrease_key(size_t index, const T& new_value) -> void {
   heapify_up(index);
 }
 
-//========== PRIVATE HELPER METHODS ==========//
+//=================================================================================//
+//===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <typename T>
 auto MinHeap<T>::heapify_up(size_t index) -> void {
@@ -235,8 +236,8 @@ auto MinHeap<T>::heapify_down(size_t index) -> void {
 
 template <typename T>
 auto MinHeap<T>::build_heap() -> void {
-  // Start from the first non-leaf node and heapify down
-  // Last non-leaf node is at index (size/2 - 1)
+  // Start from the first non-leaf node and heapify down.
+  // Last non-leaf node is at index (size/2 - 1).
   if (size_ <= 1) {
     return;
   }
@@ -250,23 +251,23 @@ template <typename T>
 auto MinHeap<T>::grow() -> void {
   size_t new_capacity = capacity_ * kGrowthFactor;
 
-  // Allocate new array
+  // Allocate new array.
   T* new_data = static_cast<T*>(::operator new(new_capacity * sizeof(T)));
 
-  // Move elements to new array
+  // Move elements to new array.
   for (size_t i = 0; i < size_; ++i) {
     new (&new_data[i]) T(std::move(data_[i]));
     data_[i].~T();
   }
 
-  // Deallocate old array
+  // Deallocate old array.
   ::operator delete(data_);
 
-  // Update pointers and capacity
+  // Update pointers and capacity.
   data_     = new_data;
   capacity_ = new_capacity;
 }
 
-} // namespace ads::heap
+} // namespace ads::heaps
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

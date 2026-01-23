@@ -103,9 +103,9 @@ SHOW_USED_FILES        = YES
 SHOW_FILES             = YES
 SHOW_NAMESPACES        = YES
 
-# ------------------------------------------------------- #
+# ------------------------------------------------------------- #
 # Configuration options related to warning and progress messages
-# ------------------------------------------------------- #
+# ------------------------------------------------------------- #
 
 QUIET                  = NO
 WARNINGS               = YES
@@ -156,9 +156,9 @@ SOURCE_TOOLTIPS        = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
 
-# ------------------------------------------------------- #
+# ------------------------------------------------------------- #
 # Configuration options related to the alphabetical class index
-# ------------------------------------------------------- #
+# ------------------------------------------------------------- #
 
 ALPHABETICAL_INDEX     = YES
 IGNORE_PREFIX          =
