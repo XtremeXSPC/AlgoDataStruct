@@ -1,4 +1,4 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Graph_Adjacency_List.hpp
  * @author Costantino Lombardi
@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #pragma once
 
@@ -104,7 +104,7 @@ public:
    * @param is_directed If true, creates a directed graph; otherwise undirected.
    * @complexity Time O(n), Space O(n)
    */
-  GraphAdjacencyList(size_t num_vertices, bool is_directed = false);
+  explicit GraphAdjacencyList(size_t num_vertices, bool is_directed = false);
 
   /**
    * @brief Move constructor.
@@ -365,4 +365,4 @@ private:
 
 #endif // GRAPH_ADJACENCY_LIST_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
