@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -49,7 +50,7 @@ void print_tree(const BinarySearchTree<T>& tree, const string& name) {
 
 // Test basic insertion and traversals.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   BinarySearchTree<int> bst;
 
@@ -91,7 +92,7 @@ void demo_basic_operations() {
 
 // Test search operations.
 void demo_search_operations() {
-  cout << "\n========== Demo: Search Operations ==========\n";
+  ads::demo::print_section("Demo: Search Operations");
 
   BinarySearchTree<int> bst;
 
@@ -133,7 +134,7 @@ void demo_search_operations() {
 
 // Test removal operations.
 void demo_removal() {
-  cout << "\n========== Demo: Removal Operations ==========\n";
+  ads::demo::print_section("Demo: Removal Operations");
 
   BinarySearchTree<int> bst;
 
@@ -175,7 +176,7 @@ void demo_removal() {
 
 // Test iterator functionality.
 void demo_iterators() {
-  cout << "\n========== Demo: Iterators ==========\n";
+  ads::demo::print_section("Demo: Iterators");
 
   BinarySearchTree<int> bst;
 
@@ -216,7 +217,7 @@ void demo_iterators() {
 
 // Test with custom types.
 void demo_custom_types() {
-  cout << "\n========== Demo: Custom Types ==========\n";
+  ads::demo::print_section("Demo: Custom Types");
 
   struct Person {
     string name;
@@ -251,7 +252,7 @@ void demo_custom_types() {
 
 // Test move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   BinarySearchTree<int> bst1;
   bst1.insert(50);
@@ -287,7 +288,7 @@ void demo_move_semantics() {
 
 // Test exception handling.
 void demo_exceptions() {
-  cout << "\n========== Demo: Exception Handling ==========\n";
+  ads::demo::print_section("Demo: Exception Handling");
 
   BinarySearchTree<int> empty_tree;
 
@@ -314,7 +315,7 @@ void demo_exceptions() {
 
 // Test edge cases.
 void demo_edge_cases() {
-  cout << "\n========== Demo: Edge Cases ==========\n";
+  ads::demo::print_section("Demo: Edge Cases");
 
   // Single element tree.
   BinarySearchTree<int> single;
@@ -350,9 +351,7 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             Binary Search Tree Usage Examples              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_header("Binary Search Tree Usage Examples");
 
     demo_basic_operations();
     demo_search_operations();
@@ -363,10 +362,7 @@ auto main() -> int {
     demo_exceptions();
     demo_edge_cases();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             All Tests Completed Successfully!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

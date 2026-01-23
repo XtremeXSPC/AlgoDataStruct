@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "../include/ads/trees/Trie.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -57,7 +58,7 @@ void print_trie_stats(const TrieType& trie, const string& name) {
 
 // Test basic insertion and search.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   TrieType trie;
 
@@ -93,7 +94,7 @@ void demo_basic_operations() {
 
 // Test prefix operations.
 void demo_prefix_operations() {
-  cout << "\n========== Demo: Prefix Operations ==========\n";
+  ads::demo::print_section("Demo: Prefix Operations");
 
   TrieType trie;
 
@@ -132,7 +133,7 @@ void demo_prefix_operations() {
 
 // Test autocomplete functionality.
 void demo_autocomplete() {
-  cout << "\n========== Demo: Autocomplete ==========\n";
+  ads::demo::print_section("Demo: Autocomplete");
 
   TrieType trie;
 
@@ -170,7 +171,7 @@ void demo_autocomplete() {
 
 // Test word counting with prefix.
 void demo_word_counting() {
-  cout << "\n========== Demo: Word Counting ==========\n";
+  ads::demo::print_section("Demo: Word Counting");
 
   TrieType trie;
 
@@ -194,7 +195,7 @@ void demo_word_counting() {
 
 // Test remove operations.
 void demo_remove_operations() {
-  cout << "\n========== Demo: Remove Operations ==========\n";
+  ads::demo::print_section("Demo: Remove Operations");
 
   TrieType trie;
 
@@ -225,7 +226,7 @@ void demo_remove_operations() {
 
 // Test move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   TrieType trie1;
   trie1.insert("hello");
@@ -260,7 +261,7 @@ void demo_move_semantics() {
 
 // Test performance.
 void demo_performance() {
-  cout << "\n========== Demo: Performance ==========\n";
+  ads::demo::print_section("Demo: Performance");
 
   TrieType trie;
 
@@ -302,11 +303,11 @@ void demo_performance() {
   cout << "  Found: " << word1_set.size() << " words\n";
 }
 
-//===------------------------- CASE SENSITIVITY DEMO --------------------------===//
+//===-------------------------- CASE SENSITIVITY DEMO --------------------------===//
 
 // Test case sensitivity.
 void demo_case_sensitivity() {
-  cout << "\n========== Demo: Case Sensitivity ==========\n";
+  ads::demo::print_section("Demo: Case Sensitivity");
 
   TrieType trie;
 
@@ -328,7 +329,7 @@ void demo_case_sensitivity() {
 
 // Edge cases.
 void demo_edge_cases() {
-  cout << "\n========== Demo: Edge Cases ==========\n";
+  ads::demo::print_section("Demo: Edge Cases");
 
   TrieType trie;
 
@@ -370,9 +371,7 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "          TRIE (PREFIX TREE) - COMPREHENSIVE DEMO           \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_header("TRIE (PREFIX TREE) - COMPREHENSIVE DEMO");
 
     demo_basic_operations();
     demo_prefix_operations();
@@ -384,10 +383,7 @@ auto main() -> int {
     demo_case_sensitivity();
     demo_edge_cases();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const std::exception& e) {
     cerr << "\nUnexpected error: " << e.what() << '\n';

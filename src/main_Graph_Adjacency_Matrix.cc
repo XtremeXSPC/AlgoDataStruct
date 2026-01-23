@@ -23,6 +23,7 @@
 
 #include "../include/ads/graphs/Graph_Adjacency_List.hpp"
 #include "../include/ads/graphs/Graph_Adjacency_Matrix.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -35,25 +36,12 @@ using namespace ads::graphs;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
-// Print a separator with title.
-void print_separator(const string& title) {
-  cout << "\n=====---------- " << title << " ----------=====\n";
-}
-
-template <typename T>
-void print_vector(const vector<T>& vec, const string& prefix = "") {
-  cout << prefix;
-  for (const auto& elem : vec) {
-    cout << elem << " ";
-  }
-  cout << '\n';
-}
 
 //===------------------------------ MATRIX DEMOS -------------------------------===//
 
 // Test construction and basic properties.
 void demo_matrix_construction() {
-  print_separator("Matrix - Construction and Properties");
+  ads::demo::print_section("Matrix - Construction and Properties");
 
   GraphAdjacencyMatrix<int> graph(false);
   cout << "Created undirected graph matrix\n";
@@ -65,7 +53,7 @@ void demo_matrix_construction() {
 
 // Test vertex and edge operations.
 void demo_matrix_operations() {
-  print_separator("Matrix - Basic Operations");
+  ads::demo::print_section("Matrix - Basic Operations");
 
   GraphAdjacencyMatrix<string> graph(false);
 
@@ -105,7 +93,7 @@ void demo_matrix_operations() {
 
 // Test traversal algorithms.
 void demo_matrix_traversal() {
-  print_separator("Matrix - Graph Traversal");
+  ads::demo::print_section("Matrix - Graph Traversal");
 
   GraphAdjacencyMatrix<int> graph(false);
 
@@ -124,16 +112,16 @@ void demo_matrix_traversal() {
 
   cout << "\nBFS from vertex 0:\n";
   auto bfs_result = graph.bfs(0);
-  print_vector(bfs_result, "Traversal order: ");
+  ads::demo::print_sequence(bfs_result, "Traversal order: ");
 
   cout << "\nDFS from vertex 0:\n";
   auto dfs_result = graph.dfs(0);
-  print_vector(dfs_result, "Traversal order: ");
+  ads::demo::print_sequence(dfs_result, "Traversal order: ");
 
   cout << "\nPath from 0 to 5:\n";
   auto path = graph.find_path(0, 5);
   if (path) {
-    print_vector(*path, "Path: ");
+    ads::demo::print_sequence(*path, "Path: ");
   }
 }
 
@@ -141,7 +129,7 @@ void demo_matrix_traversal() {
 
 // Test connected components.
 void demo_matrix_connected_components() {
-  print_separator("Matrix - Connected Components");
+  ads::demo::print_section("Matrix - Connected Components");
 
   GraphAdjacencyMatrix<int> graph(false);
 
@@ -160,7 +148,7 @@ void demo_matrix_connected_components() {
 
   for (size_t i = 0; i < components.size(); ++i) {
     cout << "Component " << i + 1 << ": ";
-    print_vector(components[i]);
+    ads::demo::print_sequence(components[i]);
   }
 }
 
@@ -204,7 +192,7 @@ auto measure_neighbor_iteration(GraphType& graph, size_t N, std::atomic<size_t>&
 
 // Compare performance between adjacency list and matrix.
 void compare_performance() {
-  print_separator("Performance Comparison - List vs Matrix");
+  ads::demo::print_section("Performance Comparison - List vs Matrix");
 
   const size_t N = 1000;
 
@@ -286,9 +274,7 @@ void compare_performance() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "          GRAPH ADJACENCY MATRIX - EXAMPLES TESTS           \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("GRAPH ADJACENCY MATRIX - EXAMPLES TESTS");
 
   try {
     // Basic tests.
@@ -300,10 +286,7 @@ auto main() -> int {
     // Performance comparison.
     compare_performance();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const exception& e) {
     cerr << "\nTest failed with exception: " << e.what() << '\n';

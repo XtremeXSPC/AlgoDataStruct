@@ -21,6 +21,7 @@
 
 #include "../include/ads/hash/Hash_Table_Chaining.hpp"
 #include "../include/ads/hash/Hash_Table_Open_Addressing.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -63,7 +64,7 @@ void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string&
 
 // Test basic operations with linear probing.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations (Linear Probing) ==========\n";
+  ads::demo::print_section("Demo: Basic Operations (Linear Probing)");
 
   HashTableOpenAddressing<int, string> table(16, ProbingStrategy::LINEAR, 0.5f);
 
@@ -92,7 +93,7 @@ void demo_basic_operations() {
 
 // Test all three probing strategies.
 void demo_probing_strategies() {
-  cout << "\n========== Demo: Different Probing Strategies ==========\n";
+  ads::demo::print_section("Demo: Different Probing Strategies");
 
   vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
@@ -127,7 +128,7 @@ void demo_probing_strategies() {
 
 // Test tombstone handling (deleted slots).
 void demo_tombstones() {
-  cout << "\n========== Demo: Tombstone Handling ==========\n";
+  ads::demo::print_section("Demo: Tombstone Handling");
 
   HashTableOpenAddressing<int, string> table(8, ProbingStrategy::LINEAR, 0.5f);
 
@@ -163,7 +164,7 @@ void demo_tombstones() {
 
 // Test updates.
 void demo_updates() {
-  cout << "\n========== Demo: Updates ==========\n";
+  ads::demo::print_section("Demo: Updates");
 
   HashTableOpenAddressing<string, int> table;
 
@@ -191,7 +192,7 @@ void demo_updates() {
 
 // Test rehashing.
 void demo_rehashing() {
-  cout << "\n========== Demo: Rehashing ==========\n";
+  ads::demo::print_section("Demo: Rehashing");
 
   HashTableOpenAddressing<int, int> table(4, ProbingStrategy::LINEAR, 0.5f); // Small capacity, low threshold
 
@@ -226,7 +227,7 @@ void demo_rehashing() {
 
 // Test with high collision rate.
 void demo_high_collisions() {
-  cout << "\n========== Demo: High Collision Rate ==========\n";
+  ads::demo::print_section("Demo: High Collision Rate");
 
   // Small capacity forces many collisions.
   HashTableOpenAddressing<int, int> table(8, ProbingStrategy::LINEAR, 0.5f);
@@ -249,7 +250,7 @@ void demo_high_collisions() {
 
 // Test reserve.
 void demo_reserve() {
-  cout << "\n========== Demo: Reserve ==========\n";
+  ads::demo::print_section("Demo: Reserve");
 
   HashTableOpenAddressing<int, string> table;
 
@@ -272,7 +273,7 @@ void demo_reserve() {
 
 // Test exception handling.
 void demo_exceptions() {
-  cout << "\n========== Demo: Exception Handling ==========\n";
+  ads::demo::print_section("Demo: Exception Handling");
 
   HashTableOpenAddressing<int, string> table;
   table.insert(1, "one");
@@ -308,7 +309,7 @@ void demo_exceptions() {
 
 // Test move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   HashTableOpenAddressing<int, string> table1;
   table1.insert(1, "one");
@@ -336,7 +337,7 @@ void demo_move_semantics() {
 
 // Test clear.
 void demo_clear() {
-  cout << "\n========== Demo: Clear ==========\n";
+  ads::demo::print_section("Demo: Clear");
 
   HashTableOpenAddressing<int, int> table;
   for (int i = 0; i < 50; ++i) {
@@ -361,7 +362,7 @@ void demo_clear() {
 
 // Performance comparison: Open Addressing vs Chaining.
 void demo_performance_comparison() {
-  cout << "\n========== Demo: Performance Comparison ==========\n";
+  ads::demo::print_section("Demo: Performance Comparison");
 
   const int N = 50000;
 
@@ -408,7 +409,7 @@ void demo_performance_comparison() {
 
 // Test edge cases.
 void demo_edge_cases() {
-  cout << "\n========== Demo: Edge Cases ==========\n";
+  ads::demo::print_section("Demo: Edge Cases");
 
   HashTableOpenAddressing<int, int> table;
 
@@ -434,9 +435,7 @@ void demo_edge_cases() {
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  cout << "╔═══----------------------------------------------------═══╗\n";
-  cout << "      HASH TABLE OPEN ADDRESSING - COMPREHENSIVE DEMO       \n";
-  cout << "╚═══----------------------------------------------------═══╝\n";
+  ads::demo::print_header("HASH TABLE OPEN ADDRESSING - COMPREHENSIVE DEMO");
 
   try {
     demo_basic_operations();
@@ -452,10 +451,7 @@ auto main() -> int {
     demo_performance_comparison();
     demo_edge_cases();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
     return 0;
 
@@ -465,4 +461,4 @@ auto main() -> int {
   }
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

@@ -9,6 +9,10 @@
 # Exclude Visual Studio Code configuration directory
 *!.vscode/
 
+# Claude AI files
+.claude/
+docs/Claude/
+
 # Exclude CMake build directories
 /build
 /bin

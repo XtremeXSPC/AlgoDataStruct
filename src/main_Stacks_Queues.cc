@@ -21,6 +21,7 @@
 #include "../include/ads/queues/Linked_Queue.hpp"
 #include "../include/ads/stacks/Array_Stack.hpp"
 #include "../include/ads/stacks/Linked_Stack.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -37,7 +38,7 @@ using namespace ads::stacks;
 // Helper function to demonstrate polymorphic usage.
 template <typename T>
 void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
-  cout << "========== Testing " << stack_type << " ==========\n";
+  ads::demo::print_section("Testing " + stack_type);
 
   // Test push operations.
   cout << "Pushing elements: 10, 20, 30\n";
@@ -69,7 +70,7 @@ void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
 // Helper function for queue testing.
 template <typename T>
 void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
-  cout << "\n========== Testing " << queue_type << " ==========\n";
+  ads::demo::print_section("Testing " + queue_type);
 
   // Test enqueue operations.
   cout << "Enqueuing elements: 100, 200, 300\n";
@@ -101,7 +102,7 @@ void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
 
 // Performance comparison function.
 void performance_comparison() {
-  cout << "\n========== Performance Comparison ==========\n";
+  ads::demo::print_section("Performance Comparison");
   const int iterations = 100000;
 
   // Stack performance test.
@@ -169,7 +170,7 @@ void performance_comparison() {
 
 // Test emplace functionality with complex types.
 void demo_emplace_functionality() {
-  cout << "\n========== Testing Emplace with Complex Types ==========\n";
+  ads::demo::print_section("Testing Emplace with Complex Types");
 
   struct Person {
     string name;
@@ -194,6 +195,8 @@ void demo_emplace_functionality() {
 
 auto main() -> int {
   try {
+    ads::demo::print_header("STACKS AND QUEUES - COMPREHENSIVE DEMO");
+
     // Test Stack implementations.
     ArrayStack<int>  array_stack;
     LinkedStack<int> linked_stack;
@@ -209,7 +212,7 @@ auto main() -> int {
     demo_queue_interface(linked_queue, "LinkedQueue");
 
     // Test move semantics.
-    cout << "\n========== Testing Move Semantics ==========\n";
+    ads::demo::print_section("Testing Move Semantics");
     ArrayStack<string> stack1;
     stack1.push("Hello");
     stack1.push("World");
@@ -229,7 +232,7 @@ auto main() -> int {
     return 1;
   }
 
-  cout << "\n========== All Tests Completed Successfully ==========\n";
+  ads::demo::print_footer();
   return 0;
 }
 

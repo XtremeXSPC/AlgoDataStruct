@@ -15,14 +15,52 @@
 #ifndef ADS_SUPPORT_DEMO_UTILITIES_HPP
 #define ADS_SUPPORT_DEMO_UTILITIES_HPP
 
+#include <initializer_list>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include "Terminal_Colors.hpp"
 
 //===---------------------------------------------------------------------------===//
 
 namespace ads::demo {
+
+namespace detail {
+
+constexpr std::string_view kBoxTop    = "╔═══----------------------------------------------------═══╗";
+constexpr std::string_view kBoxBottom = "╚═══----------------------------------------------------═══╝";
+constexpr size_t           kBoxWidth  = 60;
+
+inline auto center_text(std::string_view text, size_t width) -> std::string {
+  if (text.size() >= width) {
+    return std::string(text.substr(0, width));
+  }
+
+  const size_t padding = width - text.size();
+  const size_t left    = padding / 2;
+  const size_t right   = padding - left;
+
+  return std::string(left, ' ') + std::string(text) + std::string(right, ' ');
+}
+
+inline void print_boxed_lines(std::initializer_list<std::string_view> lines, const char* color) {
+  if (color != nullptr && color[0] != '\0') {
+    std::cout << color;
+  }
+
+  std::cout << kBoxTop << "\n";
+  for (const auto& line : lines) {
+    std::cout << center_text(line, kBoxWidth) << "\n";
+  }
+  std::cout << kBoxBottom << "\n";
+
+  if (color != nullptr && color[0] != '\0') {
+    std::cout << ANSI_RESET;
+  }
+}
+
+} // namespace detail
 
 /**
  * @brief Print a formatted section separator with title.
@@ -70,24 +108,33 @@ inline void print_warning(const std::string& message) {
  * @brief Print a program header.
  * @param program_name The name of the demo program.
  */
-inline void print_header(const std::string& program_name) {
-  std::cout << ANSI_BOLD << ANSI_BLUE;
-  std::cout << "╔═══----------------------------------------------------═══╗\n";
-  std::cout << "    " << program_name << "\n";
-  std::cout << "╚═══----------------------------------------------------═══╝\n";
-  std::cout << ANSI_RESET;
+inline void print_header(std::string_view program_name) {
+  detail::print_boxed_lines({program_name}, ANSI_BOLD ANSI_BLUE);
+}
+
+/**
+ * @brief Print a multi-line program header.
+ * @param lines Lines to print within the header box.
+ */
+inline void print_header(std::initializer_list<std::string_view> lines) {
+  detail::print_boxed_lines(lines, ANSI_BOLD ANSI_BLUE);
 }
 
 /**
  * @brief Print a program footer.
  */
 inline void print_footer() {
-  std::cout << ANSI_BOLD << ANSI_GREEN;
   std::cout << "\n";
-  std::cout << "╔═══----------------------------------------------------═══╗\n";
-  std::cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-  std::cout << "╚═══----------------------------------------------------═══╝\n";
-  std::cout << ANSI_RESET;
+  detail::print_boxed_lines({"ALL DEMOS COMPLETED SUCCESSFULLY!"}, ANSI_BOLD ANSI_GREEN);
+}
+
+/**
+ * @brief Print a program footer with a custom message.
+ * @param message The footer message.
+ */
+inline void print_footer(std::string_view message) {
+  std::cout << "\n";
+  detail::print_boxed_lines({message}, ANSI_BOLD ANSI_GREEN);
 }
 
 /**
@@ -99,7 +146,30 @@ inline void print_footer() {
  */
 template <typename Container>
 void print_container(const Container& container, const std::string& name, const std::string& separator = " ") {
-  std::cout << name << ": ";
+  if (!name.empty()) {
+    std::cout << name << ": ";
+  }
+  bool first = true;
+  for (const auto& elem : container) {
+    if (!first) {
+      std::cout << separator;
+    }
+    std::cout << elem;
+    first = false;
+  }
+  std::cout << "\n";
+}
+
+/**
+ * @brief Print a container's contents with a prefix.
+ * @tparam Container Container type with begin/end iterators.
+ * @param container The container to print.
+ * @param prefix The prefix to print before the elements.
+ * @param separator The separator between elements (default: " ").
+ */
+template <typename Container>
+void print_sequence(const Container& container, const std::string& prefix = "", const std::string& separator = " ") {
+  std::cout << prefix;
   bool first = true;
   for (const auto& elem : container) {
     if (!first) {

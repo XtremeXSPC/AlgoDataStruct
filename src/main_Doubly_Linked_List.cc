@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "../include/ads/lists/Doubly_Linked_List.hpp"
+#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -62,7 +63,7 @@ void print_list(const DoublyLinkedList<T>& list, const string& name) {
 
 // Demo: Basic push operations.
 void demo_basic_operations() {
-  cout << "\n========== Demo: Basic Operations ==========\n";
+  ads::demo::print_section("Demo: Basic Operations");
 
   DoublyLinkedList<int> list;
 
@@ -91,7 +92,7 @@ void demo_basic_operations() {
 
 // Demo: Pop operations.
 void demo_pop_operations() {
-  cout << "\n========== Demo: Pop Operations ==========\n";
+  ads::demo::print_section("Demo: Pop Operations");
 
   DoublyLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -114,7 +115,7 @@ void demo_pop_operations() {
 
 // Demo: Insert and erase operations.
 void demo_insert_erase() {
-  cout << "\n========== Demo: Insert and Erase ==========\n";
+  ads::demo::print_section("Demo: Insert and Erase");
 
   DoublyLinkedList<int> list;
   list.push_back(10);
@@ -153,7 +154,7 @@ void demo_insert_erase() {
 
 // Demo: Emplace operations.
 void demo_emplace() {
-  cout << "\n========== Demo: Emplace Operations ==========\n";
+  ads::demo::print_section("Demo: Emplace Operations");
 
   struct Person {
     string name;
@@ -179,7 +180,7 @@ void demo_emplace() {
 
 // Demo: Iterators.
 void demo_iterators() {
-  cout << "\n========== Demo: Iterators ==========\n";
+  ads::demo::print_section("Demo: Iterators");
 
   DoublyLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -229,7 +230,7 @@ void demo_iterators() {
 
 // Demo: Reverse operation.
 void demo_reverse() {
-  cout << "\n========== Demo: Reverse ==========\n";
+  ads::demo::print_section("Demo: Reverse");
 
   DoublyLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -256,7 +257,7 @@ void demo_reverse() {
 
 // Demo: Move semantics.
 void demo_move_semantics() {
-  cout << "\n========== Demo: Move Semantics ==========\n";
+  ads::demo::print_section("Demo: Move Semantics");
 
   DoublyLinkedList<int> list1;
   for (int i = 1; i <= 3; ++i) {
@@ -290,7 +291,7 @@ void demo_move_semantics() {
 
 // Demo: Clear and reuse.
 void demo_clear() {
-  cout << "\n========== Demo: Clear and Reuse ==========\n";
+  ads::demo::print_section("Demo: Clear and Reuse");
 
   DoublyLinkedList<int> list;
   for (int i = 0; i < 5; ++i) {
@@ -313,7 +314,7 @@ void demo_clear() {
 
 // Demo: Exception handling.
 void demo_exceptions() {
-  cout << "\n========== Demo: Exception Handling ==========\n";
+  ads::demo::print_section("Demo: Exception Handling");
 
   DoublyLinkedList<int> empty_list;
 
@@ -356,7 +357,7 @@ void demo_exceptions() {
 
 // Demo: Edge cases.
 void demo_edge_cases() {
-  cout << "\n========== Demo: Edge Cases ==========\n";
+  ads::demo::print_section("Demo: Edge Cases");
 
   // Single element list.
   DoublyLinkedList<int> single;
@@ -388,9 +389,7 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "          DOUBLY LINKED LIST - COMPREHENSIVE DEMO           \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_header("DOUBLY LINKED LIST - COMPREHENSIVE DEMO");
 
     demo_basic_operations();
     demo_pop_operations();
@@ -403,10 +402,7 @@ auto main() -> int {
     demo_exceptions();
     demo_edge_cases();
 
-    cout << "\n";
-    cout << "╔═══----------------------------------------------------═══╗\n";
-    cout << "             ALL DEMOS COMPLETED SUCCESSFULLY!              \n";
-    cout << "╚═══----------------------------------------------------═══╝\n";
+    ads::demo::print_footer();
 
   } catch (const exception& e) {
     cerr << "\nUnexpected error: " << e.what() << "\n";
@@ -416,4 +412,4 @@ auto main() -> int {
   return 0;
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
