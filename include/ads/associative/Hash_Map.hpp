@@ -32,14 +32,14 @@ namespace ads::associative {
  * @brief A hash map providing a user-friendly interface with iterators.
  *
  * @details HashMap is a wrapper around HashTableChaining that provides:
- *          - Iterator support for range-based for loops.
- *          - API similar to std::unordered_map.
- *          - Convenience methods: keys(), values(), entries().
- *          - operator[] for easy element access/insertion.
+ *            - Iterator support for range-based for loops.
+ *            - API similar to std::unordered_map.
+ *            - Convenience methods: keys(), values(), entries().
+ *            - operator[] for easy element access/insertion.
  *
  *          All operations have the same complexity as the underlying hash table:
- *          - Insert/Find/Erase: O(1) average, O(n) worst case.
- *          - Iteration: O(n) where n is size.
+ *            - Insert/Find/Erase: O(1) average, O(n) worst case.
+ *            - Iteration: O(n) where n is size.
  *
  * @tparam Key The type of keys (must be hashable).
  * @tparam Value The type of mapped values.
@@ -435,7 +435,7 @@ private:
    * @brief Finds an entry in the underlying table (non-const).
    * @param key The key to search for.
    * @return Bucket index and iterator to entry (or end of bucket if not found).
-   * @complexity Time O(1) average, O(n) worst case.
+   * @complexity Time O(1) average, O(n) worst case
    */
   auto find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator>;
 
@@ -443,7 +443,7 @@ private:
    * @brief Finds an entry in the underlying table (const).
    * @param key The key to search for.
    * @return Bucket index and const iterator to entry (or end of bucket if not found).
-   * @complexity Time O(1) average, O(n) worst case.
+   * @complexity Time O(1) average, O(n) worst case
    */
   auto find_in_table(const Key& key) const -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
 
