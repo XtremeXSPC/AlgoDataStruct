@@ -73,7 +73,7 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    iterator() : current_(nullptr) {}
+    iterator() = default;
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -87,7 +87,7 @@ public:
 
     // Stack to maintain the path during in-order traversal.
     std::stack<Node*> stack_;
-    Node*             current_;
+    Node*             current_ = nullptr;
 
     // Private constructor used by begin() to initialize the iterator.
     explicit iterator(Node* root);
