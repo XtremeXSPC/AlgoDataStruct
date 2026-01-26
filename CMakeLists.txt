@@ -229,6 +229,8 @@ target_sources(ads_lib
             # Associative structures.
             include/ads/associative/Dictionary.hpp
             include/ads/associative/Hash_Map.hpp
+            include/ads/associative/Tree_Map.hpp
+            include/ads/associative/Tree_Map_Exception.hpp
 
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
@@ -255,6 +257,7 @@ target_sources(ads_lib
         src/ads/graphs/Graph_Adjacency_List.tpp
         src/ads/graphs/Graph_Adjacency_Matrix.tpp
         src/ads/associative/Hash_Map.tpp
+        src/ads/associative/Tree_Map.tpp
 )
 
 # ------------------------ Helper Function: Add Executable ------------------------ #
@@ -411,6 +414,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Disjoint_Set_Union.cc")
     ads_add_executable(test_Disjoint_Set_Union src/main_Disjoint_Set_Union.cc)
 endif()
 
+# TreeMap test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Tree_Map.cc")
+    ads_add_executable(test_Tree_Map src/main_Tree_Map.cc)
+endif()
+
 # HashMap test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Map.cc")
     ads_add_executable(test_HashMap src/main_Hash_Map.cc)
@@ -499,6 +507,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Disjoint_Set_Union.cpp")
         list(APPEND TEST_SOURCES tests/Test_Disjoint_Set_Union.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Tree_Map.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Tree_Map.cpp)
     endif()
 
     # Create test executable if we have test files.
