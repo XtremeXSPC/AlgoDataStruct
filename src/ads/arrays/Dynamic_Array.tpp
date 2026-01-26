@@ -434,6 +434,7 @@ auto DynamicArray<T>::crend() const noexcept -> const_reverse_iterator {
   return const_reverse_iterator(begin());
 }
 
+//=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <typename T>

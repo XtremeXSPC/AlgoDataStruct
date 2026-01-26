@@ -23,7 +23,8 @@ template <typename T, size_t N>
   requires(N > 0)
 StaticArray<T, N>::StaticArray()
   requires std::default_initializable<T>
-    : data_{} {}
+    : data_{} {
+}
 
 template <typename T, size_t N>
   requires(N > 0)
@@ -78,7 +79,7 @@ auto StaticArray<T, N>::operator=(StaticArray&& other) noexcept(std::is_nothrow_
   return *this;
 }
 
-//===------------------------ MODIFICATION OPERATIONS ---------------------------===//
+//===------------------------- MODIFICATION OPERATIONS -------------------------===//
 
 template <typename T, size_t N>
   requires(N > 0)
