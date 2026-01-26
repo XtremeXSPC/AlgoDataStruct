@@ -1,15 +1,15 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_DoublyLinkedList.cpp
  * @author Costantino Lombardi
- * @brief Test cases for DoublyLinkedList
+ * @brief Test cases for DoublyLinkedList.
  * @version 0.1
  * @date 2025-06-30
  *
  * @copyright Copyright (c) 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -19,13 +19,13 @@
 
 using namespace ads::lists;
 
-// Test fixture to initeratorialize a clean list for each test
+// Test fixture to initeratorialize a clean list for each test.
 class DoublyLinkedListTest : public ::testing::Test {
 protected:
   DoublyLinkedList<int> list;
 };
 
-// ----- Basic tests and state ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(DoublyLinkedListTest, IsEmptyOnConstruction) {
   EXPECT_EQ(list.size(), 0);
@@ -40,11 +40,11 @@ TEST_F(DoublyLinkedListTest, Clear) {
   list.clear();
   EXPECT_EQ(list.size(), 0);
   EXPECT_TRUE(list.is_empty());
-  // We verify that access fails after clear()
+  // We verify that access fails after clear().
   EXPECT_THROW(list.front(), ListException);
 }
 
-// ----- Tests on modifiers (push/pop/emplace) ----- //
+//===--------------------------- MODIFICATION TESTS ----------------------------===//
 
 TEST_F(DoublyLinkedListTest, PushFront) {
   list.push_front(10);
@@ -87,7 +87,7 @@ TEST_F(DoublyLinkedListTest, PopFront) {
 
   list.pop_front();
   EXPECT_TRUE(list.is_empty());
-  // Now we expect our custom exception
+  // Now we expect our custom exception.
   EXPECT_THROW(list.pop_front(), ListException);
 }
 
@@ -106,11 +106,11 @@ TEST_F(DoublyLinkedListTest, PopBack) {
 
   list.pop_back();
   EXPECT_TRUE(list.is_empty());
-  // Here we expect the defined exception
+  // Here we expect the defined exception.
   EXPECT_THROW(list.pop_back(), ListException);
 }
 
-// Test for emplace witeratorh a non-trivial type like std::string
+// Test for emplace witeratorh a non-trivial type like std::string.
 TEST(DoublyLinkedListStringTest, Emplace) {
   DoublyLinkedList<std::string> str_list;
   str_list.emplace_front("world");
@@ -122,7 +122,7 @@ TEST(DoublyLinkedListStringTest, Emplace) {
   EXPECT_EQ(str_list.back(), "!");
 }
 
-// ----- Tests for access and iteratorerators ----- //
+//===----------------------------- ACCESSOR TESTS ------------------------------===//
 
 TEST_F(DoublyLinkedListTest, AccessOnEmptyThrows) {
   EXPECT_THROW(list.front(), ListException);
@@ -139,7 +139,7 @@ TEST_F(DoublyLinkedListTest, ConstCorrectness) {
 
   const auto& const_list = list;
 
-  // Verify that iteratoreration over a const list works correctly
+  // Verify that iteratoreration over a const list works correctly.
   auto iterator = const_list.cbegin();
   ASSERT_NE(iterator, const_list.cend());
   EXPECT_EQ(*iterator, 10);
@@ -152,7 +152,7 @@ TEST_F(DoublyLinkedListTest, ConstCorrectness) {
   // The following code should NOT compile, which proves const_iteratorerator correctness:
   // *const_list.cbegin() = 5;
 
-  // Verify that range-based for loop works witeratorh a const list
+  // Verify that range-based for loop works witeratorh a const list.
   std::vector<int> actual;
   for (const int& val : const_list) {
     actual.push_back(val);
@@ -161,20 +161,20 @@ TEST_F(DoublyLinkedListTest, ConstCorrectness) {
   EXPECT_EQ(actual, expected);
 }
 
-// ----- Tests for algoriteratorhms (insert, erase, reverse) ----- //
+//===--------------------------- COMPREHENSIVE TESTS ---------------------------===//
 
 TEST_F(DoublyLinkedListTest, InsertComprehensive) {
-  // 1. Insertion into an empty list (equivalent to push_front)
+  // 1. Insertion into an empty list (equivalent to push_front).
   list.insert(list.begin(), 10);
   EXPECT_EQ(list.front(), 10);
   EXPECT_EQ(list.size(), 1);
 
-  // 2. Insertion at the end
+  // 2. Insertion at the end.
   list.insert(list.end(), 30);
   EXPECT_EQ(list.back(), 30);
   EXPECT_EQ(list.size(), 2);
 
-  // 3. Insertion in the middle
+  // 3. Insertion in the middle.
   auto iterator = list.begin();
   ++iterator; // iterator points to 30
   list.insert(iterator, 20);
@@ -194,24 +194,24 @@ TEST_F(DoublyLinkedListTest, EraseComprehensive) {
   list.push_back(30);
   list.push_back(40);
 
-  // 1. Remove from the middle
+  // 1. Remove from the middle.
   auto iterator = list.begin();
   ++iterator; // iterator points to 20
   iterator = list.erase(iterator);
   EXPECT_EQ(*iterator, 30);
   EXPECT_EQ(list.size(), 3);
 
-  // 2. Remove from the head
+  // 2. Remove from the head.
   iterator = list.erase(list.begin());
   EXPECT_EQ(*iterator, 30);
   EXPECT_EQ(list.size(), 2);
 
-  // 3. Remove from the tail
+  // 3. Remove from the tail.
   auto iterator_to_tail = list.begin();
-  ++iterator_to_tail; // Now points to 40 (the last element)
+  ++iterator_to_tail; // Now points to 40 (the last element).
   iterator = list.erase(iterator_to_tail);
 
-  EXPECT_EQ(iterator, list.end()); // The returned iteratorerator is end()
+  EXPECT_EQ(iterator, list.end()); // The returned iteratorerator is end().
   EXPECT_EQ(list.size(), 1);
   EXPECT_EQ(list.back(), 30);
 }
@@ -234,11 +234,11 @@ TEST_F(DoublyLinkedListTest, Reverse) {
 }
 
 TEST_F(DoublyLinkedListTest, ReverseEdgeCases) {
-  // 1. Reversing an empty list
+  // 1. Reversing an empty list.
   list.reverse();
   EXPECT_TRUE(list.is_empty());
 
-  // 2. Reversing a list witeratorh a single element
+  // 2. Reversing a list witeratorh a single element.
   list.push_back(42);
   list.reverse();
   EXPECT_EQ(list.size(), 1);
@@ -246,23 +246,25 @@ TEST_F(DoublyLinkedListTest, ReverseEdgeCases) {
   EXPECT_EQ(list.back(), 42);
 }
 
-// ----- Tests for special semantics ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(DoublyLinkedListTest, MoveSemantics) {
   list.push_back(10);
   list.push_back(20);
 
-  // Test move constructor
+  // Test move constructor.
   DoublyLinkedList<int> moved_list_ctor = std::move(list);
-  EXPECT_TRUE(list.is_empty()); // The original list is empty
+  EXPECT_TRUE(list.is_empty()); // The original list is empty.
   EXPECT_EQ(list.size(), 0);
   EXPECT_EQ(moved_list_ctor.size(), 2);
   EXPECT_EQ(moved_list_ctor.front(), 10);
 
-  // Test move assignment
+  // Test move assignment.
   list = std::move(moved_list_ctor);
   EXPECT_TRUE(moved_list_ctor.is_empty());
   EXPECT_EQ(moved_list_ctor.size(), 0);
   EXPECT_EQ(list.size(), 2);
   EXPECT_EQ(list.back(), 20);
 }
+
+//===---------------------------------------------------------------------------===//

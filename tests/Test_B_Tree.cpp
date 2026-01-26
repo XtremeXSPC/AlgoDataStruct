@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_BTree.cpp
- * @brief Google Test unit tests for B-Tree implementation
+ * @brief Google Test unit tests for B-Tree implementation.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -20,13 +20,13 @@ using namespace ads::trees;
 template <typename T, int Degree = 3>
 using BTreeType = B_Tree<T, Degree>;
 
-// Test fixture for BTree
+// Test fixture for BTree.
 class BTreeTest : public ::testing::Test {
 protected:
-  BTreeType<int> tree; // B-Tree with minimum degree 3 (max 5 keys per node)
+  BTreeType<int> tree; // B-Tree with minimum degree 3 (max 5 keys per node).
 };
 
-// ----- Basic State Tests ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(BTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -44,7 +44,7 @@ TEST_F(BTreeTest, Clear) {
   EXPECT_TRUE(tree.is_empty());
 }
 
-// ----- Insertion Tests ----- //
+//===----------------------------- INSERTION TESTS -----------------------------===//
 
 TEST_F(BTreeTest, InsertSingleElement) {
   tree.insert(50);
@@ -64,7 +64,7 @@ TEST_F(BTreeTest, InsertMultipleElements) {
 }
 
 TEST_F(BTreeTest, InsertWithSplit) {
-  // Insert enough elements to cause node splits
+  // Insert enough elements to cause node splits.
   for (int i = 1; i <= 20; ++i) {
     tree.insert(i);
   }
@@ -81,7 +81,7 @@ TEST_F(BTreeTest, InsertDuplicateRejected) {
   EXPECT_EQ(tree.size(), 1);
 }
 
-// ----- Search Tests ----- //
+//===------------------------------ SEARCH TESTS -------------------------------===//
 
 TEST_F(BTreeTest, ContainsElement) {
   tree.insert(10);
@@ -115,7 +115,7 @@ TEST_F(BTreeTest, FindMinMaxOnEmptyThrows) {
   EXPECT_THROW([[maybe_unused]] auto val = tree.find_max(), EmptyTreeException);
 }
 
-// ----- Removal Tests ----- //
+//===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(BTreeTest, RemoveFromLeaf) {
   GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
@@ -137,7 +137,7 @@ TEST_F(BTreeTest, RemoveAll) {
   GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
 }
 
-// ----- Traversal Tests ----- //
+//===----------------------------- TRAVERSAL TESTS -----------------------------===//
 
 TEST_F(BTreeTest, InOrderTraversal) {
   tree.insert(50);
@@ -155,7 +155,7 @@ TEST_F(BTreeTest, InOrderTraversal) {
   EXPECT_EQ(result, expected);
 }
 
-// ----- Iterator Tests ----- //
+//===------------------------------ ITERATOR TESTS ------------------------------===//
 
 TEST_F(BTreeTest, IteratorTraversal) {
   tree.insert(50);
@@ -169,7 +169,7 @@ TEST_F(BTreeTest, IteratorTraversal) {
   EXPECT_EQ(actual, expected);
 }
 
-// ----- Move Semantics Tests ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(BTreeTest, MoveConstructor) {
   tree.insert(50);
@@ -195,7 +195,7 @@ TEST_F(BTreeTest, MoveAssignment) {
   EXPECT_EQ(other_tree.size(), 3);
 }
 
-// ----- Large Dataset Tests ----- //
+//===--------------------------- LARGE DATASET TESTS ---------------------------===//
 
 TEST_F(BTreeTest, LargeDatasetInsert) {
   const int N = 1000;
@@ -212,10 +212,10 @@ TEST_F(BTreeTest, LargeDatasetInsertAndRemove) {
   GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
 }
 
-// ----- Different Degree Tests ----- //
+//===------------------------- DEGREE VARIATION TESTS --------------------------===//
 
 TEST(BTreeDegreeTest, MinimumDegree2) {
-  BTreeType<int, 2> tree; // Minimum degree 2 (2-3-4 tree behavior)
+  BTreeType<int, 2> tree; // Minimum degree 2 (2-3-4 tree behavior).
 
   for (int i = 1; i <= 20; ++i) {
     tree.insert(i);
@@ -228,18 +228,18 @@ TEST(BTreeDegreeTest, MinimumDegree2) {
 }
 
 TEST(BTreeDegreeTest, LargerDegree) {
-  BTreeType<int, 5> tree; // Minimum degree 5
+  BTreeType<int, 5> tree; // Minimum degree 5.
 
   for (int i = 1; i <= 100; ++i) {
     tree.insert(i);
   }
 
   EXPECT_EQ(tree.size(), 100);
-  // Height should be very small due to high branching factor
+  // Height should be very small due to high branching factor.
   EXPECT_LE(tree.height(), 3);
 }
 
-// ----- String Type Tests ----- //
+//===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
 
 TEST(BTreeStringTest, StringKeys) {
   BTreeType<std::string> tree;
@@ -254,3 +254,5 @@ TEST(BTreeStringTest, StringKeys) {
   EXPECT_EQ(tree.find_min(), "apple");
   EXPECT_EQ(tree.find_max(), "elderberry");
 }
+
+//===---------------------------------------------------------------------------===//
