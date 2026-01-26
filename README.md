@@ -1,12 +1,19 @@
-# AlgoDataStruct: Data Structures Library
+# AlgoDataStruct: Data Structures Library (C++)
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Java](https://img.shields.io/badge/Java-17+-orange.svg)
-![C++](https://img.shields.io/badge/C++-17+-purple.svg)
+![C++20](https://img.shields.io/badge/C++-20-purple.svg)
 
 ## Description
 
-**AlgoDataStruct** is a comprehensive educational library that implements a wide range of data structures in Java and C++. Designed for students, this library offers clean, well-documented, and efficient implementations of fundamental and advanced data structures.
+**AlgoDataStruct** is an educational, header-only C++ library that implements classic data
+structures with modern C++20. The project favors clear invariants, clean APIs, and
+well-documented behavior over micro-optimizations.
+
+Key characteristics:
+
+- Header-only templates with `.tpp` implementation files included by the public headers
+- STL-friendly iteration/traversal where applicable and explicit error handling via custom exceptions
+- Focused, testable implementations intended for study and extension
 
 ## Implemented Data Structures
 
@@ -15,264 +22,158 @@
 
 - **Arrays**
   - Static Array
-  - Dynamic Array (ArrayList/Vector)
-  - Circular Array
+  - Dynamic Array (vector-like growth)
+  - Circular Array (wrap-around indexing)
 
 - **Linked Lists**
-  - Singly Linked List ✓ (C++)
-  - Doubly Linked List ✓ (C++)
+  - Singly Linked List
+  - Doubly Linked List
   - Circular Linked List
-  - Skip List
 
 - **Stacks**
-  - Array-based implementation ✓ (C++)
-  - Linked list-based implementation ✓ (C++)
+  - Array-based Stack
+  - Linked-list-based Stack
 
 - **Queues**
-  - Simple Queue ✓ (C++)
-  - Priority Queue ✓ (C++)
-  - Double-ended Queue (Deque)
-  - Circular Queue ✓ (C++)
+  - Linked Queue
+  - Circular Queue
+  - Circular Deque
+  - Priority Queue (binary heap)
 
 </details>
 
 <details>
-<summary><strong>Hierarchical Structures</strong></summary>
+<summary><strong>Trees</strong></summary>
 
-- **Trees**
-  - Binary Tree
-  - Binary Search Tree (BST) ✓ (C++)
-  - AVL Tree ✓ (C++)
-  - Red-Black Tree ✓ (C++)
-  - B-Tree ✓ (C++)
-  - B+ Tree
-  - 2-3 Tree
-  - 2-3-4 Tree
-  - Segment Tree
-  - Fenwick Tree (Binary Indexed Tree)
-  - Trie (Prefix Tree) ✓ (C++)
-  - Suffix Tree
-  - Quad-tree and Oct-tree
-
-- **Heaps**
-  - Min/Max Heap ✓ (C++)
-  - Binary Heap
-  - Fibonacci Heap
-  - Binomial Heap
-  - Leftist Heap
-  - Skew Heap
+- Complete Binary Tree (level-order insertion)
+- Binary Search Tree (BST)
+- AVL Tree
+- Red-Black Tree
+- B-Tree
+- Trie (Prefix Tree)
 
 </details>
 
 <details>
-<summary><strong>Associative Structures</strong> (+)</summary>
+<summary><strong>Heaps</strong></summary>
 
-- **Dictionaries/Maps**
-  - Dictionary/Map (generic implementation)
-  - HashMap/unordered_map ✓ (C++)
-  - TreeMap/map (ordered map based on tree)
-  - LinkedHashMap (ordered by insertion)
-  - MultiMap (map with duplicate keys)
-  - BiMap (bidirectional map)
-  - Immutable Map implementations
+- Min Heap
+- Max Heap
 
 </details>
 
 <details>
-<summary><strong>Hashing Structures</strong> (+)</summary>
+<summary><strong>Hashing Structures</strong></summary>
 
-- **Hash Tables**
-  - Hash table with chaining
-  - Hash table with open addressing (Linear probing, Quadratic probing, Double hashing)
-  - Cuckoo Hashing
-  - Perfect Hash Table
-  - Bloom Filter
-  - Count-Min Sketch
-  - HyperLogLog
+- Hash table with chaining
+- Hash table with open addressing (linear, quadratic, double hashing)
 
 </details>
 
 <details>
-<summary><strong>Graph Structures</strong> (+)</summary>
+<summary><strong>Associative Structures</strong></summary>
 
-- **Graph Representations**
-  - Adjacency Matrix
-  - Adjacency List
-  - Disjoint Sets (Union-Find)
-  - Weighted Graphs
-  - Directed Graphs
-  - Multigraphs
-  - Hypergraphs
+- Dictionary interface
+- HashMap
+- TreeMap
+- HashSet
+- TreeSet
 
 </details>
 
 <details>
-<summary><strong>String Data Structures</strong> (+)</summary>
+<summary><strong>Graph Structures</strong></summary>
 
-- **String Processing**
-  - Suffix Tree
-  - Suffix Array
-  - Suffix Automaton
-  - FM-index
-  - Rope (for efficient string manipulation)
+- Adjacency List
+- Adjacency Matrix
+- Disjoint Sets (Union-Find)
 
 </details>
 
-<details>
-<summary><strong>Spatial Data Structures</strong> (+)</summary>
+## Roadmap (Advanced)
 
-- **Spatial Search Structures**
-  - KD-Tree
-  - R-Tree
-  - Quad-tree and Oct-tree
-  - Voronoi Diagram
-  - Range Trees (multidimensional)
+Planned, not implemented yet:
 
-- **Nearest Neighbor Search Structures**
-  - HNSW (Hierarchical Navigable Small World)
-  - VP-Tree (Vantage-Point Tree)
-  - Cover Tree
-  - ANNOY (Approximate Nearest Neighbors Oh Yeah)
-
-</details>
-
-<details>
-<summary><strong>Advanced Structures</strong> (+)</summary>
-
-- **Range Query Structures**
-  - Sparse Table
-  - 2D Segment Tree
-  - Range Trees
-
-- **Probabilistic Structures**
-  - Skip List
-  - Treap
-  - Splay Tree
-  - MinHash
-
-- **Concurrent Structures**
-  - Thread-safe Lists
-  - Concurrent Hash Maps
-  - Lock-free Data Structures
-
-- **Persistent Data Structures**
-  - Persistent Arrays
-  - Persistent Lists
-  - Persistent Maps
-
-- **Big Data Structures**
-  - Log-Structured Merge Tree (LSM Tree)
-  - External Memory Data Structures
-
-- **Other Structures**
-  - LRU Cache
-  - LFU Cache
-  - Time Series Data Structures
-
-</details>
-
-(+) _Not implemented yet but I'm working on it!_
+- Skip List (advanced)
+- B+ Tree, 2-3 Tree, 2-3-4 Tree
+- Segment Tree, Fenwick Tree (Binary Indexed Tree)
+- String structures (Suffix Tree/Array, Suffix Automaton, Rope)
+- Probabilistic structures (Bloom Filter, Count-Min Sketch, HyperLogLog)
+- Spatial structures (KD-Tree, R-Tree, Quad/Oct-tree)
 
 ## Repository Organization
 
 ```path-tree
 AlgoDataStruct/
-├── java/
-│   ├── linear/
-│   ├── trees/
-│   ├── heaps/
-│   ├── associative/
-│   ├── hash/
-│   ├── graph/
-│   ├── string/
-│   ├── spatial/
-│   ├── concurrent/
-│   ├── persistent/
-│   ├── advanced/
-│   └── utils/
-├── cpp/
-│   ├── linear/
-│   ├── trees/
-│   ├── heaps/
-│   ├── associative/
-│   ├── hash/
-│   ├── graph/
-│   ├── string/
-│   ├── spatial/
-│   ├── concurrent/
-│   ├── persistent/
-│   ├── advanced/
-│   └── utils/
-├── docs/
-│   ├── complexity-analysis.md
-│   ├── implementation-guide.md
-│   └── structure-specific/
-├── examples/
-│   ├── java/
-│   └── cpp/
-└── tests/
-    ├── java/
-    └── cpp/
+├── include/
+│   └── ads/
+│       ├── arrays/
+│       ├── lists/
+│       ├── stacks/
+│       ├── queues/
+│       ├── trees/
+│       ├── heaps/
+│       ├── hash/
+│       ├── associative/
+│       └── graphs/
+├── src/
+│   ├── ads/              # .tpp implementation files
+│   └── main_*.cc          # usage demos / sample programs
+├── tests/                 # unit tests (standalone)
+├── docs/                  # generated documentation
+│   └── html/
+├── Documentation/         # additional notes and PDFs
+├── CMakeLists.txt
+├── clang-toolchain.cmake
+├── gcc-toolchain.cmake
+└── Makefile
 ```
 
 ## Code Conventions
 
-- **Java**: I follow Google Java Style Guide conventions
-- **C++**: I follow Google C++ Style Guide conventions
-- Each data structure includes:
-  - Complete documentation with JavaDoc/Doxygen
-  - Complexity analysis (not always)
-  - Unit tests (not always)
-  - Usage examples
+- **C++**: Google C++ Style Guide conventions
+- Header-only templates: public headers in `include/ads`, implementations in `src/ads`
+- Many structures include iterators or traversal callbacks where they make sense
+- Documentation is written in Doxygen style; complexity notes are included when available
+- Tests and demos live in `tests/` and `src/main_*.cc`
+
+## Build and Run (optional)
+
+The library is header-only; you can include the headers directly. To build the demo
+executables in `src/main_*.cc`:
+
+```sh
+cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build
+cmake --build build
+```
+
+Executables are placed in `build/bin/`. Use `gcc-toolchain.cmake` if you prefer GCC.
 
 ## Usage
-
-### Java
-
-```java
-// Example usage of an AVL Tree
-import datastructures.trees.AVLTree;
-
-public class Main {
-    public static void main(String[] args) {
-        AVLTree<Integer> avlTree = new AVLTree<>();
-
-        avlTree.insert(10);
-        avlTree.insert(20);
-        avlTree.insert(30);
-
-        System.out.println("Contains 20? " + avlTree.contains(20)); // true
-        avlTree.delete(20);
-        System.out.println("Contains 20? " + avlTree.contains(20)); // false
-
-        System.out.println("In-order traversal: ");
-        avlTree.inOrderTraversal(value -> System.out.print(value + " "));
-    }
-}
-```
 
 ### C++
 
 ```cpp
 // Example usage of an AVL Tree
-#include "avl_tree.h" // Make file does the work
+#include "ads/trees/AVL_Tree.hpp"
 #include <iostream>
 
 int main() {
-    AVLTree<int> avlTree;
+    ads::trees::AVLTree<int> avlTree;
 
     avlTree.insert(10);
     avlTree.insert(20);
     avlTree.insert(30);
 
-    std::cout << "Contains 20? " << (avlTree.contains(20) ? "Yes" : "No") << std::endl; // Yes
+    std::cout << std::boolalpha << avlTree.contains(20) << "\n"; // true
     avlTree.remove(20);
-    std::cout << "Contains 20? " << (avlTree.contains(20) ? "Yes" : "No") << std::endl; // No
+    std::cout << std::boolalpha << avlTree.contains(20) << "\n"; // false
 
     std::cout << "In-order traversal: ";
-    avlTree.inOrderTraversal([](int value) {
+    avlTree.in_order_traversal([](const int& value) {
         std::cout << value << " ";
     });
+    std::cout << "\n";
 
     return 0;
 }
@@ -280,33 +181,36 @@ int main() {
 
 ## Example: Using HashMap
 
-```java
-// Java HashMap example
-import datastructures.associative.HashMap;
+```cpp
+#include "ads/associative/Hash_Map.hpp"
+#include <iostream>
+#include <string>
 
-public class Main {
-    public static void main(String[] args) {
-        HashMap<String, Integer> scores = new HashMap<>();
+int main() {
+    ads::associative::HashMap<std::string, int> scores;
 
-        // Adding key-value pairs
-        scores.put("Alice", 95);
-        scores.put("Bob", 89);
-        scores.put("Charlie", 92);
+    // Adding key-value pairs
+    scores.put("Alice", 95);
+    scores.put("Bob", 89);
+    scores.put("Charlie", 92);
 
-        // Retrieving values
-        System.out.println("Bob's score: " + scores.get("Bob")); // 89
+    // Retrieving values
+    std::cout << "Bob's score: " << scores.get("Bob") << "\n"; // 89
 
-        // Checking if a key exists
-        System.out.println("Does David have a score? " + scores.containsKey("David")); // false
+    // Checking if a key exists
+    std::cout << "Does David have a score? " << std::boolalpha
+              << scores.contains("David") << "\n"; // false
 
-        // Updating a value
-        scores.put("Bob", 91);
-        System.out.println("Bob's updated score: " + scores.get("Bob")); // 91
+    // Updating a value
+    scores.put("Bob", 91);
+    std::cout << "Bob's updated score: " << scores.get("Bob") << "\n"; // 91
 
-        // Removing a key-value pair
-        scores.remove("Charlie");
-        System.out.println("Charlie's score exists? " + scores.containsKey("Charlie")); // false
-    }
+    // Removing a key-value pair
+    scores.erase("Charlie");
+    std::cout << "Charlie's score exists? " << std::boolalpha
+              << scores.contains("Charlie") << "\n"; // false
+
+    return 0;
 }
 ```
 
@@ -318,6 +222,13 @@ Contributions are welcome! Please read our contribution guidelines before submit
 2. **Performance improvements**: Optimizations without compromising clarity
 3. **Documentation**: Improvements to comments, examples, or guides
 4. **Tests**: Add more test cases or improve existing ones
+
+When adding a new structure, please include:
+
+- Public header in `include/ads/<area>/`
+- `.tpp` implementation in `src/ads/<area>/`
+- A demo in `src/main_<Structure>.cc` and a unit test in `tests/`
+- An update to this README if it changes the public surface
 
 ## Learning Resources
 
