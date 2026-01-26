@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Tree_Map.cpp
- * @brief Google Test unit tests for TreeMap
+ * @brief Google Test unit tests for TreeMap.
  * @version 0.1
  * @date 2026-01-23
  *
@@ -21,6 +21,8 @@ class TreeMapTest : public ::testing::Test {
 protected:
   TreeMap<int, std::string> map;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(TreeMapTest, IsEmptyOnConstruction) {
   EXPECT_EQ(map.size(), 0);
@@ -48,11 +50,15 @@ TEST_F(TreeMapTest, AtThrowsOnMissingKey) {
   EXPECT_THROW(map.at(42), KeyNotFoundException);
 }
 
+//===----------------------- INSERTION OPERATIONS TESTS ------------------------===//
+
 TEST_F(TreeMapTest, InsertReturnsInsertionState) {
   EXPECT_TRUE(map.insert(3, "three"));
   EXPECT_FALSE(map.insert(3, "THREE"));
   EXPECT_EQ(map.get(3), "THREE");
 }
+
+//===------------------------ CONTAINS AND REMOVE TESTS ------------------------===//
 
 TEST_F(TreeMapTest, ContainsAndRemove) {
   map.put(2, "two");

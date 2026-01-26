@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Deque.cpp
- * @brief Google Test unit tests for CircularArrayDeque
+ * @brief Google Test unit tests for CircularArrayDeque.
  * @version 0.1
  * @date 2026-01-23
  *
@@ -21,6 +21,8 @@ class CircularArrayDequeTest : public ::testing::Test {
 protected:
   CircularArrayDeque<int> deque;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(CircularArrayDequeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(deque.size(), 0);
@@ -80,6 +82,8 @@ TEST_F(CircularArrayDequeTest, IndexAccess) {
   EXPECT_THROW(deque.at(5), QueueException);
 }
 
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+
 TEST_F(CircularArrayDequeTest, MoveSemantics) {
   deque.push_back(10);
   deque.push_back(20);
@@ -92,6 +96,8 @@ TEST_F(CircularArrayDequeTest, MoveSemantics) {
   EXPECT_TRUE(moved.is_empty());
   EXPECT_EQ(deque.size(), 2);
 }
+
+//===----------------------------- ITERATOR TESTS ------------------------------===//
 
 TEST_F(CircularArrayDequeTest, IteratorTraversal) {
   for (int i = 1; i <= 4; ++i) {
@@ -124,4 +130,4 @@ TEST_F(CircularArrayDequeTest, WrapAroundBehavior) {
   EXPECT_EQ(small_deque[1], 2);
 }
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

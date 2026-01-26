@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_BinarySearchTree.cpp
- * @brief Google Test unit tests for BinarySearchTree
+ * @brief Google Test unit tests for BinarySearchTree.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -17,13 +17,13 @@
 
 using namespace ads::trees;
 
-// Test fixture for BinarySearchTree
+// Test fixture for BinarySearchTree.
 class BinarySearchTreeTest : public ::testing::Test {
 protected:
   BinarySearchTree<int> tree;
 
   void SetUp() override {
-    // Common setup: create a balanced tree
+    // Common setup: create a balanced tree.
     //        50
     //       /  \
     //      30   70
@@ -42,7 +42,7 @@ protected:
   }
 };
 
-// ----- Basic State Tests ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(BinarySearchTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -60,7 +60,7 @@ TEST_F(BinarySearchTreeTest, Clear) {
   EXPECT_EQ(tree.height(), -1);
 }
 
-// ----- Insertion Tests ----- //
+//===----------------------------- INSERTION TESTS -----------------------------===//
 
 TEST_F(BinarySearchTreeTest, InsertSingleElement) {
   EXPECT_TRUE(tree.insert(50));
@@ -87,7 +87,7 @@ TEST_F(BinarySearchTreeTest, EmplaceElement) {
   EXPECT_TRUE(tree.contains(42));
 }
 
-// ----- Search Tests ----- //
+//===------------------------------ SEARCH TESTS -------------------------------===//
 
 TEST_F(BinarySearchTreeTest, ContainsElement) {
   buildBalancedTree();
@@ -123,11 +123,11 @@ TEST_F(BinarySearchTreeTest, SuccessorPredecessor) {
   EXPECT_EQ(*pred, 30);
 
   // Test edge cases
-  EXPECT_EQ(tree.successor(80), nullptr);  // No successor for max
+  EXPECT_EQ(tree.successor(80), nullptr);   // No successor for max
   EXPECT_EQ(tree.predecessor(20), nullptr); // No predecessor for min
 }
 
-// ----- Removal Tests ----- //
+//===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(BinarySearchTreeTest, RemoveLeafNode) {
   buildBalancedTree();
@@ -169,7 +169,7 @@ TEST_F(BinarySearchTreeTest, RemoveNonExistent) {
   EXPECT_EQ(tree.size(), 7);
 }
 
-// ----- Traversal Tests ----- //
+//===----------------------------- TRAVERSAL TESTS -----------------------------===//
 
 TEST_F(BinarySearchTreeTest, InOrderTraversal) {
   buildBalancedTree();
@@ -211,7 +211,7 @@ TEST_F(BinarySearchTreeTest, LevelOrderTraversal) {
   EXPECT_EQ(result, expected);
 }
 
-// ----- Iterator Tests ----- //
+//===----------------------------- ITERATOR TESTS ------------------------------===//
 
 TEST_F(BinarySearchTreeTest, IteratorTraversal) {
   buildBalancedTree();
@@ -234,7 +234,7 @@ TEST_F(BinarySearchTreeTest, ExplicitIterator) {
   EXPECT_EQ(*it, 30);
 }
 
-// ----- Move Semantics Tests ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(BinarySearchTreeTest, MoveConstructor) {
   buildBalancedTree();
@@ -260,7 +260,7 @@ TEST_F(BinarySearchTreeTest, MoveAssignment) {
   EXPECT_TRUE(other_tree.contains(50));
 }
 
-// ----- Edge Cases Tests ----- //
+//===----------------------------- EDGE CASE TESTS -----------------------------===//
 
 TEST_F(BinarySearchTreeTest, SingleElementTree) {
   tree.insert(42);
@@ -272,16 +272,16 @@ TEST_F(BinarySearchTreeTest, SingleElementTree) {
 }
 
 TEST_F(BinarySearchTreeTest, DegenerateTree) {
-  // Create a degenerate tree (linked list)
+  // Create a degenerate tree (linked list).
   for (int i = 1; i <= 5; ++i) {
     tree.insert(i);
   }
 
   EXPECT_EQ(tree.size(), 5);
-  EXPECT_EQ(tree.height(), 4); // Height equals size - 1
+  EXPECT_EQ(tree.height(), 4); // Height equals size - 1.
 }
 
-// ----- Custom Type Tests ----- //
+//===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
 
 TEST(BinarySearchTreeCustomTypeTest, CustomComparison) {
   struct Person {
@@ -301,3 +301,5 @@ TEST(BinarySearchTreeCustomTypeTest, CustomComparison) {
   EXPECT_EQ(people_tree.find_min().name, "Bob");
   EXPECT_EQ(people_tree.find_max().name, "Charlie");
 }
+
+//===---------------------------------------------------------------------------===//
