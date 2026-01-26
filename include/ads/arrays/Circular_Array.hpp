@@ -59,21 +59,25 @@ public:
     iterator() = default;
     iterator(size_t logical_index, CircularArray<T>* array) : logical_index_(logical_index), array_(array) {}
 
+    // Dereference operators.
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
     auto operator[](difference_type n) const -> reference;
 
+    // Increment and decrement operators.
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
     auto operator--() -> iterator&;
     auto operator--(int) -> iterator;
 
+    // Arithmetic operators.
     auto operator+=(difference_type n) -> iterator&;
     auto operator-=(difference_type n) -> iterator&;
     auto operator+(difference_type n) const -> iterator;
     auto operator-(difference_type n) const -> iterator;
     auto operator-(const iterator& other) const -> difference_type;
 
+    // Comparison operators.
     auto operator==(const iterator& other) const -> bool { return logical_index_ == other.logical_index_; }
     auto operator!=(const iterator& other) const -> bool { return logical_index_ != other.logical_index_; }
     auto operator<(const iterator& other) const -> bool { return logical_index_ < other.logical_index_; }
@@ -102,23 +106,27 @@ public:
 
     const_iterator() = default;
     const_iterator(size_t logical_index, const CircularArray<T>* array) : logical_index_(logical_index), array_(array) {}
-    const_iterator(const iterator& it) : logical_index_(it.logical_index_), array_(it.array_) {}
+    explicit const_iterator(const iterator& it) : logical_index_(it.logical_index_), array_(it.array_) {}
 
+    // Dereference operators.
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
     auto operator[](difference_type n) const -> reference;
 
+    // Increment and decrement operators.
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
     auto operator--() -> const_iterator&;
     auto operator--(int) -> const_iterator;
 
+    // Arithmetic operators.
     auto operator+=(difference_type n) -> const_iterator&;
     auto operator-=(difference_type n) -> const_iterator&;
     auto operator+(difference_type n) const -> const_iterator;
     auto operator-(difference_type n) const -> const_iterator;
     auto operator-(const const_iterator& other) const -> difference_type;
 
+    // Comparison operators.
     auto operator==(const const_iterator& other) const -> bool { return logical_index_ == other.logical_index_; }
     auto operator!=(const const_iterator& other) const -> bool { return logical_index_ != other.logical_index_; }
     auto operator<(const const_iterator& other) const -> bool { return logical_index_ < other.logical_index_; }

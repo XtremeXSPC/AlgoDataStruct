@@ -26,7 +26,7 @@ TreeSet<T>::TreeSet(std::initializer_list<T> values) {
   }
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename T>
 auto TreeSet<T>::insert(const T& value) -> bool {
@@ -44,6 +44,8 @@ auto TreeSet<T>::emplace(Args&&... args) -> bool {
   T value(std::forward<Args>(args)...);
   return insert(std::move(value));
 }
+
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <typename T>
 auto TreeSet<T>::erase(const T& value) -> bool {

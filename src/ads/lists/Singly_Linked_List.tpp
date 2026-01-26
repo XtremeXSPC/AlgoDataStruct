@@ -219,7 +219,7 @@ auto SinglyLinkedList<T>::pop_back() -> void {
     head_.reset();
     tail_ = nullptr;
   } else {
-    // Find the penultimate node (O(n) operation)
+    // Find the penultimate node (O(n) operation).
     Node* current = head_.get();
     while (current->next.get() != tail_) {
       current = current->next.get();
@@ -281,7 +281,7 @@ auto SinglyLinkedList<T>::size() const noexcept -> size_t {
 
 template <typename T>
 auto SinglyLinkedList<T>::clear() noexcept -> void {
-  // Iterative deallocation to avoid stack overflow with large lists
+  // Iterative deallocation to avoid stack overflow with large lists.
   while (head_) {
     head_ = std::move(head_->next);
   }
@@ -292,12 +292,12 @@ auto SinglyLinkedList<T>::clear() noexcept -> void {
 template <typename T>
 auto SinglyLinkedList<T>::reverse() noexcept -> void {
   if (size_ <= 1) {
-    return; // Nothing to reverse
+    return; // Nothing to reverse.
   }
 
   std::unique_ptr<Node> prev    = nullptr;
   std::unique_ptr<Node> current = std::move(head_);
-  tail_                         = current.get(); // The old head becomes the new tail
+  tail_                         = current.get(); // The old head becomes the new tail.
 
   while (current) {
     std::unique_ptr<Node> next = std::move(current->next);

@@ -54,11 +54,12 @@ public:
    */
   struct Node {
     T                     data;
-    std::unique_ptr<Node> left;
-    std::unique_ptr<Node> right;
+    std::unique_ptr<Node> left  = nullptr;
+    std::unique_ptr<Node> right = nullptr;
 
     template <typename... Args>
-    explicit Node(Args&&... args) : data(std::forward<Args>(args)...), left(nullptr), right(nullptr) {}
+      requires(!std::same_as<std::remove_cvref_t<Args>, Node> && ...)
+    explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -77,17 +78,17 @@ public:
   CompleteBinaryTree(std::initializer_list<T> values);
 
   /**
-   * @brief Destructor.
-   * @complexity Time O(n), Space O(h) where h is height
-   */
-  ~CompleteBinaryTree() = default;
-
-  /**
    * @brief Move constructor.
    * @param other The tree to move from.
    * @complexity Time O(1), Space O(1)
    */
   CompleteBinaryTree(CompleteBinaryTree&& other) noexcept;
+
+  /**
+   * @brief Destructor.
+   * @complexity Time O(n), Space O(h) where h is height
+   */
+  ~CompleteBinaryTree() = default;
 
   /**
    * @brief Move assignment operator.
@@ -101,7 +102,7 @@ public:
   CompleteBinaryTree(const CompleteBinaryTree&)                    = delete;
   auto operator=(const CompleteBinaryTree&) -> CompleteBinaryTree& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
    * @brief Inserts a value into the tree in level-order position.
@@ -126,6 +127,8 @@ public:
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
   /**
    * @brief Removes all elements from the tree.
