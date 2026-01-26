@@ -40,7 +40,7 @@ void print_list(const SinglyLinkedList<T>& list, const string& label) {
 
 //===----------------------------- DEMO FUNCTIONS ------------------------------===//
 
-// Basic push/pop demo.
+// Demonstrates basic push/pop operations.
 void demo_basics() {
   ads::demo::print_section("Basic push/pop");
 
@@ -61,7 +61,7 @@ void demo_basics() {
 
 //===------------------------ EMPLACE AND REVERSE DEMO -------------------------===//
 
-// Emplace and reverse demo.
+// Demonstrates emplace operations and reverse.
 void demo_emplace_and_reverse() {
   ads::demo::print_section("Emplace and reverse");
 
@@ -77,7 +77,7 @@ void demo_emplace_and_reverse() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Move semantics demo.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Move semantics");
 
@@ -99,7 +99,7 @@ void demo_move_semantics() {
 
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
-// Test exception handling.
+// Demonstrates exception handling.
 void demo_exceptions() {
   ads::demo::print_section("Exception handling");
 

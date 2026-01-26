@@ -209,6 +209,22 @@ public:
   [[nodiscard]] auto contains(const T& value) const -> bool override;
 
   /**
+   * @brief Finds and returns a pointer to a value in the tree.
+   * @param value The value to search for.
+   * @return Pointer to the value if found, nullptr otherwise.
+   * @complexity Time O(log n), Space O(log n) due to recursion.
+   */
+  [[nodiscard]] auto find(const T& value) -> T*;
+
+  /**
+   * @brief Finds and returns a pointer to a value in the tree (const version).
+   * @param value The value to search for.
+   * @return Pointer to the value if found, nullptr otherwise.
+   * @complexity Time O(log n), Space O(log n) due to recursion.
+   */
+  [[nodiscard]] auto find(const T& value) const -> const T*;
+
+  /**
    * @brief Finds and returns the minimum value in the tree.
    * @return Const reference to the minimum value.
    * @throws EmptyTreeException if the tree is empty.

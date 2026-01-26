@@ -29,12 +29,9 @@ using std::vector;
 
 using namespace ads::associative;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
-
-
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test basic insertion and access.
+// Demonstrates basic insertion and access.
 void demo_hashmap_basic() {
   ads::demo::print_section("HashMap - Basic Operations");
 
@@ -56,7 +53,7 @@ void demo_hashmap_basic() {
 
 //===----------------------------- ITERATION DEMO ------------------------------===//
 
-// Test iteration over entries.
+// Demonstrates iteration over HashMap.
 void demo_hashmap_iteration() {
   ads::demo::print_section("HashMap - Range-Based For Loop");
 
@@ -75,7 +72,7 @@ void demo_hashmap_iteration() {
 
 //===----------------------- INSERTION AND EMPLACE DEMO ------------------------===//
 
-// Test insert and emplace methods.
+// Demonstrates insert and emplace methods.
 void demo_hashmap_insert_emplace() {
   ads::demo::print_section("HashMap - Insert and Emplace");
 
@@ -100,7 +97,7 @@ void demo_hashmap_insert_emplace() {
 
 //===-------------------------- ERASE OPERATIONS DEMO --------------------------===//
 
-// Test erase method.
+// Demonstrates erase method.
 void demo_hashmap_erase() {
   ads::demo::print_section("HashMap - Erase Operations");
 
@@ -127,7 +124,7 @@ void demo_hashmap_erase() {
 
 //===-------------------------- UTILITY METHODS DEMO ---------------------------===//
 
-// Test keys, values, and entries methods.
+// Demonstrates keys, values, and entries methods.
 void demo_hashmap_utility_methods() {
   ads::demo::print_section("HashMap - Utility Methods (keys, values, entries)");
 
@@ -161,7 +158,7 @@ void demo_hashmap_utility_methods() {
 
 //===------------------------ APPLICATION EXAMPLE DEMO -------------------------===//
 
-// Application: Word frequency counter.
+// Demonstrates a word frequency counter application.
 void demo_word_frequency() {
   ads::demo::print_section("Application - Word Frequency Counter");
 
@@ -197,7 +194,7 @@ void demo_word_frequency() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Test move semantics.
+// Demonstrates move semantics.
 void demo_hashmap_move_semantics() {
   ads::demo::print_section("HashMap - Move Semantics");
 

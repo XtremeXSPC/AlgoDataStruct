@@ -61,7 +61,7 @@ void print_list(const DoublyLinkedList<T>& list, const string& name) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Demo: Basic push operations.
+// Demonstrates basic insertion and access operations.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -90,7 +90,7 @@ void demo_basic_operations() {
 
 //===--------------------------- POP OPERATIONS DEMO ---------------------------===//
 
-// Demo: Pop operations.
+// Demonstrates pop_front and pop_back operations.
 void demo_pop_operations() {
   ads::demo::print_section("Demo: Pop Operations");
 
@@ -113,7 +113,7 @@ void demo_pop_operations() {
 
 //===--------------------- INSERT & ERASE OPERATIONS DEMO ----------------------===//
 
-// Demo: Insert and erase operations.
+// Demonstrates insert and erase operations.
 void demo_insert_erase() {
   ads::demo::print_section("Demo: Insert and Erase");
 
@@ -152,7 +152,7 @@ void demo_insert_erase() {
 
 //===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
 
-// Demo: Emplace operations.
+// Demonstrates emplace operations.
 void demo_emplace() {
   ads::demo::print_section("Demo: Emplace Operations");
 
@@ -178,7 +178,7 @@ void demo_emplace() {
 
 //===------------------------------ ITERATOR DEMO ------------------------------===//
 
-// Demo: Iterators.
+// Demonstrates iterator functionality.
 void demo_iterators() {
   ads::demo::print_section("Demo: Iterators");
 
@@ -228,7 +228,7 @@ void demo_iterators() {
 
 //===------------------------------ REVERSE DEMO -------------------------------===//
 
-// Demo: Reverse operation.
+// Demonstrates reverse operation.
 void demo_reverse() {
   ads::demo::print_section("Demo: Reverse");
 
@@ -255,7 +255,7 @@ void demo_reverse() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Demo: Move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -289,7 +289,7 @@ void demo_move_semantics() {
 
 //===------------------------------- CLEAR DEMO --------------------------------===//
 
-// Demo: Clear and reuse.
+// Demonstrates clear operation.
 void demo_clear() {
   ads::demo::print_section("Demo: Clear and Reuse");
 
@@ -312,7 +312,7 @@ void demo_clear() {
 
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
-// Demo: Exception handling.
+// Demonstrates exception handling.
 void demo_exceptions() {
   ads::demo::print_section("Demo: Exception Handling");
 
@@ -355,7 +355,7 @@ void demo_exceptions() {
 
 //===----------------------------- EDGE CASES DEMO -----------------------------===//
 
-// Demo: Edge cases.
+// Test edge cases.
 void demo_edge_cases() {
   ads::demo::print_section("Demo: Edge Cases");
 

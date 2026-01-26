@@ -30,12 +30,9 @@ using std::vector;
 
 using namespace ads::graphs;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
-
-
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test construction and basic properties.
+// Demonstrates graph construction and basic properties.
 void demo_graph_construction() {
   ads::demo::print_section("Graph - Construction and Basic Properties");
 

@@ -31,12 +31,9 @@ using std::vector;
 
 using namespace ads::queues;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
-
-
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Priority Queue basic operations.
+// Demonstrates basic insertion and extraction.
 void demo_priority_queue_basic() {
   ads::demo::print_section("Priority Queue - Basic Operations (Max-Heap)");
 
@@ -67,7 +64,7 @@ void demo_priority_queue_basic() {
 
 //===----------------------------- MIN HEAP DEMOS ------------------------------===//
 
-// Min-Heap Priority Queue operations.
+// Priority Queue with Min-Heap comparator.
 void demo_priority_queue_min_heap() {
   ads::demo::print_section("Priority Queue - Min-Heap with greater");
 
@@ -93,7 +90,7 @@ void demo_priority_queue_min_heap() {
 
 //===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
 
-// Priority Queue construction from vector.
+// Demonstrates construction from vector.
 void demo_priority_queue_from_vector() {
   ads::demo::print_section("Priority Queue - Construction from Vector");
 
@@ -118,7 +115,7 @@ void demo_priority_queue_from_vector() {
 
 //===------------------- INITIALIZER LIST CONSTRUCTION DEMO --------------------===//
 
-// Priority Queue construction from initializer list.
+// Demonstrates initializer list construction.
 void demo_priority_queue_initializer_list() {
   ads::demo::print_section("Priority Queue - Initializer List Construction");
 
@@ -137,7 +134,7 @@ void demo_priority_queue_initializer_list() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Priority Queue move semantics.
+// Demonstrates move semantics.
 void demo_priority_queue_move_semantics() {
   ads::demo::print_section("Priority Queue - Move Semantics");
 
@@ -166,7 +163,7 @@ void demo_priority_queue_move_semantics() {
 
 //===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
 
-// Priority Queue emplace operations.
+// Demonstrates emplace operations.
 void demo_priority_queue_emplace() {
   ads::demo::print_section("Priority Queue - Emplace Operations");
 
@@ -190,7 +187,7 @@ void demo_priority_queue_emplace() {
 
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
-// Priority Queue exception handling.
+// Demonstrates exception handling.
 void demo_priority_queue_exception_handling() {
   ads::demo::print_section("Priority Queue - Exception Handling");
 
@@ -213,7 +210,7 @@ void demo_priority_queue_exception_handling() {
 
 //===--------------------- SORTED ELEMENTS EXTRACTION DEMO ---------------------===//
 
-// Priority Queue sorted elements extraction.
+// Demonstrates extraction of sorted elements.
 void demo_priority_queue_sorted_elements() {
   ads::demo::print_section("Priority Queue - Sorted Elements Extraction");
 

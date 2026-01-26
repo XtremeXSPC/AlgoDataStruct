@@ -224,6 +224,7 @@ target_sources(ads_lib
             # Graph implementations.
             include/ads/graphs/Graph_Adjacency_List.hpp
             include/ads/graphs/Graph_Adjacency_Matrix.hpp
+            include/ads/graphs/Disjoint_Set_Union.hpp
 
             # Associative structures.
             include/ads/associative/Dictionary.hpp
@@ -405,6 +406,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Graph_Adjacency_Matrix.cc")
     ads_add_executable(test_Graph_ADJ_Matrix src/main_Graph_Adjacency_Matrix.cc)
 endif()
 
+# Disjoint Set Union test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Disjoint_Set_Union.cc")
+    ads_add_executable(test_Disjoint_Set_Union src/main_Disjoint_Set_Union.cc)
+endif()
+
 # HashMap test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Hash_Map.cc")
     ads_add_executable(test_HashMap src/main_Hash_Map.cc)
@@ -452,17 +458,14 @@ if(ENABLE_TESTING)
     set(TEST_SOURCES "")
 
     # Add test files if they exist.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Dynamic_Array.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Dynamic_Array.cpp)
+    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_SinglyLinkedList.cpp")
         list(APPEND TEST_SOURCES tests/Test_SinglyLinkedList.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
       list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Dynamic_Array.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Dynamic_Array.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Deque.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Deque.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BinarySearchTree.cpp")
         list(APPEND TEST_SOURCES tests/Test_BinarySearchTree.cpp)
@@ -485,11 +488,17 @@ if(ENABLE_TESTING)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Queues.cpp")
         list(APPEND TEST_SOURCES tests/Test_Queues.cpp)
     endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Deque.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Deque.cpp)
+    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Heaps.cpp")
         list(APPEND TEST_SOURCES tests/Test_Heaps.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_HashTables.cpp")
         list(APPEND TEST_SOURCES tests/Test_HashTables.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Disjoint_Set_Union.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Disjoint_Set_Union.cpp)
     endif()
 
     # Create test executable if we have test files.

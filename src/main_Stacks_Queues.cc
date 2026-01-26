@@ -67,7 +67,7 @@ void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Helper function for queue testing.
+// Demonstrates basic insertion and extraction.
 template <typename T>
 void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
   ads::demo::print_section("Testing " + queue_type);

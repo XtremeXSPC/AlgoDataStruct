@@ -174,6 +174,18 @@ auto AVLTree<T>::contains(const T& value) const -> bool {
 }
 
 template <typename T>
+auto AVLTree<T>::find(const T& value) -> T* {
+  Node* node = find_helper(root_.get(), value);
+  return node ? &node->data : nullptr;
+}
+
+template <typename T>
+auto AVLTree<T>::find(const T& value) const -> const T* {
+  Node* node = find_helper(root_.get(), value);
+  return node ? &node->data : nullptr;
+}
+
+template <typename T>
 auto AVLTree<T>::find_min() const -> const T& {
   if (!root_) {
     throw EmptyTreeException("Cannot find minimum in empty tree");
