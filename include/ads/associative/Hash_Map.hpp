@@ -428,7 +428,6 @@ private:
   // Internal hash table storing the key-value pairs.
   hash::HashTableChaining<Key, Value> table_;
 
-  //===============================================================================//
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
   /**

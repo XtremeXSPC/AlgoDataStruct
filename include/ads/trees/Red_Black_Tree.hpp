@@ -216,8 +216,8 @@ private:
     std::unique_ptr<Node> right;  ///< Right child.
     Node*                 parent; // Non-owning pointer for upward traversal.
 
-    Node(const T& val, Color col = Color::Red, Node* par = nullptr);
-    Node(T&& val, Color col = Color::Red, Node* par = nullptr);
+    explicit Node(const T& val, Color col = Color::Red, Node* par = nullptr);
+    explicit Node(T&& val, Color col = Color::Red, Node* par = nullptr);
   };
 
   //===============================================================================//
