@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_AVLTree.cpp
- * @brief Google Test unit tests for AVL Tree implementation
+ * @brief Google Test unit tests for AVL Tree implementation.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -23,7 +23,7 @@ protected:
   AVLTree<int> tree;
 };
 
-// ----- Basic State Tests ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(AVLTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -41,7 +41,7 @@ TEST_F(AVLTreeTest, Clear) {
   EXPECT_TRUE(tree.is_empty());
 }
 
-// ----- Insertion Tests ----- //
+//===----------------------------- INSERTION TESTS -----------------------------===//
 
 TEST_F(AVLTreeTest, InsertSingleElement) {
   tree.insert(50);
@@ -68,24 +68,24 @@ TEST_F(AVLTreeTest, InsertDuplicateRejected) {
   EXPECT_EQ(tree.size(), 1);
 }
 
-// ----- Rotation Tests (Balance) ----- //
+//===----------------------------- ROTATION TESTS ------------------------------===//
 
 TEST_F(AVLTreeTest, LeftLeftRotation) {
-  // Insert in descending order to trigger LL rotation
+  // Insert in descending order to trigger LL rotation.
   tree.insert(30);
   tree.insert(20);
-  tree.insert(10); // Should trigger rotation
+  tree.insert(10); // Should trigger rotation.
 
   // Tree should be balanced
   EXPECT_EQ(tree.size(), 3);
-  EXPECT_LE(tree.height(), 2); // Height measured in node levels (leaf = 1)
+  EXPECT_LE(tree.height(), 2); // Height measured in node levels (leaf = 1).
 }
 
 TEST_F(AVLTreeTest, RightRightRotation) {
-  // Insert in ascending order to trigger RR rotation
+  // Insert in ascending order to trigger RR rotation.
   tree.insert(10);
   tree.insert(20);
-  tree.insert(30); // Should trigger rotation
+  tree.insert(30); // Should trigger rotation.
 
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2);
@@ -95,7 +95,7 @@ TEST_F(AVLTreeTest, LeftRightRotation) {
   // LR case
   tree.insert(30);
   tree.insert(10);
-  tree.insert(20); // Should trigger LR rotation
+  tree.insert(20); // Should trigger LR rotation.
 
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2);
@@ -105,13 +105,13 @@ TEST_F(AVLTreeTest, RightLeftRotation) {
   // RL case
   tree.insert(10);
   tree.insert(30);
-  tree.insert(20); // Should trigger RL rotation
+  tree.insert(20); // Should trigger RL rotation.
 
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2);
 }
 
-// ----- Search Tests ----- //
+//===------------------------------ SEARCH TESTS -------------------------------===//
 
 TEST_F(AVLTreeTest, ContainsElement) {
   tree.insert(50);
@@ -140,7 +140,7 @@ TEST_F(AVLTreeTest, FindMinMaxOnEmptyThrows) {
   EXPECT_THROW({ [[maybe_unused]] auto result = tree.find_max(); }, EmptyTreeException);
 }
 
-// ----- Removal Tests ----- //
+//===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(AVLTreeTest, RemoveLeafNode) {
   tree.insert(50);
@@ -183,7 +183,7 @@ TEST_F(AVLTreeTest, RemoveNonExistent) {
 }
 
 TEST_F(AVLTreeTest, RemoveWithRebalancing) {
-  // Build a tree that will need rebalancing after removal
+  // Build a tree that will need rebalancing after removal.
   tree.insert(50);
   tree.insert(30);
   tree.insert(70);
@@ -194,12 +194,12 @@ TEST_F(AVLTreeTest, RemoveWithRebalancing) {
 
   tree.remove(20);
   tree.remove(40);
-  // Tree should still be balanced
+  // Tree should still be balanced.
 
   EXPECT_LE(tree.height(), 3);
 }
 
-// ----- Traversal Tests ----- //
+//===----------------------------- TRAVERSAL TESTS -----------------------------===//
 
 TEST_F(AVLTreeTest, InOrderTraversal) {
   tree.insert(50);
@@ -215,7 +215,7 @@ TEST_F(AVLTreeTest, InOrderTraversal) {
   EXPECT_EQ(result, expected);
 }
 
-// ----- Iterator Tests ----- //
+//===----------------------------- ITERATOR TESTS ------------------------------===//
 
 TEST_F(AVLTreeTest, IteratorTraversal) {
   tree.insert(50);
@@ -231,7 +231,7 @@ TEST_F(AVLTreeTest, IteratorTraversal) {
   EXPECT_EQ(actual, expected);
 }
 
-// ----- Move Semantics Tests ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(AVLTreeTest, MoveConstructor) {
   tree.insert(50);
@@ -257,16 +257,16 @@ TEST_F(AVLTreeTest, MoveAssignment) {
   EXPECT_EQ(other_tree.size(), 3);
 }
 
-// ----- Balance Tests ----- //
+//===------------------------------ BALANCE TESTS ------------------------------===//
 
 TEST_F(AVLTreeTest, BalanceAfterMultipleInsertions) {
-  // Insert many elements
+  // Insert many elements.
   for (int i = 1; i <= 100; ++i) {
     tree.insert(i);
   }
 
   EXPECT_EQ(tree.size(), 100);
-  // For a balanced AVL tree with 100 nodes, height should be around log2(100) ~ 7
+  // For a balanced AVL tree with 100 nodes, height should be around log2(100) ~ 7.
   EXPECT_LE(tree.height(), 10);
 }
 
@@ -277,6 +277,8 @@ TEST_F(AVLTreeTest, BalanceAfterRandomInsertions) {
   }
 
   EXPECT_EQ(tree.size(), 15);
-  // Height should be reasonable for balanced tree
+  // Height should be reasonable for balanced tree.
   EXPECT_LE(tree.height(), 5);
 }
+
+//===---------------------------------------------------------------------------===//

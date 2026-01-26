@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Disjoint_Set_Union.cpp
- * @brief Google Test unit tests for DisjointSetUnion
+ * @brief Google Test unit tests for DisjointSetUnion.
  * @version 0.1
  * @date 2026-01-23
  *
@@ -19,6 +19,8 @@ class DisjointSetUnionTest : public ::testing::Test {
 protected:
   DisjointSetUnion dsu{5};
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(DisjointSetUnionTest, ConstructionInitializesSets) {
   EXPECT_EQ(dsu.size(), 5);
@@ -52,6 +54,8 @@ TEST_F(DisjointSetUnionTest, AddElementCreatesNewSet) {
   EXPECT_EQ(dsu.set_count(), 6);
   EXPECT_EQ(dsu.find(index), index);
 }
+
+//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
 
 TEST_F(DisjointSetUnionTest, OutOfRangeThrows) {
   EXPECT_THROW(dsu.find(99), DisjointSetException);
