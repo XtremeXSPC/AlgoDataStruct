@@ -242,8 +242,8 @@ target_sources(ads_lib
     # These are included by the headers, but we list them here so they
     # appear in IDEs and are tracked for changes.
     INTERFACE
-        src/ads/arrays/Dynamic_Array.tpp
         src/ads/arrays/Static_Array.tpp
+        src/ads/arrays/Dynamic_Array.tpp
         src/ads/arrays/Circular_Array.tpp
         src/ads/lists/Doubly_Linked_List.tpp
         src/ads/lists/Singly_Linked_List.tpp
@@ -256,8 +256,8 @@ target_sources(ads_lib
         src/ads/queues/Priority_Queue.tpp
         src/ads/trees/Trie.tpp
         src/ads/trees/B_Tree.tpp
-        src/ads/trees/Red_Black_Tree.tpp
         src/ads/trees/AVL_Tree.tpp
+        src/ads/trees/Red_Black_Tree.tpp
         src/ads/trees/Binary_Search_Tree.tpp
         src/ads/trees/Complete_Binary_Tree.tpp
         src/ads/heaps/Min_Heap.tpp
@@ -351,19 +351,9 @@ endfunction()
 # ----------------------------- Main Test Executables ----------------------------- #
 # These are the actual test programs that exercise the data structures library.
 
-# Singly Linked List test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
-    ads_add_executable(test_Singly__Linked_List src/main_Singly_Linked_List.cc)
-endif()
-
-# Linked Lists test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Doubly_Linked_List.cc")
-    ads_add_executable(test_Doubly__Linked_List src/main_Doubly_Linked_List.cc)
-endif()
-
-# Circular Linked List test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Circular_Linked_List.cc")
-    ads_add_executable(test_Circular_Linked_List src/main_Circular_Linked_List.cc)
+# Static Array test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Static_Array.cc")
+    ads_add_executable(test_Static_Array src/main_Static_Array.cc)
 endif()
 
 # Dynamic Array test.
@@ -371,19 +361,24 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dynamic_Array.cc")
     ads_add_executable(test_Dynamic_Array src/main_Dynamic_Array.cc)
 endif()
 
-# Static Array test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Static_Array.cc")
-    ads_add_executable(test_Static_Array src/main_Static_Array.cc)
-endif()
-
 # Circular Array test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Circular_Array.cc")
     ads_add_executable(test_Circular_Array src/main_Circular_Array.cc)
 endif()
 
-# Deque test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Deque.cc")
-    ads_add_executable(test_Deque src/main_Deque.cc)
+# Singly Linked List test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Singly_Linked_List.cc")
+    ads_add_executable(test_Singly_Linked_List src/main_Singly_Linked_List.cc)
+endif()
+
+# Doubly Linked Lists test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Doubly_Linked_List.cc")
+    ads_add_executable(test_Doubly_Linked_List src/main_Doubly_Linked_List.cc)
+endif()
+
+# Circular Linked List test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Circular_Linked_List.cc")
+    ads_add_executable(test_Circular_Linked_List src/main_Circular_Linked_List.cc)
 endif()
 
 # Stacks and Queues test.
@@ -391,9 +386,19 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Stacks_Queues.cc")
     ads_add_executable(test_Stacks_Queues src/main_Stacks_Queues.cc)
 endif()
 
+# Deque test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Deque.cc")
+    ads_add_executable(test_Deque src/main_Deque.cc)
+endif()
+
 # Priority Queue test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Priority_Queue.cc")
     ads_add_executable(test_Priority_Queue src/main_Priority_Queue.cc)
+endif()
+
+# Complete Binary Tree test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Complete_Binary_Tree.cc")
+    ads_add_executable(test_Complete_Binary_Tree src/main_Complete_Binary_Tree.cc)
 endif()
 
 # Binary Search Tree test.
@@ -419,11 +424,6 @@ endif()
 # Trie test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
     ads_add_executable(test_Trie src/main_Trie.cc)
-endif()
-
-# Complete Binary Tree test.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Complete_Binary_Tree.cc")
-    ads_add_executable(test_Complete_Binary_Tree src/main_Complete_Binary_Tree.cc)
 endif()
 
 # Dijkstra Integration test (Graph + PriorityQueue).
@@ -480,47 +480,47 @@ option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 if(ENABLE_TESTING)
     enable_testing()
 
-    # Download and configure GoogleTest using FetchContent.
-    include(FetchContent)
-    FetchContent_Declare(
-      googletest
-      URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-      DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-    )
+    # Prefer a system-installed GoogleTest if available to avoid header/library
+    # mismatches when system include paths are configured (e.g. via CPATH).
+    find_package(GTest QUIET)
 
-    # Configure GoogleTest to work with MSVC's runtime library.
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+    if(NOT GTest_FOUND)
+        # Download and configure GoogleTest using FetchContent.
+        include(FetchContent)
+        FetchContent_Declare(
+          googletest
+          URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+          DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        )
 
-    FetchContent_MakeAvailable(googletest)
+        # Configure GoogleTest to work with MSVC's runtime library.
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+
+        FetchContent_MakeAvailable(googletest)
+    endif()
 
     # Collect all test source files.
     set(TEST_SOURCES "")
 
     # Add test files if they exist.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Static_Array.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Static_Array.cpp)
+    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Dynamic_Array.cpp")
         list(APPEND TEST_SOURCES tests/Test_Dynamic_Array.cpp)
     endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Array.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Circular_Array.cpp)
+    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_SinglyLinkedList.cpp")
-        list(APPEND TEST_SOURCES tests/Test_SinglyLinkedList.cpp)
+        list(APPEND TEST_SOURCES tests/Test_Singly_Linked_List.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_DoublyLinkedList.cpp")
-      list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
+        list(APPEND TEST_SOURCES tests/Test_DoublyLinkedList.cpp)
     endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BinarySearchTree.cpp")
-        list(APPEND TEST_SOURCES tests/Test_BinarySearchTree.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_AVLTree.cpp")
-        list(APPEND TEST_SOURCES tests/Test_AVLTree.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_RedBlackTree.cpp")
-        list(APPEND TEST_SOURCES tests/Test_RedBlackTree.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_BTree.cpp")
-        list(APPEND TEST_SOURCES tests/Test_BTree.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Trie.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Trie.cpp)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Linked_List.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Circular_Linked_List.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Stacks.cpp")
         list(APPEND TEST_SOURCES tests/Test_Stacks.cpp)
@@ -531,42 +531,51 @@ if(ENABLE_TESTING)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Deque.cpp")
         list(APPEND TEST_SOURCES tests/Test_Deque.cpp)
     endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Complete_Binary_Tree.cpp")
+       list(APPEND TEST_SOURCES tests/Test_Complete_Binary_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Binary_Search_Tree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Binary_Search_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_B_Tree.cpp")
+       list(APPEND TEST_SOURCES tests/Test_B_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_AVL_Tree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_AVL_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Red_Black_Tree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Red_Black_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Trie.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Trie.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Disjoint_Set_Union.cpp")
+       list(APPEND TEST_SOURCES tests/Test_Disjoint_Set_Union.cpp)
+    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Heaps.cpp")
         list(APPEND TEST_SOURCES tests/Test_Heaps.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_HashTables.cpp")
         list(APPEND TEST_SOURCES tests/Test_HashTables.cpp)
     endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Disjoint_Set_Union.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Disjoint_Set_Union.cpp)
-    endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Tree_Map.cpp")
         list(APPEND TEST_SOURCES tests/Test_Tree_Map.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Static_Array.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Static_Array.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Array.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Circular_Array.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Linked_List.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Circular_Linked_List.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Complete_Binary_Tree.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Complete_Binary_Tree.cpp)
-    endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Hash_Set.cpp")
-        list(APPEND TEST_SOURCES tests/Test_Hash_Set.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Tree_Set.cpp")
         list(APPEND TEST_SOURCES tests/Test_Tree_Set.cpp)
     endif()
-
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Hash_Set.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Hash_Set.cpp)
+    endif()
     # Create test executable if we have test files.
     if(TEST_SOURCES)
         add_executable(runTests ${TEST_SOURCES})
         target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
-        target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
+        if(GTest_FOUND)
+            target_link_libraries(runTests PRIVATE ads_lib GTest::gtest GTest::gtest_main)
+        else()
+            target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
+        endif()
 
         # Register tests with CTest.
         include(GoogleTest)

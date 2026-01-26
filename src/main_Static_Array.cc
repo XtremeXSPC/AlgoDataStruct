@@ -14,6 +14,7 @@
 //===---------------------------------------------------------------------------===//
 
 #include <iostream>
+#include <ranges>
 #include <string>
 
 #include "../include/ads/arrays/Static_Array.hpp"
@@ -28,6 +29,7 @@ using namespace ads::arrays;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
+// Helper function to print array contents.
 template <typename T, size_t N>
 void print_array(const StaticArray<T, N>& array, const string& label) {
   cout << label << " (size: " << array.size() << ")\n";
@@ -40,6 +42,7 @@ void print_array(const StaticArray<T, N>& array, const string& label) {
 
 //===--------------------------- CONSTRUCTION DEMO -----------------------------===//
 
+// Demonstrate various construction methods.
 void demo_construction() {
   ads::demo::print_section("Demo: Construction");
 
@@ -62,8 +65,9 @@ void demo_construction() {
   ads::demo::print_success("All construction methods work correctly.");
 }
 
-//===--------------------------- ACCESS OPERATIONS DEMO ------------------------===//
+//===------------------------- ACCESS OPERATIONS DEMO --------------------------===//
 
+// Demonstrate access operations.
 void demo_access_operations() {
   ads::demo::print_section("Demo: Access Operations");
 
@@ -89,15 +93,16 @@ void demo_access_operations() {
   cout << "   *(data() + 2) = " << *(ptr + 2) << "\n";
 
   cout << "\n5. Modifying elements:\n";
-  array[0] = 100;
+  array[0]    = 100;
   array.at(4) = 500;
   print_array(array, "   Modified array");
 
   ads::demo::print_success("All access operations work correctly.");
 }
 
-//===------------------------------ ITERATION DEMO -----------------------------===//
+//===----------------------------- ITERATION DEMO ------------------------------===//
 
+// Demonstrate various iteration methods.
 void demo_iteration() {
   ads::demo::print_section("Demo: Iteration");
 
@@ -111,20 +116,20 @@ void demo_iteration() {
   cout << "\n";
 
   cout << "\n2. Iterator-based loop:\n   ";
-  for (auto it = array.begin(); it != array.end(); ++it) {
-    cout << *it << " ";
+  for (const auto& val : array) {
+    cout << val << " ";
   }
   cout << "\n";
 
   cout << "\n3. Reverse iteration:\n   ";
-  for (auto it = array.rbegin(); it != array.rend(); ++it) {
-    cout << *it << " ";
+  for (const auto& val : std::ranges::reverse_view(array)) {
+    cout << val << " ";
   }
   cout << "\n";
 
   cout << "\n4. Const iteration:\n   ";
-  for (auto it = array.cbegin(); it != array.cend(); ++it) {
-    cout << *it << " ";
+  for (const auto& val : array) {
+    cout << val << " ";
   }
   cout << "\n";
 
@@ -161,8 +166,9 @@ void demo_comparison() {
   ads::demo::print_success("All comparison operations work correctly.");
 }
 
-//===--------------------------- UTILITY OPERATIONS DEMO -----------------------===//
+//===------------------------- UTILITY OPERATIONS DEMO -------------------------===//
 
+// Demonstrate utility operations like swap and fill.
 void demo_utility_operations() {
   ads::demo::print_section("Demo: Utility Operations");
 
@@ -187,8 +193,9 @@ void demo_utility_operations() {
   ads::demo::print_success("All utility operations work correctly.");
 }
 
-//===--------------------------- EXCEPTION HANDLING DEMO -----------------------===//
+//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
+// Demonstrate exception handling for out-of-bounds access.
 void demo_exception_handling() {
   ads::demo::print_section("Demo: Exception Handling");
 
@@ -206,8 +213,9 @@ void demo_exception_handling() {
   ads::demo::print_success("Exception handling works correctly.");
 }
 
-//===--------------------------- STRING TYPE DEMO ------------------------------===//
+//===---------------------------- STRING TYPE DEMO -----------------------------===//
 
+// Demonstrate StaticArray with string type.
 void demo_string_type() {
   ads::demo::print_section("Demo: String Type Support");
 
@@ -226,7 +234,7 @@ void demo_string_type() {
   ads::demo::print_success("String type support works correctly.");
 }
 
-//===----------------------------------- MAIN ----------------------------------===//
+//===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("StaticArray Demo");
