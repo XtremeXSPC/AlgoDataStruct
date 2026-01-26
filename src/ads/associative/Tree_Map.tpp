@@ -112,7 +112,7 @@ auto TreeMap<Key, Value>::find(const Key& key) -> Value* {
   if (!entry || !entry->value.has_value()) {
     return nullptr;
   }
-  return std::addressof(entry->value.value());
+  return &entry->value.value();
 }
 
 template <typename Key, typename Value>
@@ -121,7 +121,7 @@ auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
   if (!entry || !entry->value.has_value()) {
     return nullptr;
   }
-  return std::addressof(entry->value.value());
+  return &entry->value.value();
 }
 
 //===------------------------- INSERTION OPERATIONS --------------------------===//
