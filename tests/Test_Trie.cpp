@@ -1,16 +1,16 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_Trie.cpp
- * @brief Google Test unit tests for Trie implementation
+ * @brief Google Test unit tests for Trie implementation.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
 #include <algorithm>
+#include <gtest/gtest.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -21,13 +21,13 @@ using namespace ads::trees;
 
 using TrieType = ads::trees::Trie<>;
 
-// Test fixture for Trie
+// Test fixture for Trie.
 class TrieTest : public ::testing::Test {
 protected:
   TrieType trie;
 };
 
-// ----- Basic State Tests ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(TrieTest, IsEmptyOnConstruction) {
   EXPECT_EQ(trie.size(), 0);
@@ -44,7 +44,7 @@ TEST_F(TrieTest, Clear) {
   EXPECT_TRUE(trie.is_empty());
 }
 
-// ----- Insertion Tests ----- //
+//===----------------------------- INSERTION TESTS -----------------------------===//
 
 TEST_F(TrieTest, InsertSingleWord) {
   trie.insert("hello");
@@ -90,7 +90,7 @@ TEST_F(TrieTest, InsertPrefixWords) {
   EXPECT_TRUE(trie.search("careful"));
 }
 
-// ----- Search Tests ----- //
+//===----------------------------- ACCESSOR TESTS ------------------------------===//
 
 TEST_F(TrieTest, ContainsWord) {
   trie.insert("hello");
@@ -100,8 +100,8 @@ TEST_F(TrieTest, ContainsWord) {
   EXPECT_TRUE(trie.search("hello"));
   EXPECT_TRUE(trie.search("help"));
   EXPECT_TRUE(trie.search("heap"));
-  EXPECT_FALSE(trie.search("hel"));    // Prefix but not a word
-  EXPECT_FALSE(trie.search("helper")); // Not inserted
+  EXPECT_FALSE(trie.search("hel"));    // Prefix but not a word.
+  EXPECT_FALSE(trie.search("helper")); // Not inserted.
 }
 
 TEST_F(TrieTest, StartsWithPrefix) {
@@ -130,7 +130,7 @@ TEST_F(TrieTest, GetWordsWithPrefix) {
   auto words = trie.get_all_words_with_prefix("car");
   EXPECT_EQ(words.size(), 4);
 
-  // Check that all expected words are present
+  // Check that all expected words are present.
   std::vector<std::string> expected = {"car", "card", "care", "careful"};
   for (const auto& word : expected) {
     EXPECT_NE(std::find(words.begin(), words.end(), word), words.end());
@@ -146,7 +146,7 @@ TEST_F(TrieTest, GetAllWords) {
   EXPECT_EQ(words.size(), 3);
 }
 
-// ----- Removal Tests ----- //
+//===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(TrieTest, RemoveWord) {
   trie.insert("hello");
@@ -169,18 +169,18 @@ TEST_F(TrieTest, RemovePrefixWord) {
   trie.insert("car");
   trie.insert("card");
 
-  // Remove the shorter word, longer should remain
+  // Remove the shorter word, longer should remain.
   EXPECT_TRUE(trie.remove("car"));
   EXPECT_FALSE(trie.search("car"));
   EXPECT_TRUE(trie.search("card"));
-  EXPECT_TRUE(trie.starts_with("car")); // Prefix still exists
+  EXPECT_TRUE(trie.starts_with("car")); // Prefix still exists.
 }
 
 TEST_F(TrieTest, RemoveLongerWord) {
   trie.insert("car");
   trie.insert("card");
 
-  // Remove the longer word, shorter should remain
+  // Remove the longer word, shorter should remain.
   EXPECT_TRUE(trie.remove("card"));
   EXPECT_TRUE(trie.search("car"));
   EXPECT_FALSE(trie.search("card"));
@@ -198,7 +198,7 @@ TEST_F(TrieTest, RemoveAll) {
   EXPECT_TRUE(trie.is_empty());
 }
 
-// ----- Move Semantics Tests ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(TrieTest, MoveConstructor) {
   trie.insert("hello");
@@ -222,7 +222,7 @@ TEST_F(TrieTest, MoveAssignment) {
   EXPECT_EQ(other_trie.size(), 2);
 }
 
-// ----- Edge Cases ----- //
+//===---------------------------- ADDITIONAL TESTS -----------------------------===//
 
 TEST_F(TrieTest, SingleCharacterWords) {
   trie.insert("a");
@@ -254,7 +254,7 @@ TEST_F(TrieTest, CaseSensitivity) {
   EXPECT_FALSE(trie.search("HELLO"));
 }
 
-// ----- Autocomplete Scenario Tests ----- //
+//===--------------------------- AUTOCOMPLETE TESTS ----------------------------===//
 
 TEST_F(TrieTest, AutocompleteSuggestions) {
   trie.insert("app");
@@ -266,7 +266,7 @@ TEST_F(TrieTest, AutocompleteSuggestions) {
   auto suggestions = trie.get_all_words_with_prefix("app");
   EXPECT_EQ(suggestions.size(), 4);
 
-  // Verify "banana" is not in suggestions
+  // Verify "banana" is not in suggestions.
   EXPECT_EQ(std::find(suggestions.begin(), suggestions.end(), "banana"), suggestions.end());
 }
 
@@ -278,7 +278,7 @@ TEST_F(TrieTest, NoSuggestionsForUnknownPrefix) {
   EXPECT_TRUE(suggestions.empty());
 }
 
-// ----- Large Dataset Tests ----- //
+//===--------------------------- LARGE DATASET TESTS ---------------------------===//
 
 TEST_F(TrieTest, LargeDataset) {
   const int N = 1000;
@@ -288,14 +288,14 @@ TEST_F(TrieTest, LargeDataset) {
 
   EXPECT_EQ(trie.size(), N);
 
-  // Verify some random words
+  // Verify some random words.
   EXPECT_TRUE(trie.search("word0"));
   EXPECT_TRUE(trie.search("word500"));
   EXPECT_TRUE(trie.search("word999"));
 }
 
 TEST_F(TrieTest, PrefixSearchPerformance) {
-  // Insert many words with common prefix
+  // Insert many words with common prefix.
   for (int i = 0; i < 100; ++i) {
     trie.insert("prefix" + std::to_string(i));
   }
@@ -304,7 +304,7 @@ TEST_F(TrieTest, PrefixSearchPerformance) {
   EXPECT_EQ(words.size(), 100);
 }
 
-// ----- Count Words With Prefix ----- //
+//===---------------------- COUNT WORDS WITH PREFIX TESTS ----------------------===//
 
 TEST_F(TrieTest, CountWordsWithPrefix) {
   trie.insert("car");
@@ -318,3 +318,5 @@ TEST_F(TrieTest, CountWordsWithPrefix) {
   EXPECT_EQ(trie.count_words_with_prefix("cat"), 1);
   EXPECT_EQ(trie.count_words_with_prefix("xyz"), 0);
 }
+
+//===---------------------------------------------------------------------------===//

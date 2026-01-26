@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Circular_Array.cpp
- * @brief Google Test unit tests for CircularArray
+ * @brief Google Test unit tests for CircularArray.
  * @version 0.1
  * @date 2026-01-26
  *
@@ -17,10 +17,13 @@
 
 using namespace ads::arrays;
 
+// Test fixture for CircularArray.
 class CircularArrayTest : public ::testing::Test {
 protected:
   CircularArray<int> array;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(CircularArrayTest, IsEmptyOnConstruction) {
   EXPECT_EQ(array.size(), 0u);

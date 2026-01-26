@@ -17,7 +17,7 @@
 
 using namespace ads::trees;
 
-// Test fixture for AVLTree
+// Test fixture for AVLTree.
 class AVLTreeTest : public ::testing::Test {
 protected:
   AVLTree<int> tree;

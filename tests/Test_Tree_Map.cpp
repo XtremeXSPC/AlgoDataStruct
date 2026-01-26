@@ -17,6 +17,7 @@
 
 using namespace ads::associative;
 
+// Test fixture for TreeMap.
 class TreeMapTest : public ::testing::Test {
 protected:
   TreeMap<int, std::string> map;
