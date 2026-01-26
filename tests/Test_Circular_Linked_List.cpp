@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Circular_Linked_List.cpp
- * @brief Google Test unit tests for CircularLinkedList
+ * @brief Google Test unit tests for CircularLinkedList.
  * @version 0.1
  * @date 2026-01-26
  *
@@ -17,10 +17,13 @@
 
 using namespace ads::lists;
 
+// Test fixture for CircularLinkedList.
 class CircularLinkedListTest : public ::testing::Test {
 protected:
   CircularLinkedList<int> list;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(CircularLinkedListTest, IsEmptyOnConstruction) {
   EXPECT_EQ(list.size(), 0u);

@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Complete_Binary_Tree.cpp
- * @brief Google Test unit tests for CompleteBinaryTree
+ * @brief Google Test unit tests for CompleteBinaryTree.
  * @version 0.1
  * @date 2026-01-26
  *
@@ -17,10 +17,13 @@
 
 using namespace ads::trees;
 
+// Test fixture for CompleteBinaryTree.
 class CompleteBinaryTreeTest : public ::testing::Test {
 protected:
   CompleteBinaryTree<int> tree;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(CompleteBinaryTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0u);
@@ -89,7 +92,7 @@ TEST_F(CompleteBinaryTreeTest, PreOrderTraversal) {
   std::vector<int> result;
   t.pre_order_traversal([&result](int val) { result.push_back(val); });
 
-  // Pre-order: root, left, right
+  // Pre-order: root, left, right.
   // Tree:     1
   //         /   \
   //        2     3
@@ -105,7 +108,7 @@ TEST_F(CompleteBinaryTreeTest, InOrderTraversal) {
   std::vector<int> result;
   t.in_order_traversal([&result](int val) { result.push_back(val); });
 
-  // In-order: left, root, right
+  // In-order: left, root, right.
   std::vector<int> expected{4, 2, 5, 1, 6, 3, 7};
   EXPECT_EQ(result, expected);
 }
@@ -116,7 +119,7 @@ TEST_F(CompleteBinaryTreeTest, PostOrderTraversal) {
   std::vector<int> result;
   t.post_order_traversal([&result](int val) { result.push_back(val); });
 
-  // Post-order: left, right, root
+  // Post-order: left, right, root.
   std::vector<int> expected{4, 5, 2, 6, 7, 3, 1};
   EXPECT_EQ(result, expected);
 }
@@ -124,7 +127,7 @@ TEST_F(CompleteBinaryTreeTest, PostOrderTraversal) {
 TEST_F(CompleteBinaryTreeTest, ToVector) {
   CompleteBinaryTree<int> t{1, 2, 3, 4, 5};
 
-  auto vec = t.to_vector();
+  auto             vec = t.to_vector();
   std::vector<int> expected{1, 2, 3, 4, 5};
   EXPECT_EQ(vec, expected);
 }
@@ -162,23 +165,23 @@ TEST_F(CompleteBinaryTreeTest, EmplaceOperation) {
 }
 
 TEST_F(CompleteBinaryTreeTest, HeightCalculation) {
-  EXPECT_EQ(tree.height(), -1);  // Empty
+  EXPECT_EQ(tree.height(), -1); // Empty.
 
   tree.insert(1);
-  EXPECT_EQ(tree.height(), 0);   // Root only
+  EXPECT_EQ(tree.height(), 0); // Root only.
 
   tree.insert(2);
   tree.insert(3);
-  EXPECT_EQ(tree.height(), 1);   // Two levels
+  EXPECT_EQ(tree.height(), 1); // Two levels.
 
   tree.insert(4);
   tree.insert(5);
   tree.insert(6);
   tree.insert(7);
-  EXPECT_EQ(tree.height(), 2);   // Three levels (complete)
+  EXPECT_EQ(tree.height(), 2); // Three levels (complete).
 
   tree.insert(8);
-  EXPECT_EQ(tree.height(), 3);   // Four levels
+  EXPECT_EQ(tree.height(), 3); // Four levels.
 }
 
 TEST_F(CompleteBinaryTreeTest, RootNodeAccess) {

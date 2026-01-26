@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_Queues.cpp
- * @brief Google Test unit tests for Queue implementations
+ * @brief Google Test unit tests for Queue implementations.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -18,12 +18,13 @@
 
 using namespace ads::queues;
 
-// ==================== CircularArrayQueue Tests ==================== //
-
+// Test fixture for CircularArrayQueue.
 class CircularArrayQueueTest : public ::testing::Test {
 protected:
   CircularArrayQueue<int> queue;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(CircularArrayQueueTest, IsEmptyOnConstruction) {
   EXPECT_EQ(queue.size(), 0);
@@ -115,11 +116,11 @@ TEST_F(CircularArrayQueueTest, FIFOOrder) {
     queue.dequeue();
   }
 
-  EXPECT_EQ(output, input); // FIFO: output should match input order
+  EXPECT_EQ(output, input); // FIFO: output should match input order.
 }
 
 TEST_F(CircularArrayQueueTest, CircularBehavior) {
-  // Fill and partially empty to test circular wrapping
+  // Fill and partially empty to test circular wrapping.
   for (int i = 0; i < 5; ++i) {
     queue.enqueue(i);
   }
@@ -128,7 +129,7 @@ TEST_F(CircularArrayQueueTest, CircularBehavior) {
     queue.dequeue();
   }
 
-  // Now add more elements (should wrap around)
+  // Now add more elements (should wrap around).
   for (int i = 10; i < 15; ++i) {
     queue.enqueue(i);
   }
@@ -154,7 +155,7 @@ TEST_F(CircularArrayQueueTest, LargeQueueOperations) {
   EXPECT_TRUE(queue.is_empty());
 }
 
-// ==================== LinkedQueue Tests ==================== //
+//===--------------------------- LINKED QUEUE TESTS ----------------------------===//
 
 class LinkedQueueTest : public ::testing::Test {
 protected:
@@ -227,13 +228,13 @@ TEST_F(LinkedQueueTest, MoveSemantics) {
   queue.enqueue(10);
   queue.enqueue(20);
 
-  // Move constructor
+  // Move constructor.
   LinkedQueue<int> moved_queue = std::move(queue);
   EXPECT_TRUE(queue.is_empty());
   EXPECT_EQ(moved_queue.size(), 2);
   EXPECT_EQ(moved_queue.front(), 10);
 
-  // Move assignment
+  // Move assignment.
   queue = std::move(moved_queue);
   EXPECT_TRUE(moved_queue.is_empty());
   EXPECT_EQ(queue.size(), 2);
@@ -271,7 +272,7 @@ TEST_F(LinkedQueueTest, LargeQueueOperations) {
   EXPECT_TRUE(queue.is_empty());
 }
 
-// ==================== Polymorphic Interface Tests ==================== //
+//===--------------------------- POLYMORPHISM TESTS ----------------------------===//
 
 TEST(QueuePolymorphismTest, CircularArrayQueueThroughInterface) {
   CircularArrayQueue<int> concrete_queue;
@@ -296,3 +297,5 @@ TEST(QueuePolymorphismTest, LinkedQueueThroughInterface) {
   EXPECT_EQ(q->rear(), 20);
   EXPECT_EQ(q->size(), 2);
 }
+
+//===---------------------------------------------------------------------------===//

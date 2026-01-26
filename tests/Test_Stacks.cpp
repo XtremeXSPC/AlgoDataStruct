@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_Stacks.cpp
- * @brief Google Test unit tests for Stack implementations (ArrayStack, LinkedStack)
+ * @brief Google Test unit tests for Stack implementations (ArrayStack, LinkedStack).
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -18,12 +18,13 @@
 
 using namespace ads::stacks;
 
-// ==================== ArrayStack Tests ==================== //
-
+// Test fixture for ArrayStack.
 class ArrayStackTest : public ::testing::Test {
 protected:
   ArrayStack<int> stack;
 };
+
+//===---------------------------- ARRAY STACK TESTS ----------------------------===//
 
 TEST_F(ArrayStackTest, IsEmptyOnConstruction) {
   EXPECT_EQ(stack.size(), 0);
@@ -86,13 +87,13 @@ TEST_F(ArrayStackTest, MoveSemantics) {
   stack.push(10);
   stack.push(20);
 
-  // Move constructor
+  // Move constructor.
   ArrayStack<int> moved_stack = std::move(stack);
   EXPECT_TRUE(stack.is_empty());
   EXPECT_EQ(moved_stack.size(), 2);
   EXPECT_EQ(moved_stack.top(), 20);
 
-  // Move assignment
+  // Move assignment.
   stack = std::move(moved_stack);
   EXPECT_TRUE(moved_stack.is_empty());
   EXPECT_EQ(stack.size(), 2);
@@ -130,7 +131,7 @@ TEST_F(ArrayStackTest, LargeStackOperations) {
   EXPECT_TRUE(stack.is_empty());
 }
 
-// ==================== LinkedStack Tests ==================== //
+//===--------------------------- LINKED STACK TESTS ----------------------------===//
 
 class LinkedStackTest : public ::testing::Test {
 protected:
@@ -198,13 +199,13 @@ TEST_F(LinkedStackTest, MoveSemantics) {
   stack.push(10);
   stack.push(20);
 
-  // Move constructor
+  // Move constructor.
   LinkedStack<int> moved_stack = std::move(stack);
   EXPECT_TRUE(stack.is_empty());
   EXPECT_EQ(moved_stack.size(), 2);
   EXPECT_EQ(moved_stack.top(), 20);
 
-  // Move assignment
+  // Move assignment.
   stack = std::move(moved_stack);
   EXPECT_TRUE(moved_stack.is_empty());
   EXPECT_EQ(stack.size(), 2);
@@ -242,7 +243,7 @@ TEST_F(LinkedStackTest, LargeStackOperations) {
   EXPECT_TRUE(stack.is_empty());
 }
 
-// ==================== Polymorphic Interface Tests ==================== //
+//===------------------------ STACK POLYMORPHISM TESTS -------------------------===//
 
 TEST(StackPolymorphismTest, ArrayStackThroughInterface) {
   ArrayStack<int> concrete_stack;
@@ -265,3 +266,5 @@ TEST(StackPolymorphismTest, LinkedStackThroughInterface) {
   EXPECT_EQ(stack->top(), 20);
   EXPECT_EQ(stack->size(), 2);
 }
+
+//===---------------------------------------------------------------------------===//

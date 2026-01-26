@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_HashTables.cpp
- * @brief Google Test unit tests for Hash Table implementations
+ * @brief Google Test unit tests for Hash Table implementations.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -18,12 +18,13 @@
 
 using namespace ads::hash;
 
-// ==================== HashTableChaining Tests ==================== //
-
+// Test fixture for HashTableChaining.
 class HashTableChainingTest : public ::testing::Test {
 protected:
   HashTableChaining<int, std::string> table;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(HashTableChainingTest, IsEmptyOnConstruction) {
   EXPECT_EQ(table.size(), 0);
@@ -60,6 +61,8 @@ TEST_F(HashTableChainingTest, GetNonExistentThrows) {
   EXPECT_THROW(table.at(1), KeyNotFoundException);
 }
 
+//===--------------------------- MODIFICATION TESTS ----------------------------===//
+
 TEST_F(HashTableChainingTest, Remove) {
   table.insert(1, "one");
   table.insert(2, "two");
@@ -69,7 +72,7 @@ TEST_F(HashTableChainingTest, Remove) {
   EXPECT_EQ(table.size(), 2);
   EXPECT_FALSE(table.contains(2));
 
-  EXPECT_FALSE(table.erase(99)); // Non-existent
+  EXPECT_FALSE(table.erase(99)); // Non-existent.
 }
 
 TEST_F(HashTableChainingTest, Clear) {
@@ -82,52 +85,54 @@ TEST_F(HashTableChainingTest, Clear) {
 }
 
 TEST_F(HashTableChainingTest, CollisionHandling) {
-  // Insert many elements to force collisions
+  // Insert many elements to force collisions.
   for (int i = 0; i < 100; ++i) {
     table.insert(i, "value" + std::to_string(i));
   }
 
   EXPECT_EQ(table.size(), 100);
 
-  // Verify all elements are accessible
+  // Verify all elements are accessible.
   for (int i = 0; i < 100; ++i) {
     EXPECT_TRUE(table.contains(i));
     EXPECT_EQ(table.at(i), "value" + std::to_string(i));
   }
 }
 
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+
 TEST_F(HashTableChainingTest, MoveSemantics) {
   table.insert(1, "one");
   table.insert(2, "two");
 
-  // Move constructor
+  // Move constructor.
   HashTableChaining<int, std::string> moved_table = std::move(table);
   EXPECT_TRUE(table.is_empty());
   EXPECT_EQ(moved_table.size(), 2);
   EXPECT_EQ(moved_table.at(1), "one");
 
-  // Move assignment
+  // Move assignment.
   table = std::move(moved_table);
   EXPECT_TRUE(moved_table.is_empty());
   EXPECT_EQ(table.size(), 2);
 }
 
 TEST_F(HashTableChainingTest, LoadFactorAndRehash) {
-  // Insert enough elements to trigger rehashing
+  // Insert enough elements to trigger rehashing.
   for (int i = 0; i < 1000; ++i) {
     table.insert(i, std::to_string(i));
   }
 
   EXPECT_EQ(table.size(), 1000);
-  EXPECT_LE(table.load_factor(), 1.0); // Load factor should be reasonable
+  EXPECT_LE(table.load_factor(), 1.0); // Load factor should be reasonable.
 
-  // Verify data integrity after rehash
+  // Verify data integrity after rehash.
   for (int i = 0; i < 1000; ++i) {
     EXPECT_EQ(table.at(i), std::to_string(i));
   }
 }
 
-// ==================== HashTableOpenAddressing Tests ==================== //
+//===-------------------------- OPEN ADDRESSING TESTS --------------------------===//
 
 class HashTableOpenAddressingTest : public ::testing::Test {
 protected:
@@ -178,7 +183,7 @@ TEST_F(HashTableOpenAddressingTest, Remove) {
   EXPECT_EQ(table.size(), 2);
   EXPECT_FALSE(table.contains(2));
 
-  EXPECT_FALSE(table.erase(99)); // Non-existent
+  EXPECT_FALSE(table.erase(99)); // Non-existent.
 }
 
 TEST_F(HashTableOpenAddressingTest, Clear) {
@@ -191,7 +196,7 @@ TEST_F(HashTableOpenAddressingTest, Clear) {
 }
 
 TEST_F(HashTableOpenAddressingTest, ProbeSequence) {
-  // Insert elements that may collide
+  // Insert elements that may collide.
   for (int i = 0; i < 50; ++i) {
     table.insert(i, "value" + std::to_string(i));
   }
@@ -218,13 +223,13 @@ TEST_F(HashTableOpenAddressingTest, MoveSemantics) {
   table.insert(1, "one");
   table.insert(2, "two");
 
-  // Move constructor
+  // Move constructor.
   HashTableOpenAddressing<int, std::string> moved_table = std::move(table);
   EXPECT_TRUE(table.is_empty());
   EXPECT_EQ(moved_table.size(), 2);
   EXPECT_EQ(moved_table.at(1), "one");
 
-  // Move assignment
+  // Move assignment.
   table = std::move(moved_table);
   EXPECT_TRUE(moved_table.is_empty());
   EXPECT_EQ(table.size(), 2);
@@ -242,7 +247,7 @@ TEST_F(HashTableOpenAddressingTest, LoadFactorAndRehash) {
   }
 }
 
-// ==================== String Key Tests ==================== //
+//===---------------------------- STRING KEY TESTS -----------------------------===//
 
 TEST(HashTableStringKeyTest, ChainingWithStringKeys) {
   HashTableChaining<std::string, int> table;
@@ -267,3 +272,5 @@ TEST(HashTableStringKeyTest, OpenAddressingWithStringKeys) {
   EXPECT_EQ(table.at("banana"), 2);
   EXPECT_EQ(table.at("cherry"), 3);
 }
+
+//===---------------------------------------------------------------------------===//
