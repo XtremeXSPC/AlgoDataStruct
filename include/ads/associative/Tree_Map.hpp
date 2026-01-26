@@ -16,7 +16,7 @@
 #ifndef TREE_MAP_HPP
 #define TREE_MAP_HPP
 
-#include <functional>
+#include <concepts>
 #include <initializer_list>
 #include <optional>
 #include <utility>
@@ -55,7 +55,7 @@ private:
 
     auto operator<(const Entry& other) const -> bool { return key < other.key; }
     auto operator>(const Entry& other) const -> bool { return other.key < key; }
-    auto operator==(const Entry& other) const -> bool { return key == other.key; }
+    auto operator==(const Entry& other) const -> bool { return !(key < other.key) && !(other.key < key); }
   };
 
   using TreeType = ads::trees::AVLTree<Entry>;
