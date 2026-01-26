@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Dynamic_Array.cpp
- * @brief Google Test unit tests for DynamicArray
+ * @brief Google Test unit tests for DynamicArray.
  * @version 0.1
  * @date 2026-01-23
  *
@@ -21,6 +21,8 @@ class DynamicArrayTest : public ::testing::Test {
 protected:
   DynamicArray<int> array;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(DynamicArrayTest, IsEmptyOnConstruction) {
   EXPECT_EQ(array.size(), 0);
@@ -46,15 +48,6 @@ TEST_F(DynamicArrayTest, PopBack) {
   EXPECT_EQ(array.back(), 5);
 }
 
-TEST_F(DynamicArrayTest, PopBackOnEmptyThrows) {
-  EXPECT_THROW(array.pop_back(), ArrayUnderflowException);
-}
-
-TEST_F(DynamicArrayTest, AtThrowsOnOutOfRange) {
-  array.push_back(1);
-  EXPECT_THROW(array.at(1), ArrayOutOfRangeException);
-}
-
 TEST_F(DynamicArrayTest, InsertAndErase) {
   array.push_back(10);
   array.push_back(30);
@@ -76,6 +69,19 @@ TEST_F(DynamicArrayTest, EmplaceBack) {
   EXPECT_EQ(strings.size(), 2);
   EXPECT_EQ(strings.back(), "World");
 }
+
+//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
+
+TEST_F(DynamicArrayTest, PopBackOnEmptyThrows) {
+  EXPECT_THROW(array.pop_back(), ArrayUnderflowException);
+}
+
+TEST_F(DynamicArrayTest, AtThrowsOnOutOfRange) {
+  array.push_back(1);
+  EXPECT_THROW(array.at(1), ArrayOutOfRangeException);
+}
+
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(DynamicArrayTest, MoveSemantics) {
   array.push_back(10);
