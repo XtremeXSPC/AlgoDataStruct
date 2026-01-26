@@ -45,7 +45,7 @@ auto CompleteBinaryTree<T>::operator=(CompleteBinaryTree&& other) noexcept -> Co
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename T>
 auto CompleteBinaryTree<T>::insert(const T& value) -> void {
@@ -95,6 +95,8 @@ auto CompleteBinaryTree<T>::emplace(Args&&... args) -> T& {
   ++size_;
   return ref;
 }
+
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <typename T>
 auto CompleteBinaryTree<T>::clear() noexcept -> void {

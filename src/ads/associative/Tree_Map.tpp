@@ -26,26 +26,11 @@ TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init) 
   }
 }
 
-//===------------------------- DICTIONARY INTERFACE ---------------------------===//
+//===---------------------------- QUERY OPERATIONS -----------------------------===//
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void {
-  if (Entry* entry = find_entry(key)) {
-    entry->value = value;
-    return;
-  }
-
-  tree_.insert(Entry(key, value));
-}
-
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void {
-  if (Entry* entry = find_entry(key)) {
-    entry->value = std::move(value);
-    return;
-  }
-
-  tree_.insert(Entry(std::move(key), std::move(value)));
+auto TreeMap<Key, Value>::empty() const noexcept -> bool {
+  return tree_.is_empty();
 }
 
 template <typename Key, typename Value>
@@ -67,24 +52,21 @@ auto TreeMap<Key, Value>::get(const Key& key) const -> const Value& {
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::contains(const Key& key) const -> bool {
-  return find_entry(key) != nullptr;
-}
-
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::remove(const Key& key) -> bool {
-  return tree_.remove(Entry(key));
-}
-
-template <typename Key, typename Value>
 auto TreeMap<Key, Value>::size() const noexcept -> size_t {
   return tree_.size();
 }
 
-//===---------------------------- ELEMENT ACCESS -----------------------------===//
+template <typename Key, typename Value>
+auto TreeMap<Key, Value>::contains(const Key& key) const -> bool {
+  return find_entry(key) != nullptr;
+}
+
+//===----------------------------- ELEMENT ACCESS ------------------------------===//
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::operator[](const Key& key) -> Value& requires std::default_initializable<Value> {
+auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
+  requires std::default_initializable<Value>
+{
   if (Entry* entry = find_entry(key)) {
     if (!entry->value.has_value()) {
       entry->value.emplace();
@@ -124,7 +106,7 @@ auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
   return &entry->value.value();
 }
 
-//===------------------------- INSERTION OPERATIONS --------------------------===//
+//===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::insert(const Key& key, const Value& value) -> bool {
@@ -152,7 +134,32 @@ auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool {
   return true;
 }
 
-//===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+template <typename Key, typename Value>
+auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void {
+  if (Entry* entry = find_entry(key)) {
+    entry->value = value;
+    return;
+  }
+
+  tree_.insert(Entry(key, value));
+}
+
+template <typename Key, typename Value>
+auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void {
+  if (Entry* entry = find_entry(key)) {
+    entry->value = std::move(value);
+    return;
+  }
+
+  tree_.insert(Entry(std::move(key), std::move(value)));
+}
+
+//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+
+template <typename Key, typename Value>
+auto TreeMap<Key, Value>::remove(const Key& key) -> bool {
+  return tree_.remove(Entry(key));
+}
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::erase(const Key& key) -> bool {
@@ -164,14 +171,7 @@ auto TreeMap<Key, Value>::clear() noexcept -> void {
   tree_.clear();
 }
 
-//===--------------------------- QUERY OPERATIONS ----------------------------===//
-
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::empty() const noexcept -> bool {
-  return tree_.is_empty();
-}
-
-//===-------------------------- CONVENIENCE METHODS --------------------------===//
+//===--------------------------- CONVENIENCE METHODS ---------------------------===//
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::keys() const -> std::vector<Key> {
@@ -208,6 +208,7 @@ auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>> 
   return result;
 }
 
+//=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <typename Key, typename Value>

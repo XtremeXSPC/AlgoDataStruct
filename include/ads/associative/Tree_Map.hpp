@@ -87,29 +87,56 @@ public:
   TreeMap(TreeMap&& other) noexcept = default;
 
   /**
+   * @brief Destructor.
+   */
+  ~TreeMap() override = default;
+
+  /**
    * @brief Move assignment operator.
    * @complexity Time O(1), Space O(1)
    */
   auto operator=(TreeMap&& other) noexcept -> TreeMap& = default;
 
-  /**
-   * @brief Destructor.
-   */
-  ~TreeMap() override = default;
-
   // Copy constructor and assignment are disabled (move-only type).
   TreeMap(const TreeMap&)                    = delete;
   auto operator=(const TreeMap&) -> TreeMap& = delete;
 
-  //===------------------------- DICTIONARY INTERFACE ---------------------------===//
+  //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
-  auto               put(const Key& key, const Value& value) -> void override;
-  auto               put(Key&& key, Value&& value) -> void override;
-  auto               get(const Key& key) -> Value& override;
-  auto               get(const Key& key) const -> const Value& override;
-  [[nodiscard]] auto contains(const Key& key) const -> bool override;
-  auto               remove(const Key& key) -> bool override;
+  /**
+   * @brief Checks if the map is empty.
+   * @return true if empty, false otherwise.
+   */
+  [[nodiscard]] auto empty() const noexcept -> bool;
+
+  /**
+   * @brief Retrieves the value associated with a key.
+   * @param key The key to look up.
+   * @return Reference to the associated value.
+   * @throws KeyNotFoundException if the key does not exist.
+   */
+  auto get(const Key& key) -> Value& override;
+
+  /**
+   * @brief Retrieves the value associated with a key (const version).
+   * @param key The key to look up.
+   * @return Const reference to the associated value.
+   * @throws KeyNotFoundException if the key does not exist.
+   */
+  auto get(const Key& key) const -> const Value& override;
+
+  /**
+   * @brief Returns the number of elements in the map.
+   * @return The current size.
+   */
   [[nodiscard]] auto size() const noexcept -> size_t override;
+
+  /**
+   * @brief Checks if a key exists in the map.
+   * @param key The key to search for.
+   * @return true if found, false otherwise.
+   */
+  [[nodiscard]] auto contains(const Key& key) const -> bool override;
 
   //===---------------------------- ELEMENT ACCESS -----------------------------===//
 
@@ -180,7 +207,28 @@ public:
   template <typename... Args>
   auto emplace(Key key, Args&&... args) -> bool;
 
+  /**
+   * @brief Inserts or updates a key-value pair.
+   * @param key The key to insert or update.
+   * @param value The value to associate with the key.
+   */
+  auto put(const Key& key, const Value& value) -> void override;
+
+  /**
+   * @brief Inserts or updates a key-value pair (move).
+   * @param key The key to insert or update.
+   * @param value The value to associate with the key.
+   */
+  auto put(Key&& key, Value&& value) -> void override;
+
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Removes an element with the given key.
+   * @param key The key to remove.
+   * @return true if an element was removed, false otherwise.
+   */
+  auto remove(const Key& key) -> bool override;
 
   /**
    * @brief Removes an element with the given key.
@@ -193,14 +241,6 @@ public:
    * @brief Removes all elements.
    */
   auto clear() noexcept -> void;
-
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
-
-  /**
-   * @brief Checks if the map is empty.
-   * @return true if empty, false otherwise.
-   */
-  [[nodiscard]] auto empty() const noexcept -> bool;
 
   //===-------------------------- CONVENIENCE METHODS --------------------------===//
 
