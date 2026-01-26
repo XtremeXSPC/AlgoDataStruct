@@ -52,7 +52,7 @@ void print_avl_tree(const AVLTree<T>& tree, const string& name) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test basic insertion and traversals.
+// Demonstrates basic insertion and traversal operations.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -200,7 +200,7 @@ void demo_rl_rotation() {
 
 //===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
 
-// Test search operations.
+// Demonstrates search operations.
 void demo_search_operations() {
   ads::demo::print_section("Demo: Search Operations");
 
@@ -227,7 +227,7 @@ void demo_search_operations() {
 
 //===---------------------------- REMOVE OPERATIONS ----------------------------===//
 
-// Test remove operations.
+// Demonstrates remove operations.
 void demo_remove_operations() {
   ads::demo::print_section("Demo: Remove Operations");
 
@@ -268,7 +268,7 @@ void demo_remove_operations() {
 
 //===------------------------------ ITERATOR DEMO ------------------------------===//
 
-// Test iterator.
+// Demonstrates iterator functionality.
 void demo_iterator() {
   ads::demo::print_section("Demo: Iterator");
 
@@ -288,7 +288,7 @@ void demo_iterator() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Test move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 

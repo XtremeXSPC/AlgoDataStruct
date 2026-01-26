@@ -14,6 +14,7 @@
 //===---------------------------------------------------------------------------===//
 
 #include <chrono>
+#include <format>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -56,7 +57,7 @@ void print_trie_stats(const TrieType& trie, const string& name) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test basic insertion and search.
+// Demonstrates basic insertion and extraction.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -92,7 +93,7 @@ void demo_basic_operations() {
 
 //===------------------------- PREFIX OPERATIONS DEMO --------------------------===//
 
-// Test prefix operations.
+// Demonstrates prefix-based operations.
 void demo_prefix_operations() {
   ads::demo::print_section("Demo: Prefix Operations");
 
@@ -131,7 +132,7 @@ void demo_prefix_operations() {
 
 //===---------------------------- AUTOCOMPLETE DEMO ----------------------------===//
 
-// Test autocomplete functionality.
+// Demonstrates autocomplete functionality.
 void demo_autocomplete() {
   ads::demo::print_section("Demo: Autocomplete");
 
@@ -169,7 +170,7 @@ void demo_autocomplete() {
 
 //===--------------------------- WORD COUNTING DEMO ----------------------------===//
 
-// Test word counting with prefix.
+// Demonstrates word counting with prefixes.
 void demo_word_counting() {
   ads::demo::print_section("Demo: Word Counting");
 
@@ -193,7 +194,7 @@ void demo_word_counting() {
 
 //===------------------------- REMOVE OPERATIONS DEMO --------------------------===//
 
-// Test remove operations.
+// Demonstrates remove operations.
 void demo_remove_operations() {
   ads::demo::print_section("Demo: Remove Operations");
 
@@ -224,7 +225,7 @@ void demo_remove_operations() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Test move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -259,7 +260,7 @@ void demo_move_semantics() {
 
 //===---------------------------- PERFORMANCE DEMO -----------------------------===//
 
-// Test performance.
+// Permormance testing.
 void demo_performance() {
   ads::demo::print_section("Demo: Performance");
 
@@ -272,7 +273,7 @@ void demo_performance() {
   auto start = std::chrono::high_resolution_clock::now();
 
   for (int i = 0; i < N; ++i) {
-    trie.insert("word" + std::to_string(i));
+    trie.insert(std::format("word{}", i));
   }
 
   auto end      = std::chrono::high_resolution_clock::now();
@@ -285,7 +286,7 @@ void demo_performance() {
   cout << "\nSearching for all " << N << " words...\n";
   start = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < N; ++i) {
-    [[maybe_unused]] bool found = trie.search("word" + std::to_string(i));
+    [[maybe_unused]] bool found = trie.search(std::format("word{}", i));
   }
   end      = std::chrono::high_resolution_clock::now();
   duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

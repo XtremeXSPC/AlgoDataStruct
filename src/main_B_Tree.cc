@@ -51,7 +51,7 @@ void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Demo: Basic operations.
+// Demonstrates basic insertion and traversal operations.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -88,7 +88,7 @@ void demo_basic_operations() {
 
 //===--------------------------- NODE SPLITTING DEMO ---------------------------===//
 
-// Demo: Node splitting.
+// Demonstrates node splitting during insertions.
 void demo_node_splitting() {
   ads::demo::print_section("Demo: Node Splitting");
 
@@ -114,7 +114,7 @@ void demo_node_splitting() {
 
 //===------------------------- DIFFERENT DEGREES DEMO --------------------------===//
 
-// Demo: Different minimum degrees.
+// Demonstrates B-Trees with different minimum degrees.
 void demo_different_degrees() {
   ads::demo::print_section("Demo: Different Minimum Degrees");
 
@@ -155,7 +155,7 @@ void demo_different_degrees() {
 
 //===------------------------ SEARCH AND TRAVERSAL DEMO ------------------------===//
 
-// Demo: Search and traversal.
+// Demonstrates search and traversal operations.
 void demo_search_traversal() {
   ads::demo::print_section("Demo: Search and Traversal");
 
@@ -181,7 +181,7 @@ void demo_search_traversal() {
 
 //===------------------------- RANDOM INSERTIONS DEMO --------------------------===//
 
-// Demo: Random insertions.
+// Demonstrates random insertions.
 void demo_random_insertions() {
   ads::demo::print_section("Demo: Random Insertions");
 
@@ -219,7 +219,7 @@ void demo_random_insertions() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Demo: Move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -255,7 +255,7 @@ void demo_move_semantics() {
 
 //===---------------------------- STRING TYPE DEMO -----------------------------===//
 
-// Demo: String type support.
+// Demonstrates B-Tree with string type.
 void demo_string_type() {
   ads::demo::print_section("Demo: String Type Support");
 
@@ -281,7 +281,7 @@ void demo_string_type() {
 
 //===---------------------------- PERFORMANCE DEMO -----------------------------===//
 
-// Demo: Performance.
+// Demonstrates performance with large datasets.
 void demo_performance() {
   ads::demo::print_section("Demo: Performance");
 
@@ -317,7 +317,7 @@ void demo_performance() {
 
 //===-------------------------- CLEAR AND REUSE DEMO ---------------------------===//
 
-// Demo: Clear and reuse.
+// Demonstrates clearing the tree and reusing it.
 void demo_clear_reuse() {
   ads::demo::print_section("Demo: Clear and Reuse");
 
@@ -343,7 +343,7 @@ void demo_clear_reuse() {
 
 //===------------------------- HEIGHT COMPARISON DEMO --------------------------===//
 
-// Demo: Height comparison for large datasets.
+// Demonstrates height comparison for different minimum degrees.
 void demo_height_comparison() {
   ads::demo::print_section("Demo: Height Comparison");
 

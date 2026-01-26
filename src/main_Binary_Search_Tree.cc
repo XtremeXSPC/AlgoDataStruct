@@ -48,7 +48,7 @@ void print_tree(const BinarySearchTree<T>& tree, const string& name) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test basic insertion and traversals.
+// Demonstrates basic insertion and traversal operations.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -90,7 +90,7 @@ void demo_basic_operations() {
 
 //===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
 
-// Test search operations.
+// Demonstrates search operations.
 void demo_search_operations() {
   ads::demo::print_section("Demo: Search Operations");
 
@@ -132,7 +132,7 @@ void demo_search_operations() {
 
 //===------------------------- REMOVE OPERATIONS DEMO --------------------------===//
 
-// Test removal operations.
+// Demonstrates remove operations.
 void demo_removal() {
   ads::demo::print_section("Demo: Removal Operations");
 
@@ -174,7 +174,7 @@ void demo_removal() {
 
 //===----------------------- SORTED SEQUENCE COMPARISON ------------------------===//
 
-// Test iterator functionality.
+// Demonstrates sorted sequence insertion.
 void demo_iterators() {
   ads::demo::print_section("Demo: Iterators");
 
@@ -215,7 +215,7 @@ void demo_iterators() {
 
 //===---------------------------- CUSTOM TYPES DEMO ----------------------------===//
 
-// Test with custom types.
+// Demonstrates usage with custom types.
 void demo_custom_types() {
   ads::demo::print_section("Demo: Custom Types");
 
@@ -250,7 +250,7 @@ void demo_custom_types() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Test move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -286,7 +286,7 @@ void demo_move_semantics() {
 
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
-// Test exception handling.
+// Demonstrates exception handling.
 void demo_exceptions() {
   ads::demo::print_section("Demo: Exception Handling");
 

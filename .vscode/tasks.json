@@ -232,6 +232,7 @@
         "test_Dijkstra",
         "test_Graph_ADJ_List",
         "test_Graph_ADJ_Matrix",
+        "test_Disjoint_Set_Union",
         "test_HashMap",
         "test_Hash_Chaining",
         "test_Hash_Open_Addr",
