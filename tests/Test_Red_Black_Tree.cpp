@@ -20,13 +20,13 @@ using namespace ads::trees;
 template <typename T>
 using RedBlackTreeType = Red_Black_Tree<T>;
 
-// Test fixture for RedBlackTree
+// Test fixture for RedBlackTree.
 class RedBlackTreeTest : public ::testing::Test {
 protected:
   RedBlackTreeType<int> tree;
 };
 
-// ----- Basic State Tests ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(RedBlackTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -44,7 +44,7 @@ TEST_F(RedBlackTreeTest, Clear) {
   EXPECT_TRUE(tree.is_empty());
 }
 
-// ----- Insertion Tests ----- //
+//===----------------------------- INSERTION TESTS -----------------------------===//
 
 TEST_F(RedBlackTreeTest, InsertSingleElement) {
   tree.insert(50);
@@ -73,7 +73,7 @@ TEST_F(RedBlackTreeTest, InsertDuplicateRejected) {
   EXPECT_EQ(tree.size(), 1);
 }
 
-// ----- Search Tests ----- //
+//===----------------------------- ACCESSOR TESTS ------------------------------===//
 
 TEST_F(RedBlackTreeTest, ContainsElement) {
   tree.insert(50);
@@ -102,7 +102,7 @@ TEST_F(RedBlackTreeTest, FindMinMaxOnEmptyThrows) {
   EXPECT_THROW([[maybe_unused]] auto val = tree.find_max(), EmptyTreeException);
 }
 
-// ----- Removal Tests ----- //
+//===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(RedBlackTreeTest, RemoveLeafNode) {
   GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
@@ -120,7 +120,7 @@ TEST_F(RedBlackTreeTest, RemoveNonExistent) {
   GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
 }
 
-// ----- Traversal Tests ----- //
+//===----------------------------- TRAVERSAL TESTS -----------------------------===//
 
 TEST_F(RedBlackTreeTest, InOrderTraversal) {
   tree.insert(50);
@@ -144,7 +144,7 @@ TEST_F(RedBlackTreeTest, LevelOrderTraversal) {
   GTEST_SKIP() << "Level-order traversal helper is not available for Red-Black Tree.";
 }
 
-// ----- Iterator Tests ----- //
+//===----------------------------- ITERATOR TESTS ------------------------------===//
 
 TEST_F(RedBlackTreeTest, IteratorTraversal) {
   tree.insert(50);
@@ -158,7 +158,7 @@ TEST_F(RedBlackTreeTest, IteratorTraversal) {
   EXPECT_EQ(actual, expected);
 }
 
-// ----- Move Semantics Tests ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(RedBlackTreeTest, MoveConstructor) {
   tree.insert(50);
@@ -184,21 +184,21 @@ TEST_F(RedBlackTreeTest, MoveAssignment) {
   EXPECT_EQ(other_tree.size(), 3);
 }
 
-// ----- Balance Tests ----- //
+//===------------------------------ BALANCE TESTS ------------------------------===//
 
 TEST_F(RedBlackTreeTest, BalanceAfterAscendingInsertions) {
-  // Insert in ascending order
+  // Insert in ascending order.
   for (int i = 1; i <= 50; ++i) {
     tree.insert(i);
   }
 
   EXPECT_EQ(tree.size(), 50);
-  // Red-Black tree should be balanced
-  EXPECT_LE(tree.height(), 12); // 2*log2(50+1) ~ 12
+  // Red-Black tree should be balanced.
+  EXPECT_LE(tree.height(), 12); // 2*log2(50+1) ~ 12.
 }
 
 TEST_F(RedBlackTreeTest, BalanceAfterDescendingInsertions) {
-  // Insert in descending order
+  // Insert in descending order.
   for (int i = 50; i >= 1; --i) {
     tree.insert(i);
   }
@@ -211,7 +211,7 @@ TEST_F(RedBlackTreeTest, BalanceAfterMultipleOperations) {
   GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
 }
 
-// ----- Edge Cases ----- //
+//===----------------------------- EDGE CASE TESTS -----------------------------===//
 
 TEST_F(RedBlackTreeTest, SingleElementTree) {
   tree.insert(42);
@@ -231,7 +231,7 @@ TEST_F(RedBlackTreeTest, ClearAndReuse) {
   EXPECT_TRUE(tree.contains(100));
 }
 
-// ----- Custom Type Tests ----- //
+//===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
 
 TEST(RedBlackTreeCustomTypeTest, StringKeys) {
   RedBlackTreeType<std::string> str_tree;
@@ -244,3 +244,5 @@ TEST(RedBlackTreeCustomTypeTest, StringKeys) {
   EXPECT_EQ(str_tree.find_min(), "apple");
   EXPECT_EQ(str_tree.find_max(), "cherry");
 }
+
+//===---------------------------------------------------------------------------===//

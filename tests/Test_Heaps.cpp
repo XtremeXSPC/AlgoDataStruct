@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_Heaps.cpp
- * @brief Google Test unit tests for MinHeap and MaxHeap implementations
+ * @brief Google Test unit tests for MinHeap and MaxHeap implementations.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -18,12 +18,13 @@
 
 using namespace ads::heaps;
 
-// ==================== MinHeap Tests ==================== //
-
+// Test fixture for MinHeap.
 class MinHeapTest : public ::testing::Test {
 protected:
   MinHeap<int> heap;
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(MinHeapTest, IsEmptyOnConstruction) {
   EXPECT_EQ(heap.size(), 0);
@@ -91,13 +92,13 @@ TEST_F(MinHeapTest, MoveSemantics) {
   heap.insert(10);
   heap.insert(20);
 
-  // Move constructor
+  // Move constructor.
   MinHeap<int> moved_heap = std::move(heap);
   EXPECT_TRUE(heap.is_empty());
   EXPECT_EQ(moved_heap.size(), 3);
   EXPECT_EQ(moved_heap.top(), 10);
 
-  // Move assignment
+  // Move assignment.
   heap = std::move(moved_heap);
   EXPECT_TRUE(moved_heap.is_empty());
   EXPECT_EQ(heap.size(), 3);
@@ -127,13 +128,13 @@ TEST_F(MinHeapTest, LargeHeapOperations) {
   EXPECT_EQ(heap.size(), N);
   EXPECT_EQ(heap.top(), 1);
 
-  // Extract first 10
+  // Extract first 10.
   for (int i = 1; i <= 10; ++i) {
     EXPECT_EQ(heap.extract_min(), i);
   }
 }
 
-// ==================== MaxHeap Tests ==================== //
+//===----------------------------- MAX HEAP TESTS ------------------------------===//
 
 class MaxHeapTest : public ::testing::Test {
 protected:
@@ -206,13 +207,13 @@ TEST_F(MaxHeapTest, MoveSemantics) {
   heap.insert(30);
   heap.insert(20);
 
-  // Move constructor
+  // Move constructor.
   MaxHeap<int> moved_heap = std::move(heap);
   EXPECT_TRUE(heap.is_empty());
   EXPECT_EQ(moved_heap.size(), 3);
   EXPECT_EQ(moved_heap.top(), 30);
 
-  // Move assignment
+  // Move assignment.
   heap = std::move(moved_heap);
   EXPECT_TRUE(moved_heap.is_empty());
   EXPECT_EQ(heap.size(), 3);
@@ -261,7 +262,7 @@ TEST_F(MaxHeapTest, LargeHeapOperations) {
   }
 }
 
-// ==================== Comparison Tests ==================== //
+//===---------------------------- COMPARISON TESTS -----------------------------===//
 
 TEST(HeapComparisonTest, MinMaxHeapWithSameData) {
   std::vector<int> data = {5, 2, 8, 1, 9, 3, 7};
@@ -272,3 +273,5 @@ TEST(HeapComparisonTest, MinMaxHeapWithSameData) {
   EXPECT_EQ(min_heap.top(), 1);
   EXPECT_EQ(max_heap.top(), 9);
 }
+
+//===---------------------------------------------------------------------------===//

@@ -19,7 +19,7 @@
 
 using namespace ads::lists;
 
-// Test fixture to initeratorialize a clean list for each test.
+// Test fixture for DoublyLinkedList.
 class DoublyLinkedListTest : public ::testing::Test {
 protected:
   DoublyLinkedList<int> list;

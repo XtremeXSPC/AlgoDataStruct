@@ -17,6 +17,7 @@
 
 using namespace ads::arrays;
 
+// Test fixture for DynamicArray.
 class DynamicArrayTest : public ::testing::Test {
 protected:
   DynamicArray<int> array;

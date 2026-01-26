@@ -15,6 +15,7 @@
 
 using namespace ads::graphs;
 
+// Test fixture for DisjointSetUnion.
 class DisjointSetUnionTest : public ::testing::Test {
 protected:
   DisjointSetUnion dsu{5};

@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Hash_Set.cpp
- * @brief Google Test unit tests for HashSet
+ * @brief Google Test unit tests for HashSet.
  * @version 0.1
  * @date 2026-01-26
  *

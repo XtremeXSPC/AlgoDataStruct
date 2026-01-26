@@ -17,6 +17,7 @@
 
 using namespace ads::queues;
 
+// Test fixture for CircularArrayDeque.
 class CircularArrayDequeTest : public ::testing::Test {
 protected:
   CircularArrayDeque<int> deque;

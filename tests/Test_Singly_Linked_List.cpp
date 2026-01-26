@@ -1,13 +1,13 @@
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 /**
  * @file Test_SinglyLinkedList.cpp
- * @brief Google Test unit tests for SinglyLinkedList
+ * @brief Google Test unit tests for SinglyLinkedList.
  * @version 0.1
  * @date 2025-11-21
  *
  * @copyright MIT License 2025
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
 #include <string>
@@ -17,13 +17,13 @@
 
 using namespace ads::lists;
 
-// Test fixture for SinglyLinkedList
+// Test fixture for SinglyLinkedList.
 class SinglyLinkedListTest : public ::testing::Test {
 protected:
   SinglyLinkedList<int> list;
 };
 
-// ----- Basic State Tests ----- //
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(SinglyLinkedListTest, IsEmptyOnConstruction) {
   EXPECT_EQ(list.size(), 0);
@@ -41,7 +41,7 @@ TEST_F(SinglyLinkedListTest, Clear) {
   EXPECT_THROW(list.front(), ListException);
 }
 
-// ----- Modifier Tests (push/pop/emplace) ----- //
+//===--------------------------- MODIFICATION TESTS ----------------------------===//
 
 TEST_F(SinglyLinkedListTest, PushFront) {
   list.push_front(10);
@@ -116,7 +116,7 @@ TEST(SinglyLinkedListStringTest, Emplace) {
   EXPECT_EQ(str_list.back(), "!");
 }
 
-// ----- Access Tests ----- //
+//===----------------------------- ACCESSOR TESTS ------------------------------===//
 
 TEST_F(SinglyLinkedListTest, AccessOnEmptyThrows) {
   EXPECT_THROW(list.front(), ListException);
@@ -150,7 +150,7 @@ TEST_F(SinglyLinkedListTest, ConstCorrectness) {
   EXPECT_EQ(actual, expected);
 }
 
-// ----- Algorithm Tests (reverse) ----- //
+//===---------------------------- ADDITIONAL TESTS -----------------------------===//
 
 TEST_F(SinglyLinkedListTest, Reverse) {
   list.push_back(1);
@@ -170,11 +170,11 @@ TEST_F(SinglyLinkedListTest, Reverse) {
 }
 
 TEST_F(SinglyLinkedListTest, ReverseEdgeCases) {
-  // Empty list
+  // Empty list.
   list.reverse();
   EXPECT_TRUE(list.is_empty());
 
-  // Single element
+  // Single element.
   list.push_back(42);
   list.reverse();
   EXPECT_EQ(list.size(), 1);
@@ -182,20 +182,20 @@ TEST_F(SinglyLinkedListTest, ReverseEdgeCases) {
   EXPECT_EQ(list.back(), 42);
 }
 
-// ----- Move Semantics Tests ----- //
+//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(SinglyLinkedListTest, MoveSemantics) {
   list.push_back(10);
   list.push_back(20);
 
-  // Move constructor
+  // Move constructor.
   SinglyLinkedList<int> moved_list_ctor = std::move(list);
   EXPECT_TRUE(list.is_empty());
   EXPECT_EQ(list.size(), 0);
   EXPECT_EQ(moved_list_ctor.size(), 2);
   EXPECT_EQ(moved_list_ctor.front(), 10);
 
-  // Move assignment
+  // Move assignment.
   list = std::move(moved_list_ctor);
   EXPECT_TRUE(moved_list_ctor.is_empty());
   EXPECT_EQ(moved_list_ctor.size(), 0);
@@ -203,7 +203,7 @@ TEST_F(SinglyLinkedListTest, MoveSemantics) {
   EXPECT_EQ(list.back(), 20);
 }
 
-// ----- Iterator Tests ----- //
+//===------------------------- ITERATOR FUNCTIONALITY --------------------------===//
 
 TEST_F(SinglyLinkedListTest, IteratorTraversal) {
   for (int i = 1; i <= 5; ++i) {
@@ -231,7 +231,7 @@ TEST_F(SinglyLinkedListTest, RangeBasedFor) {
   EXPECT_EQ(sum, 60);
 }
 
-// ----- Large List Test ----- //
+//===-------------------------- LARGE LIST OPERATIONS --------------------------===//
 
 TEST_F(SinglyLinkedListTest, LargeListOperations) {
   const int N = 1000;
@@ -251,3 +251,5 @@ TEST_F(SinglyLinkedListTest, LargeListOperations) {
   list.clear();
   EXPECT_TRUE(list.is_empty());
 }
+
+//===---------------------------------------------------------------------------===//

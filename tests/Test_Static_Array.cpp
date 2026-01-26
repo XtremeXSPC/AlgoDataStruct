@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Static_Array.cpp
- * @brief Google Test unit tests for StaticArray
+ * @brief Google Test unit tests for StaticArray.
  * @version 0.1
  * @date 2026-01-26
  *
@@ -17,10 +17,13 @@
 
 using namespace ads::arrays;
 
+// Test fixture for StaticArray.
 class StaticArrayTest : public ::testing::Test {
 protected:
   StaticArray<int, 5> array{1, 2, 3, 4, 5};
 };
+
+//===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(StaticArrayTest, SizeIsFixed) {
   EXPECT_EQ(array.size(), 5u);

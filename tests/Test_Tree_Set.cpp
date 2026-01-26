@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Tree_Set.cpp
- * @brief Google Test unit tests for TreeSet
+ * @brief Google Test unit tests for TreeSet.
  * @version 0.1
  * @date 2026-01-26
  *
@@ -17,6 +17,7 @@
 
 using namespace ads::associative;
 
+// Test fixture for TreeSet.
 class TreeSetTest : public ::testing::Test {
 protected:
   TreeSet<int> set;
@@ -106,7 +107,7 @@ TEST_F(TreeSetTest, ToVectorReturnsSortedOrder) {
   set.insert(10);
   set.insert(90);
 
-  auto vec = set.to_vector();
+  auto             vec = set.to_vector();
   std::vector<int> expected{10, 30, 50, 70, 90};
   EXPECT_EQ(vec, expected);
 }
@@ -138,7 +139,7 @@ TEST_F(TreeSetTest, StringSet) {
   strings.insert("apple");
   strings.insert("banana");
 
-  auto vec = strings.to_vector();
+  auto                     vec = strings.to_vector();
   std::vector<std::string> expected{"apple", "banana", "cherry"};
   EXPECT_EQ(vec, expected);
 }
