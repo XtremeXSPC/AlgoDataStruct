@@ -185,12 +185,14 @@ target_sources(ads_lib
             include/ads/arrays/Array_Exception.hpp
             include/ads/arrays/Dynamic_Array.hpp
             include/ads/arrays/Static_Array.hpp
+            include/ads/arrays/Circular_Array.hpp
 
             # List interface.
             include/ads/lists/List.hpp
             include/ads/lists/List_Exception.hpp
             include/ads/lists/Doubly_Linked_List.hpp
             include/ads/lists/Singly_Linked_List.hpp
+            include/ads/lists/Circular_Linked_List.hpp
 
             # Stack interface and implementations.
             include/ads/stacks/Stack.hpp
@@ -211,6 +213,7 @@ target_sources(ads_lib
             include/ads/trees/Binary_Tree_Exception.hpp
             include/ads/trees/Binary_Search_Tree.hpp
             include/ads/trees/AVL_Tree.hpp
+            include/ads/trees/Complete_Binary_Tree.hpp
 
             # Heap implementations.
             include/ads/heaps/Heap_Exception.hpp
@@ -232,6 +235,8 @@ target_sources(ads_lib
             include/ads/associative/Hash_Map.hpp
             include/ads/associative/Tree_Map.hpp
             include/ads/associative/Tree_Map_Exception.hpp
+            include/ads/associative/Hash_Set.hpp
+            include/ads/associative/Tree_Set.hpp
 
     # Template implementations (.tpp files)
     # These are included by the headers, but we list them here so they
@@ -239,8 +244,10 @@ target_sources(ads_lib
     INTERFACE
         src/ads/arrays/Dynamic_Array.tpp
         src/ads/arrays/Static_Array.tpp
+        src/ads/arrays/Circular_Array.tpp
         src/ads/lists/Doubly_Linked_List.tpp
         src/ads/lists/Singly_Linked_List.tpp
+        src/ads/lists/Circular_Linked_List.tpp
         src/ads/stacks/Array_Stack.tpp
         src/ads/stacks/Linked_Stack.tpp
         src/ads/queues/Circular_Array_Queue.tpp
@@ -252,6 +259,7 @@ target_sources(ads_lib
         src/ads/trees/Red_Black_Tree.tpp
         src/ads/trees/AVL_Tree.tpp
         src/ads/trees/Binary_Search_Tree.tpp
+        src/ads/trees/Complete_Binary_Tree.tpp
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
         src/ads/hash/Hash_Table_Chaining.tpp
@@ -260,6 +268,8 @@ target_sources(ads_lib
         src/ads/graphs/Graph_Adjacency_Matrix.tpp
         src/ads/associative/Hash_Map.tpp
         src/ads/associative/Tree_Map.tpp
+        src/ads/associative/Hash_Set.tpp
+        src/ads/associative/Tree_Set.tpp
 )
 
 # ------------------------ Helper Function: Add Executable ------------------------ #
@@ -351,6 +361,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Doubly_Linked_List.cc")
     ads_add_executable(test_Doubly__Linked_List src/main_Doubly_Linked_List.cc)
 endif()
 
+# Circular Linked List test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Circular_Linked_List.cc")
+    ads_add_executable(test_Circular_Linked_List src/main_Circular_Linked_List.cc)
+endif()
+
 # Dynamic Array test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dynamic_Array.cc")
     ads_add_executable(test_Dynamic_Array src/main_Dynamic_Array.cc)
@@ -359,6 +374,11 @@ endif()
 # Static Array test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Static_Array.cc")
     ads_add_executable(test_Static_Array src/main_Static_Array.cc)
+endif()
+
+# Circular Array test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Circular_Array.cc")
+    ads_add_executable(test_Circular_Array src/main_Circular_Array.cc)
 endif()
 
 # Deque test.
@@ -399,6 +419,11 @@ endif()
 # Trie test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
     ads_add_executable(test_Trie src/main_Trie.cc)
+endif()
+
+# Complete Binary Tree test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Complete_Binary_Tree.cc")
+    ads_add_executable(test_Complete_Binary_Tree src/main_Complete_Binary_Tree.cc)
 endif()
 
 # Dijkstra Integration test (Graph + PriorityQueue).
@@ -520,6 +545,21 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Static_Array.cpp")
         list(APPEND TEST_SOURCES tests/Test_Static_Array.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Array.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Circular_Array.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Linked_List.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Circular_Linked_List.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Complete_Binary_Tree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Complete_Binary_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Hash_Set.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Hash_Set.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Tree_Set.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Tree_Set.cpp)
     endif()
 
     # Create test executable if we have test files.
