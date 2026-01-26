@@ -240,36 +240,60 @@ public:
    * @brief Returns an iterator to the beginning of the array.
    */
   auto begin() noexcept -> iterator;
+
+  /**
+   * @brief Returns a const iterator to the beginning of the array.
+   */
   auto begin() const noexcept -> const_iterator;
 
   /**
    * @brief Returns an iterator to the end of the array.
    */
   auto end() noexcept -> iterator;
+
+  /**
+   * @brief Returns a const iterator to the end of the array.
+   */
   auto end() const noexcept -> const_iterator;
 
   /**
    * @brief Returns a const iterator to the beginning/end of the array.
    */
   auto cbegin() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns a const iterator to the end of the array.
+   */
   auto cend() const noexcept -> const_iterator;
 
   /**
    * @brief Returns a reverse iterator to the beginning (end of array).
    */
   auto rbegin() noexcept -> reverse_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator to the beginning (end of array).
+   */
   auto rbegin() const noexcept -> const_reverse_iterator;
 
   /**
    * @brief Returns a reverse iterator to the end (beginning of array).
    */
   auto rend() noexcept -> reverse_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator to the end (beginning of array).
+   */
   auto rend() const noexcept -> const_reverse_iterator;
 
   /**
    * @brief Returns a const reverse iterator to the beginning/end of the array.
    */
   auto crbegin() const noexcept -> const_reverse_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator to the end/beginning of the array.
+   */
   auto crend() const noexcept -> const_reverse_iterator;
 
   //===-------------------------- COMPARISON OPERATORS -------------------------===//
