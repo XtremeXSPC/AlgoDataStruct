@@ -184,6 +184,7 @@ target_sources(ads_lib
             # Array implementations.
             include/ads/arrays/Array_Exception.hpp
             include/ads/arrays/Dynamic_Array.hpp
+            include/ads/arrays/Static_Array.hpp
 
             # List interface.
             include/ads/lists/List.hpp
@@ -237,6 +238,7 @@ target_sources(ads_lib
     # appear in IDEs and are tracked for changes.
     INTERFACE
         src/ads/arrays/Dynamic_Array.tpp
+        src/ads/arrays/Static_Array.tpp
         src/ads/lists/Doubly_Linked_List.tpp
         src/ads/lists/Singly_Linked_List.tpp
         src/ads/stacks/Array_Stack.tpp
@@ -352,6 +354,11 @@ endif()
 # Dynamic Array test.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dynamic_Array.cc")
     ads_add_executable(test_Dynamic_Array src/main_Dynamic_Array.cc)
+endif()
+
+# Static Array test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Static_Array.cc")
+    ads_add_executable(test_Static_Array src/main_Static_Array.cc)
 endif()
 
 # Deque test.
@@ -510,6 +517,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Tree_Map.cpp")
         list(APPEND TEST_SOURCES tests/Test_Tree_Map.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Static_Array.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Static_Array.cpp)
     endif()
 
     # Create test executable if we have test files.
