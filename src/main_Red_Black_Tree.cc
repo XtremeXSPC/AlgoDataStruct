@@ -50,7 +50,7 @@ void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Demo: Basic operations.
+// Demonstrates basic insertion and extraction.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -84,7 +84,7 @@ void demo_basic_operations() {
 
 //===----------------------- SEQUENTIAL INSERTIONS DEMO ------------------------===//
 
-// Demo: Sequential insertions.
+// Demonstrates sequential insertions.
 void demo_sequential_insertions() {
   ads::demo::print_section("Demo: Sequential Insertions");
 
@@ -110,7 +110,7 @@ void demo_sequential_insertions() {
 
 //===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
 
-// Demo: Search operations.
+// Demonstrates search operations.
 void demo_search_operations() {
   ads::demo::print_section("Demo: Search Operations");
 
@@ -134,7 +134,7 @@ void demo_search_operations() {
 
 //===------------------------ PROPERTY VALIDATION DEMO -------------------------===//
 
-// Demo: RB-Tree properties validation.
+// Demonstrates validation of Red-Black Tree properties.
 void demo_property_validation() {
   ads::demo::print_section("Demo: RB-Tree Properties Validation");
 
@@ -159,7 +159,7 @@ void demo_property_validation() {
 
 //===------------------------- RANDOM INSERTIONS DEMO --------------------------===//
 
-// Demo: Random insertions.
+// Demonstrates random insertions.
 void demo_random_insertions() {
   ads::demo::print_section("Demo: Random Insertions");
 
@@ -173,7 +173,7 @@ void demo_random_insertions() {
 
   std::random_device rd;
   std::mt19937       g(rd());
-  std::shuffle(values.begin(), values.end(), g);
+  std::ranges::shuffle(values, g);
 
   cout << "Inserting 100 values in random order...\n";
   for (int val : values) {
@@ -197,7 +197,7 @@ void demo_random_insertions() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Demo: Move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -233,7 +233,7 @@ void demo_move_semantics() {
 
 //===---------------------------- PERFORMANCE DEMO -----------------------------===//
 
-// Demo: Performance.
+// Demonstrates performance of insertions and searches.
 void demo_performance() {
   ads::demo::print_section("Demo: Performance");
 
@@ -269,7 +269,7 @@ void demo_performance() {
 
 //===-------------------------- CLEAR AND REUSE DEMO ---------------------------===//
 
-// Demo: Clear and reuse.
+// Demonstrates clear and reuse.
 void demo_clear_reuse() {
   ads::demo::print_section("Demo: Clear and Reuse");
 
@@ -295,7 +295,7 @@ void demo_clear_reuse() {
 
 //===----------------------------- EDGE CASES DEMO -----------------------------===//
 
-// Demo: Edge cases.
+// Demonstrates edge cases.
 void demo_edge_cases() {
   ads::demo::print_section("Demo: Edge Cases");
 

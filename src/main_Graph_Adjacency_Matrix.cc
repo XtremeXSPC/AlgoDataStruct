@@ -34,12 +34,9 @@ using std::vector;
 
 using namespace ads::graphs;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
-
-
 //===------------------------------ MATRIX DEMOS -------------------------------===//
 
-// Test construction and basic properties.
+// Demonstrates graph construction and basic properties.
 void demo_matrix_construction() {
   ads::demo::print_section("Matrix - Construction and Properties");
 
@@ -51,7 +48,7 @@ void demo_matrix_construction() {
   cout << "Edges: " << graph.num_edges() << '\n';
 }
 
-// Test vertex and edge operations.
+// Demonstrates adding vertices and edges.
 void demo_matrix_operations() {
   ads::demo::print_section("Matrix - Basic Operations");
 
@@ -91,7 +88,7 @@ void demo_matrix_operations() {
 
 //===---------------------------- MATRIX TRAVERSAL -----------------------------===//
 
-// Test traversal algorithms.
+// Demonstrates BFS and DFS traversals.
 void demo_matrix_traversal() {
   ads::demo::print_section("Matrix - Graph Traversal");
 

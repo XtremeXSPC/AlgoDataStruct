@@ -49,7 +49,7 @@ void print_stats(const HashTableChaining<Key, Value>& table, const string& name)
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test basic insertion and access.
+// Demonstrates basic insertion and access.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
@@ -78,7 +78,7 @@ void demo_basic_operations() {
 
 //===------------------------------ UPDATES DEMO -------------------------------===//
 
-// Test update existing keys.
+// Demonstrates updating existing keys.
 void demo_updates() {
   ads::demo::print_section("Demo: Updates");
 
@@ -106,7 +106,7 @@ void demo_updates() {
 
 //===----------------------------- OPERATOR[] DEMO -----------------------------===//
 
-// Test operator[].
+// Demonstrates operator[].
 void demo_bracket_operator() {
   ads::demo::print_section("Demo: Operator[]");
 
@@ -130,7 +130,7 @@ void demo_bracket_operator() {
 
 //===-------------------------------- FIND DEMO --------------------------------===//
 
-// Test find().
+// Demonstrates find method.
 void demo_find() {
   ads::demo::print_section("Demo: Find");
 
@@ -158,7 +158,7 @@ void demo_find() {
 
 //===------------------------------- ERASE DEMO --------------------------------===//
 
-// Test erase.
+// Demonstrates erase method.
 void demo_erase() {
   ads::demo::print_section("Demo: Erase");
 
@@ -189,7 +189,7 @@ void demo_erase() {
 
 //===----------------------------- REHASHING DEMO ------------------------------===//
 
-// Test rehashing.
+// Demonstrates rehashing.
 void demo_rehashing() {
   ads::demo::print_section("Demo: Rehashing");
 
@@ -225,7 +225,7 @@ void demo_rehashing() {
 
 //===------------------------------ RESERVE DEMO -------------------------------===//
 
-// Test reserve.
+// Demonstrates reserve method.
 void demo_reserve() {
   ads::demo::print_section("Demo: Reserve");
 
@@ -260,7 +260,7 @@ struct Person {
 
 //===---------------------------- CUSTOM TYPES DEMO ----------------------------===//
 
-// Test with custom types.
+// Demonstrates usage with custom types.
 void demo_custom_types() {
   ads::demo::print_section("Demo: Custom Types");
 
@@ -280,7 +280,7 @@ void demo_custom_types() {
 
 //===------------------------- COLLISION HANDLING DEMO -------------------------===//
 
-// Test collisions (intentional).
+// Demonstrates collision handling.
 void demo_collisions() {
   ads::demo::print_section("Demo: Collision Handling");
 
@@ -305,7 +305,7 @@ void demo_collisions() {
 
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
-// Test exception handling.
+// Demonstrates exception handling.
 void demo_exceptions() {
   ads::demo::print_section("Demo: Exception Handling");
 
@@ -334,7 +334,7 @@ void demo_exceptions() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Test move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -362,7 +362,7 @@ void demo_move_semantics() {
 
 //===------------------------------- CLEAR DEMO --------------------------------===//
 
-// Test clear().
+// Demonstrates clear method.
 void demo_clear() {
   ads::demo::print_section("Demo: Clear");
 

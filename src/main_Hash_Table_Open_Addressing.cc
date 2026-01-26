@@ -62,7 +62,7 @@ void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string&
 
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
-// Test basic operations with linear probing.
+// Demonstrates basic insertion and access.
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations (Linear Probing)");
 
@@ -91,7 +91,7 @@ void demo_basic_operations() {
 
 //===-------------------- DIFFERENT PROBING STRATEGIES DEMO --------------------===//
 
-// Test all three probing strategies.
+// Demonstrates different probing strategies.
 void demo_probing_strategies() {
   ads::demo::print_section("Demo: Different Probing Strategies");
 
@@ -126,7 +126,7 @@ void demo_probing_strategies() {
 
 //===------------------------- TOMBSTONE HANDLING DEMO -------------------------===//
 
-// Test tombstone handling (deleted slots).
+// Demonstrates tombstone handling.
 void demo_tombstones() {
   ads::demo::print_section("Demo: Tombstone Handling");
 
@@ -162,7 +162,7 @@ void demo_tombstones() {
 
 //===------------------------- UPDATE OPERATIONS DEMO --------------------------===//
 
-// Test updates.
+// Demonstrates updating existing keys.
 void demo_updates() {
   ads::demo::print_section("Demo: Updates");
 
@@ -190,7 +190,7 @@ void demo_updates() {
 
 //===----------------------------- REHASHING DEMO ------------------------------===//
 
-// Test rehashing.
+// Demonstrates rehashing.
 void demo_rehashing() {
   ads::demo::print_section("Demo: Rehashing");
 
@@ -225,7 +225,7 @@ void demo_rehashing() {
 
 //===-------------------------- HIGH COLLISIONS DEMO ---------------------------===//
 
-// Test with high collision rate.
+// Demonstrates handling of high collision rates.
 void demo_high_collisions() {
   ads::demo::print_section("Demo: High Collision Rate");
 
@@ -248,7 +248,7 @@ void demo_high_collisions() {
 
 //===------------------------------ RESERVE DEMO -------------------------------===//
 
-// Test reserve.
+// Demonstrates reserve method.
 void demo_reserve() {
   ads::demo::print_section("Demo: Reserve");
 
@@ -271,7 +271,7 @@ void demo_reserve() {
 
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
-// Test exception handling.
+// Demonstrates exception handling.
 void demo_exceptions() {
   ads::demo::print_section("Demo: Exception Handling");
 
@@ -307,7 +307,7 @@ void demo_exceptions() {
 
 //===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
 
-// Test move semantics.
+// Demonstrates move semantics.
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
@@ -335,7 +335,7 @@ void demo_move_semantics() {
 
 //===------------------------------- CLEAR DEMO --------------------------------===//
 
-// Test clear.
+// Demonstrates clear method.
 void demo_clear() {
   ads::demo::print_section("Demo: Clear");
 

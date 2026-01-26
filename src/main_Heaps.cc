@@ -32,9 +32,6 @@ using std::vector;
 
 using namespace ads::heaps;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
-
-
 //===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
 
 // Min Heap basic operations.
