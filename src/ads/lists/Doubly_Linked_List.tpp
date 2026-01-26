@@ -44,7 +44,7 @@ auto DoublyLinkedList<T>::iterator::operator++(int) -> typename DoublyLinkedList
 template <typename T>
 auto DoublyLinkedList<T>::iterator::operator--() -> typename DoublyLinkedList<T>::iterator& {
   if (node_ptr_ == nullptr) { // -- from end()
-    // Decrementing end() requires a valid list pointer
+    // Decrementing end() requires a valid list pointer.
     if (list_ptr_ != nullptr) {
       node_ptr_ = list_ptr_->tail_;
     }
@@ -89,7 +89,7 @@ auto DoublyLinkedList<T>::const_iterator::operator++(int) -> typename DoublyLink
 template <typename T>
 auto DoublyLinkedList<T>::const_iterator::operator--() -> typename DoublyLinkedList<T>::const_iterator& {
   if (node_ptr_ == nullptr) { // -- from cend()
-    // Decrementing cend() requires a valid list pointer
+    // Decrementing cend() requires a valid list pointer.
     if (list_ptr_ != nullptr) {
       node_ptr_ = list_ptr_->tail_;
     }
@@ -146,7 +146,7 @@ auto DoublyLinkedList<T>::emplace_front(Args&&... args) {
   if (head_) {
     head_->prev   = newNode.get();
     newNode->next = std::move(head_);
-  } else { // List was empty
+  } else { // List was empty.
     tail_ = newNode.get();
   }
   head_ = std::move(newNode);
@@ -167,7 +167,7 @@ void DoublyLinkedList<T>::push_front(T&& value) {
 template <typename T>
 template <typename... Args>
 auto DoublyLinkedList<T>::emplace_back(Args&&... args) {
-  if (!tail_) { // Empty list
+  if (!tail_) { // Empty list.
     head_ = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
     tail_ = head_.get();
   } else {
@@ -198,7 +198,7 @@ void DoublyLinkedList<T>::pop_front() {
   head_ = std::move(head_->next);
   if (head_) {
     head_->prev = nullptr;
-  } else { // The list became empty
+  } else { // The list became empty.
     tail_ = nullptr;
   }
   size_--;
@@ -213,7 +213,7 @@ void DoublyLinkedList<T>::pop_back() {
     pop_front();
   } else {
     tail_ = tail_->prev;
-    tail_->next.reset(); // Deallocates the old tail node
+    tail_->next.reset(); // Deallocates the old tail node.
     size_--;
   }
 }
@@ -275,19 +275,19 @@ void DoublyLinkedList<T>::clear() noexcept {
 
 template <typename T>
 auto DoublyLinkedList<T>::insert(iterator pos, const T& value) {
-  return insert(pos, T(value)); // Calls the T&& version
+  return insert(pos, T(value)); // Calls the T&& version.
 }
 
 template <typename T>
 auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
-  // Edge cases: insertion at head or tail
+  // Edge cases: insertion at head or tail.
   if (pos == begin()) {
     push_front(std::move(value));
     return begin();
   }
   if (pos == end()) {
     push_back(std::move(value));
-    // After push_back, `tail_` points to the new node
+    // After push_back, `tail_` points to the new node.
     return iterator(tail_, this);
   }
 
@@ -295,15 +295,15 @@ auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
   Node* pos_node  = pos.node_ptr_;
   Node* prev_node = pos_node->prev;
 
-  // 1. Create the new node, which points to the previous node
+  // 1. Create the new node, which points to the previous node.
   auto     new_node = std::make_unique<Node>(prev_node, std::move(value));
   iterator new_it(new_node.get(), this);
 
-  // 2. The new node takes ownership of the pointer to the next node
+  // 2. The new node takes ownership of the pointer to the next node.
   new_node->next = std::move(prev_node->next);
-  // 3. The `pos` node (next) now must point back to the new node
+  // 3. The `pos` node (next) now must point back to the new node.
   pos_node->prev = new_node.get();
-  // 4. The previous node now points to the new node, transferring ownership
+  // 4. The previous node now points to the new node, transferring ownership.
   prev_node->next = std::move(new_node);
 
   size_++;
@@ -356,17 +356,17 @@ void DoublyLinkedList<T>::reverse() noexcept {
   // and insert them one by one at the head of a new list (reusing head_).
   // `current_list` holds the nodes not yet processed.
   std::unique_ptr<Node> current_list = std::move(head_);
-  tail_                              = current_list.get(); // The old head becomes the new tail
+  tail_                              = current_list.get(); // The old head becomes the new tail.
 
   while (current_list) {
-    // 1. Detach the node at the head of `current_list`
+    // 1. Detach the node at the head of `current_list`.
     auto detached_node = std::move(current_list);
-    // 2. Advance `current_list` to the next node
+    // 2. Advance `current_list` to the next node.
     current_list = std::move(detached_node->next);
 
-    // 3. Insert `detached_node` at the head of the resulting list (managed by `head_`)
+    // 3. Insert `detached_node` at the head of the resulting list (managed by `head_`).
     detached_node->next = std::move(head_);
-    if (detached_node->next) { // If the list was not empty
+    if (detached_node->next) { // If the list was not empty.
       detached_node->next->prev = detached_node.get();
     }
     head_       = std::move(detached_node);

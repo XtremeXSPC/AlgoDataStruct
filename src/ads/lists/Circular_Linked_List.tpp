@@ -17,6 +17,90 @@
 
 namespace ads::lists {
 
+//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+
+template <typename T>
+auto CircularLinkedList<T>::iterator::operator*() const -> reference {
+  return node_->data;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::iterator::operator->() const -> pointer {
+  return &node_->data;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::iterator::operator++() -> iterator& {
+  if (remaining_ > 0) {
+    --remaining_;
+    if (remaining_ == 0) {
+      node_ = nullptr;
+    } else {
+      node_ = node_->next;
+    }
+  }
+  return *this;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::iterator::operator++(int) -> iterator {
+  iterator tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::iterator::operator==(const iterator& other) const -> bool {
+  return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
+}
+
+template <typename T>
+auto CircularLinkedList<T>::iterator::operator!=(const iterator& other) const -> bool {
+  return !(*this == other);
+}
+
+//===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
+
+template <typename T>
+auto CircularLinkedList<T>::const_iterator::operator*() const -> reference {
+  return node_->data;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::const_iterator::operator->() const -> pointer {
+  return &node_->data;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::const_iterator::operator++() -> const_iterator& {
+  if (remaining_ > 0) {
+    --remaining_;
+    if (remaining_ == 0) {
+      node_ = nullptr;
+    } else {
+      node_ = node_->next;
+    }
+  }
+  return *this;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
+  const_iterator tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+template <typename T>
+auto CircularLinkedList<T>::const_iterator::operator==(const const_iterator& other) const -> bool {
+  return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
+}
+
+template <typename T>
+auto CircularLinkedList<T>::const_iterator::operator!=(const const_iterator& other) const -> bool {
+  return !(*this == other);
+}
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
@@ -279,90 +363,6 @@ auto CircularLinkedList<T>::cbegin() const -> const_iterator {
 template <typename T>
 auto CircularLinkedList<T>::cend() const -> const_iterator {
   return end();
-}
-
-//===---------------------------- ITERATOR METHODS -----------------------------===//
-
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator*() const -> reference {
-  return node_->data;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator->() const -> pointer {
-  return &node_->data;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator++() -> iterator& {
-  if (remaining_ > 0) {
-    --remaining_;
-    if (remaining_ == 0) {
-      node_ = nullptr;
-    } else {
-      node_ = node_->next;
-    }
-  }
-  return *this;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator++(int) -> iterator {
-  iterator tmp = *this;
-  ++(*this);
-  return tmp;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator==(const iterator& other) const -> bool {
-  return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
-}
-
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator!=(const iterator& other) const -> bool {
-  return !(*this == other);
-}
-
-//===------------------------- CONST_ITERATOR METHODS --------------------------===//
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator*() const -> reference {
-  return node_->data;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator->() const -> pointer {
-  return &node_->data;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator++() -> const_iterator& {
-  if (remaining_ > 0) {
-    --remaining_;
-    if (remaining_ == 0) {
-      node_ = nullptr;
-    } else {
-      node_ = node_->next;
-    }
-  }
-  return *this;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
-  const_iterator tmp = *this;
-  ++(*this);
-  return tmp;
-}
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator==(const const_iterator& other) const -> bool {
-  return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
-}
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator!=(const const_iterator& other) const -> bool {
-  return !(*this == other);
 }
 
 } // namespace ads::lists

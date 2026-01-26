@@ -58,6 +58,11 @@ public:
   DisjointSetUnion(DisjointSetUnion&& other) noexcept;
 
   /**
+   * @brief Destructor.
+   */
+  ~DisjointSetUnion() = default;
+
+  /**
    * @brief Move assignment operator.
    * @param other The structure to move from.
    * @return Reference to this instance.
@@ -65,16 +70,11 @@ public:
    */
   auto operator=(DisjointSetUnion&& other) noexcept -> DisjointSetUnion&;
 
-  /**
-   * @brief Destructor.
-   */
-  ~DisjointSetUnion() = default;
-
   // Copy constructor and assignment are disabled (move-only type).
   DisjointSetUnion(const DisjointSetUnion&)                    = delete;
   auto operator=(const DisjointSetUnion&) -> DisjointSetUnion& = delete;
 
-  //===-------------------------- INITIALIZATION -------------------------------===//
+  //===---------------------------- INITIALIZATION -----------------------------===//
 
   /**
    * @brief Resets the structure with a new number of elements.
@@ -90,7 +90,7 @@ public:
    */
   [[nodiscard]] auto add_element() -> size_t;
 
-  //===-------------------------- FIND OPERATIONS ------------------------------===//
+  //===---------------------------- FIND OPERATIONS ----------------------------===//
 
   /**
    * @brief Finds the representative of the set containing element (with compression).

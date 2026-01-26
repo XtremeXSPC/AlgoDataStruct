@@ -17,6 +17,146 @@
 
 namespace ads::arrays {
 
+//===---------------------------- ITERATOR METHODS -----------------------------===//
+
+template <typename T>
+auto CircularArray<T>::iterator::operator*() const -> reference {
+  return (*array_)[logical_index_];
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator->() const -> pointer {
+  return &(*array_)[logical_index_];
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator[](difference_type n) const -> reference {
+  return (*array_)[logical_index_ + n];
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator++() -> iterator& {
+  ++logical_index_;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator++(int) -> iterator {
+  iterator tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator--() -> iterator& {
+  --logical_index_;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator--(int) -> iterator {
+  iterator tmp = *this;
+  --(*this);
+  return tmp;
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator+=(difference_type n) -> iterator& {
+  logical_index_ += n;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator-=(difference_type n) -> iterator& {
+  logical_index_ -= n;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator+(difference_type n) const -> iterator {
+  return iterator(logical_index_ + n, array_);
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator-(difference_type n) const -> iterator {
+  return iterator(logical_index_ - n, array_);
+}
+
+template <typename T>
+auto CircularArray<T>::iterator::operator-(const iterator& other) const -> difference_type {
+  return static_cast<difference_type>(logical_index_) - static_cast<difference_type>(other.logical_index_);
+}
+
+//===------------------------- CONST_ITERATOR METHODS --------------------------===//
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator*() const -> reference {
+  return (*array_)[logical_index_];
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator->() const -> pointer {
+  return &(*array_)[logical_index_];
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator[](difference_type n) const -> reference {
+  return (*array_)[logical_index_ + n];
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator++() -> const_iterator& {
+  ++logical_index_;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator++(int) -> const_iterator {
+  const_iterator tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator--() -> const_iterator& {
+  --logical_index_;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator--(int) -> const_iterator {
+  const_iterator tmp = *this;
+  --(*this);
+  return tmp;
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator+=(difference_type n) -> const_iterator& {
+  logical_index_ += n;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_iterator& {
+  logical_index_ -= n;
+  return *this;
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator+(difference_type n) const -> const_iterator {
+  return const_iterator(logical_index_ + n, array_);
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator-(difference_type n) const -> const_iterator {
+  return const_iterator(logical_index_ - n, array_);
+}
+
+template <typename T>
+auto CircularArray<T>::const_iterator::operator-(const const_iterator& other) const -> difference_type {
+  return static_cast<difference_type>(logical_index_) - static_cast<difference_type>(other.logical_index_);
+}
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
@@ -382,147 +522,6 @@ auto CircularArray<T>::reallocate(size_t new_capacity) -> void {
   data_     = std::move(new_data);
   head_     = 0;
   capacity_ = new_capacity;
-}
-
-//===---------------------------- ITERATOR METHODS -----------------------------===//
-
-// iterator methods
-template <typename T>
-auto CircularArray<T>::iterator::operator*() const -> reference {
-  return (*array_)[logical_index_];
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator->() const -> pointer {
-  return &(*array_)[logical_index_];
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator[](difference_type n) const -> reference {
-  return (*array_)[logical_index_ + n];
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator++() -> iterator& {
-  ++logical_index_;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator++(int) -> iterator {
-  iterator tmp = *this;
-  ++(*this);
-  return tmp;
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator--() -> iterator& {
-  --logical_index_;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator--(int) -> iterator {
-  iterator tmp = *this;
-  --(*this);
-  return tmp;
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator+=(difference_type n) -> iterator& {
-  logical_index_ += n;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator-=(difference_type n) -> iterator& {
-  logical_index_ -= n;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator+(difference_type n) const -> iterator {
-  return iterator(logical_index_ + n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator-(difference_type n) const -> iterator {
-  return iterator(logical_index_ - n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator-(const iterator& other) const -> difference_type {
-  return static_cast<difference_type>(logical_index_) - static_cast<difference_type>(other.logical_index_);
-}
-
-//===------------------------- CONST_ITERATOR METHODS --------------------------===//
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator*() const -> reference {
-  return (*array_)[logical_index_];
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator->() const -> pointer {
-  return &(*array_)[logical_index_];
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator[](difference_type n) const -> reference {
-  return (*array_)[logical_index_ + n];
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator++() -> const_iterator& {
-  ++logical_index_;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator++(int) -> const_iterator {
-  const_iterator tmp = *this;
-  ++(*this);
-  return tmp;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator--() -> const_iterator& {
-  --logical_index_;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator--(int) -> const_iterator {
-  const_iterator tmp = *this;
-  --(*this);
-  return tmp;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator+=(difference_type n) -> const_iterator& {
-  logical_index_ += n;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_iterator& {
-  logical_index_ -= n;
-  return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator+(difference_type n) const -> const_iterator {
-  return const_iterator(logical_index_ + n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator-(difference_type n) const -> const_iterator {
-  return const_iterator(logical_index_ - n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator-(const const_iterator& other) const -> difference_type {
-  return static_cast<difference_type>(logical_index_) - static_cast<difference_type>(other.logical_index_);
 }
 
 } // namespace ads::arrays

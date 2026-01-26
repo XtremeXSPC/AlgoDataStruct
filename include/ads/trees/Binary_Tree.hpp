@@ -41,7 +41,7 @@ public:
   // A virtual destructor is mandatory for polymorphic base classes.
   virtual ~BinaryTree() = default;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
    * @brief Inserts a value into the tree (copy).
@@ -56,6 +56,8 @@ public:
    * @return true if the value was inserted, false if it already exists.
    */
   virtual auto insert(T&& value) -> bool = 0;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
   /**
    * @brief Removes a value from the tree.

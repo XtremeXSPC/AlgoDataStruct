@@ -56,15 +56,15 @@ public:
   TreeSet(std::initializer_list<T> values);
 
   /**
-   * @brief Destructor.
-   */
-  ~TreeSet() = default;
-
-  /**
    * @brief Move constructor.
    * @complexity Time O(1), Space O(1)
    */
   TreeSet(TreeSet&& other) noexcept = default;
+
+  /**
+   * @brief Destructor.
+   */
+  ~TreeSet() = default;
 
   /**
    * @brief Move assignment operator.
@@ -76,7 +76,7 @@ public:
   TreeSet(const TreeSet&)                    = delete;
   auto operator=(const TreeSet&) -> TreeSet& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
    * @brief Inserts an element into the set.
@@ -85,6 +85,13 @@ public:
    * @complexity Time O(log n), Space O(1)
    */
   auto insert(const T& value) -> bool;
+
+  /**
+   * @brief Inserts an element into the set (move).
+   * @param value The r-value to move.
+   * @return true if inserted, false if already exists.
+   * @complexity Time O(log n), Space O(1)
+   */
   auto insert(T&& value) -> bool;
 
   /**
@@ -96,6 +103,8 @@ public:
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> bool;
+
+  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
   /**
    * @brief Removes an element from the set.
