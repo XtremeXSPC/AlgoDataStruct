@@ -260,11 +260,6 @@ auto HashSet<T, Hash>::iterator::operator==(const iterator& other) const -> bool
 }
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::iterator::operator!=(const iterator& other) const -> bool {
-  return !(*this == other);
-}
-
-template <typename T, typename Hash>
 auto HashSet<T, Hash>::iterator::advance_to_next_bucket() -> void {
   ++bucket_idx_;
   while (bucket_idx_ < set_->buckets_.size() && set_->buckets_[bucket_idx_].empty()) {

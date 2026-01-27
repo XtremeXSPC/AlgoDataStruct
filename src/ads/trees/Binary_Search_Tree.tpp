@@ -75,11 +75,6 @@ auto BinarySearchTree<T>::iterator::operator==(const iterator& other) const -> b
   return current_ == other.current_;
 }
 
-template <typename T>
-auto BinarySearchTree<T>::iterator::operator!=(const iterator& other) const -> bool {
-  return current_ != other.current_;
-}
-
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
