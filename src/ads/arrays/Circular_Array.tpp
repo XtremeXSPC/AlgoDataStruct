@@ -72,21 +72,6 @@ auto CircularArray<T>::iterator::operator-=(difference_type n) -> iterator& {
   return *this;
 }
 
-template <typename T>
-auto CircularArray<T>::iterator::operator+(difference_type n) const -> iterator {
-  return iterator(logical_index_ + n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator-(difference_type n) const -> iterator {
-  return iterator(logical_index_ - n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::iterator::operator-(const iterator& other) const -> difference_type {
-  return static_cast<difference_type>(logical_index_) - static_cast<difference_type>(other.logical_index_);
-}
-
 //===------------------------- CONST_ITERATOR METHODS --------------------------===//
 
 template <typename T>
@@ -140,21 +125,6 @@ template <typename T>
 auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_iterator& {
   logical_index_ -= n;
   return *this;
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator+(difference_type n) const -> const_iterator {
-  return const_iterator(logical_index_ + n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator-(difference_type n) const -> const_iterator {
-  return const_iterator(logical_index_ - n, array_);
-}
-
-template <typename T>
-auto CircularArray<T>::const_iterator::operator-(const const_iterator& other) const -> difference_type {
-  return static_cast<difference_type>(logical_index_) - static_cast<difference_type>(other.logical_index_);
 }
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
