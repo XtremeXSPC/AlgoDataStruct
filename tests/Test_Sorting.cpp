@@ -18,8 +18,10 @@
 #include "../include/ads/algorithms/Sorting.hpp"
 #include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/arrays/Static_Array.hpp"
+#include "../include/ads/lists/Singly_Linked_List.hpp"
 
 using namespace ads::algorithms;
+using namespace ads::lists;
 
 namespace {
 
@@ -96,6 +98,19 @@ TEST(SortingAlgorithmsTest, MergeSortIsStable) {
   EXPECT_EQ(ids_for_twos, expected_ids_twos);
 }
 
+TEST(SortingAlgorithmsTest, MergeSortForwardIterator) {
+  SinglyLinkedList<int> list;
+  list.push_back(4);
+  list.push_back(1);
+  list.push_back(3);
+  list.push_back(2);
+
+  merge_sort(list.begin(), list.end());
+
+  std::vector<int> expected = {1, 2, 3, 4};
+  EXPECT_EQ(to_vector(list.begin(), list.end()), expected);
+}
+
 TEST(SortingAlgorithmsTest, QuickSortWithDuplicates) {
   std::vector<int> data = {4, 1, 3, 4, 2, 1, 5};
   quick_sort(data.begin(), data.end());
@@ -109,6 +124,58 @@ TEST(SortingAlgorithmsTest, HeapSortWithCustomComparator) {
   heap_sort(data.begin(), data.end(), std::greater<>{});
 
   std::vector<int> expected = {8, 5, 4, 2, 1};
+  EXPECT_EQ(data, expected);
+}
+
+TEST(SortingAlgorithmsTest, TimSortIsStable) {
+  std::vector<StableItem> items = {{.key = 3, .id = 0}, {.key = 2, .id = 0}, {.key = 3, .id = 1}, {.key = 1, .id = 0}, {.key = 2, .id = 1}};
+
+  tim_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
+
+  std::vector<int> keys;
+  std::vector<int> ids_for_threes;
+  for (const auto& item : items) {
+    keys.push_back(item.key);
+    if (item.key == 3) {
+      ids_for_threes.push_back(item.id);
+    }
+  }
+
+  std::vector<int> expected_keys       = {1, 2, 2, 3, 3};
+  std::vector<int> expected_ids_threes = {0, 1};
+  EXPECT_EQ(keys, expected_keys);
+  EXPECT_EQ(ids_for_threes, expected_ids_threes);
+}
+
+TEST(SortingAlgorithmsTest, CountingSortHandlesNegatives) {
+  std::vector<int> data = {4, -1, 3, -2, 0, -1};
+  counting_sort(data.begin(), data.end());
+
+  std::vector<int> expected = {-2, -1, -1, 0, 3, 4};
+  EXPECT_EQ(data, expected);
+}
+
+TEST(SortingAlgorithmsTest, CountingSortWithExplicitRange) {
+  std::vector<int> data = {5, 2, 7, 2, 3, 6};
+  counting_sort(data.begin(), data.end(), 2, 7);
+
+  std::vector<int> expected = {2, 2, 3, 5, 6, 7};
+  EXPECT_EQ(data, expected);
+}
+
+TEST(SortingAlgorithmsTest, RadixSortSignedIntegers) {
+  std::vector<int> data = {170, 45, -75, 90, -802, 24, 2, 66};
+  radix_sort(data.begin(), data.end());
+
+  std::vector<int> expected = {-802, -75, 2, 24, 45, 66, 90, 170};
+  EXPECT_EQ(data, expected);
+}
+
+TEST(SortingAlgorithmsTest, BucketSortFloatingPoints) {
+  std::vector<double> data = {0.78, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.12, 0.23, 0.68};
+  bucket_sort(data.begin(), data.end());
+
+  std::vector<double> expected = {0.12, 0.17, 0.21, 0.23, 0.26, 0.39, 0.68, 0.72, 0.78, 0.94};
   EXPECT_EQ(data, expected);
 }
 
