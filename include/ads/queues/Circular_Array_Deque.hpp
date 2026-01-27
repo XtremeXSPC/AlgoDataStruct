@@ -59,7 +59,6 @@ public:
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
     auto operator==(const iterator& other) const -> bool { return index_ == other.index_ && deque_ == other.deque_; }
-    auto operator!=(const iterator& other) const -> bool { return !(*this == other); }
 
   private:
     size_t                 index_;
@@ -87,7 +86,6 @@ public:
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
     auto operator==(const const_iterator& other) const -> bool { return index_ == other.index_ && deque_ == other.deque_; }
-    auto operator!=(const const_iterator& other) const -> bool { return !(*this == other); }
 
   private:
     size_t                       index_;

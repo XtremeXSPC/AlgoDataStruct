@@ -65,11 +65,6 @@ auto HashMap<Key, Value, Hash>::iterator::operator==(const iterator& other) cons
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::iterator::operator!=(const iterator& other) const -> bool {
-  return !(*this == other);
-}
-
-template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::iterator::advance_to_next_bucket() -> void {
   if (!map_)
     return;
@@ -136,11 +131,6 @@ auto HashMap<Key, Value, Hash>::const_iterator::operator==(const const_iterator&
     return true;
   // Otherwise, compare list iterators too.
   return list_it_ == other.list_it_;
-}
-
-template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::const_iterator::operator!=(const const_iterator& other) const -> bool {
-  return !(*this == other);
 }
 
 template <typename Key, typename Value, typename Hash>

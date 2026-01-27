@@ -54,11 +54,6 @@ auto CircularLinkedList<T>::iterator::operator==(const iterator& other) const ->
   return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
 }
 
-template <typename T>
-auto CircularLinkedList<T>::iterator::operator!=(const iterator& other) const -> bool {
-  return !(*this == other);
-}
-
 //===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
 
 template <typename T>
@@ -94,11 +89,6 @@ auto CircularLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
 template <typename T>
 auto CircularLinkedList<T>::const_iterator::operator==(const const_iterator& other) const -> bool {
   return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
-}
-
-template <typename T>
-auto CircularLinkedList<T>::const_iterator::operator!=(const const_iterator& other) const -> bool {
-  return !(*this == other);
 }
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//

@@ -43,19 +43,18 @@ class TreeMap : public Dictionary<Key, Value> {
 private:
   struct Entry {
     Key                  key;
-    std::optional<Value> value;
+    std::optional<Value> value = std::nullopt;
 
     Entry(const Key& k, const Value& v) : key(k), value(v) {}
     Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
-    explicit Entry(const Key& k) : key(k), value(std::nullopt) {}
-    explicit Entry(Key&& k) : key(std::move(k)), value(std::nullopt) {}
+    explicit Entry(const Key& k) : key(k) {}
+    explicit Entry(Key&& k) : key(std::move(k)) {}
 
     template <typename... Args>
     Entry(std::piecewise_construct_t, Key&& k, Args&&... args) : key(std::move(k)), value(std::in_place, std::forward<Args>(args)...) {}
 
-    auto operator<(const Entry& other) const -> bool { return key < other.key; }
-    auto operator>(const Entry& other) const -> bool { return other.key < key; }
-    auto operator==(const Entry& other) const -> bool { return !(key < other.key) && !(other.key < key); }
+    auto operator<=>(const Entry& other) const { return key <=> other.key; }
+    auto operator==(const Entry& other) const -> bool { return key == other.key; }
   };
 
   using TreeType = ads::trees::AVLTree<Entry>;
@@ -260,7 +259,20 @@ public:
   [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>;
 
 private:
+  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+
+  /**
+   * @brief Finds the Entry pointer for a given key.
+   * @param key The key to search for.
+   * @return Pointer to Entry or nullptr if not found.
+   */
   auto find_entry(const Key& key) -> Entry*;
+
+  /**
+   * @brief Finds the Entry pointer for a given key (const).
+   * @param key The key to search for.
+   * @return Pointer to Entry or nullptr if not found.
+   */
   auto find_entry(const Key& key) const -> const Entry*;
 
   TreeType tree_;
