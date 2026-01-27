@@ -75,21 +75,15 @@ public:
     auto operator-=(difference_type n) -> iterator&;
 
     // Hidden friend operators for arithmetic.
-    friend auto operator+(const iterator& it, difference_type n) -> iterator {
-      return iterator(it.logical_index_ + n, it.array_);
-    }
-    friend auto operator+(difference_type n, const iterator& it) -> iterator {
-      return it + n;
-    }
-    friend auto operator-(const iterator& it, difference_type n) -> iterator {
-      return iterator(it.logical_index_ - n, it.array_);
-    }
+    friend auto operator+(const iterator& it, difference_type n) -> iterator { return iterator(it.logical_index_ + n, it.array_); }
+    friend auto operator+(difference_type n, const iterator& it) -> iterator { return it + n; }
+    friend auto operator-(const iterator& it, difference_type n) -> iterator { return iterator(it.logical_index_ - n, it.array_); }
     friend auto operator-(const iterator& lhs, const iterator& rhs) -> difference_type {
       return static_cast<difference_type>(lhs.logical_index_) - static_cast<difference_type>(rhs.logical_index_);
     }
 
     // Comparison operators.
-    auto operator<=>(const iterator& other) const noexcept = default;
+    auto operator<=>(const iterator& other) const noexcept        = default;
     auto operator==(const iterator& other) const noexcept -> bool = default;
 
   private:
@@ -134,9 +128,7 @@ public:
     friend auto operator+(const const_iterator& it, difference_type n) -> const_iterator {
       return const_iterator(it.logical_index_ + n, it.array_);
     }
-    friend auto operator+(difference_type n, const const_iterator& it) -> const_iterator {
-      return it + n;
-    }
+    friend auto operator+(difference_type n, const const_iterator& it) -> const_iterator { return it + n; }
     friend auto operator-(const const_iterator& it, difference_type n) -> const_iterator {
       return const_iterator(it.logical_index_ - n, it.array_);
     }
@@ -145,7 +137,7 @@ public:
     }
 
     // Comparison operators.
-    auto operator<=>(const const_iterator& other) const noexcept = default;
+    auto operator<=>(const const_iterator& other) const noexcept        = default;
     auto operator==(const const_iterator& other) const noexcept -> bool = default;
 
   private:
@@ -218,6 +210,12 @@ public:
    * @complexity Time O(1) amortized, Space O(1)
    */
   auto push_front(const T& value) -> void;
+
+  /**
+   * @brief Inserts an element at the front (move).
+   * @param value The value to insert.
+   * @complexity Time O(1) amortized, Space O(1)
+   */
   auto push_front(T&& value) -> void;
 
   /**
@@ -236,6 +234,12 @@ public:
    * @complexity Time O(1) amortized, Space O(1)
    */
   auto push_back(const T& value) -> void;
+
+  /**
+   * @brief Inserts an element at the back (move).
+   * @param value The value to insert.
+   * @complexity Time O(1) amortized, Space O(1)
+   */
   auto push_back(T&& value) -> void;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
@@ -269,6 +273,13 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   auto operator[](size_t index) -> T&;
+
+  /**
+   * @brief Accesses an element by logical index without bounds checking (const).
+   * @param index The logical index of the element.
+   * @return Const reference to the element.
+   * @complexity Time O(1), Space O(1)
+   */
   auto operator[](size_t index) const -> const T&;
 
   /**
@@ -279,6 +290,14 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   auto at(size_t index) -> T&;
+
+  /**
+   * @brief Accesses an element by logical index with bounds checking (const).
+   * @param index The logical index of the element.
+   * @return Const reference to the element.
+   * @throws ArrayOutOfRangeException if index >= size().
+   * @complexity Time O(1), Space O(1)
+   */
   auto at(size_t index) const -> const T&;
 
   /**
@@ -287,6 +306,12 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   auto front() -> T&;
+
+  /**
+   * @brief Returns a const reference to the first element.
+   * @throws ArrayUnderflowException if the array is empty.
+   * @complexity Time O(1), Space O(1)
+   */
   auto front() const -> const T&;
 
   /**
@@ -295,6 +320,12 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   auto back() -> T&;
+
+  /**
+   * @brief Returns a const reference to the last element.
+   * @throws ArrayUnderflowException if the array is empty.
+   * @complexity Time O(1), Space O(1)
+   */
   auto back() const -> const T&;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//

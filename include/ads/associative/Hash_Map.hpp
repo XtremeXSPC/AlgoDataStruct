@@ -74,7 +74,6 @@ public:
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
     auto operator==(const iterator& other) const -> bool;
-    auto operator!=(const iterator& other) const -> bool;
 
   private:
     friend class HashMap;
@@ -118,7 +117,6 @@ public:
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
     auto operator==(const const_iterator& other) const -> bool;
-    auto operator!=(const const_iterator& other) const -> bool;
 
   private:
     friend class HashMap;

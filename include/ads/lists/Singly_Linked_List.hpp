@@ -65,7 +65,6 @@ public:
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
     auto operator==(const iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
-    auto operator!=(const iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
     Node*                node_ptr_;
@@ -95,7 +94,6 @@ public:
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
     auto operator==(const const_iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
-    auto operator!=(const const_iterator& other) const -> bool { return node_ptr_ != other.node_ptr_; }
 
   private:
     const Node*                node_ptr_;

@@ -80,7 +80,6 @@ public:
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
     auto operator==(const iterator& other) const -> bool;
-    auto operator!=(const iterator& other) const -> bool;
 
   private:
     friend class BinarySearchTree<T>;

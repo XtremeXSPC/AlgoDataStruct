@@ -79,11 +79,6 @@ auto AVLTree<T>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
-template <typename T>
-auto AVLTree<T>::iterator::operator!=(const iterator& other) const -> bool {
-  return !(*this == other);
-}
-
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T>
