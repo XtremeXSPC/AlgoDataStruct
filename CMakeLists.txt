@@ -579,9 +579,9 @@ if(ENABLE_TESTING)
         add_executable(runTests ${TEST_SOURCES})
         target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
         if(GTest_FOUND)
-            target_link_libraries(runTests PRIVATE ads_lib GTest::gtest GTest::gtest_main)
+            target_link_libraries(runTests PRIVATE ads_lib GTest::gtest_main)
         else()
-            target_link_libraries(runTests PRIVATE ads_lib gtest gtest_main)
+            target_link_libraries(runTests PRIVATE ads_lib gtest_main)
         endif()
 
         # Register tests with CTest.
