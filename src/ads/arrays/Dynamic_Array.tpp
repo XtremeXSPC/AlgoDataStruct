@@ -47,6 +47,7 @@ DynamicArray<T>::DynamicArray(std::initializer_list<T> values) :
       ++constructed;
     }
   } catch (...) {
+    // Rollback constructed elements on failure.
     for (size_t i = 0; i < constructed; ++i) {
       std::destroy_at(data_.get() + i);
     }
@@ -73,6 +74,7 @@ DynamicArray<T>::DynamicArray(size_t count, const T& value) :
       std::construct_at(data_.get() + constructed, value);
     }
   } catch (...) {
+    // Rollback constructed elements on failure.
     for (size_t i = 0; i < constructed; ++i) {
       std::destroy_at(data_.get() + i);
     }
@@ -374,7 +376,7 @@ auto DynamicArray<T>::resize(size_t new_size, const T& value) -> void {
   }
 }
 
-//===------------------------- ITERATOR OPERATIONS -----------------------------===//
+//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
 template <typename T>
 auto DynamicArray<T>::begin() noexcept -> iterator {
