@@ -15,6 +15,7 @@
 #include <concepts>
 #include <functional>
 #include <iterator>
+#include <numbers>
 #include <vector>
 
 #include "../include/ads/algorithms/Sorting.hpp"
@@ -241,7 +242,7 @@ TEST(SortingEdgeCasesTest, SingleElement) {
   test_single([](auto f, auto l) { counting_sort(f, l); });
   test_single([](auto f, auto l) { radix_sort(f, l); });
 
-  std::vector<double> float_data = {3.14};
+  std::vector<double> float_data = {std::numbers::pi};
   bucket_sort(float_data.begin(), float_data.end());
   EXPECT_EQ(float_data, std::vector<double>{3.14});
 }
