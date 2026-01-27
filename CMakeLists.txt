@@ -181,6 +181,9 @@ target_sources(ads_lib
         FILE_SET HEADERS
         BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
         FILES
+            # Algorithms.
+            include/ads/algorithms/Sorting.hpp
+
             # Array implementations.
             include/ads/arrays/Array_Exception.hpp
             include/ads/arrays/Dynamic_Array.hpp
@@ -242,6 +245,7 @@ target_sources(ads_lib
     # These are included by the headers, but we list them here so they
     # appear in IDEs and are tracked for changes.
     INTERFACE
+        src/ads/algorithms/Sorting.tpp
         src/ads/arrays/Static_Array.tpp
         src/ads/arrays/Dynamic_Array.tpp
         src/ads/arrays/Circular_Array.tpp
@@ -512,6 +516,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Circular_Array.cpp")
         list(APPEND TEST_SOURCES tests/Test_Circular_Array.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Sorting.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Sorting.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_SinglyLinkedList.cpp")
         list(APPEND TEST_SOURCES tests/Test_Singly_Linked_List.cpp)
