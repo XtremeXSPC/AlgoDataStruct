@@ -73,17 +73,24 @@ public:
     // Arithmetic operators.
     auto operator+=(difference_type n) -> iterator&;
     auto operator-=(difference_type n) -> iterator&;
-    auto operator+(difference_type n) const -> iterator;
-    auto operator-(difference_type n) const -> iterator;
-    auto operator-(const iterator& other) const -> difference_type;
+
+    // Hidden friend operators for arithmetic.
+    friend auto operator+(const iterator& it, difference_type n) -> iterator {
+      return iterator(it.logical_index_ + n, it.array_);
+    }
+    friend auto operator+(difference_type n, const iterator& it) -> iterator {
+      return it + n;
+    }
+    friend auto operator-(const iterator& it, difference_type n) -> iterator {
+      return iterator(it.logical_index_ - n, it.array_);
+    }
+    friend auto operator-(const iterator& lhs, const iterator& rhs) -> difference_type {
+      return static_cast<difference_type>(lhs.logical_index_) - static_cast<difference_type>(rhs.logical_index_);
+    }
 
     // Comparison operators.
-    auto operator==(const iterator& other) const -> bool { return logical_index_ == other.logical_index_; }
-    auto operator!=(const iterator& other) const -> bool { return logical_index_ != other.logical_index_; }
-    auto operator<(const iterator& other) const -> bool { return logical_index_ < other.logical_index_; }
-    auto operator<=(const iterator& other) const -> bool { return logical_index_ <= other.logical_index_; }
-    auto operator>(const iterator& other) const -> bool { return logical_index_ > other.logical_index_; }
-    auto operator>=(const iterator& other) const -> bool { return logical_index_ >= other.logical_index_; }
+    auto operator<=>(const iterator& other) const noexcept = default;
+    auto operator==(const iterator& other) const noexcept -> bool = default;
 
   private:
     size_t            logical_index_ = 0;
@@ -122,17 +129,24 @@ public:
     // Arithmetic operators.
     auto operator+=(difference_type n) -> const_iterator&;
     auto operator-=(difference_type n) -> const_iterator&;
-    auto operator+(difference_type n) const -> const_iterator;
-    auto operator-(difference_type n) const -> const_iterator;
-    auto operator-(const const_iterator& other) const -> difference_type;
+
+    // Hidden friend operators for arithmetic.
+    friend auto operator+(const const_iterator& it, difference_type n) -> const_iterator {
+      return const_iterator(it.logical_index_ + n, it.array_);
+    }
+    friend auto operator+(difference_type n, const const_iterator& it) -> const_iterator {
+      return it + n;
+    }
+    friend auto operator-(const const_iterator& it, difference_type n) -> const_iterator {
+      return const_iterator(it.logical_index_ - n, it.array_);
+    }
+    friend auto operator-(const const_iterator& lhs, const const_iterator& rhs) -> difference_type {
+      return static_cast<difference_type>(lhs.logical_index_) - static_cast<difference_type>(rhs.logical_index_);
+    }
 
     // Comparison operators.
-    auto operator==(const const_iterator& other) const -> bool { return logical_index_ == other.logical_index_; }
-    auto operator!=(const const_iterator& other) const -> bool { return logical_index_ != other.logical_index_; }
-    auto operator<(const const_iterator& other) const -> bool { return logical_index_ < other.logical_index_; }
-    auto operator<=(const const_iterator& other) const -> bool { return logical_index_ <= other.logical_index_; }
-    auto operator>(const const_iterator& other) const -> bool { return logical_index_ > other.logical_index_; }
-    auto operator>=(const const_iterator& other) const -> bool { return logical_index_ >= other.logical_index_; }
+    auto operator<=>(const const_iterator& other) const noexcept = default;
+    auto operator==(const const_iterator& other) const noexcept -> bool = default;
 
   private:
     size_t                  logical_index_ = 0;

@@ -103,7 +103,7 @@ Planned, not implemented yet:
 
 ## Repository Organization
 
-```path-tree
+```path
 AlgoDataStruct/
 ├── include/
 │   └── ads/
@@ -117,7 +117,7 @@ AlgoDataStruct/
 │       ├── associative/
 │       └── graphs/
 ├── src/
-│   ├── ads/              # .tpp implementation files
+│   ├── ads/               # .tpp implementation files
 │   └── main_*.cc          # usage demos / sample programs
 ├── tests/                 # unit tests (standalone)
 ├── docs/                  # generated documentation
