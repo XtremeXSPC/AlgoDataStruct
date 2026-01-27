@@ -33,6 +33,9 @@ constexpr std::size_t kInsertionThreshold = 16;
 constexpr std::size_t kRadixBase          = 256;
 constexpr std::size_t kRadixBits          = 8;
 
+// Ciura gap sequence for Shell sort (empirically optimal for practical sizes).
+constexpr std::array<std::size_t, 8> kCiuraGaps = {701, 301, 132, 57, 23, 10, 4, 1};
+
 // Helper to get iterator at index.
 template <std::random_access_iterator Iter>
 auto iter_at(Iter first, std::size_t index) -> Iter {
@@ -159,9 +162,19 @@ auto merge_sort_impl(Iter first, Iter last, Compare& comp, Buffer& buffer) -> vo
   merge_ranges(first, mid, last, comp, buffer);
 }
 
-// Recursive quick sort implementation.
+// Computes floor(log2(n)) for depth limit calculation.
+inline auto log2_floor(std::size_t n) -> std::size_t {
+  std::size_t result = 0;
+  while (n > 1) {
+    n >>= 1;
+    ++result;
+  }
+  return result;
+}
+
+// Recursive introsort implementation (quick sort with heap sort fallback).
 template <std::random_access_iterator Iter, typename Compare>
-auto quick_sort_impl(Iter first, Iter last, Compare& comp) -> void {
+auto quick_sort_impl(Iter first, Iter last, Compare& comp, std::size_t depth_limit) -> void {
   while (true) {
     const auto count = last - first;
     if (count <= 1) {
@@ -174,6 +187,13 @@ auto quick_sort_impl(Iter first, Iter last, Compare& comp) -> void {
       return;
     }
 
+    // Fall back to heap sort if recursion is too deep (introsort behavior).
+    if (depth_limit == 0) {
+      heap_sort(first, last, comp);
+      return;
+    }
+    --depth_limit;
+
     Iter pivot = detail::partition(first, last, comp);
 
     const auto left_size  = pivot - first;
@@ -181,10 +201,10 @@ auto quick_sort_impl(Iter first, Iter last, Compare& comp) -> void {
 
     // Recurse on the smaller side to keep stack depth bounded.
     if (left_size < right_size) {
-      quick_sort_impl(first, pivot, comp);
+      quick_sort_impl(first, pivot, comp, depth_limit);
       first = pivot + 1;
     } else {
-      quick_sort_impl(pivot + 1, last, comp);
+      quick_sort_impl(pivot + 1, last, comp, depth_limit);
       last = pivot;
     }
   }
@@ -219,6 +239,7 @@ auto sift_down(Iter first, std::size_t start, std::size_t end, Compare& comp) ->
   }
 }
 
+// Builds a max-heap from the range.
 template <std::random_access_iterator Iter, typename Compare>
 auto build_heap(Iter first, std::size_t count, Compare& comp) -> void {
   if (count < 2) {
@@ -251,29 +272,34 @@ auto merge_sort_forward_impl(Iter first, Iter last, Compare& comp, Buffer& buffe
 // Returns the number of distinct values in the inclusive range.
 template <typename T>
 auto range_size(T min_value, T max_value) -> std::size_t {
-  using Unsigned = std::make_unsigned_t<T>;
-  auto umin      = static_cast<Unsigned>(min_value);
-  auto umax      = static_cast<Unsigned>(max_value);
-  auto range     = umax - umin;
-  auto size      = static_cast<Unsigned>(range + 1);
+  // Use std::size_t for arithmetic to avoid overflow with small types.
+  using Unsigned       = std::make_unsigned_t<T>;
+  const auto umin      = static_cast<std::size_t>(static_cast<Unsigned>(min_value));
+  const auto umax      = static_cast<std::size_t>(static_cast<Unsigned>(max_value));
+  const std::size_t range = (umax >= umin) ? (umax - umin) : (std::numeric_limits<Unsigned>::max() - umin + umax + 1);
+  const std::size_t size  = range + 1;
 
-  if (size == 0) {
+  if (size == 0 || size <= range) {
     throw std::length_error("counting_sort range too large");
   }
 
-  if (size > static_cast<Unsigned>(std::numeric_limits<std::size_t>::max())) {
-    throw std::length_error("counting_sort range exceeds addressable size");
-  }
-
-  return static_cast<std::size_t>(size);
+  return size;
 }
 
+// Maps a value to its index in the counting array (handles signed types).
 template <typename T>
-auto to_index(T value, std::make_unsigned_t<T> umin) -> std::size_t {
-  using Unsigned = std::make_unsigned_t<T>;
-  return static_cast<std::size_t>(static_cast<Unsigned>(value) - umin);
+auto to_index(T value, T min_value) -> std::size_t {
+  if constexpr (std::is_signed_v<T>) {
+    // For signed types, compute the distance from min_value in a way that avoids overflow.
+    // Use the wider signed type to avoid issues.
+    using WideType = std::conditional_t<sizeof(T) < sizeof(long long), long long, T>;
+    return static_cast<std::size_t>(static_cast<WideType>(value) - static_cast<WideType>(min_value));
+  } else {
+    return static_cast<std::size_t>(value - min_value);
+  }
 }
 
+// Extracts the radix key, adjusting for signed types.
 template <typename T>
 auto radix_key(T value) -> std::make_unsigned_t<T> {
   using Unsigned = std::make_unsigned_t<T>;
@@ -288,13 +314,15 @@ auto radix_key(T value) -> std::make_unsigned_t<T> {
   return key;
 }
 
+// Structure to represent a run in Tim sort.
 template <std::random_access_iterator Iter>
 struct Run {
   Iter        base;
   std::size_t length;
 };
 
-auto min_run_length(std::size_t n) -> std::size_t {
+// Computes the minimum run length for Tim sort.
+inline auto min_run_length(std::size_t n) -> std::size_t {
   std::size_t r = 0;
   while (n >= 64) {
     r |= (n & 1U);
@@ -303,6 +331,7 @@ auto min_run_length(std::size_t n) -> std::size_t {
   return n + r;
 }
 
+// Counts a run and makes it ascending.
 template <std::random_access_iterator Iter, typename Compare>
 auto count_run_and_make_ascending(Iter first, Iter last, Compare& comp) -> std::size_t {
   Iter run_end = first + 1;
@@ -474,20 +503,44 @@ auto shell_sort(Iter first, Iter last, Compare comp) -> void {
     return;
   }
 
-  // Use Shell's original gap sequence: N/2, N/4, ..., 1.
-  for (std::size_t gap = count / 2; gap > 0; gap /= 2) {
-    for (std::size_t i = gap; i < count; ++i) {
+  // Use Ciura gap sequence for better performance than Shell's original.
+  // For large arrays, extend beyond Ciura with 2.25x multiplier.
+  std::size_t gap = 1;
+  while (gap < count / 3) {
+    gap = static_cast<std::size_t>(static_cast<double>(gap) * 2.25) + 1;
+  }
+
+  // Find starting index in Ciura sequence or use computed gap.
+  std::size_t ciura_idx = 0;
+  while (ciura_idx < detail::kCiuraGaps.size() && detail::kCiuraGaps[ciura_idx] >= count) {
+    ++ciura_idx;
+  }
+
+  auto next_gap = [&]() -> std::size_t {
+    if (ciura_idx < detail::kCiuraGaps.size()) {
+      return detail::kCiuraGaps[ciura_idx++];
+    }
+    gap = gap / 2;
+    return gap;
+  };
+
+  for (std::size_t g = next_gap(); g >= 1; g = (g == 1) ? 0 : next_gap()) {
+    for (std::size_t i = g; i < count; ++i) {
       auto        temp = std::move(*detail::iter_at(first, i));
       std::size_t j    = i;
 
       // Perform gapped insertion sort.
-      while (j >= gap && std::invoke(comp, temp, *detail::iter_at(first, j - gap))) {
-        *detail::iter_at(first, j) = std::move(*detail::iter_at(first, j - gap));
-        j -= gap;
+      while (j >= g && std::invoke(comp, temp, *detail::iter_at(first, j - g))) {
+        *detail::iter_at(first, j) = std::move(*detail::iter_at(first, j - g));
+        j -= g;
       }
 
       // Place temp in its correct location.
       *detail::iter_at(first, j) = std::move(temp);
+    }
+
+    if (g == 1) {
+      break;
     }
   }
 }
@@ -530,7 +583,13 @@ auto merge_sort(Iter first, Iter last, Compare comp) -> void {
 template <std::random_access_iterator Iter, typename Compare>
   requires std::sortable<Iter, Compare>
 auto quick_sort(Iter first, Iter last, Compare comp) -> void {
-  detail::quick_sort_impl(first, last, comp);
+  const auto count = static_cast<std::size_t>(last - first);
+  if (count <= 1) {
+    return;
+  }
+  // Use 2 * log2(n) as depth limit (introsort strategy).
+  const std::size_t depth_limit = 2 * detail::log2_floor(count);
+  detail::quick_sort_impl(first, last, comp, depth_limit);
 }
 
 //===-------------------------------- HEAP SORT --------------------------------===//
@@ -630,17 +689,15 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
   }
 
   using value_type = std::iter_value_t<Iter>;
-  using Unsigned   = std::make_unsigned_t<value_type>;
 
   const std::size_t count      = static_cast<std::size_t>(last - first);
   const std::size_t range_size = detail::range_size(min_value, max_value);
 
   std::vector<std::size_t> counts(range_size, 0);
-  const auto               umin = static_cast<Unsigned>(min_value);
 
   for (std::size_t i = 0; i < count; ++i) {
     const value_type value = *detail::iter_at(first, i);
-    ++counts[detail::to_index(value, umin)];
+    ++counts[detail::to_index(value, min_value)];
   }
 
   for (std::size_t i = 1; i < range_size; ++i) {
@@ -650,7 +707,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
   std::vector<value_type> buffer(count);
   for (std::size_t i = count; i-- > 0;) {
     const value_type  value = *detail::iter_at(first, i);
-    const std::size_t index = detail::to_index(value, umin);
+    const std::size_t index = detail::to_index(value, min_value);
     buffer[--counts[index]] = value;
   }
 
@@ -714,17 +771,26 @@ auto bucket_sort(Iter first, Iter last, std::size_t bucket_count) -> void {
 
   using value_type = std::iter_value_t<Iter>;
 
-  value_type min_value = *first;
-  value_type max_value = *first;
+  value_type min_value = std::numeric_limits<value_type>::infinity();
+  value_type max_value = -std::numeric_limits<value_type>::infinity();
 
-  // Find min and max values.
-  for (Iter it = first + 1; it != last; ++it) {
+  // Find min and max values, checking for NaN.
+  for (Iter it = first; it != last; ++it) {
+    if (std::isnan(*it)) {
+      throw std::invalid_argument("bucket_sort: NaN values not supported");
+    }
     if (*it < min_value) {
       min_value = *it;
     }
     if (*it > max_value) {
       max_value = *it;
     }
+  }
+
+  // Handle infinite values by falling back to comparison sort.
+  if (std::isinf(min_value) || std::isinf(max_value)) {
+    insertion_sort(first, last, std::less<>{});
+    return;
   }
 
   if (min_value == max_value) {
