@@ -32,13 +32,13 @@ StaticArray<T, N>::StaticArray(std::initializer_list<T> values) {
   if (values.size() != N) {
     throw ArrayOutOfRangeException("Initializer list size must match array size");
   }
-  std::copy(values.begin(), values.end(), data_);
+  std::ranges::copy(values, data_);
 }
 
 template <typename T, size_t N>
   requires(N > 0)
 StaticArray<T, N>::StaticArray(const T& value) {
-  std::fill(std::begin(data_), std::end(data_), value);
+  std::ranges::fill(data_, value);
 }
 
 template <typename T, size_t N>
@@ -46,7 +46,7 @@ template <typename T, size_t N>
 StaticArray<T, N>::StaticArray(const StaticArray& other)
   requires std::copy_constructible<T>
 {
-  std::copy(other.data_, other.data_ + N, data_);
+  std::ranges::copy(other.data_, data_);
 }
 
 template <typename T, size_t N>
@@ -54,7 +54,7 @@ template <typename T, size_t N>
 StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
   requires std::move_constructible<T>
 {
-  std::move(other.data_, other.data_ + N, data_);
+  std::ranges::move(other.data_, data_);
 }
 
 template <typename T, size_t N>
@@ -63,7 +63,7 @@ auto StaticArray<T, N>::operator=(const StaticArray& other) -> StaticArray&
   requires std::is_copy_assignable_v<T>
 {
   if (this != &other) {
-    std::copy(other.data_, other.data_ + N, data_);
+    std::ranges::copy(other.data_, data_);
   }
   return *this;
 }
@@ -74,7 +74,7 @@ auto StaticArray<T, N>::operator=(StaticArray&& other) noexcept(std::is_nothrow_
   requires std::is_move_assignable_v<T>
 {
   if (this != &other) {
-    std::move(other.data_, other.data_ + N, data_);
+    std::ranges::move(other.data_, data_);
   }
   return *this;
 }
@@ -84,7 +84,7 @@ auto StaticArray<T, N>::operator=(StaticArray&& other) noexcept(std::is_nothrow_
 template <typename T, size_t N>
   requires(N > 0)
 auto StaticArray<T, N>::fill(const T& value) -> void {
-  std::fill(std::begin(data_), std::end(data_), value);
+  std::ranges::fill(data_, value);
 }
 
 template <typename T, size_t N>
@@ -242,7 +242,7 @@ template <typename T, size_t N>
 auto StaticArray<T, N>::operator==(const StaticArray& other) const -> bool
   requires std::equality_comparable<T>
 {
-  return std::equal(data_, data_ + N, other.data_);
+  return std::ranges::equal(data_, other.data_);
 }
 
 template <typename T, size_t N>
