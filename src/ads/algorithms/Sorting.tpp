@@ -273,9 +273,9 @@ auto merge_sort_forward_impl(Iter first, Iter last, Compare& comp, Buffer& buffe
 template <typename T>
 auto range_size(T min_value, T max_value) -> std::size_t {
   // Use std::size_t for arithmetic to avoid overflow with small types.
-  using Unsigned       = std::make_unsigned_t<T>;
-  const auto umin      = static_cast<std::size_t>(static_cast<Unsigned>(min_value));
-  const auto umax      = static_cast<std::size_t>(static_cast<Unsigned>(max_value));
+  using Unsigned          = std::make_unsigned_t<T>;
+  const auto        umin  = static_cast<std::size_t>(static_cast<Unsigned>(min_value));
+  const auto        umax  = static_cast<std::size_t>(static_cast<Unsigned>(max_value));
   const std::size_t range = (umax >= umin) ? (umax - umin) : (std::numeric_limits<Unsigned>::max() - umin + umax + 1);
   const std::size_t size  = range + 1;
 
@@ -617,7 +617,7 @@ auto heap_sort(Iter first, Iter last, Compare comp) -> void {
 template <std::random_access_iterator Iter, typename Compare>
   requires std::sortable<Iter, Compare>
 auto tim_sort(Iter first, Iter last, Compare comp) -> void {
-  const std::size_t count = static_cast<std::size_t>(last - first);
+  const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {
     return;
   }
@@ -634,8 +634,8 @@ auto tim_sort(Iter first, Iter last, Compare comp) -> void {
   Iter              cursor  = first;
 
   while (cursor != last) {
-    const std::size_t remaining = static_cast<std::size_t>(last - cursor);
-    std::size_t       run_len   = detail::count_run_and_make_ascending(cursor, last, comp);
+    const auto  remaining = static_cast<std::size_t>(last - cursor);
+    std::size_t run_len   = detail::count_run_and_make_ascending(cursor, last, comp);
 
     if (run_len < min_run) {
       const std::size_t target = std::min(min_run, remaining);
@@ -690,7 +690,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
 
   using value_type = std::iter_value_t<Iter>;
 
-  const std::size_t count      = static_cast<std::size_t>(last - first);
+  const auto        count      = static_cast<std::size_t>(last - first);
   const std::size_t range_size = detail::range_size(min_value, max_value);
 
   std::vector<std::size_t> counts(range_size, 0);
