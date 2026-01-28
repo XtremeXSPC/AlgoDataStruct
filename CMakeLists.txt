@@ -214,9 +214,11 @@ target_sources(ads_lib
             # Binary Tree interface and implementations.
             include/ads/trees/Binary_Tree.hpp
             include/ads/trees/Binary_Tree_Exception.hpp
+            include/ads/trees/Fenwick_Tree_Exception.hpp
             include/ads/trees/Binary_Search_Tree.hpp
             include/ads/trees/AVL_Tree.hpp
             include/ads/trees/Complete_Binary_Tree.hpp
+            include/ads/trees/Fenwick_Tree.hpp
 
             # Heap implementations.
             include/ads/heaps/Heap_Exception.hpp
@@ -264,6 +266,7 @@ target_sources(ads_lib
         src/ads/trees/Red_Black_Tree.tpp
         src/ads/trees/Binary_Search_Tree.tpp
         src/ads/trees/Complete_Binary_Tree.tpp
+        src/ads/trees/Fenwick_Tree.tpp
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
         src/ads/hash/Hash_Table_Chaining.tpp
@@ -430,6 +433,11 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Trie.cc")
     ads_add_executable(test_Trie src/main_Trie.cc)
 endif()
 
+# Fenwick Tree test.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Fenwick_Tree.cc")
+    ads_add_executable(test_Fenwick_Tree src/main_Fenwick_Tree.cc)
+endif()
+
 # Dijkstra Integration test (Graph + PriorityQueue).
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main_Dijkstra_Integration.cc")
     ads_add_executable(test_Dijkstra src/main_Dijkstra_Integration.cc)
@@ -555,6 +563,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Trie.cpp")
         list(APPEND TEST_SOURCES tests/Test_Trie.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Fenwick_Tree.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Fenwick_Tree.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Disjoint_Set_Union.cpp")
        list(APPEND TEST_SOURCES tests/Test_Disjoint_Set_Union.cpp)

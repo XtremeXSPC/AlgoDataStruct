@@ -51,6 +51,7 @@ Key characteristics:
 - Red-Black Tree
 - B-Tree
 - Trie (Prefix Tree)
+- Fenwick Tree (Binary Indexed Tree)
 
 </details>
 
@@ -96,7 +97,7 @@ Planned, not implemented yet:
 
 - Skip List (advanced)
 - B+ Tree, 2-3 Tree, 2-3-4 Tree
-- Segment Tree, Fenwick Tree (Binary Indexed Tree)
+- Segment Tree
 - String structures (Suffix Tree/Array, Suffix Automaton, Rope)
 - Probabilistic structures (Bloom Filter, Count-Min Sketch, HyperLogLog)
 - Spatial structures (KD-Tree, R-Tree, Quad/Oct-tree)
