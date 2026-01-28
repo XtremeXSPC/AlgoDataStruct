@@ -149,13 +149,16 @@ auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T& {
 
   // Shift elements right to make space.
   T* data_ptr = data_.get();
+  // Create one uninitialized slot at the end by move-constructing the last element.
   std::construct_at(data_ptr + size_, std::move_if_noexcept(data_ptr[size_ - 1]));
-  for (size_t i = size_ - 1; i > index; --i) {
-    data_ptr[i] = std::move_if_noexcept(data_ptr[i - 1]);
-  }
+  // Shift the remaining elements one position to the right.
+  // std::move_backward enables optimized bulk moves for trivially movable types.
+  std::move_backward(data_ptr + index, data_ptr + size_ - 1, data_ptr + size_);
 
-  // Construct the new element in place.
-  data_ptr[index] = T(std::forward<Args>(args)...);
+  // Replace the moved-from element at index with the new one.
+  // Destroy first to avoid an extra temporary + assignment.
+  std::destroy_at(data_ptr + index);
+  std::construct_at(data_ptr + index, std::forward<Args>(args)...);
   ++size_;
   return data_ptr[index];
 }
@@ -201,9 +204,8 @@ auto DynamicArray<T>::erase(size_t index) -> void {
 
   // Shift elements left to fill the gap.
   T* data_ptr = data_.get();
-  for (size_t i = index; i + 1 < size_; ++i) {
-    data_ptr[i] = std::move_if_noexcept(data_ptr[i + 1]);
-  }
+  // std::move allows the library to optimize for trivially movable types.
+  std::move(data_ptr + index + 1, data_ptr + size_, data_ptr + index);
 
   // Destroy the now-unused last element.
   std::destroy_at(data_.get() + size_ - 1);
@@ -222,8 +224,11 @@ auto DynamicArray<T>::erase(size_t index) -> void {
 
 template <typename T>
 auto DynamicArray<T>::clear() noexcept -> void {
-  for (size_t i = 0; i < size_; ++i) {
-    std::destroy_at(data_.get() + i);
+  // Skip destructor loop for trivially destructible types.
+  if constexpr (!std::is_trivially_destructible_v<T>) {
+    for (size_t i = 0; i < size_; ++i) {
+      std::destroy_at(data_.get() + i);
+    }
   }
   size_ = 0;
 }
@@ -487,21 +492,11 @@ auto DynamicArray<T>::reallocate(size_t new_capacity) -> void {
       static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
 
   // Move or copy existing elements to new storage.
-  size_t constructed = 0;
-  try {
-    for (; constructed < size_; ++constructed) {
-      if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-        std::construct_at(new_data.get() + constructed, std::move(data_[constructed]));
-      } else {
-        std::construct_at(new_data.get() + constructed, data_[constructed]);
-      }
-    }
-  } catch (...) {
-    // Rollback constructed elements on failure.
-    for (size_t i = 0; i < constructed; ++i) {
-      std::destroy_at(new_data.get() + i);
-    }
-    throw;
+  // Use uninitialized algorithms to enable bulk optimizations when possible.
+  if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+    std::uninitialized_move_n(data_.get(), size_, new_data.get());
+  } else {
+    std::uninitialized_copy_n(data_.get(), size_, new_data.get());
   }
 
   // Destroy old elements only after all new elements are constructed.
