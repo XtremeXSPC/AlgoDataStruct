@@ -1,0 +1,72 @@
+{
+  //===------------------- ZED EDITOR SETTINGS CONFIGURATION -------------------===//
+
+  // Editor Configuration
+  "tab_size": 2,
+  "hard_tabs": false,
+  "show_wrap_guides": true,
+  "wrap_guides": [85, 120],
+  "show_line_numbers": true,
+  "relative_line_numbers": false,
+  "cursor_blink": true,
+  "show_completions_on_input": true,
+  "show_completion_documentation": true,
+  "use_autoclose": true,
+
+  // Formatting
+  "format_on_save": "on",
+  "formatter": "language_server",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+
+  // Auto-save
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000
+    }
+  },
+
+  // File scan exclusions
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.DS_Store",
+    "**/build",
+    "**/build-tests",
+    "**/*.o",
+    "**/*.exe"
+  ],
+
+  // Language-specific settings
+  "languages": {
+    "C++": {
+      "tab_size": 2,
+      "formatter": "language_server",
+      "format_on_save": "on"
+    },
+    "C": {
+      "tab_size": 2,
+      "formatter": "language_server",
+      "format_on_save": "on"
+    }
+  },
+
+  // LSP configuration (clangd)
+  "lsp": {
+    "clangd": {
+      "binary": {
+        "arguments": [
+          "--completion-style=detailed",
+          "--header-insertion=iwyu",
+          "--background-index",
+          "--clang-tidy",
+          "-j=8"
+        ]
+      }
+    }
+  },
+
+  // File associations
+  "file_types": {
+    "C++": ["tpp", "hpp", "h", "cc"]
+  }
+}
