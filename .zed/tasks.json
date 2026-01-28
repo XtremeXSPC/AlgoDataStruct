@@ -1,0 +1,130 @@
+[
+  //===------------------------- CMAKE CONFIGURE TASKS -------------------------===//
+  {
+    "label": "CMake: Configure (Debug)",
+    "command": "cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always"
+  },
+  {
+    "label": "CMake: Configure (Release)",
+    "command": "cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Release -B build",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always"
+  },
+  {
+    "label": "CMake: Configure (Debug + Tests)",
+    "command": "CPATH= cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build-tests",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always"
+  },
+
+  //===------------------------------ BUILD TASKS ------------------------------===//
+  {
+    "label": "CMake: Build All",
+    "command": "cmake --build build -j8",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "tags": ["build"]
+  },
+  {
+    "label": "CMake: Build (Debug + Tests)",
+    "command": "CPATH= cmake --build build-tests -j8",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "tags": ["build"]
+  },
+
+  //===------------------------------ CLEAN TASKS ------------------------------===//
+  {
+    "label": "CMake: Clean",
+    "command": "cmake --build build --target clean",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "CMake: Clean & Reconfigure (Debug)",
+    "command": "cmake -E remove_directory build && cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "CMake: Clean & Reconfigure (Debug + Tests)",
+    "command": "CPATH= cmake -E remove_directory build-tests && cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build-tests",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+
+  //===----------------------------- TEST RUNNERS ------------------------------===//
+  {
+    "label": "Test: Run GoogleTest Suite",
+    "command": "CPATH= ctest --output-on-failure --verbose",
+    "cwd": "$ZED_WORKTREE_ROOT/build-tests",
+    "use_new_terminal": false,
+    "reveal": "always",
+    "tags": ["test"]
+  },
+
+  //===------------------------ Individual Test Runners ------------------------===//
+  {
+    "label": "Run: test_BST",
+    "command": "./build/bin/test_BST",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always",
+    "tags": ["test"]
+  },
+  {
+    "label": "Run: test_AVL",
+    "command": "./build/bin/test_AVL",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always",
+    "tags": ["test"]
+  },
+  {
+    "label": "Run: test_RBT",
+    "command": "./build/bin/test_RBT",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always",
+    "tags": ["test"]
+  },
+  {
+    "label": "Run: test_Heaps",
+    "command": "./build/bin/test_Heaps",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always",
+    "tags": ["test"]
+  },
+
+  //===-------------------------- FORMAT & LINT TASKS --------------------------===//
+  {
+    "label": "Format: clang-format Active File",
+    "command": "clang-format -i $ZED_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "Lint: clang-tidy Active File",
+    "command": "clang-tidy $ZED_FILE -- -std=c++20",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "reveal": "always"
+  }
+]

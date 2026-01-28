@@ -1,0 +1,194 @@
+[
+  {
+    "label": "Debug test_BST",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_BST",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Static_Array",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Static_Array",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Dynamic_Array",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Dynamic_Array",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Circular_Array",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Circular_Array",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Singly_Linked_List",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Singly_Linked_List",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Doubly_Linked_List",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Doubly_Linked_List",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Circular_Linked_List",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Circular_Linked_List",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Stacks_Queues",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Stacks_Queues",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Deque",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Deque",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Priority_Queue",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Priority_Queue",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Complete_Binary_Tree",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Complete_Binary_Tree",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_BBT",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_BBT",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_AVL",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_AVL",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_RBT",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_RBT",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Trie",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Trie",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Dijkstra",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Dijkstra",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Graph_ADJ_List",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Graph_ADJ_List",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Graph_ADJ_Matrix",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Graph_ADJ_Matrix",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Disjoint_Set_Union",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Disjoint_Set_Union",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Tree_Map",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Tree_Map",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_HashMap",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_HashMap",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Hash_Chaining",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Hash_Chaining",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Hash_Open_Addr",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Hash_Open_Addr",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  },
+  {
+    "label": "Debug test_Heaps",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/bin/test_Heaps",
+    "build": "CMake: Build All",
+    "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+  }
+]

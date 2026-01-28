@@ -4,10 +4,7 @@
     {
       "name": "macOS",
       "intelliSenseMode": "macos-clang-arm64",
-      "includePath": [
-        "${workspaceFolder}/**",
-        "/opt/homebrew/Cellar/gcc/15.1.0/include/c++/15"
-      ],
+      "includePath": ["${workspaceFolder}/**", "/opt/homebrew/Cellar/gcc/15.1.0/include/c++/15"],
       "defines": ["_DEBUG", "__APPLE__", "__MACH__"],
       "compilerPath": "/usr/bin/clang++",
       "compilerArgs": ["-Wall", "-Wextra", "-pedantic"],
@@ -30,14 +27,7 @@
       "name": "Windows",
       "intelliSenseMode": "windows-msvc-x64",
       "includePath": ["${workspaceFolder}/**"],
-      "defines": [
-        "_DEBUG",
-        "UNICODE",
-        "_UNICODE",
-        "WIN32",
-        "_WIN64",
-        "NOMINMAX"
-      ],
+      "defines": ["_DEBUG", "UNICODE", "_UNICODE", "WIN32", "_WIN64", "NOMINMAX"],
       "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64/cl.exe",
       "compilerArgs": ["/W4", "/WX"],
       "cStandard": "c23",
@@ -49,13 +39,7 @@
       "name": "Windows (MinGW)",
       "intelliSenseMode": "windows-gcc-x64",
       "includePath": ["${workspaceFolder}/**"],
-      "defines": [
-        "_DEBUG",
-        "UNICODE",
-        "_UNICODE",
-        "__MINGW32__",
-        "__MINGW64__"
-      ],
+      "defines": ["_DEBUG", "UNICODE", "_UNICODE", "__MINGW32__", "__MINGW64__"],
       "compilerPath": "C:/MSYS2/mingw64/bin/g++.exe",
       "compilerArgs": ["-Wall", "-Wextra", "-pedantic"],
       "cStandard": "c23",

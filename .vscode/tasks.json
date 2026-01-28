@@ -1,4 +1,5 @@
 {
+  //===----------------------- CMAKE TASKS CONFIGURATION -----------------------===//
   "version": "2.0.0",
   "tasks": [
     {
@@ -54,6 +55,8 @@
       "problemMatcher": [],
       "detail": "Configure project with CMake for Debug build and GoogleTest"
     },
+
+    //===----------------------------- BUILD TASKS -----------------------------===//
     {
       "label": "CMake: Build All",
       "type": "shell",
@@ -97,6 +100,8 @@
       "problemMatcher": ["$gcc"],
       "detail": "Build specific target (prompts for target name)"
     },
+
+    //===----------------------------- CLEAN TASKS -----------------------------===//
     {
       "label": "CMake: Clean",
       "type": "shell",
@@ -139,6 +144,8 @@
       "problemMatcher": [],
       "detail": "Remove build-tests directory and reconfigure for Debug with tests"
     },
+
+    //===----------------------------- RUN & TEST ------------------------------===//
     {
       "label": "Run: Select Target",
       "type": "shell",
@@ -181,6 +188,8 @@
       "problemMatcher": [],
       "detail": "Run all GoogleTest unit tests (requires ENABLE_TESTING=ON)"
     },
+
+    //===--------------------------- UTILITIES TASKS ---------------------------===//
     {
       "label": "Format: clang-format Active File",
       "type": "shell",
@@ -198,20 +207,41 @@
       "detail": "Run clang-tidy on current file"
     }
   ],
+
+  //===--------------------------- BUILD/RUN TARGETS ---------------------------===//
   "inputs": [
     {
       "id": "targetName",
       "type": "pickString",
       "description": "Select target to build",
       "options": [
-        "test_bst",
-        "test_stacks_queues",
-        "test_lists",
-        "test_avl",
-        "test_hash_chaining",
-        "test_hash_open_addressing"
+        "all",
+        "test_Static_Array",
+        "test_Dynamic_Array",
+        "test_Circular_Array",
+        "test_Singly_Linked_List",
+        "test_Doubly_Linked_List",
+        "test_Circular_Linked_List",
+        "test_Stacks_Queues",
+        "test_Deque",
+        "test_Priority_Queue",
+        "test_Complete_Binary_Tree",
+        "test_BST",
+        "test_BBT",
+        "test_AVL",
+        "test_RBT",
+        "test_Trie",
+        "test_Dijkstra",
+        "test_Graph_ADJ_List",
+        "test_Graph_ADJ_Matrix",
+        "test_Disjoint_Set_Union",
+        "test_Tree_Map",
+        "test_HashMap",
+        "test_Hash_Chaining",
+        "test_Hash_Open_Addr",
+        "test_Heaps"
       ],
-      "default": "test_bst"
+      "default": "test_BST"
     },
     {
       "id": "runTarget",
@@ -243,7 +273,7 @@
         "test_Hash_Open_Addr",
         "test_Heaps"
       ],
-      "default": "test_bst"
+      "default": "test_BST"
     }
   ]
 }
