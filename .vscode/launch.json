@@ -11,7 +11,7 @@
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": ["command script import ${env:HOME}/.lldb/LLDB_Formatters"]
+      "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
     },
     {
       "name": "(macOS) Debug with MS C/C++",
@@ -29,7 +29,7 @@
       "setupCommands": [
         {
           "description": "Load Custom LLDB Formatters",
-          "text": "command script import ${env:HOME}/.lldb/LLDB_Formatters",
+          "text": "command script import ~/.lldb/LLDB_Formatters",
           "ignoreFailures": true
         },
         {
@@ -49,7 +49,7 @@
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": ["command script import /home/lcs-dev/.lldb/LLDB_Formatters"]
+      "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
     },
     {
       "name": "(Linux) Debug with MS C/C++",
@@ -101,7 +101,7 @@
       "setupCommands": [
         {
           "description": "Load Custom LLDB Formatters (macOS)",
-          "text": "command script import ${env:HOME}/.lldb/LLDB_Formatters",
+          "text": "command script import ~/.lldb/LLDB_Formatters",
           "ignoreFailures": true
         },
         {
