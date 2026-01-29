@@ -219,6 +219,7 @@ target_sources(ads_lib
             include/ads/trees/AVL_Tree.hpp
             include/ads/trees/Complete_Binary_Tree.hpp
             include/ads/trees/Fenwick_Tree.hpp
+            include/ads/trees/Fenwick_Tree_Range_Update.hpp
 
             # Heap implementations.
             include/ads/heaps/Heap_Exception.hpp
@@ -267,6 +268,7 @@ target_sources(ads_lib
         src/ads/trees/Binary_Search_Tree.tpp
         src/ads/trees/Complete_Binary_Tree.tpp
         src/ads/trees/Fenwick_Tree.tpp
+        src/ads/trees/Fenwick_Tree_Range_Update.tpp
         src/ads/heaps/Min_Heap.tpp
         src/ads/heaps/Max_Heap.tpp
         src/ads/hash/Hash_Table_Chaining.tpp
@@ -566,6 +568,9 @@ if(ENABLE_TESTING)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Fenwick_Tree.cpp")
         list(APPEND TEST_SOURCES tests/Test_Fenwick_Tree.cpp)
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Fenwick_Tree_Range_Update.cpp")
+        list(APPEND TEST_SOURCES tests/Test_Fenwick_Tree_Range_Update.cpp)
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_Disjoint_Set_Union.cpp")
        list(APPEND TEST_SOURCES tests/Test_Disjoint_Set_Union.cpp)
