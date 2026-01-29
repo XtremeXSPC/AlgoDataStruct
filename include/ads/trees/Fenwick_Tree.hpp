@@ -16,6 +16,8 @@
 #ifndef FENWICK_TREE_HPP
 #define FENWICK_TREE_HPP
 
+#include <bit>
+#include <concepts>
 #include <cstddef>
 #include <initializer_list>
 #include <utility>
@@ -26,6 +28,23 @@
 namespace ads::trees {
 
 /**
+ * @brief Concept for types that can be used as Fenwick tree elements.
+ *
+ * @details A type T satisfies FenwickElement if it supports:
+ *          - Default construction (T{})
+ *          - Compound addition (a += b)
+ *          - Subtraction (a - b) for computing deltas
+ *          - Comparison with < for lower_bound operations
+ */
+template <typename T>
+concept FenwickElement = requires(T a, T b) {
+  { T{} };
+  { a += b } -> std::same_as<T&>;
+  { a - b } -> std::convertible_to<T>;
+  { a < b } -> std::convertible_to<bool>;
+};
+
+/**
  * @brief Fenwick Tree (Binary Indexed Tree) for efficient prefix and range sums.
  *
  * @details This data structure supports point updates and prefix sum queries in
@@ -33,12 +52,9 @@ namespace ads::trees {
  *          internal tree uses 1-based indexing. A copy of the original values is
  *          stored to enable value_at() and set() operations.
  *
- * @tparam T Value type. Must support:
- *           - Default construction (T{})
- *           - operator+= for accumulation
- *           - operator- for range sums and set() deltas
+ * @tparam T Value type satisfying FenwickElement concept.
  */
-template <typename T>
+template <FenwickElement T>
 class FenwickTree {
 public:
   using value_type      = T;
@@ -211,6 +227,15 @@ public:
    */
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
+  /**
+   * @brief Finds the smallest index where prefix_sum(index) >= target_sum.
+   * @param target_sum The target sum to search for.
+   * @return The smallest index satisfying the condition, or size() if not found.
+   * @complexity Time O(log n), Space O(1)
+   * @note Assumes all values are non-negative. For negative values, behavior is undefined.
+   */
+  [[nodiscard]] auto lower_bound(const T& target_sum) const -> size_t;
+
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
@@ -238,6 +263,8 @@ private:
    * @param right Zero-based right boundary (inclusive).
    */
   auto validate_range(size_t left, size_t right) const -> void;
+
+  //===----------------------------- DATA MEMBERS ------------------------------===//
 
   std::vector<T> values_;   ///< Original values for value_at() and set().
   std::vector<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
