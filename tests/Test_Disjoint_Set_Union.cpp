@@ -59,8 +59,8 @@ TEST_F(DisjointSetUnionTest, AddElementCreatesNewSet) {
 //===-------------------------- ERROR HANDLING TESTS ---------------------------===//
 
 TEST_F(DisjointSetUnionTest, OutOfRangeThrows) {
-  EXPECT_THROW(dsu.find(99), DisjointSetException);
-  EXPECT_THROW(dsu.connected(1, 99), DisjointSetException);
+  EXPECT_THROW({ [[maybe_unused]] auto _ = dsu.find(99); }, DisjointSetException);
+  EXPECT_THROW({ [[maybe_unused]] auto _ = dsu.connected(1, 99); }, DisjointSetException);
 }
 
 //===---------------------------------------------------------------------------===//
