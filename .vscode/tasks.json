@@ -265,6 +265,7 @@
         "test_RBT",
         "test_Trie",
         "test_Fenwick_Tree",
+        "test_Segment_Tree",
         "test_Dijkstra",
         "test_Graph_ADJ_List",
         "test_Graph_ADJ_Matrix",
