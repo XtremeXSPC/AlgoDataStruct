@@ -3,8 +3,8 @@
  * @file main_Segment_Tree.cc
  * @author Costantino Lombardi
  * @brief Comprehensive demo program for SegmentTree implementation.
- * @version 0.1
- * @date 2026-02-03
+ * @version 0.2
+ * @date 2026-02-04
  *
  * @copyright MIT License 2026
  *
@@ -13,7 +13,9 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include <algorithm>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -27,6 +29,33 @@ using std::string;
 using std::vector;
 
 using ads::trees::SegmentTree;
+
+struct MaxCombine {
+  auto operator()(int left, int right) const -> int { return std::max(left, right); }
+};
+
+struct MaxIdentity {
+  auto operator()() const -> int { return std::numeric_limits<int>::min(); }
+};
+
+struct SumCount {
+  int sum   = 0;
+  int count = 0;
+};
+
+struct SumCountCombine {
+  auto operator()(const SumCount& left, const SumCount& right) const -> SumCount {
+    return SumCount{left.sum + right.sum, left.count + right.count};
+  }
+};
+
+struct SumCountIdentity {
+  auto operator()() const -> SumCount { return SumCount{}; }
+};
+
+struct SumCountLeaf {
+  auto operator()(int value) const -> SumCount { return SumCount{value, 1}; }
+};
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
@@ -98,6 +127,37 @@ void demo_reset_clear() {
   print_tree_state(tree, "After clear");
 }
 
+//===------------------------- CUSTOM FUNCTOR DEMO -----------------------------===//
+
+// Demonstrates custom combine and identity functors (max segment tree).
+void demo_custom_functors() {
+  ads::demo::print_section("Demo: Custom Functors (Max)");
+
+  vector<int>                                    values = {1, 3, -2, 8, -7};
+  SegmentTree<int, int, MaxCombine, MaxIdentity> tree(values);
+
+  cout << "Max [0..4]: " << tree.range_query(0, 4) << "\n";
+  cout << "Max [1..3]: " << tree.range_query(1, 3) << "\n";
+
+  cout << "Setting index 3 to 0\n";
+  tree.set(3, 0);
+  cout << "Max [0..4] after update: " << tree.range_query(0, 4) << "\n";
+}
+
+//===------------------------- CUSTOM NODE DEMO -------------------------------===//
+
+// Demonstrates custom node aggregation using a leaf builder.
+void demo_custom_nodes() {
+  ads::demo::print_section("Demo: Custom Nodes (Sum + Count)");
+
+  vector<int>                                                                 values = {2, 4, 6, 8};
+  SegmentTree<int, SumCount, SumCountCombine, SumCountIdentity, SumCountLeaf> tree(values);
+
+  SumCount result = tree.range_query(1, 3);
+  cout << "Range [1..3] sum: " << result.sum << "\n";
+  cout << "Range [1..3] count: " << result.count << "\n";
+}
+
 //===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
 
 // Demonstrates exception handling for invalid operations.
@@ -129,6 +189,8 @@ auto main() -> int {
     demo_build_and_queries();
     demo_updates();
     demo_reset_clear();
+    demo_custom_functors();
+    demo_custom_nodes();
     demo_exceptions();
 
     ads::demo::print_footer();
