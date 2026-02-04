@@ -2,14 +2,16 @@
 /**
  * @file Test_Segment_Tree.cpp
  * @brief Google Test unit tests for SegmentTree implementation.
- * @version 0.1
- * @date 2026-02-03
+ * @version 0.2
+ * @date 2026-02-04
  *
  * @copyright MIT License 2026
  */
 //===---------------------------------------------------------------------------===//
 
+#include <algorithm>
 #include <gtest/gtest.h>
+#include <limits>
 #include <vector>
 
 #include "../include/ads/trees/Segment_Tree.hpp"
@@ -19,6 +21,33 @@ using namespace ads::trees;
 class SegmentTreeTest : public ::testing::Test {
 protected:
   SegmentTree<int> tree{std::vector<int>{1, 2, 3, 4, 5}};
+};
+
+struct MaxCombine {
+  auto operator()(int left, int right) const -> int { return std::max(left, right); }
+};
+
+struct MaxIdentity {
+  auto operator()() const -> int { return std::numeric_limits<int>::min(); }
+};
+
+struct SumCount {
+  int sum   = 0;
+  int count = 0;
+};
+
+struct SumCountCombine {
+  auto operator()(const SumCount& left, const SumCount& right) const -> SumCount {
+    return SumCount{left.sum + right.sum, left.count + right.count};
+  }
+};
+
+struct SumCountIdentity {
+  auto operator()() const -> SumCount { return SumCount{}; }
+};
+
+struct SumCountLeaf {
+  auto operator()(int value) const -> SumCount { return SumCount{value, 1}; }
 };
 
 //===---------------------------- BASIC STATE TESTS ----------------------------===//
@@ -89,6 +118,24 @@ TEST(SegmentTreeErrorTest, OutOfRangeThrows) {
   EXPECT_THROW(segment.set(3, 1), SegmentTreeException);
   EXPECT_THROW({ [[maybe_unused]] auto _ = segment.range_sum(2, 1); }, SegmentTreeException);
   EXPECT_THROW({ [[maybe_unused]] auto _ = segment.range_sum(0, 3); }, SegmentTreeException);
+}
+
+//===--------------------------- FUNCTOR EXTENSION TESTS ------------------------===//
+
+TEST(SegmentTreeFunctorTest, MaxAggregate) {
+  SegmentTree<int, int, MaxCombine, MaxIdentity> segment({1, 5, 3, -2});
+  EXPECT_EQ(segment.range_query(0, 3), 5);
+  EXPECT_EQ(segment.range_query(2, 3), 3);
+
+  segment.set(1, -4);
+  EXPECT_EQ(segment.range_query(0, 3), 3);
+}
+
+TEST(SegmentTreeFunctorTest, CustomNodeAggregation) {
+  SegmentTree<int, SumCount, SumCountCombine, SumCountIdentity, SumCountLeaf> segment({2, 4, 6, 8});
+  SumCount                                                                    result = segment.range_query(1, 3);
+  EXPECT_EQ(result.sum, 18);
+  EXPECT_EQ(result.count, 3);
 }
 
 //===---------------------------------------------------------------------------===//
