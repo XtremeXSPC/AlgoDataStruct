@@ -9,13 +9,14 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <algorithm>
+#include "../include/ads/trees/Trie.hpp"
+
 #include <gtest/gtest.h>
+
+#include <algorithm>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Trie.hpp"
 
 using namespace ads::trees;
 
@@ -281,7 +282,7 @@ TEST_F(TrieTest, NoSuggestionsForUnknownPrefix) {
 //===--------------------------- LARGE DATASET TESTS ---------------------------===//
 
 TEST_F(TrieTest, LargeDataset) {
-  const int N = 1000;
+  const int N = 1'000;
   for (int i = 0; i < N; ++i) {
     trie.insert("word" + std::to_string(i));
   }

@@ -21,11 +21,17 @@ namespace ads::trees {
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::
-    SegmentTree(Combine combine, Identity identity, LeafBuilder leaf_builder) noexcept(
-        std::is_nothrow_move_constructible_v<Combine> && std::is_nothrow_move_constructible_v<Identity>
-        && std::is_nothrow_move_constructible_v<LeafBuilder>) :
-    combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(), tree_(), size_(0) {
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
+    Combine combine, Identity identity,
+    LeafBuilder leaf_builder) noexcept(std::is_nothrow_move_constructible_v<Combine>
+                                       && std::is_nothrow_move_constructible_v<Identity>
+                                       && std::is_nothrow_move_constructible_v<LeafBuilder>) :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(),
+    tree_(),
+    size_(0) {
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
@@ -38,25 +44,42 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
-    size_type size, Combine combine, Identity identity, LeafBuilder leaf_builder)
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(size_type size, Combine combine,
+                                                                                Identity    identity,
+                                                                                LeafBuilder leaf_builder)
   requires std::default_initializable<Value>
-    : combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(), tree_(), size_(0) {
+    :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(),
+    tree_(),
+    size_(0) {
   reset(size);
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(size_type size, const Value& value) :
-    combine_(), identity_(), leaf_builder_(), values_(size, value), tree_(), size_(size) {
+    combine_(),
+    identity_(),
+    leaf_builder_(),
+    values_(size, value),
+    tree_(),
+    size_(size) {
   build_tree();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
-    size_type size, const Value& value, Combine combine, Identity identity, LeafBuilder leaf_builder) :
-    combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(size, value), tree_(),
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(size_type size, const Value& value,
+                                                                                Combine combine, Identity identity,
+                                                                                LeafBuilder leaf_builder) :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(size, value),
+    tree_(),
     size_(size) {
   build_tree();
 }
@@ -64,7 +87,12 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(const std::vector<Value>& values) :
-    combine_(), identity_(), leaf_builder_(), values_(values), tree_(), size_(values.size()) {
+    combine_(),
+    identity_(),
+    leaf_builder_(),
+    values_(values),
+    tree_(),
+    size_(values.size()) {
   build_tree();
 }
 
@@ -72,28 +100,44 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(std::vector<Value>&& values) noexcept(
     std::is_nothrow_move_constructible_v<std::vector<Value>>) :
-    combine_(), identity_(), leaf_builder_(), values_(std::move(values)), tree_(), size_(0) {
+    combine_(),
+    identity_(),
+    leaf_builder_(),
+    values_(std::move(values)),
+    tree_(),
+    size_(0) {
   size_ = values_.size();
   build_tree();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
-    const std::vector<Value>& values, Combine combine, Identity identity, LeafBuilder leaf_builder) :
-    combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(values), tree_(),
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(const std::vector<Value>& values,
+                                                                                Combine combine, Identity identity,
+                                                                                LeafBuilder leaf_builder) :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(values),
+    tree_(),
     size_(values.size()) {
   build_tree();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::
-    SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity, LeafBuilder leaf_builder) noexcept(
-        std::is_nothrow_move_constructible_v<std::vector<Value>> && std::is_nothrow_move_constructible_v<Combine>
-        && std::is_nothrow_move_constructible_v<Identity> && std::is_nothrow_move_constructible_v<LeafBuilder>) :
-    combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(std::move(values)),
-    tree_(), size_(0) {
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
+    std::vector<Value>&& values, Combine combine, Identity identity,
+    LeafBuilder leaf_builder) noexcept(std::is_nothrow_move_constructible_v<std::vector<Value>>
+                                       && std::is_nothrow_move_constructible_v<Combine>
+                                       && std::is_nothrow_move_constructible_v<Identity>
+                                       && std::is_nothrow_move_constructible_v<LeafBuilder>) :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(std::move(values)),
+    tree_(),
+    size_(0) {
   size_ = values_.size();
   build_tree();
 }
@@ -101,15 +145,25 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(std::initializer_list<Value> values) :
-    combine_(), identity_(), leaf_builder_(), values_(values), tree_(), size_(values.size()) {
+    combine_(),
+    identity_(),
+    leaf_builder_(),
+    values_(values),
+    tree_(),
+    size_(values.size()) {
   build_tree();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
-    std::initializer_list<Value> values, Combine combine, Identity identity, LeafBuilder leaf_builder) :
-    combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(values), tree_(),
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(std::initializer_list<Value> values,
+                                                                                Combine combine, Identity identity,
+                                                                                LeafBuilder leaf_builder) :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(values),
+    tree_(),
     size_(values.size()) {
   build_tree();
 }
@@ -118,7 +172,12 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 template <std::input_iterator InputIt>
 constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(InputIt first, InputIt last) :
-    combine_(), identity_(), leaf_builder_(), values_(first, last), tree_(), size_(0) {
+    combine_(),
+    identity_(),
+    leaf_builder_(),
+    values_(first, last),
+    tree_(),
+    size_(0) {
   size_ = values_.size();
   build_tree();
 }
@@ -126,9 +185,14 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 template <std::input_iterator InputIt>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
-    InputIt first, InputIt last, Combine combine, Identity identity, LeafBuilder leaf_builder) :
-    combine_(std::move(combine)), identity_(std::move(identity)), leaf_builder_(std::move(leaf_builder)), values_(first, last), tree_(),
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(InputIt first, InputIt last,
+                                                                                Combine combine, Identity identity,
+                                                                                LeafBuilder leaf_builder) :
+    combine_(std::move(combine)),
+    identity_(std::move(identity)),
+    leaf_builder_(std::move(leaf_builder)),
+    values_(first, last),
+    tree_(),
     size_(0) {
   size_ = values_.size();
   build_tree();
@@ -137,14 +201,19 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(SegmentTree&& other) noexcept :
-    combine_(std::move(other.combine_)), identity_(std::move(other.identity_)), leaf_builder_(std::move(other.leaf_builder_)),
-    values_(std::move(other.values_)), tree_(std::move(other.tree_)), size_(other.size_) {
+    combine_(std::move(other.combine_)),
+    identity_(std::move(other.identity_)),
+    leaf_builder_(std::move(other.leaf_builder_)),
+    values_(std::move(other.values_)),
+    tree_(std::move(other.tree_)),
+    size_(other.size_) {
   other.size_ = 0;
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::operator=(SegmentTree&& other) noexcept -> SegmentTree& {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::operator=(SegmentTree&& other) noexcept
+    -> SegmentTree& {
   if (this != &other) {
     combine_      = std::move(other.combine_);
     identity_     = std::move(other.identity_);
@@ -161,7 +230,8 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::operato
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(const std::vector<Value>& values) -> void {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(const std::vector<Value>& values)
+    -> void {
   values_ = values;
   size_   = values_.size();
   build_tree();
@@ -178,7 +248,8 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(s
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(std::initializer_list<Value> values) -> void {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(std::initializer_list<Value> values)
+    -> void {
   values_.assign(values.begin(), values.end());
   size_ = values_.size();
   build_tree();
@@ -195,7 +266,8 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(I
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::set(size_type index, const Value& value) -> void {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::set(size_type index, const Value& value)
+    -> void {
   validate_index(index);
   values_[index]       = value;
   tree_[size_ + index] = leaf_builder_(value);
@@ -213,7 +285,8 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::set(siz
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::add(size_type index, const Value& delta) -> void
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::add(size_type index, const Value& delta)
+    -> void
   requires detail::Addable<Value>
 {
   validate_index(index);
@@ -244,7 +317,9 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::clear()
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::range_query(size_type left, size_type right) const -> node_type {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::range_query(size_type left,
+                                                                                     size_type right) const
+    -> node_type {
   validate_range(left, right);
 
   // Convert to internal indices: leaves are at [size_, 2*size_).
@@ -271,14 +346,15 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::range_q
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::range_sum(size_type left, size_type right) const -> node_type {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::range_sum(size_type left,
+                                                                                   size_type right) const -> node_type {
   return range_query(left, right);
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::total() const noexcept(detail::is_identity_nothrow_v<Identity>)
-    -> node_type {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::total() const
+    noexcept(detail::is_identity_nothrow_v<Identity>) -> node_type {
   if (is_empty()) {
     return identity_();
   }
@@ -287,14 +363,15 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::total()
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::total_sum() const noexcept(detail::is_identity_nothrow_v<Identity>)
-    -> node_type {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::total_sum() const
+    noexcept(detail::is_identity_nothrow_v<Identity>) -> node_type {
   return total();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::value_at(size_type index) const -> const_reference {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::value_at(size_type index) const
+    -> const_reference {
   validate_index(index);
   return values_[index];
 }
@@ -352,25 +429,29 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::cend() 
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::rbegin() const noexcept -> const_reverse_iterator {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::rbegin() const noexcept
+    -> const_reverse_iterator {
   return values_.crbegin();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::rend() const noexcept -> const_reverse_iterator {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::rend() const noexcept
+    -> const_reverse_iterator {
   return values_.crend();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crbegin() const noexcept -> const_reverse_iterator {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crbegin() const noexcept
+    -> const_reverse_iterator {
   return values_.crbegin();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crend() const noexcept -> const_reverse_iterator {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crend() const noexcept
+    -> const_reverse_iterator {
   return values_.crend();
 }
 
@@ -378,19 +459,22 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crend()
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_combine() const noexcept -> const Combine& {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_combine() const noexcept
+    -> const Combine& {
   return combine_;
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_identity() const noexcept -> const Identity& {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_identity() const noexcept
+    -> const Identity& {
   return identity_;
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_leaf_builder() const noexcept -> const LeafBuilder& {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_leaf_builder() const noexcept
+    -> const LeafBuilder& {
   return leaf_builder_;
 }
 
@@ -441,7 +525,8 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::validat
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::validate_range(size_type left, size_type right) const -> void {
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::validate_range(size_type left,
+                                                                                        size_type right) const -> void {
   if (left > right) {
     throw SegmentTreeException("SegmentTree invalid range: left > right");
   }

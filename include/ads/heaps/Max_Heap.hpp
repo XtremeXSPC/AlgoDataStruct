@@ -16,13 +16,13 @@
 #ifndef MAX_HEAP_HPP
 #define MAX_HEAP_HPP
 
+#include "Heap_Exception.hpp"
+
 #include <algorithm>
 #include <memory>
 #include <new>
 #include <utility>
 #include <vector>
-
-#include "Heap_Exception.hpp"
 
 namespace ads::heaps {
 

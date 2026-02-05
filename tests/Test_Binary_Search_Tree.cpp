@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Binary_Search_Tree.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
 
 using namespace ads::trees;
 
@@ -289,6 +290,7 @@ TEST(BinarySearchTreeCustomTypeTest, CustomComparison) {
     int         age;
 
     bool operator<(const Person& other) const { return age < other.age; }
+
     bool operator==(const Person& other) const { return age == other.age; }
   };
 

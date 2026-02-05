@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Static_Array.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/arrays/Static_Array.hpp"
 
 using namespace ads::arrays;
 

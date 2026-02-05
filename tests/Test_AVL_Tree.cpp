@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/AVL_Tree.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/AVL_Tree.hpp"
 
 using namespace ads::trees;
 

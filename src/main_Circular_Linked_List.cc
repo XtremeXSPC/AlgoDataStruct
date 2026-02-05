@@ -13,11 +13,11 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <iostream>
-#include <string>
-
 #include "../include/ads/lists/Circular_Linked_List.hpp"
 #include "support/Demo_Utilities.hpp"
+
+#include <iostream>
+#include <string>
 
 using std::cerr;
 using std::cout;

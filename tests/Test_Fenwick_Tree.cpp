@@ -9,10 +9,11 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-#include <vector>
-
 #include "../include/ads/trees/Fenwick_Tree.hpp"
+
+#include <gtest/gtest.h>
+
+#include <vector>
 
 using namespace ads::trees;
 

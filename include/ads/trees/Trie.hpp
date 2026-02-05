@@ -206,7 +206,9 @@ private:
    */
   struct TrieNode {
     // Children storage: map for flexibility, array for speed.
-    std::conditional_t<UseMap, std::unordered_map<char, std::unique_ptr<TrieNode>>, std::array<std::unique_ptr<TrieNode>, 26>> children;
+    std::conditional_t<UseMap, std::unordered_map<char, std::unique_ptr<TrieNode>>,
+                       std::array<std::unique_ptr<TrieNode>, 26>>
+        children;
 
     bool is_end_of_word; ///< True if this node marks end of a word.
 
@@ -261,7 +263,8 @@ private:
    * @param current_word Prefix accumulated so far.
    * @param results Vector to store results.
    */
-  void dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const;
+  void dfs_collect_words(const TrieNode* node, const std::string& current_word,
+                         std::vector<std::string>& results) const;
 
   /**
    * @brief Recursive helper to count words with prefix.

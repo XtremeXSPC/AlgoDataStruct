@@ -45,7 +45,9 @@ FenwickTree<T>::FenwickTree(std::initializer_list<T> values) : values_(), tree_(
 
 template <FenwickElement T>
 FenwickTree<T>::FenwickTree(FenwickTree&& other) noexcept :
-    values_(std::move(other.values_)), tree_(std::move(other.tree_)), size_(other.size_) {
+    values_(std::move(other.values_)),
+    tree_(std::move(other.tree_)),
+    size_(other.size_) {
   other.size_ = 0;
 }
 

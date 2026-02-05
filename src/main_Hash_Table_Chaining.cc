@@ -13,6 +13,9 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/hash/Hash_Table_Chaining.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <format>
 #include <iostream>
@@ -20,9 +23,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include "../include/ads/hash/Hash_Table_Chaining.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -203,7 +203,8 @@ void demo_rehashing() {
   for (int i = 1; i <= 20; ++i) {
     table.insert(i, i * 10);
     if (i % 5 == 0) {
-      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor() << '\n';
+      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor()
+           << '\n';
     }
   }
 
@@ -253,6 +254,7 @@ struct Person {
   int    age;
 
   Person() : name(""), age(0) {}
+
   Person(const string& n, int a) : name(n), age(a) {}
 
   bool operator==(const Person& other) const { return name == other.name && age == other.age; }
@@ -380,7 +382,7 @@ void demo_clear() {
   print_stats(table, "table");
 
   cout << "\nInserting after clear:\n";
-  table.insert(42, 1764);
+  table.insert(42, 1'764);
   cout << "  Contains 42? " << (table.contains(42) ? "Yes" : "No") << '\n';
   cout << "  table[42] = " << table[42] << '\n';
 }
@@ -391,7 +393,7 @@ void demo_clear() {
 void demo_performance() {
   ads::demo::print_section("Demo: Performance Comparison");
 
-  const int N = 100000;
+  const int N = 100'000;
 
   // Test our hash table.
   auto start = std::chrono::high_resolution_clock::now();

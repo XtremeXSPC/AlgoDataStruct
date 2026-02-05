@@ -9,15 +9,16 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Lazy_Segment_Tree.hpp"
+#include "../include/ads/trees/Segment_Tree.hpp"
+
+#include <gtest/gtest.h>
+
 #include <algorithm>
 #include <array>
-#include <gtest/gtest.h>
 #include <limits>
 #include <numeric>
 #include <vector>
-
-#include "../include/ads/trees/Lazy_Segment_Tree.hpp"
-#include "../include/ads/trees/Segment_Tree.hpp"
 
 using namespace ads::trees;
 
@@ -364,12 +365,12 @@ TEST(SegmentTreeEdgeCaseTest, SingleElementQueries) {
 }
 
 TEST(SegmentTreeEdgeCaseTest, LargeTree) {
-  std::vector<int> large(1000);
+  std::vector<int> large(1'000);
   std::iota(large.begin(), large.end(), 1); // 1 to 1000
   SegmentTree<int> segment(large);
 
-  EXPECT_EQ(segment.size(), 1000);
-  EXPECT_EQ(segment.total(), 500500); // Sum 1 to 1000
+  EXPECT_EQ(segment.size(), 1'000);
+  EXPECT_EQ(segment.total(), 500'500); // Sum 1 to 1000
 
   // Test various range queries
   EXPECT_EQ(segment.range_query(0, 9), 55);    // Sum 1 to 10

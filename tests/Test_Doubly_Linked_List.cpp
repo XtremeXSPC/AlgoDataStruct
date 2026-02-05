@@ -11,11 +11,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/lists/Doubly_Linked_List.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/lists/Doubly_Linked_List.hpp"
 
 using namespace ads::lists;
 

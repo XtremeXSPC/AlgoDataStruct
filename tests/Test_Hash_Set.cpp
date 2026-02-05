@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/associative/Hash_Set.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/associative/Hash_Set.hpp"
 
 using namespace ads::associative;
 

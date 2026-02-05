@@ -13,12 +13,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Fenwick_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Fenwick_Tree.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;

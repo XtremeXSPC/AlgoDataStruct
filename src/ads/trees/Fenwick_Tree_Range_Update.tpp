@@ -30,7 +30,8 @@ FenwickTreeRangeUpdate<T>::FenwickTreeRangeUpdate(size_t size) : tree_(), size_(
 
 template <FenwickElement T>
 FenwickTreeRangeUpdate<T>::FenwickTreeRangeUpdate(FenwickTreeRangeUpdate&& other) noexcept :
-    tree_(std::move(other.tree_)), size_(other.size_) {
+    tree_(std::move(other.tree_)),
+    size_(other.size_) {
   other.size_ = 0;
 }
 

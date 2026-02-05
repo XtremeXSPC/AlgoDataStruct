@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/B_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <random>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/B_Tree.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -37,7 +37,8 @@ using namespace ads::trees;
 // Helper function to print tree contents.
 template <int MinDegree>
 void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
-  cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << ", nodes: " << tree.count_nodes() << "):\n";
+  cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height()
+       << ", nodes: " << tree.count_nodes() << "):\n";
 
   if (tree.is_empty()) {
     cout << "  (empty)\n";
@@ -109,7 +110,8 @@ void demo_node_splitting() {
   }
 
   print_btree(btree, "btree");
-  cout << "\nB-Tree properties maintained after all insertions: " << (btree.validate_properties() ? "yes" : "no") << '\n';
+  cout << "\nB-Tree properties maintained after all insertions: " << (btree.validate_properties() ? "yes" : "no")
+       << '\n';
 }
 
 //===------------------------- DIFFERENT DEGREES DEMO --------------------------===//
@@ -261,7 +263,8 @@ void demo_string_type() {
 
   B_Tree<string, 3> btree;
 
-  vector<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon"};
+  vector<string> words = {"apple", "banana", "cherry",   "date", "elderberry",
+                          "fig",   "grape",  "honeydew", "kiwi", "lemon"};
 
   cout << "Inserting fruits: ";
   for (const auto& word : words) {
@@ -285,7 +288,7 @@ void demo_string_type() {
 void demo_performance() {
   ads::demo::print_section("Demo: Performance");
 
-  const int N = 10000;
+  const int N = 10'000;
 
   cout << "Inserting " << N << " elements sequentially...\n";
 
@@ -347,7 +350,7 @@ void demo_clear_reuse() {
 void demo_height_comparison() {
   ads::demo::print_section("Demo: Height Comparison");
 
-  const int N = 1000;
+  const int N = 1'000;
 
   B_Tree<int, 2>  btree2;
   B_Tree<int, 5>  btree5;

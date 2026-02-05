@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/AVL_Tree.hpp"
+#include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <random>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/AVL_Tree.hpp"
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -323,7 +323,7 @@ void demo_sorted_sequence() {
   AVLTree<int>          avl;
   BinarySearchTree<int> bst;
 
-  const int N = 1000;
+  const int N = 1'000;
   cout << "Inserting sorted sequence from 1 to " << N << "\n\n";
 
   // Insert into both trees.
@@ -351,7 +351,7 @@ void demo_sorted_sequence() {
 void demo_performance() {
   ads::demo::print_section("Demo: Performance Comparison");
 
-  const int N = 10000;
+  const int N = 10'000;
 
   // Random number generator.
   std::random_device              rd;

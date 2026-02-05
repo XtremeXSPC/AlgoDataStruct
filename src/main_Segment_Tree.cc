@@ -13,14 +13,14 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Segment_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <algorithm>
 #include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Segment_Tree.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;

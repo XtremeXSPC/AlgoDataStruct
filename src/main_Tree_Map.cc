@@ -13,11 +13,11 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <iostream>
-#include <string>
-
 #include "../include/ads/associative/Tree_Map.hpp"
 #include "support/Demo_Utilities.hpp"
+
+#include <iostream>
+#include <string>
 
 using std::cerr;
 using std::cout;

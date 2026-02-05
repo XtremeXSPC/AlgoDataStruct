@@ -9,6 +9,11 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/algorithms/Sorting.hpp"
+#include "../include/ads/arrays/Dynamic_Array.hpp"
+#include "../include/ads/arrays/Static_Array.hpp"
+#include "../include/ads/lists/Singly_Linked_List.hpp"
+
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -17,11 +22,6 @@
 #include <iterator>
 #include <numbers>
 #include <vector>
-
-#include "../include/ads/algorithms/Sorting.hpp"
-#include "../include/ads/arrays/Dynamic_Array.hpp"
-#include "../include/ads/arrays/Static_Array.hpp"
-#include "../include/ads/lists/Singly_Linked_List.hpp"
 
 using namespace ads::algorithms;
 using namespace ads::lists;
@@ -82,9 +82,11 @@ TEST(SortingAlgorithmsTest, ShellSortHandlesNegatives) {
 }
 
 TEST(SortingAlgorithmsTest, MergeSortIsStable) {
-  std::vector<StableItem> items = {{.key = 2, .id = 0}, {.key = 1, .id = 0}, {.key = 2, .id = 1}, {.key = 1, .id = 1}, {.key = 2, .id = 2}};
+  std::vector<StableItem> items = {
+      {.key = 2, .id = 0}, {.key = 1, .id = 0}, {.key = 2, .id = 1}, {.key = 1, .id = 1}, {.key = 2, .id = 2}};
 
-  merge_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
+  merge_sort(items.begin(), items.end(),
+             [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
 
   std::vector<int> keys;
   std::vector<int> ids_for_twos;
@@ -131,7 +133,8 @@ TEST(SortingAlgorithmsTest, HeapSortWithCustomComparator) {
 }
 
 TEST(SortingAlgorithmsTest, TimSortIsStable) {
-  std::vector<StableItem> items = {{.key = 3, .id = 0}, {.key = 2, .id = 0}, {.key = 3, .id = 1}, {.key = 1, .id = 0}, {.key = 2, .id = 1}};
+  std::vector<StableItem> items = {
+      {.key = 3, .id = 0}, {.key = 2, .id = 0}, {.key = 3, .id = 1}, {.key = 1, .id = 0}, {.key = 2, .id = 1}};
 
   tim_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
 
@@ -325,10 +328,10 @@ TEST(SortingIntegerTypesTest, CountingSortWithChar) {
 }
 
 TEST(SortingIntegerTypesTest, CountingSortWithShort) {
-  std::vector<short> data = {1000, -500, 0, 32000, -32000};
+  std::vector<short> data = {1'000, -500, 0, 32'000, -32'000};
   counting_sort(data.begin(), data.end());
 
-  std::vector<short> expected = {-32000, -500, 0, 1000, 32000};
+  std::vector<short> expected = {-32'000, -500, 0, 1'000, 32'000};
   EXPECT_EQ(data, expected);
 }
 
@@ -349,10 +352,10 @@ TEST(SortingIntegerTypesTest, RadixSortWithChar) {
 }
 
 TEST(SortingIntegerTypesTest, RadixSortWithShort) {
-  std::vector<short> data = {1000, -500, 0, 32000, -32000};
+  std::vector<short> data = {1'000, -500, 0, 32'000, -32'000};
   radix_sort(data.begin(), data.end());
 
-  std::vector<short> expected = {-32000, -500, 0, 1000, 32000};
+  std::vector<short> expected = {-32'000, -500, 0, 1'000, 32'000};
   EXPECT_EQ(data, expected);
 }
 
@@ -361,9 +364,9 @@ TEST(SortingIntegerTypesTest, RadixSortWithUnsignedTypes) {
   radix_sort(uchar_data.begin(), uchar_data.end());
   EXPECT_EQ(uchar_data, (std::vector<unsigned char>{0, 64, 128, 192, 255}));
 
-  std::vector<unsigned short> ushort_data = {65535, 0, 32768, 1000};
+  std::vector<unsigned short> ushort_data = {65'535, 0, 32'768, 1'000};
   radix_sort(ushort_data.begin(), ushort_data.end());
-  EXPECT_EQ(ushort_data, (std::vector<unsigned short>{0, 1000, 32768, 65535}));
+  EXPECT_EQ(ushort_data, (std::vector<unsigned short>{0, 1'000, 32'768, 65'535}));
 }
 
 //===----------------------- BUCKET SORT SPECIAL VALUES ------------------------===//
@@ -374,7 +377,8 @@ TEST(SortingBucketSortTest, ThrowsOnNaN) {
 }
 
 TEST(SortingBucketSortTest, HandlesInfinity) {
-  std::vector<double> data = {3.0, std::numeric_limits<double>::infinity(), 1.0, -std::numeric_limits<double>::infinity(), 2.0};
+  std::vector<double> data = {3.0, std::numeric_limits<double>::infinity(), 1.0,
+                              -std::numeric_limits<double>::infinity(), 2.0};
   bucket_sort(data.begin(), data.end());
 
   EXPECT_EQ(data[0], -std::numeric_limits<double>::infinity());
@@ -411,7 +415,7 @@ TEST(SortingCountingSortTest, FullInt8RangeWorks) {
 //===---------------------------- LARGE DATA TESTS -----------------------------===//
 
 TEST(SortingLargeDataTest, QuickSortLargeReversed) {
-  const std::size_t size = 10000;
+  const std::size_t size = 10'000;
   std::vector<int>  data(size);
   std::vector<int>  expected(size);
   for (std::size_t i = 0; i < size; ++i) {
@@ -424,7 +428,7 @@ TEST(SortingLargeDataTest, QuickSortLargeReversed) {
 }
 
 TEST(SortingLargeDataTest, TimSortNearlySorted) {
-  const std::size_t size = 1000;
+  const std::size_t size = 1'000;
   std::vector<int>  data(size);
   for (std::size_t i = 0; i < size; ++i) {
     data[i] = static_cast<int>(i);
@@ -442,10 +446,10 @@ TEST(SortingLargeDataTest, TimSortNearlySorted) {
 }
 
 TEST(SortingLargeDataTest, MergeSortRandomData) {
-  const std::size_t size = 5000;
+  const std::size_t size = 5'000;
   std::vector<int>  data(size);
   for (std::size_t i = 0; i < size; ++i) {
-    data[i] = static_cast<int>((i * 31337) % 10000);
+    data[i] = static_cast<int>((i * 31'337) % 10'000);
   }
 
   std::vector<int> expected = data;

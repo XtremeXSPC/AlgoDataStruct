@@ -9,9 +9,9 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-
 #include "../include/ads/trees/Fenwick_Tree_Range_Update.hpp"
+
+#include <gtest/gtest.h>
 
 using namespace ads::trees;
 

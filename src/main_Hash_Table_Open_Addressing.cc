@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/hash/Hash_Table_Chaining.hpp"
+#include "../include/ads/hash/Hash_Table_Open_Addressing.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <random>
 #include <string>
 #include <vector>
-
-#include "../include/ads/hash/Hash_Table_Chaining.hpp"
-#include "../include/ads/hash/Hash_Table_Open_Addressing.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -95,7 +95,8 @@ void demo_basic_operations() {
 void demo_probing_strategies() {
   ads::demo::print_section("Demo: Different Probing Strategies");
 
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
+  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC,
+                                        ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     cout << "\nTesting " << strategy_to_string(strategy) << ":\n";
@@ -203,7 +204,8 @@ void demo_rehashing() {
   for (int i = 1; i <= 20; ++i) {
     table.insert(i, i * 10);
     if (i % 5 == 0) {
-      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor() << '\n';
+      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor()
+           << '\n';
     }
   }
 
@@ -353,7 +355,7 @@ void demo_clear() {
   print_stats(table, "table");
 
   cout << "\nInserting after clear:\n";
-  table.insert(42, 1764);
+  table.insert(42, 1'764);
   cout << "  Contains 42? " << (table.contains(42) ? "Yes" : "No") << '\n';
   cout << "  table[42] = " << table[42] << '\n';
 }
@@ -364,10 +366,11 @@ void demo_clear() {
 void demo_performance_comparison() {
   ads::demo::print_section("Demo: Performance Comparison");
 
-  const int N = 50000;
+  const int N = 50'000;
 
   // Test Open Addressing with different strategies.
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
+  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC,
+                                        ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     auto start = std::chrono::high_resolution_clock::now();
@@ -422,7 +425,7 @@ void demo_edge_cases() {
 
   // Test single element.
   cout << "\nTesting single element:\n";
-  table.insert(42, 1764);
+  table.insert(42, 1'764);
   print_stats(table, "single element table");
 
   // Test operator[] with non-existent key.

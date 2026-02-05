@@ -40,6 +40,7 @@ public:
 class QueueOverflowException : public QueueException {
 public:
   using QueueException::QueueException;
+
   QueueOverflowException() : QueueException("Queue overflow: maximum capacity exceeded") {}
 };
 
@@ -49,6 +50,7 @@ public:
 class QueueUnderflowException : public QueueException {
 public:
   using QueueException::QueueException;
+
   QueueUnderflowException() : QueueException("Queue underflow: operation on empty queue") {}
 };
 

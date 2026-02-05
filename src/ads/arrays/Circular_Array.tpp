@@ -131,7 +131,10 @@ auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_it
 
 template <typename T>
 CircularArray<T>::CircularArray(size_t initial_capacity) :
-    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }), head_(0), size_(0), capacity_(std::max(initial_capacity, kMinCapacity)) {
+    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }),
+    head_(0),
+    size_(0),
+    capacity_(std::max(initial_capacity, kMinCapacity)) {
   if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
     throw ArrayOverflowException("CircularArray capacity overflow");
   }
@@ -140,7 +143,10 @@ CircularArray<T>::CircularArray(size_t initial_capacity) :
 
 template <typename T>
 CircularArray<T>::CircularArray(std::initializer_list<T> values) :
-    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }), head_(0), size_(0), capacity_(std::max(values.size(), kMinCapacity)) {
+    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }),
+    head_(0),
+    size_(0),
+    capacity_(std::max(values.size(), kMinCapacity)) {
   if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
     throw ArrayOverflowException("CircularArray capacity overflow");
   }
@@ -164,7 +170,10 @@ CircularArray<T>::CircularArray(std::initializer_list<T> values) :
 
 template <typename T>
 CircularArray<T>::CircularArray(CircularArray&& other) noexcept :
-    data_(std::move(other.data_)), head_(other.head_), size_(other.size_), capacity_(other.capacity_) {
+    data_(std::move(other.data_)),
+    head_(other.head_),
+    size_(other.size_),
+    capacity_(other.capacity_) {
   other.head_     = 0;
   other.size_     = 0;
   other.capacity_ = 0;
@@ -462,8 +471,8 @@ auto CircularArray<T>::reallocate(size_t new_capacity) -> void {
     throw ArrayOverflowException("CircularArray capacity overflow");
   }
 
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
+                                              [](T* ptr) { ::operator delete[](ptr); });
 
   // Move elements to new buffer in linear order.
   size_t constructed = 0;

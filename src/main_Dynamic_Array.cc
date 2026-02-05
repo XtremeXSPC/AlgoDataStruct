@@ -13,12 +13,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <iostream>
 #include <string>
 #include <utility>
-
-#include "../include/ads/arrays/Dynamic_Array.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;

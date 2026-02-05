@@ -23,7 +23,10 @@ namespace ads::associative {
 
 template <typename T, typename Hash>
 HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor) :
-    buckets_(initial_capacity), size_(0), max_load_factor_(max_load_factor), hasher_() {
+    buckets_(initial_capacity),
+    size_(0),
+    max_load_factor_(max_load_factor),
+    hasher_() {
   if (max_load_factor_ <= 0) {
     max_load_factor_ = 0.75;
   }
@@ -38,7 +41,10 @@ HashSet<T, Hash>::HashSet(std::initializer_list<T> values) : HashSet(values.size
 
 template <typename T, typename Hash>
 HashSet<T, Hash>::HashSet(HashSet&& other) noexcept :
-    buckets_(std::move(other.buckets_)), size_(other.size_), max_load_factor_(other.max_load_factor_), hasher_(std::move(other.hasher_)) {
+    buckets_(std::move(other.buckets_)),
+    size_(other.size_),
+    max_load_factor_(other.max_load_factor_),
+    hasher_(std::move(other.hasher_)) {
   other.size_ = 0;
 }
 

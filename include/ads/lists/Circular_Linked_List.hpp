@@ -16,12 +16,12 @@
 #ifndef CIRCULAR_LINKED_LIST_HPP
 #define CIRCULAR_LINKED_LIST_HPP
 
+#include "List_Exception.hpp"
+
 #include <cstddef>
 #include <iterator>
 #include <memory>
 #include <utility>
-
-#include "List_Exception.hpp"
 
 namespace ads::lists {
 
@@ -58,7 +58,11 @@ public:
     using reference         = T&;
 
     iterator() = default;
-    iterator(Node* node, size_t remaining, CircularLinkedList<T>* list) : node_(node), remaining_(remaining), list_(list) {}
+
+    iterator(Node* node, size_t remaining, CircularLinkedList<T>* list) :
+        node_(node),
+        remaining_(remaining),
+        list_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -87,8 +91,12 @@ public:
     using reference         = const T&;
 
     const_iterator() = default;
+
     const_iterator(const Node* node, size_t remaining, const CircularLinkedList<T>* list) :
-        node_(node), remaining_(remaining), list_(list) {}
+        node_(node),
+        remaining_(remaining),
+        list_(list) {}
+
     const_iterator(const iterator& it) : node_(it.node_), remaining_(it.remaining_), list_(it.list_) {}
 
     auto operator*() const -> reference;
