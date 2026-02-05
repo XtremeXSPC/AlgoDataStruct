@@ -45,7 +45,7 @@ struct SumCount {
 
 struct SumCountCombine {
   auto operator()(const SumCount& left, const SumCount& right) const -> SumCount {
-    return SumCount{left.sum + right.sum, left.count + right.count};
+    return SumCount{.sum = left.sum + right.sum, .count = left.count + right.count};
   }
 };
 
@@ -54,7 +54,7 @@ struct SumCountIdentity {
 };
 
 struct SumCountLeaf {
-  auto operator()(int value) const -> SumCount { return SumCount{value, 1}; }
+  auto operator()(int value) const -> SumCount { return SumCount{.sum = value, .count = 1}; }
 };
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
@@ -127,7 +127,7 @@ void demo_reset_clear() {
   print_tree_state(tree, "After clear");
 }
 
-//===------------------------- CUSTOM FUNCTOR DEMO -----------------------------===//
+//===--------------------------- CUSTOM FUNCTOR DEMO ---------------------------===//
 
 // Demonstrates custom combine and identity functors (max segment tree).
 void demo_custom_functors() {
@@ -144,13 +144,14 @@ void demo_custom_functors() {
   cout << "Max [0..4] after update: " << tree.range_query(0, 4) << "\n";
 }
 
-//===------------------------- CUSTOM NODE DEMO -------------------------------===//
+//===---------------------------- CUSTOM NODE DEMO -----------------------------===//
 
 // Demonstrates custom node aggregation using a leaf builder.
 void demo_custom_nodes() {
   ads::demo::print_section("Demo: Custom Nodes (Sum + Count)");
 
-  vector<int>                                                                 values = {2, 4, 6, 8};
+  vector<int> values = {2, 4, 6, 8};
+
   SegmentTree<int, SumCount, SumCountCombine, SumCountIdentity, SumCountLeaf> tree(values);
 
   SumCount result = tree.range_query(1, 3);
