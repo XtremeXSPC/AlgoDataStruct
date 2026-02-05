@@ -20,7 +20,10 @@ namespace ads::hash {
 
 template <typename Key, typename Value>
 HashTableChaining<Key, Value>::HashTableChaining(size_t initial_capacity, float max_load_factor) :
-    buckets_(std::make_unique<Bucket[]>(initial_capacity)), capacity_(initial_capacity), size_(0), max_load_factor_(max_load_factor) {
+    buckets_(std::make_unique<Bucket[]>(initial_capacity)),
+    capacity_(initial_capacity),
+    size_(0),
+    max_load_factor_(max_load_factor) {
   if (max_load_factor <= 0.0f) {
     throw InvalidOperationException("Max load factor must be positive");
   }
@@ -28,7 +31,10 @@ HashTableChaining<Key, Value>::HashTableChaining(size_t initial_capacity, float 
 
 template <typename Key, typename Value>
 HashTableChaining<Key, Value>::HashTableChaining(HashTableChaining&& other) noexcept :
-    buckets_(std::move(other.buckets_)), capacity_(other.capacity_), size_(other.size_), max_load_factor_(other.max_load_factor_) {
+    buckets_(std::move(other.buckets_)),
+    capacity_(other.capacity_),
+    size_(other.size_),
+    max_load_factor_(other.max_load_factor_) {
   other.capacity_        = 0;
   other.size_            = 0;
   other.max_load_factor_ = kDefaultMaxLoadFactor;
@@ -268,7 +274,8 @@ auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& ke
 }
 
 template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const Key& key) const -> typename Bucket::const_iterator {
+auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const Key& key) const ->
+    typename Bucket::const_iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
     if (it->first == key) {
       return it;

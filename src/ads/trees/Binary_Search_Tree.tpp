@@ -82,7 +82,9 @@ BinarySearchTree<T>::BinarySearchTree() : root_(nullptr), size_(0) {
 }
 
 template <typename T>
-BinarySearchTree<T>::BinarySearchTree(BinarySearchTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
+BinarySearchTree<T>::BinarySearchTree(BinarySearchTree&& other) noexcept :
+    root_(std::move(other.root_)),
+    size_(other.size_) {
   other.size_ = 0;
 }
 

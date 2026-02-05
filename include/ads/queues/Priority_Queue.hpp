@@ -16,12 +16,12 @@
 #ifndef PRIORITY_QUEUE_HPP
 #define PRIORITY_QUEUE_HPP
 
+#include "Queue_Exception.hpp"
+
 #include <functional>
 #include <initializer_list>
 #include <utility>
 #include <vector>
-
-#include "Queue_Exception.hpp"
 
 namespace ads::queues {
 

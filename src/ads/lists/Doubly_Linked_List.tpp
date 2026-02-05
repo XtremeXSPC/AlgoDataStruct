@@ -119,7 +119,9 @@ DoublyLinkedList<T>::~DoublyLinkedList() {
 
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList(DoublyLinkedList&& other) noexcept :
-    head_(std::move(other.head_)), tail_(other.tail_), size_(other.size_) {
+    head_(std::move(other.head_)),
+    tail_(other.tail_),
+    size_(other.size_) {
   other.tail_ = nullptr;
   other.size_ = 0;
 }

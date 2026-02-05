@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Complete_Binary_Tree.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Complete_Binary_Tree.hpp"
 
 using namespace ads::trees;
 

@@ -9,12 +9,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-#include <string>
-#include <vector>
-
 #include "../include/ads/queues/Circular_Array_Queue.hpp"
 #include "../include/ads/queues/Linked_Queue.hpp"
+
+#include <gtest/gtest.h>
+
+#include <string>
+#include <vector>
 
 using namespace ads::queues;
 
@@ -139,7 +140,7 @@ TEST_F(CircularArrayQueueTest, CircularBehavior) {
 }
 
 TEST_F(CircularArrayQueueTest, LargeQueueOperations) {
-  const int N = 10000;
+  const int N = 10'000;
   for (int i = 0; i < N; ++i) {
     queue.enqueue(i);
   }
@@ -256,7 +257,7 @@ TEST_F(LinkedQueueTest, FIFOOrder) {
 }
 
 TEST_F(LinkedQueueTest, LargeQueueOperations) {
-  const int N = 10000;
+  const int N = 10'000;
   for (int i = 0; i < N; ++i) {
     queue.enqueue(i);
   }

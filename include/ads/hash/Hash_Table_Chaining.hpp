@@ -16,13 +16,13 @@
 #ifndef HASH_TABLE_CHAINING_HPP
 #define HASH_TABLE_CHAINING_HPP
 
+#include "Hash_Table_Exception.hpp"
+
 #include <cstddef>
 #include <functional>
 #include <list>
 #include <memory>
 #include <utility>
-
-#include "Hash_Table_Exception.hpp"
 
 // Forward declaration for HashMap friend
 namespace ads::associative {

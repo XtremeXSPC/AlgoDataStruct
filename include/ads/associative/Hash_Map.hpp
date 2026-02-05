@@ -17,14 +17,14 @@
 #ifndef HASH_MAP_HPP
 #define HASH_MAP_HPP
 
+#include "../hash/Hash_Table_Chaining.hpp"
+#include "Dictionary.hpp"
+
 #include <functional>
 #include <initializer_list>
 #include <stdexcept>
 #include <utility>
 #include <vector>
-
-#include "../hash/Hash_Table_Chaining.hpp"
-#include "Dictionary.hpp"
 
 namespace ads::associative {
 
@@ -90,7 +90,10 @@ public:
      * @param bucket_idx Current bucket index.
      * @param list_it Iterator within the bucket's list.
      */
-    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
+    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it) :
+        map_(map),
+        bucket_idx_(bucket_idx),
+        list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -110,6 +113,7 @@ public:
     using reference         = const Entry&;
 
     const_iterator() : map_(nullptr), bucket_idx_(0), list_it_() {}
+
     const_iterator(const iterator& it);
 
     auto operator*() const -> reference;
@@ -133,7 +137,10 @@ public:
      * @param bucket_idx Current bucket index.
      * @param list_it Iterator within the bucket's list.
      */
-    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
+    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it) :
+        map_(map),
+        bucket_idx_(bucket_idx),
+        list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -442,7 +449,8 @@ private:
    * @return Bucket index and const iterator to entry (or end of bucket if not found).
    * @complexity Time O(1) average, O(n) worst case
    */
-  auto find_in_table(const Key& key) const -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
+  auto find_in_table(const Key& key) const
+      -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
 
   // Access to internal table structure (for iterators).
   friend class iterator;

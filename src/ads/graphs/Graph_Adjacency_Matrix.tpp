@@ -20,24 +20,33 @@ namespace ads::graphs {
 
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(bool is_directed) :
-    vertices_(), matrix_(), is_directed_(is_directed), num_edges_(0) {
+    vertices_(),
+    matrix_(),
+    is_directed_(is_directed),
+    num_edges_(0) {
 }
 
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(size_t num_vertices, bool is_directed) :
-    vertices_(), matrix_(num_vertices, std::vector<std::optional<EdgeWeight>>(num_vertices)), is_directed_(is_directed), num_edges_(0) {
+    vertices_(),
+    matrix_(num_vertices, std::vector<std::optional<EdgeWeight>>(num_vertices)),
+    is_directed_(is_directed),
+    num_edges_(0) {
   vertices_.reserve(num_vertices);
 }
 
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(GraphAdjacencyMatrix&& other) noexcept :
-    vertices_(std::move(other.vertices_)), matrix_(std::move(other.matrix_)), is_directed_(other.is_directed_),
+    vertices_(std::move(other.vertices_)),
+    matrix_(std::move(other.matrix_)),
+    is_directed_(other.is_directed_),
     num_edges_(other.num_edges_) {
   other.num_edges_ = 0;
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatrix&& other) noexcept -> GraphAdjacencyMatrix& {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatrix&& other) noexcept
+    -> GraphAdjacencyMatrix& {
   if (this != &other) {
     vertices_        = std::move(other.vertices_);
     matrix_          = std::move(other.matrix_);
@@ -130,7 +139,8 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_edge(size_t from, size_t 
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const
+    -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
   }
@@ -247,7 +257,8 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(size_t start_vertex) cons
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const
+    -> std::optional<std::vector<size_t>> {
   validate_vertex(from);
   validate_vertex(to);
 
@@ -342,8 +353,8 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::validate_vertex(size_t vertex
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs_helper(
-    size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const -> void {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited,
+                                                              std::vector<size_t>& result) const -> void {
   visited[vertex_id] = true;
   result.push_back(vertex_id);
 

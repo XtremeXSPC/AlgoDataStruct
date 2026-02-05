@@ -16,11 +16,11 @@
 #ifndef FENWICK_TREE_RANGE_UPDATE_HPP
 #define FENWICK_TREE_RANGE_UPDATE_HPP
 
-#include <cstddef>
-#include <vector>
-
 #include "Fenwick_Tree.hpp"
 #include "Fenwick_Tree_Exception.hpp"
+
+#include <cstddef>
+#include <vector>
 
 namespace ads::trees {
 

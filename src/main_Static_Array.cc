@@ -13,12 +13,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Static_Array.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <iostream>
 #include <ranges>
 #include <string>
-
-#include "../include/ads/arrays/Static_Array.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;

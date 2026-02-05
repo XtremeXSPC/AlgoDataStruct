@@ -16,15 +16,15 @@
 #ifndef TREE_MAP_HPP
 #define TREE_MAP_HPP
 
+#include "../trees/AVL_Tree.hpp"
+#include "Dictionary.hpp"
+#include "Tree_Map_Exception.hpp"
+
 #include <concepts>
 #include <initializer_list>
 #include <optional>
 #include <utility>
 #include <vector>
-
-#include "../trees/AVL_Tree.hpp"
-#include "Dictionary.hpp"
-#include "Tree_Map_Exception.hpp"
 
 namespace ads::associative {
 
@@ -46,14 +46,20 @@ private:
     std::optional<Value> value = std::nullopt;
 
     Entry(const Key& k, const Value& v) : key(k), value(v) {}
+
     Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
+
     explicit Entry(const Key& k) : key(k) {}
+
     explicit Entry(Key&& k) : key(std::move(k)) {}
 
     template <typename... Args>
-    Entry(std::piecewise_construct_t, Key&& k, Args&&... args) : key(std::move(k)), value(std::in_place, std::forward<Args>(args)...) {}
+    Entry(std::piecewise_construct_t, Key&& k, Args&&... args) :
+        key(std::move(k)),
+        value(std::in_place, std::forward<Args>(args)...) {}
 
     auto operator<=>(const Entry& other) const { return key <=> other.key; }
+
     auto operator==(const Entry& other) const -> bool { return key == other.key; }
   };
 

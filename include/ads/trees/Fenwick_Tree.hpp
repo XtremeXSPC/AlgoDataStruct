@@ -16,14 +16,14 @@
 #ifndef FENWICK_TREE_HPP
 #define FENWICK_TREE_HPP
 
+#include "Fenwick_Tree_Exception.hpp"
+
 #include <bit>
 #include <concepts>
 #include <cstddef>
 #include <initializer_list>
 #include <utility>
 #include <vector>
-
-#include "Fenwick_Tree_Exception.hpp"
 
 namespace ads::trees {
 

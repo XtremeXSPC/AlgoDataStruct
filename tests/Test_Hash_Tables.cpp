@@ -9,12 +9,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-#include <string>
-#include <vector>
-
 #include "../include/ads/hash/Hash_Table_Chaining.hpp"
 #include "../include/ads/hash/Hash_Table_Open_Addressing.hpp"
+
+#include <gtest/gtest.h>
+
+#include <string>
+#include <vector>
 
 using namespace ads::hash;
 
@@ -119,15 +120,15 @@ TEST_F(HashTableChainingTest, MoveSemantics) {
 
 TEST_F(HashTableChainingTest, LoadFactorAndRehash) {
   // Insert enough elements to trigger rehashing.
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < 1'000; ++i) {
     table.insert(i, std::to_string(i));
   }
 
-  EXPECT_EQ(table.size(), 1000);
+  EXPECT_EQ(table.size(), 1'000);
   EXPECT_LE(table.load_factor(), 1.0); // Load factor should be reasonable.
 
   // Verify data integrity after rehash.
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < 1'000; ++i) {
     EXPECT_EQ(table.at(i), std::to_string(i));
   }
 }

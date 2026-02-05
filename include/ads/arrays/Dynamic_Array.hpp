@@ -16,6 +16,8 @@
 #ifndef DYNAMIC_ARRAY_HPP
 #define DYNAMIC_ARRAY_HPP
 
+#include "Array_Exception.hpp"
+
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
@@ -26,8 +28,6 @@
 #include <new>
 #include <type_traits>
 #include <utility>
-
-#include "Array_Exception.hpp"
 
 namespace ads::arrays {
 

@@ -14,12 +14,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/lists/Doubly_Linked_List.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "../include/ads/lists/Doubly_Linked_List.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -375,7 +375,7 @@ void demo_edge_cases() {
   // Large list.
   cout << "\nLarge list test (1000 elements):\n";
   DoublyLinkedList<int> large;
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < 1'000; ++i) {
     large.push_back(i);
   }
   cout << "  Size: " << large.size() << "\n";

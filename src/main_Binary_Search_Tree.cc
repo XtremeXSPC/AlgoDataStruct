@@ -13,12 +13,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -339,7 +339,8 @@ void demo_edge_cases() {
   // Clear and reuse.
   cout << "\nClearing and reusing tree:\n";
   degenerate.clear();
-  cout << "  After clear - Size: " << degenerate.size() << ", Empty: " << (degenerate.is_empty() ? "yes" : "no") << '\n';
+  cout << "  After clear - Size: " << degenerate.size() << ", Empty: " << (degenerate.is_empty() ? "yes" : "no")
+       << '\n';
 
   degenerate.insert(10);
   degenerate.insert(5);

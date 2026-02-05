@@ -16,12 +16,12 @@
 #ifndef DOUBLY_LINKED_LIST_HPP
 #define DOUBLY_LINKED_LIST_HPP
 
+#include "List.hpp"
+#include "List_Exception.hpp"
+
 #include <iterator>
 #include <memory>
 #include <utility>
-
-#include "List.hpp"
-#include "List_Exception.hpp"
 
 namespace ads::lists {
 
@@ -66,6 +66,7 @@ public:
     auto operator++(int) -> iterator;
     auto operator--() -> iterator&;
     auto operator--(int) -> iterator;
+
     auto operator==(const iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
@@ -89,7 +90,9 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    const_iterator(const Node* ptr = nullptr, const DoublyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
+    const_iterator(const Node* ptr = nullptr, const DoublyLinkedList<T>* list = nullptr) :
+        node_ptr_(ptr),
+        list_ptr_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -97,6 +100,7 @@ public:
     auto operator++(int) -> const_iterator;
     auto operator--() -> const_iterator&;
     auto operator--(int) -> const_iterator;
+
     auto operator==(const const_iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
@@ -355,6 +359,7 @@ private:
     T                     data;
     std::unique_ptr<Node> next;
     Node*                 prev;
+
     template <typename... Args>
     Node(Node* ptr, Args&&... args) : data(std::forward<Args>(args)...), next(nullptr), prev(ptr) {}
   };

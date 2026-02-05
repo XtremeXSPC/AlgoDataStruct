@@ -16,11 +16,11 @@
 #ifndef LINKED_STACK_HPP
 #define LINKED_STACK_HPP
 
-#include <memory>
-#include <utility>
-
 #include "Stack.hpp"
 #include "Stack_Exception.hpp"
+
+#include <memory>
+#include <utility>
 
 namespace ads::stacks {
 

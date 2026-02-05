@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
+#include "../include/ads/queues/Priority_Queue.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
-
-#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
-#include "../include/ads/queues/Priority_Queue.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -40,7 +40,9 @@ using namespace ads::queues;
 // City graph vertex data.
 struct City {
   string name;
+
   City() : name("") {}
+
   explicit City(string n) : name(std::move(n)) {}
 };
 
@@ -97,7 +99,8 @@ auto dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) -> ve
  * @param source The source vertex index.
  * @param distances Vector of distances.
  */
-auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const vector<double>& distances) -> void {
+auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const vector<double>& distances)
+    -> void {
   cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
   cout << "=====--------------------------------------=====\n";
 
@@ -114,8 +117,7 @@ auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t 
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header(
-      {"DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO", "Graph (Adjacency List) + Priority Queue"});
+  ads::demo::print_header({"DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO", "Graph (Adjacency List) + Priority Queue"});
 
   // Create a graph of European cities with distances in km.
   GraphAdjacencyList<City, double> cities(false); // Undirected graph.
@@ -130,14 +132,14 @@ auto main() -> int {
   size_t zurich = cities.add_vertex(City("Zurich"));
 
   // Add roads (edges) with distances.
-  cities.add_edge(rome, milan, 572);    // Rome - Milan
-  cities.add_edge(milan, paris, 851);   // Milan - Paris
-  cities.add_edge(milan, zurich, 277);  // Milan - Zurich
-  cities.add_edge(paris, berlin, 1054); // Paris - Berlin
-  cities.add_edge(berlin, munich, 585); // Berlin - Munich
-  cities.add_edge(munich, vienna, 434); // Munich - Vienna
-  cities.add_edge(munich, zurich, 316); // Munich - Zurich
-  cities.add_edge(vienna, zurich, 598); // Vienna - Zurich
+  cities.add_edge(rome, milan, 572);     // Rome - Milan
+  cities.add_edge(milan, paris, 851);    // Milan - Paris
+  cities.add_edge(milan, zurich, 277);   // Milan - Zurich
+  cities.add_edge(paris, berlin, 1'054); // Paris - Berlin
+  cities.add_edge(berlin, munich, 585);  // Berlin - Munich
+  cities.add_edge(munich, vienna, 434);  // Munich - Vienna
+  cities.add_edge(munich, zurich, 316);  // Munich - Zurich
+  cities.add_edge(vienna, zurich, 598);  // Vienna - Zurich
 
   cout << "\nEuropean Cities Road Network:\n";
   cout << "---------------------------------\n";
@@ -161,7 +163,7 @@ auto main() -> int {
   cout << "Performance Test: Random Graph\n";
   cout << string(55, '=') << "\n";
 
-  const size_t                     num_vertices = 1000;
+  const size_t                     num_vertices = 1'000;
   GraphAdjacencyList<City, double> large_graph(false);
 
   // Add vertices.

@@ -9,11 +9,12 @@
  */
 //===--------------------------------------------------------------------------===//
 
+#include "../include/ads/queues/Circular_Array_Deque.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/queues/Circular_Array_Deque.hpp"
 
 using namespace ads::queues;
 

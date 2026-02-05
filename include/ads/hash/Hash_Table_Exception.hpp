@@ -41,6 +41,7 @@ public:
 class KeyNotFoundException : public HashTableException {
 public:
   using HashTableException::HashTableException;
+
   KeyNotFoundException() : HashTableException("Key not found in hash table") {}
 };
 
@@ -53,6 +54,7 @@ public:
 class EmptyTableException : public HashTableException {
 public:
   using HashTableException::HashTableException;
+
   EmptyTableException() : HashTableException("Operation on empty hash table") {}
 };
 
@@ -65,6 +67,7 @@ public:
 class InvalidOperationException : public HashTableException {
 public:
   using HashTableException::HashTableException;
+
   InvalidOperationException() : HashTableException("Invalid hash table operation") {}
 };
 

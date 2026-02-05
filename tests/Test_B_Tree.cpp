@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/B_Tree.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/B_Tree.hpp"
 
 using namespace ads::trees;
 
@@ -198,7 +199,7 @@ TEST_F(BTreeTest, MoveAssignment) {
 //===--------------------------- LARGE DATASET TESTS ---------------------------===//
 
 TEST_F(BTreeTest, LargeDatasetInsert) {
-  const int N = 1000;
+  const int N = 1'000;
   for (int i = 0; i < N; ++i) {
     tree.insert(i);
   }

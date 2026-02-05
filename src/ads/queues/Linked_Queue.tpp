@@ -31,7 +31,10 @@ LinkedQueue<T>::~LinkedQueue() {
 }
 
 template <typename T>
-LinkedQueue<T>::LinkedQueue(LinkedQueue&& other) noexcept : front_(std::move(other.front_)), rear_(other.rear_), size_(other.size_) {
+LinkedQueue<T>::LinkedQueue(LinkedQueue&& other) noexcept :
+    front_(std::move(other.front_)),
+    rear_(other.rear_),
+    size_(other.size_) {
   other.rear_ = nullptr;
   other.size_ = 0;
 }
@@ -164,6 +167,6 @@ auto LinkedQueue<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-} // namespace ads::queue
+} // namespace ads::queues
 
 //===---------------------------------------------------------------------------===//

@@ -10,13 +10,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/lists/Singly_Linked_List.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <exception>
 #include <iostream>
 #include <string>
 #include <utility>
-
-#include "../include/ads/lists/Singly_Linked_List.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;

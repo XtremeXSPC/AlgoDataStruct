@@ -9,9 +9,9 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-
 #include "../include/ads/graphs/Disjoint_Set_Union.hpp"
+
+#include <gtest/gtest.h>
 
 using namespace ads::graphs;
 

@@ -169,7 +169,9 @@ inline DisjointSetUnion::DisjointSetUnion(size_t num_elements) {
 }
 
 inline DisjointSetUnion::DisjointSetUnion(DisjointSetUnion&& other) noexcept :
-    parent_(std::move(other.parent_)), rank_(std::move(other.rank_)), set_count_(other.set_count_) {
+    parent_(std::move(other.parent_)),
+    rank_(std::move(other.rank_)),
+    set_count_(other.set_count_) {
   other.set_count_ = 0;
 }
 

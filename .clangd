@@ -6,19 +6,20 @@ CompileFlags:
 
   # Add include paths explicitly
   Add:
-    - "-I${workspaceFolder}/include"
-    - "-I${workspaceFolder}/src"
+    - '-I${workspaceFolder}/include'
+    - '-I${workspaceFolder}/src'
 
-    - "-xc++"
-    - "-std=c++20"
+    - '-xc++'
+    - '-std=c++20'
 
   Remove:
-    - "-DLOCAL*"
-    - "--gcc-toolchain*"
-    - "-D__GNUC__*"
+    - '-DLOCAL*'
+    - '--gcc-toolchain*'
+    - '-D__GNUC__*'
 
   # Treat .tpp files as C++ headers
   Compiler: clang++
+
 
 # Treat .tpp files as C++ source
 ---
@@ -27,7 +28,7 @@ If:
 
 CompileFlags:
   Add:
-    - "-xc++"
+    - '-xc++'
 ---
 # Suppress common template-heavy warnings
 Diagnostics:

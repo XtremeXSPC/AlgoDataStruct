@@ -16,6 +16,8 @@
 #ifndef CIRCULAR_ARRAY_HPP
 #define CIRCULAR_ARRAY_HPP
 
+#include "Array_Exception.hpp"
+
 #include <algorithm>
 #include <cstddef>
 #include <initializer_list>
@@ -25,8 +27,6 @@
 #include <new>
 #include <type_traits>
 #include <utility>
-
-#include "Array_Exception.hpp"
 
 namespace ads::arrays {
 
@@ -57,6 +57,7 @@ public:
     using reference         = T&;
 
     iterator() = default;
+
     iterator(size_t logical_index, CircularArray<T>* array) : logical_index_(logical_index), array_(array) {}
 
     // Dereference operators.
@@ -75,9 +76,16 @@ public:
     auto operator-=(difference_type n) -> iterator&;
 
     // Hidden friend operators for arithmetic.
-    friend auto operator+(const iterator& it, difference_type n) -> iterator { return iterator(it.logical_index_ + n, it.array_); }
+    friend auto operator+(const iterator& it, difference_type n) -> iterator {
+      return iterator(it.logical_index_ + n, it.array_);
+    }
+
     friend auto operator+(difference_type n, const iterator& it) -> iterator { return it + n; }
-    friend auto operator-(const iterator& it, difference_type n) -> iterator { return iterator(it.logical_index_ - n, it.array_); }
+
+    friend auto operator-(const iterator& it, difference_type n) -> iterator {
+      return iterator(it.logical_index_ - n, it.array_);
+    }
+
     friend auto operator-(const iterator& lhs, const iterator& rhs) -> difference_type {
       return static_cast<difference_type>(lhs.logical_index_) - static_cast<difference_type>(rhs.logical_index_);
     }
@@ -106,7 +114,11 @@ public:
     using reference         = const T&;
 
     const_iterator() = default;
-    const_iterator(size_t logical_index, const CircularArray<T>* array) : logical_index_(logical_index), array_(array) {}
+
+    const_iterator(size_t logical_index, const CircularArray<T>* array) :
+        logical_index_(logical_index),
+        array_(array) {}
+
     explicit const_iterator(const iterator& it) : logical_index_(it.logical_index_), array_(it.array_) {}
 
     // Dereference operators.
@@ -128,10 +140,13 @@ public:
     friend auto operator+(const const_iterator& it, difference_type n) -> const_iterator {
       return const_iterator(it.logical_index_ + n, it.array_);
     }
+
     friend auto operator+(difference_type n, const const_iterator& it) -> const_iterator { return it + n; }
+
     friend auto operator-(const const_iterator& it, difference_type n) -> const_iterator {
       return const_iterator(it.logical_index_ - n, it.array_);
     }
+
     friend auto operator-(const const_iterator& lhs, const const_iterator& rhs) -> difference_type {
       return static_cast<difference_type>(lhs.logical_index_) - static_cast<difference_type>(rhs.logical_index_);
     }

@@ -16,6 +16,8 @@
 #ifndef CIRCULAR_ARRAY_DEQUE_HPP
 #define CIRCULAR_ARRAY_DEQUE_HPP
 
+#include "Queue_Exception.hpp"
+
 #include <algorithm>
 #include <iterator>
 #include <limits>
@@ -23,8 +25,6 @@
 #include <new>
 #include <type_traits>
 #include <utility>
-
-#include "Queue_Exception.hpp"
 
 namespace ads::queues {
 
@@ -58,6 +58,7 @@ public:
     auto operator->() const -> pointer;
     auto operator++() -> iterator&;
     auto operator++(int) -> iterator;
+
     auto operator==(const iterator& other) const -> bool { return index_ == other.index_ && deque_ == other.deque_; }
 
   private:
@@ -78,14 +79,20 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    explicit const_iterator(size_t index = 0, const CircularArrayDeque<T>* deque = nullptr) : index_(index), deque_(deque) {}
+    explicit const_iterator(size_t index = 0, const CircularArrayDeque<T>* deque = nullptr) :
+        index_(index),
+        deque_(deque) {}
+
     explicit const_iterator(const iterator& it) : index_(it.index_), deque_(it.deque_) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
-    auto operator==(const const_iterator& other) const -> bool { return index_ == other.index_ && deque_ == other.deque_; }
+
+    auto operator==(const const_iterator& other) const -> bool {
+      return index_ == other.index_ && deque_ == other.deque_;
+    }
 
   private:
     size_t                       index_;

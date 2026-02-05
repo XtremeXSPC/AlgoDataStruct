@@ -19,8 +19,12 @@ namespace ads::hash {
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename Key, typename Value>
-HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(size_t initial_capacity, ProbingStrategy strategy, float max_load_factor) :
-    table_(std::make_unique<Slot[]>(initial_capacity)), capacity_(initial_capacity), size_(0), max_load_factor_(max_load_factor),
+HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(size_t initial_capacity, ProbingStrategy strategy,
+                                                             float max_load_factor) :
+    table_(std::make_unique<Slot[]>(initial_capacity)),
+    capacity_(initial_capacity),
+    size_(0),
+    max_load_factor_(max_load_factor),
     strategy_(strategy) {
   if (max_load_factor <= 0.0f || max_load_factor >= 1.0f) {
     throw InvalidOperationException("Max load factor must be in (0, 1)");
@@ -29,7 +33,10 @@ HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(size_t initial_capa
 
 template <typename Key, typename Value>
 HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(HashTableOpenAddressing&& other) noexcept :
-    table_(std::move(other.table_)), capacity_(other.capacity_), size_(other.size_), max_load_factor_(other.max_load_factor_),
+    table_(std::move(other.table_)),
+    capacity_(other.capacity_),
+    size_(other.size_),
+    max_load_factor_(other.max_load_factor_),
     strategy_(other.strategy_) {
   other.capacity_        = 0;
   other.size_            = 0;
@@ -37,7 +44,8 @@ HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(HashTableOpenAddres
 }
 
 template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::operator=(HashTableOpenAddressing&& other) noexcept -> HashTableOpenAddressing<Key, Value>& {
+auto HashTableOpenAddressing<Key, Value>::operator=(HashTableOpenAddressing&& other) noexcept
+    -> HashTableOpenAddressing<Key, Value>& {
   if (this != &other) {
     table_                 = std::move(other.table_);
     capacity_              = other.capacity_;

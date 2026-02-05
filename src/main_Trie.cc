@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Trie.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <format>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Trie.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -139,8 +139,9 @@ void demo_autocomplete() {
   TrieType trie;
 
   // Insert a vocabulary.
-  vector<string> vocabulary = {"car",   "card",     "care",   "careful",     "carefully", "careless",  "carpet", "carpool", "cat",
-                               "catch", "category", "cattle", "celebration", "cell",      "cellphone", "center", "central"};
+  vector<string> vocabulary = {"car",         "card",    "care",      "careful", "carefully", "careless",
+                               "carpet",      "carpool", "cat",       "catch",   "category",  "cattle",
+                               "celebration", "cell",    "cellphone", "center",  "central"};
 
   for (const auto& word : vocabulary) {
     trie.insert(word);
@@ -266,7 +267,7 @@ void demo_performance() {
 
   TrieType trie;
 
-  const int N = 10000;
+  const int N = 10'000;
 
   cout << "Inserting " << N << " words...\n";
 

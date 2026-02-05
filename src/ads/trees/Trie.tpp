@@ -252,7 +252,8 @@ auto Trie<UseMap>::find_prefix_node(const std::string& prefix) const -> TrieNode
 }
 
 template <bool UseMap>
-void Trie<UseMap>::dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const {
+void Trie<UseMap>::dfs_collect_words(const TrieNode* node, const std::string& current_word,
+                                     std::vector<std::string>& results) const {
   if (!node) {
     return;
   }

@@ -16,12 +16,12 @@
 #ifndef TREE_SET_HPP
 #define TREE_SET_HPP
 
+#include "../trees/AVL_Tree.hpp"
+
 #include <cstddef>
 #include <functional>
 #include <initializer_list>
 #include <vector>
-
-#include "../trees/AVL_Tree.hpp"
 
 namespace ads::associative {
 

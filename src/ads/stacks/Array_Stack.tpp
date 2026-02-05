@@ -20,14 +20,17 @@ namespace ads::stacks {
 
 template <typename T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
-    data_(
-        static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
-        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
-    size_(0), capacity_(initial_capacity) {
+    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
+          [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
+    size_(0),
+    capacity_(initial_capacity) {
 }
 
 template <typename T>
-ArrayStack<T>::ArrayStack(ArrayStack&& other) noexcept : data_(std::move(other.data_)), size_(other.size_), capacity_(other.capacity_) {
+ArrayStack<T>::ArrayStack(ArrayStack&& other) noexcept :
+    data_(std::move(other.data_)),
+    size_(other.size_),
+    capacity_(other.capacity_) {
   other.size_     = 0;
   other.capacity_ = 0;
 }
@@ -170,8 +173,8 @@ void ArrayStack<T>::grow() {
 template <typename T>
 void ArrayStack<T>::reallocate(size_t new_capacity) {
   // Allocate raw memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
+                                              [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Move/copy elements to new array with exception safety.
   size_t constructed_count = 0;
@@ -203,6 +206,6 @@ void ArrayStack<T>::reallocate(size_t new_capacity) {
   capacity_ = new_capacity;
 }
 
-} // namespace ads::stack
+} // namespace ads::stacks
 
 //===---------------------------------------------------------------------------===//

@@ -33,7 +33,9 @@ PriorityQueue<T, Compare>::PriorityQueue(std::initializer_list<T> init, Compare 
 }
 
 template <typename T, typename Compare>
-PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept : heap_(std::move(other.heap_)), comp_(std::move(other.comp_)) {
+PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept :
+    heap_(std::move(other.heap_)),
+    comp_(std::move(other.comp_)) {
 }
 
 template <typename T, typename Compare>

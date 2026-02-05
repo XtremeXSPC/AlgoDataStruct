@@ -16,6 +16,9 @@
 #ifndef BINARY_SEARCH_TREE_HPP
 #define BINARY_SEARCH_TREE_HPP
 
+#include "Binary_Tree.hpp"
+#include "Binary_Tree_Exception.hpp"
+
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -23,9 +26,6 @@
 #include <queue>
 #include <stack>
 #include <utility>
-
-#include "Binary_Tree.hpp"
-#include "Binary_Tree_Exception.hpp"
 
 namespace ads::trees {
 

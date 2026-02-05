@@ -16,14 +16,14 @@
 #ifndef STATIC_ARRAY_HPP
 #define STATIC_ARRAY_HPP
 
+#include "Array_Exception.hpp"
+
 #include <algorithm>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
 #include <type_traits>
 #include <utility>
-
-#include "Array_Exception.hpp"
 
 namespace ads::arrays {
 

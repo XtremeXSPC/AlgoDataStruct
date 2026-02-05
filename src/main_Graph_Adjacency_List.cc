@@ -13,13 +13,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <format>
 #include <iostream>
 #include <string>
-
-#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -435,7 +435,7 @@ void demo_graph_exception_handling() {
 void demo_graph_large_performance() {
   ads::demo::print_section("Graph - Large Dataset Performance");
 
-  const size_t            N = 10000;
+  const size_t            N = 10'000;
   GraphAdjacencyList<int> graph(false);
 
   cout << "Creating graph with " << N << " vertices...\n";

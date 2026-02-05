@@ -65,6 +65,7 @@ public:
     VertexData data; ///< Vertex data
 
     explicit Vertex(const VertexData& d) : data(d) {}
+
     explicit Vertex(VertexData&& d) : data(std::move(d)) {}
   };
 

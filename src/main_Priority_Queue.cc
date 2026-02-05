@@ -13,14 +13,14 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/queues/Priority_Queue.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <chrono>
 #include <format>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "../include/ads/queues/Priority_Queue.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -351,7 +351,7 @@ void demo_top_k_elements() {
 void demo_priority_queue_large() {
   ads::demo::print_section("Priority Queue - Large Dataset Performance");
 
-  const int          N = 100000;
+  const int          N = 100'000;
   PriorityQueue<int> pq;
   pq.reserve(N);
 
@@ -391,7 +391,7 @@ void demo_priority_queue_large() {
 void demo_heapify_construction_performance() {
   ads::demo::print_section("Priority Queue - Heapify Construction Performance");
 
-  const int   N = 100000;
+  const int   N = 100'000;
   vector<int> data;
   data.reserve(N);
 

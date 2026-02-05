@@ -13,14 +13,14 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/heaps/Max_Heap.hpp"
+#include "../include/ads/heaps/Min_Heap.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <format>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "../include/ads/heaps/Max_Heap.hpp"
-#include "../include/ads/heaps/Min_Heap.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -166,7 +166,7 @@ void demo_min_heap_exception_handling() {
 void demo_min_heap_large() {
   ads::demo::print_section("Min Heap - Large Dataset");
 
-  const int    N = 10000;
+  const int    N = 10'000;
   MinHeap<int> heap;
 
   cout << "Inserting " << N << " elements...\n";

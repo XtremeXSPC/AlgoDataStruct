@@ -21,10 +21,11 @@ namespace ads::queues {
 
 template <typename T>
 CircularArrayDeque<T>::CircularArrayDeque(size_t initial_capacity) :
-    data_(
-        static_cast<T*>(::operator new[](std::max(initial_capacity, kMinCapacity) * sizeof(T))),
-        [](T* ptr) -> auto { ::operator delete[](ptr); }),
-    front_(0), size_(0), capacity_(std::max(initial_capacity, kMinCapacity)) {
+    data_(static_cast<T*>(::operator new[](std::max(initial_capacity, kMinCapacity) * sizeof(T))),
+          [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    front_(0),
+    size_(0),
+    capacity_(std::max(initial_capacity, kMinCapacity)) {
 }
 
 template <typename T>
@@ -34,7 +35,10 @@ CircularArrayDeque<T>::~CircularArrayDeque() {
 
 template <typename T>
 CircularArrayDeque<T>::CircularArrayDeque(CircularArrayDeque&& other) noexcept :
-    data_(std::move(other.data_)), front_(other.front_), size_(other.size_), capacity_(other.capacity_) {
+    data_(std::move(other.data_)),
+    front_(other.front_),
+    size_(other.size_),
+    capacity_(other.capacity_) {
   other.front_    = 0;
   other.size_     = 0;
   other.capacity_ = 0;
@@ -377,8 +381,8 @@ auto CircularArrayDeque<T>::ensure_capacity(size_t min_capacity) -> void {
 
 template <typename T>
 auto CircularArrayDeque<T>::reallocate(size_t new_capacity) -> void {
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
+                                              [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Move existing elements to new storage.
   size_t constructed = 0;

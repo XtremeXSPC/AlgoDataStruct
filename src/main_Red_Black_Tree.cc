@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Red_Black_Tree.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <random>
 #include <string>
 #include <vector>
-
-#include "../include/ads/trees/Red_Black_Tree.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -237,7 +237,7 @@ void demo_move_semantics() {
 void demo_performance() {
   ads::demo::print_section("Demo: Performance");
 
-  const int N = 10000;
+  const int N = 10'000;
 
   cout << "Inserting " << N << " elements sequentially...\n";
 

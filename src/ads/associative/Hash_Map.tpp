@@ -86,7 +86,9 @@ auto HashMap<Key, Value, Hash>::iterator::advance_to_next_bucket() -> void {
 // Constructor from const iterator.
 template <typename Key, typename Value, typename Hash>
 HashMap<Key, Value, Hash>::const_iterator::const_iterator(const iterator& it) :
-    map_(it.map_), bucket_idx_(it.bucket_idx_), list_it_(it.list_it_) {
+    map_(it.map_),
+    bucket_idx_(it.bucket_idx_),
+    list_it_(it.list_it_) {
 }
 
 template <typename Key, typename Value, typename Hash>
@@ -153,7 +155,8 @@ auto HashMap<Key, Value, Hash>::const_iterator::advance_to_next_bucket() -> void
 
 // Constructor with initial capacity and load factor.
 template <typename Key, typename Value, typename Hash>
-HashMap<Key, Value, Hash>::HashMap(size_t initial_capacity, float max_load_factor) : table_(initial_capacity, max_load_factor) {
+HashMap<Key, Value, Hash>::HashMap(size_t initial_capacity, float max_load_factor) :
+    table_(initial_capacity, max_load_factor) {
 }
 
 // Constructor from initializer list.
@@ -423,7 +426,8 @@ auto HashMap<Key, Value, Hash>::cend() const -> const_iterator {
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator> {
+auto HashMap<Key, Value, Hash>::find_in_table(const Key& key)
+    -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator> {
   size_t bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 

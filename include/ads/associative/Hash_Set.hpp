@@ -73,7 +73,9 @@ public:
     BucketIterator          list_it_;
 
     iterator(const HashSet<T, Hash>* set, size_t bucket_idx, BucketIterator list_it) :
-        set_(set), bucket_idx_(bucket_idx), list_it_(list_it) {}
+        set_(set),
+        bucket_idx_(bucket_idx),
+        list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
