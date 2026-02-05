@@ -3,8 +3,8 @@
  * @file Segment_Tree.hpp
  * @author Costantino Lombardi
  * @brief Declaration of the SegmentTree class.
- * @version 0.2
- * @date 2026-02-04
+ * @version 1.0
+ * @date 2026-02-05
  *
  * @copyright MIT License 2026
  *
@@ -16,10 +16,13 @@
 #ifndef SEGMENT_TREE_HPP
 #define SEGMENT_TREE_HPP
 
+#include <algorithm>
 #include <concepts>
 #include <cstddef>
 #include <functional>
 #include <initializer_list>
+#include <iterator>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -35,7 +38,7 @@ namespace detail {
  */
 template <typename Node>
 struct DefaultIdentity {
-  constexpr auto operator()() const -> Node { return Node{}; }
+  constexpr auto operator()() const noexcept(std::is_nothrow_default_constructible_v<Node>) -> Node { return Node{}; }
 };
 
 /**
@@ -45,11 +48,22 @@ struct DefaultIdentity {
  */
 template <typename Value, typename Node>
 struct DefaultLeafBuilder {
-  constexpr auto operator()(const Value& value) const -> Node { return Node{value}; }
+  constexpr auto operator()(const Value& value) const noexcept(std::is_nothrow_constructible_v<Node, const Value&>) -> Node {
+    return Node{value};
+  }
 };
 
 /**
  * @brief Concept that validates Segment Tree functor compatibility.
+ *
+ * @details Requirements:
+ *            - LeafBuilder must convert Value to Node
+ *            - Combine must merge two Nodes into one Node
+ *            - Identity must return the identity element for Combine
+ *
+ * @note The Combine functor MUST be associative for correct results:
+ *       combine(combine(a, b), c) == combine(a, combine(b, c))
+ *       Common associative operations: addition, multiplication, min, max, bitwise AND/OR/XOR.
  */
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 concept SegmentTreeTraits = requires(Value value, Node node, Combine combine, Identity identity, LeafBuilder leaf) {
@@ -62,22 +76,53 @@ concept SegmentTreeTraits = requires(Value value, Node node, Combine combine, Id
  * @brief Concept for types supporting addition.
  */
 template <typename T>
-concept SegmentTreeAddable = requires(T a, T b) {
+concept Addable = requires(T a, T b) {
   { a + b } -> std::convertible_to<T>;
 };
+
+/**
+ * @brief Helper to detect noexcept for combine operation.
+ */
+template <typename Combine, typename Node>
+inline constexpr bool is_combine_nothrow_v = noexcept(std::declval<Combine>()(std::declval<Node>(), std::declval<Node>()));
+
+/**
+ * @brief Helper to detect noexcept for identity operation.
+ */
+template <typename Identity>
+inline constexpr bool is_identity_nothrow_v = noexcept(std::declval<Identity>()());
+
+/**
+ * @brief Helper to detect noexcept for leaf builder operation.
+ */
+template <typename LeafBuilder, typename Value>
+inline constexpr bool is_leaf_builder_nothrow_v = noexcept(std::declval<LeafBuilder>()(std::declval<Value>()));
 
 } // namespace detail
 
 /**
- * @brief Segment Tree for range queries with point updates.
+ * @brief Efficient iterative Segment Tree for range queries with point updates.
  *
- * @details This implementation stores the tree implicitly in a vector and
- *          uses 0-based indices for the public API. The default behavior
- *          aggregates values using std::plus (range sum). The internal Node
- *          and combine helpers are intentionally factored to make future
- *          extensions (e.g., lazy propagation, custom aggregates) straightforward.
- *          Value and Node types can differ: LeafBuilder maps Value to Node, and
- *          Combine merges Node instances during queries.
+ * @details This implementation uses an iterative approach with exactly 2n memory
+ *          (where n is the number of elements). The tree is stored implicitly in
+ *          a vector using 0-based indexing for the public API.
+ *
+ *          **Memory Layout:**
+ *            - Indices [0, n-1]: Internal nodes (index 0 unused, root at index 1)
+ *            - Indices [n, 2n-1]: Leaf nodes corresponding to input values
+ *
+ *          **Complexity:**
+ *            - Build: O(n) time, O(n) space
+ *            - Point update: O(log n) time, O(1) space
+ *            - Range query: O(log n) time, O(1) space
+ *
+ *          **Customization:**
+ *              Value and Node types can differ: LeafBuilder maps Value to Node, and
+ *              Combine merges Node instances during queries. This allows for complex
+ *              aggregations like tracking both sum and count simultaneously.
+ *
+ * @note The Combine functor "MUST" be associative for correct results.
+ *       Formally: combine(combine(a, b), c) == combine(a, combine(b, c))
  *
  * @tparam Value Value type stored externally (leaf values).
  * @tparam Node Internal node aggregate type (default: Value).
@@ -94,26 +139,24 @@ template <
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 class SegmentTree {
 public:
+  //===--------------------------- TYPE ALIASES --------------------------------===//
+
   using value_type      = Value;
   using node_type       = Node;
-  using size_type       = size_t;
+  using size_type       = std::size_t;
   using difference_type = std::ptrdiff_t;
   using reference       = Value&;
   using const_reference = const Value&;
   using pointer         = Value*;
   using const_pointer   = const Value*;
 
-  /**
-   * @brief Node stored in the internal tree.
-   * @details Keeping a dedicated node type makes it easier to extend
-   *          the data structure later (e.g., adding lazy tags).
-   */
-  struct TreeNode {
-    node_type value;
+  //===---------------------------- ITERATOR TYPES -----------------------------===//
 
-    explicit TreeNode(const node_type& node_value) : value(node_value) {}
-    explicit TreeNode(node_type&& node_value) : value(std::move(node_value)) {}
-  };
+  /**
+   * @brief Const iterator for traversing the original values.
+   */
+  using const_iterator         = typename std::vector<Value>::const_iterator;
+  using const_reverse_iterator = typename std::vector<Value>::const_reverse_iterator;
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
@@ -121,7 +164,7 @@ public:
    * @brief Constructs an empty Segment Tree.
    * @complexity Time O(1), Space O(1)
    */
-  SegmentTree();
+  constexpr SegmentTree() noexcept = default;
 
   /**
    * @brief Constructs an empty Segment Tree with custom functors.
@@ -130,7 +173,9 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(1), Space O(1)
    */
-  explicit SegmentTree(Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr explicit SegmentTree(Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {}) noexcept(
+      std::is_nothrow_move_constructible_v<Combine> && std::is_nothrow_move_constructible_v<Identity>
+      && std::is_nothrow_move_constructible_v<LeafBuilder>);
 
   /**
    * @brief Constructs a Segment Tree with the given size, default-initialized.
@@ -138,7 +183,7 @@ public:
    * @complexity Time O(n), Space O(n)
    * @note Requires Value to be default constructible.
    */
-  explicit SegmentTree(size_t size)
+  constexpr explicit SegmentTree(size_type size)
     requires std::default_initializable<Value>;
 
   /**
@@ -150,7 +195,7 @@ public:
    * @complexity Time O(n), Space O(n)
    * @note Requires Value to be default constructible.
    */
-  SegmentTree(size_t size, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {})
+  constexpr SegmentTree(size_type size, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {})
     requires std::default_initializable<Value>;
 
   /**
@@ -159,7 +204,7 @@ public:
    * @param value Initial value for each element.
    * @complexity Time O(n), Space O(n)
    */
-  SegmentTree(size_t size, const Value& value);
+  constexpr SegmentTree(size_type size, const Value& value);
 
   /**
    * @brief Constructs a Segment Tree with all elements set to a value and custom functors.
@@ -170,31 +215,50 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  SegmentTree(size_t size, const Value& value, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(size_type size, const Value& value, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
-   * @brief Constructs a Segment Tree from a vector of values.
+   * @brief Constructs a Segment Tree from a vector of values (copy).
    * @param values Input values (0-based indexing).
    * @complexity Time O(n), Space O(n)
    */
-  explicit SegmentTree(const std::vector<Value>& values);
+  constexpr explicit SegmentTree(const std::vector<Value>& values);
 
   /**
-   * @brief Constructs a Segment Tree from a vector with custom functors.
+   * @brief Constructs a Segment Tree from a vector of values (move).
+   * @param values Input values (0-based indexing), moved from.
+   * @complexity Time O(n), Space O(n)
+   */
+  constexpr explicit SegmentTree(std::vector<Value>&& values) noexcept(std::is_nothrow_move_constructible_v<std::vector<Value>>);
+
+  /**
+   * @brief Constructs a Segment Tree from a vector with custom functors (copy).
    * @param values Input values (0-based indexing).
    * @param combine Functor used to merge nodes.
    * @param identity Functor that returns the identity node.
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  SegmentTree(const std::vector<Value>& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(const std::vector<Value>& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+
+  /**
+   * @brief Constructs a Segment Tree from a vector with custom functors (move).
+   * @param values Input values (0-based indexing), moved from.
+   * @param combine Functor used to merge nodes.
+   * @param identity Functor that returns the identity node.
+   * @param leaf_builder Functor that converts a value into a node.
+   * @complexity Time O(n), Space O(n)
+   */
+  constexpr SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {}) noexcept(
+      std::is_nothrow_move_constructible_v<std::vector<Value>> && std::is_nothrow_move_constructible_v<Combine>
+      && std::is_nothrow_move_constructible_v<Identity> && std::is_nothrow_move_constructible_v<LeafBuilder>);
 
   /**
    * @brief Constructs a Segment Tree from an initializer list.
    * @param values Input values.
    * @complexity Time O(n), Space O(n)
    */
-  SegmentTree(std::initializer_list<Value> values);
+  constexpr SegmentTree(std::initializer_list<Value> values);
 
   /**
    * @brief Constructs a Segment Tree from an initializer list with custom functors.
@@ -204,14 +268,37 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  SegmentTree(std::initializer_list<Value> values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(std::initializer_list<Value> values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+
+  /**
+   * @brief Constructs a Segment Tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  constexpr SegmentTree(InputIt first, InputIt last);
+
+  /**
+   * @brief Constructs a Segment Tree from an iterator range with custom functors.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @param combine Functor used to merge nodes.
+   * @param identity Functor that returns the identity node.
+   * @param leaf_builder Functor that converts a value into a node.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  constexpr SegmentTree(InputIt first, InputIt last, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Move constructor.
    * @param other The tree to move from.
    * @complexity Time O(1), Space O(1)
    */
-  SegmentTree(SegmentTree&& other) noexcept;
+  constexpr SegmentTree(SegmentTree&& other) noexcept;
 
   /**
    * @brief Destructor.
@@ -224,7 +311,7 @@ public:
    * @return Reference to this instance.
    * @complexity Time O(1), Space O(1)
    */
-  auto operator=(SegmentTree&& other) noexcept -> SegmentTree&;
+  constexpr auto operator=(SegmentTree&& other) noexcept -> SegmentTree&;
 
   // Copy constructor and assignment are disabled (move-only type).
   SegmentTree(const SegmentTree&)                    = delete;
@@ -233,18 +320,35 @@ public:
   //===------------------------ MODIFICATION OPERATIONS ------------------------===//
 
   /**
-   * @brief Rebuilds the tree from a vector of values.
+   * @brief Rebuilds the tree from a vector of values (copy).
    * @param values Input values (0-based indexing).
    * @complexity Time O(n), Space O(n)
    */
-  auto build(const std::vector<Value>& values) -> void;
+  constexpr auto build(const std::vector<Value>& values) -> void;
+
+  /**
+   * @brief Rebuilds the tree from a vector of values (move).
+   * @param values Input values (0-based indexing), moved from.
+   * @complexity Time O(n), Space O(n)
+   */
+  constexpr auto build(std::vector<Value>&& values) noexcept(std::is_nothrow_move_assignable_v<std::vector<Value>>) -> void;
 
   /**
    * @brief Rebuilds the tree from an initializer list of values.
    * @param values Input values.
    * @complexity Time O(n), Space O(n)
    */
-  auto build(std::initializer_list<Value> values) -> void;
+  constexpr auto build(std::initializer_list<Value> values) -> void;
+
+  /**
+   * @brief Rebuilds the tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  constexpr auto build(InputIt first, InputIt last) -> void;
 
   /**
    * @brief Sets the element at the given index to a new value.
@@ -253,7 +357,16 @@ public:
    * @throws SegmentTreeException if index is out of range.
    * @complexity Time O(log n), Space O(1)
    */
-  auto set(size_t index, const Value& value) -> void;
+  constexpr auto set(size_type index, const Value& value) -> void;
+
+  /**
+   * @brief Sets the element at the given index to a new value (move).
+   * @param index Zero-based index.
+   * @param value New value, moved from.
+   * @throws SegmentTreeException if index is out of range.
+   * @complexity Time O(log n), Space O(1)
+   */
+  constexpr auto set(size_type index, Value&& value) -> void;
 
   /**
    * @brief Adds a delta to the element at the given index.
@@ -263,8 +376,8 @@ public:
    * @complexity Time O(log n), Space O(1)
    * @note Requires operator+ for Value. Intended for sum trees.
    */
-  auto add(size_t index, const Value& delta) -> void
-    requires detail::SegmentTreeAddable<Value>;
+  constexpr auto add(size_type index, const Value& delta) -> void
+    requires detail::Addable<Value>;
 
   /**
    * @brief Resets the tree to a given size with default values.
@@ -272,14 +385,14 @@ public:
    * @complexity Time O(n), Space O(n)
    * @note Requires Value to be default constructible.
    */
-  auto reset(size_t size) -> void
+  constexpr auto reset(size_type size) -> void
     requires std::default_initializable<Value>;
 
   /**
    * @brief Removes all elements from the tree.
    * @complexity Time O(n), Space O(1)
    */
-  auto clear() noexcept -> void;
+  constexpr auto clear() noexcept -> void;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
@@ -287,11 +400,11 @@ public:
    * @brief Returns the aggregate over the range [left, right].
    * @param left Zero-based left boundary (inclusive).
    * @param right Zero-based right boundary (inclusive).
-   * @return The aggregated value.
+   * @return The aggregated node value.
    * @throws SegmentTreeException if the range is invalid or out of bounds.
    * @complexity Time O(log n), Space O(1)
    */
-  [[nodiscard]] auto range_query(size_t left, size_t right) const -> node_type;
+  [[nodiscard]] constexpr auto range_query(size_type left, size_type right) const -> node_type;
 
   /**
    * @brief Returns the sum of values in the range [left, right].
@@ -302,14 +415,22 @@ public:
    * @complexity Time O(log n), Space O(1)
    * @note Convenience alias for range_query. For non-sum aggregates, prefer range_query().
    */
-  [[nodiscard]] auto range_sum(size_t left, size_t right) const -> node_type;
+  [[nodiscard]] constexpr auto range_sum(size_type left, size_type right) const -> node_type;
 
   /**
    * @brief Returns the aggregate of all elements in the tree.
    * @return The total aggregate (identity if empty).
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto total_sum() const -> node_type;
+  [[nodiscard]] constexpr auto total() const noexcept(detail::is_identity_nothrow_v<Identity>) -> node_type;
+
+  /**
+   * @brief Returns the aggregate of all elements in the tree.
+   * @return The total aggregate (identity if empty).
+   * @complexity Time O(1), Space O(1)
+   * @note Alias for total(). Kept for backwards compatibility.
+   */
+  [[nodiscard]] constexpr auto total_sum() const noexcept(detail::is_identity_nothrow_v<Identity>) -> node_type;
 
   /**
    * @brief Returns the value stored at the given index.
@@ -318,21 +439,119 @@ public:
    * @throws SegmentTreeException if index is out of range.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto value_at(size_t index) const -> const Value&;
+  [[nodiscard]] constexpr auto value_at(size_type index) const -> const_reference;
+
+  /**
+   * @brief Returns the node (aggregated value) at the given leaf index.
+   * @param index Zero-based index.
+   * @return The node value at that leaf position.
+   * @throws SegmentTreeException if index is out of range.
+   * @complexity Time O(1), Space O(1)
+   * @note Returns the Node type, not the Value type. Useful when Value != Node.
+   */
+  [[nodiscard]] constexpr auto node_at(size_type index) const -> node_type;
 
   /**
    * @brief Returns the number of elements.
    * @return The current size.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] constexpr auto size() const noexcept -> size_type;
 
   /**
    * @brief Checks if the tree is empty.
    * @return true if empty, false otherwise.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto is_empty() const noexcept -> bool;
+  [[nodiscard]] constexpr auto is_empty() const noexcept -> bool;
+
+  /**
+   * @brief Alias for is_empty() for STL compatibility.
+   * @return true if empty, false otherwise.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto empty() const noexcept -> bool;
+
+  //===--------------------------- ITERATOR ACCESS -----------------------------===//
+
+  /**
+   * @brief Returns a const iterator to the first value.
+   * @return Const iterator to the beginning.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto begin() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns a const iterator past the last value.
+   * @return Const iterator to the end.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto end() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns a const iterator to the first value.
+   * @return Const iterator to the beginning.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto cbegin() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns a const iterator past the last value.
+   * @return Const iterator to the end.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto cend() const noexcept -> const_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator to the last value.
+   * @return Const reverse iterator to the reverse beginning.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto rbegin() const noexcept -> const_reverse_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator before the first value.
+   * @return Const reverse iterator to the reverse end.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto rend() const noexcept -> const_reverse_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator to the last value.
+   * @return Const reverse iterator to the reverse beginning.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto crbegin() const noexcept -> const_reverse_iterator;
+
+  /**
+   * @brief Returns a const reverse iterator before the first value.
+   * @return Const reverse iterator to the reverse end.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto crend() const noexcept -> const_reverse_iterator;
+
+  //===-------------------------- FUNCTOR ACCESSORS ----------------------------===//
+
+  /**
+   * @brief Returns a const reference to the combine functor.
+   * @return Const reference to the combine functor.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto get_combine() const noexcept -> const Combine&;
+
+  /**
+   * @brief Returns a const reference to the identity functor.
+   * @return Const reference to the identity functor.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto get_identity() const noexcept -> const Identity&;
+
+  /**
+   * @brief Returns a const reference to the leaf builder functor.
+   * @return Const reference to the leaf builder functor.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] constexpr auto get_leaf_builder() const noexcept -> const LeafBuilder&;
 
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
@@ -341,63 +560,38 @@ private:
    * @brief Builds the internal segment tree from values_.
    * @complexity Time O(n), Space O(n)
    */
-  auto build_tree() -> void;
+  constexpr auto build_tree() -> void;
 
   /**
-   * @brief Recursively builds the tree nodes.
-   * @param v Current tree node index.
-   * @param tl Left boundary of the segment.
-   * @param tr Right boundary of the segment.
-   * @complexity Time O(n), Space O(log n) due to recursion stack.
+   * @brief Propagates an update from a leaf to the root (iterative).
+   * @param leaf_index Internal index of the leaf node (in [n, 2n-1]).
+   * @complexity Time O(log n), Space O(1)
    */
-  auto build_node(size_t v, size_t tl, size_t tr) -> void;
+  constexpr auto propagate_up(size_type leaf_index) noexcept(detail::is_combine_nothrow_v<Combine, node_type>) -> void;
 
   /**
-   * @brief Recursively updates a node at the given index.
-   * @param v Current tree node index.
-   * @param tl Left boundary of the segment.
-   * @param tr Right boundary of the segment.
-   * @param index Index to update.
-   * @param value New value.
-   * @complexity Time O(log n), Space O(log n) due to recursion stack.
+   * @brief Validates that the index is within range.
+   * @param index Index to validate.
+   * @throws SegmentTreeException if index >= size_.
    */
-  auto update_node(size_t v, size_t tl, size_t tr, size_t index, const Value& value) -> void;
+  constexpr auto validate_index(size_type index) const -> void;
 
   /**
-   * @brief Recursively queries the aggregate over a range.
-   * @param v Current tree node index.
-   * @param tl Left boundary of the segment.
-   * @param tr Right boundary of the segment.
-   * @param l Query left boundary.
-   * @param r Query right boundary.
-   * @return The aggregated Node over [l, r].
-   * @complexity Time O(log n), Space O(log n) due to recursion stack.
+   * @brief Validates that the range [left, right] is valid and within bounds.
+   * @param left Left boundary.
+   * @param right Right boundary.
+   * @throws SegmentTreeException if left > right or right >= size_.
    */
-  [[nodiscard]] auto query_node(size_t v, size_t tl, size_t tr, size_t l, size_t r) const -> TreeNode;
-
-  /** @brief Creates a leaf node with the given value. */
-  [[nodiscard]] auto make_leaf(const Value& value) const -> TreeNode;
-
-  /** @brief Combines two nodes using the Combine functor. */
-  [[nodiscard]] auto combine_nodes(const TreeNode& left, const TreeNode& right) const -> TreeNode;
-
-  /** @brief Returns the identity node. */
-  [[nodiscard]] auto identity_node() const -> TreeNode;
-
-  /** @brief Validates that the index is within range. */
-  auto validate_index(size_t index) const -> void;
-
-  /** @brief Validates that the range [left, right] is valid and within bounds. */
-  auto validate_range(size_t left, size_t right) const -> void;
+  constexpr auto validate_range(size_type left, size_type right) const -> void;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  Combine               combine_{};      ///< Functor to combine two nodes.
-  Identity              identity_{};     ///< Functor to get the identity node.
-  LeafBuilder           leaf_builder_{}; ///< Functor to build leaf nodes from values.
-  std::vector<Value>    values_{};       ///< Original values for point updates.
-  std::vector<TreeNode> tree_{};         ///< Internal segment tree storage.
-  size_t                size_ = 0;       ///< Number of elements in the tree.
+  Combine                combine_{};      ///< Functor to combine two nodes.
+  Identity               identity_{};     ///< Functor to get the identity node.
+  LeafBuilder            leaf_builder_{}; ///< Functor to build leaf nodes from values.
+  std::vector<Value>     values_{};       ///< Original values for point access.
+  std::vector<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
+  size_type              size_ = 0;       ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees
