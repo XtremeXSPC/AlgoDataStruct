@@ -1,24 +1,26 @@
-# Basato sullo stile LLVM con personalizzazioni
+# Based on the LLVM style with customizations.
 BasedOnStyle: LLVM
 
-# Mantieni l'operatore * vicino al tipo
+# Keep the * operator close to the type.
 PointerAlignment: Left
 
-# Limite per la lunghezza di ogni riga
-ColumnLimit: 140
+# Limit for the length of each line.
+ColumnLimit: 120
 
-# Dimensione dell'indentazione (2 spazi per coerenza con il C/C++)
+# Indentation size (2 spaces for consistency with C/C++).
 IndentWidth: 2
 
-# Usa spazi invece di tab
+# Use spaces instead of tabs.
 UseTab: Never
 
-# Forza la dichiarazione template su una nuova riga
+# Force template declaration on a new line.
 AlwaysBreakTemplateDeclarations: Yes
 
-# Formattazione degli argomenti delle funzioni
-AlignAfterOpenBracket: AlwaysBreak
+# Function arguments formatting.
+AlignAfterOpenBracket: Align
 AllowShortFunctionsOnASingleLine: InlineOnly
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: true
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterClass: false
@@ -29,29 +31,104 @@ BraceWrapping:
   BeforeElse: false
   IndentBraces: false
 
-# Preferisci che gli include siano ordinati
-SortIncludes: true
-
-# Allineamento dei parametri per migliorare la leggibilità
+# Align parameters to improve readability.
 AlignConsecutiveDeclarations: true
 AlignConsecutiveAssignments: true
 AlignTrailingComments: true
 
-# Spaziature
+# Spacing.
 SpaceBeforeParens: ControlStatements
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpacesInAngles: false
 
-# Configura la gestione di struct e class
+# Configure handling of structs and classes.
 AlwaysBreakAfterReturnType: None
 AllowShortBlocksOnASingleLine: false
-BinPackParameters: false
+BinPackParameters: true
+BinPackArguments: true
 
-# Configura la gestione di operatori e parametri
+# Configure handling of operators and parameters.
 BreakBeforeBinaryOperators: NonAssignment
 BreakConstructorInitializers: AfterColon
 
-# Nome delle macro sempre in uppercase
+# Macro names always in uppercase.
 MacroBlockBegin: AlwaysBreak
 MacroBlockEnd: AlwaysBreak
+
+# Penalties to make breaks smarter.
+PenaltyReturnTypeOnItsOwnLine: 200
+PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 1200000
+
+# Modern C++20/23: requires, concepts, constraints.
+Standard: c++20
+IndentRequiresClause: true
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+BreakBeforeConceptDeclarations: Always
+
+# Handling constructor initializer lists.
+PackConstructorInitializers: CurrentLine
+ConstructorInitializerIndentWidth: 4
+
+# Lambdas and trailing return types.
+LambdaBodyIndentation: Signature
+AllowShortLambdasOnASingleLine: All
+
+# Namespace indentation.
+CompactNamespaces: false
+NamespaceIndentation: None
+
+# Modern C++ attributes [[nodiscard]], [[maybe_unused]], etc.
+SpaceBeforeCpp11BracedList: false
+Cpp11BracedListStyle: true
+
+# Align operands in multi-line expressions.
+AlignOperands: Align
+
+# Include headers handling.
+IncludeBlocks: Regroup
+SortIncludes: CaseSensitive
+IncludeCategories:
+  - Regex: '^".*\.hpp"'
+    Priority: 1
+  - Regex: '^<ads/.*>'
+    Priority: 2
+  - Regex: '^<.*\.h>'
+    Priority: 3
+  - Regex: '^<.*>'
+    Priority: 4
+
+# Separation between definitions.
+SeparateDefinitionBlocks: Always
+MaxEmptyLinesToKeep: 2
+
+# Handling classes and structs.
+EmptyLineBeforeAccessModifier: LogicalBlock
+EmptyLineAfterAccessModifier: Never
+
+# References alignment (like pointers).
+ReferenceAlignment: Left
+SpaceAroundPointerQualifiers: Default
+
+# Const/volatile qualifiers.
+QualifierAlignment: Leave
+
+# Comments and documentation.
+ReflowComments: true
+CommentPragmas: '^(!|/)'
+
+# Formatting numeric literals with separators.
+IntegerLiteralSeparator:
+  Binary: 4
+  Decimal: 3
+  Hex: 4
+
+# C++23 options.
+InsertBraces: false
+RemoveSemicolon: false
+
+# Compact namespaces for short namespaces.
+ShortNamespaceLines: 10

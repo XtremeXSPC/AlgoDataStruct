@@ -9,12 +9,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-#include <string>
-#include <vector>
-
 #include "../include/ads/heaps/Max_Heap.hpp"
 #include "../include/ads/heaps/Min_Heap.hpp"
+
+#include <gtest/gtest.h>
+
+#include <string>
+#include <vector>
 
 using namespace ads::heaps;
 
@@ -120,7 +121,7 @@ TEST_F(MinHeapTest, HeapPropertyMaintained) {
 }
 
 TEST_F(MinHeapTest, LargeHeapOperations) {
-  const int N = 10000;
+  const int N = 10'000;
   for (int i = N; i > 0; --i) {
     heap.insert(i);
   }
@@ -248,7 +249,7 @@ TEST_F(MaxHeapTest, HeapsortApplication) {
 }
 
 TEST_F(MaxHeapTest, LargeHeapOperations) {
-  const int N = 10000;
+  const int N = 10'000;
   for (int i = 1; i <= N; ++i) {
     heap.insert(i);
   }

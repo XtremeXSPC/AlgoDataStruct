@@ -16,14 +16,14 @@
 #ifndef COMPLETE_BINARY_TREE_HPP
 #define COMPLETE_BINARY_TREE_HPP
 
+#include "Binary_Tree_Exception.hpp"
+
 #include <cstddef>
 #include <functional>
 #include <memory>
 #include <queue>
 #include <utility>
 #include <vector>
-
-#include "Binary_Tree_Exception.hpp"
 
 namespace ads::trees {
 

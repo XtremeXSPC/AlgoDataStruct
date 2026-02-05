@@ -131,6 +131,6 @@ auto LinkedStack<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-} // namespace ads::stack
+} // namespace ads::stacks
 
 //===---------------------------------------------------------------------------===//

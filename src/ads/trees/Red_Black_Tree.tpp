@@ -19,12 +19,21 @@ namespace ads::trees {
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <typename T>
-Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) : data(val), color(col), left(nullptr), right(nullptr), parent(par) {
+Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) :
+    data(val),
+    color(col),
+    left(nullptr),
+    right(nullptr),
+    parent(par) {
 }
 
 template <typename T>
 Red_Black_Tree<T>::Node::Node(T&& val, Color col, Node* par) :
-    data(std::move(val)), color(col), left(nullptr), right(nullptr), parent(par) {
+    data(std::move(val)),
+    color(col),
+    left(nullptr),
+    right(nullptr),
+    parent(par) {
 }
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
@@ -299,7 +308,8 @@ void Red_Black_Tree<T>::insert_fixup(Node* node) {
 }
 
 template <typename T>
-auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent) -> std::pair<Node*, bool> {
+auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent)
+    -> std::pair<Node*, bool> {
   if (!node) {
     node = std::make_unique<Node>(value, Color::Red, parent);
     size_++;

@@ -35,6 +35,7 @@ public:
 class KeyNotFoundException : public TreeMapException {
 public:
   KeyNotFoundException() : TreeMapException("Key not found in tree map") {}
+
   explicit KeyNotFoundException(const std::string& message) : TreeMapException(message) {}
 };
 

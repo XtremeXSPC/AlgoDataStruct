@@ -16,15 +16,15 @@
 #ifndef ARRAY_STACK_HPP
 #define ARRAY_STACK_HPP
 
+#include "Stack.hpp"
+#include "Stack_Exception.hpp"
+
 #include <algorithm>
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <new>
 #include <utility>
-
-#include "Stack.hpp"
-#include "Stack_Exception.hpp"
 
 namespace ads::stacks {
 
@@ -211,7 +211,7 @@ private:
   static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain.
 };
 
-} // namespace ads::stack
+} // namespace ads::stacks
 
 // Include the implementation file for templates.
 #include "../../../src/ads/stacks/Array_Stack.tpp"

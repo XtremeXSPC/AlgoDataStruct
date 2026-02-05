@@ -16,13 +16,13 @@
 #ifndef B_TREE_HPP
 #define B_TREE_HPP
 
+#include "Binary_Tree_Exception.hpp"
+
 #include <algorithm>
 #include <functional>
 #include <memory>
 #include <stdexcept>
 #include <vector>
-
-#include "Binary_Tree_Exception.hpp"
 
 namespace ads::trees {
 

@@ -20,10 +20,12 @@ namespace ads::queues {
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
-    data_(
-        static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
-        [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
-    front_(0), rear_(0), size_(0), capacity_(initial_capacity) {
+    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
+          [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
+    front_(0),
+    rear_(0),
+    size_(0),
+    capacity_(initial_capacity) {
 }
 
 template <typename T>
@@ -33,7 +35,11 @@ CircularArrayQueue<T>::~CircularArrayQueue() {
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(CircularArrayQueue&& other) noexcept :
-    data_(std::move(other.data_)), front_(other.front_), rear_(other.rear_), size_(other.size_), capacity_(other.capacity_) {
+    data_(std::move(other.data_)),
+    front_(other.front_),
+    rear_(other.rear_),
+    size_(other.size_),
+    capacity_(other.capacity_) {
   other.front_    = 0;
   other.rear_     = 0;
   other.size_     = 0;
@@ -202,8 +208,8 @@ void CircularArrayQueue<T>::grow() {
 template <typename T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   // Allocate raw memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
+                                              [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Copy elements to new array in logical order with exception safety.
   size_t constructed_count = 0;

@@ -15,15 +15,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
+#include "../include/ads/graphs/Graph_Adjacency_Matrix.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <atomic>
 #include <chrono>
 #include <format>
 #include <iostream>
 #include <string>
-
-#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
-#include "../include/ads/graphs/Graph_Adjacency_Matrix.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;
@@ -155,7 +155,7 @@ void demo_matrix_connected_components() {
 template <typename GraphType>
 auto measure_edge_lookup(GraphType& graph, size_t N, std::atomic<size_t>& count) -> long long {
   auto start = std::chrono::high_resolution_clock::now();
-  for (size_t i = 0; i < N && i < 10000; ++i) {
+  for (size_t i = 0; i < N && i < 10'000; ++i) {
     for (size_t j = 0; j < 10 && j < N; ++j) {
       if (graph.has_edge(i, j))
         count.fetch_add(1, std::memory_order_relaxed);
@@ -191,7 +191,7 @@ auto measure_neighbor_iteration(GraphType& graph, size_t N, std::atomic<size_t>&
 void compare_performance() {
   ads::demo::print_section("Performance Comparison - List vs Matrix");
 
-  const size_t N = 1000;
+  const size_t N = 1'000;
 
   // Create both representations.
   GraphAdjacencyList<int>   list_graph(false);
@@ -259,8 +259,8 @@ void compare_performance() {
   cout << "\n[Memory Usage] Estimated for sparse graph:\n";
   size_t list_memory   = N * sizeof(int) + list_graph.num_edges() * 2 * (sizeof(size_t) + sizeof(double));
   size_t matrix_memory = N * sizeof(int) + N * N * sizeof(std::optional<double>);
-  cout << "  List:   ~" << list_memory / 1024 << " KB (O(V + E))\n";
-  cout << "  Matrix: ~" << matrix_memory / 1024 << " KB (O(V²))\n";
+  cout << "  List:   ~" << list_memory / 1'024 << " KB (O(V + E))\n";
+  cout << "  Matrix: ~" << matrix_memory / 1'024 << " KB (O(V²))\n";
   cout << "  Winner: List (Matrix uses " << (100 * matrix_memory / list_memory) << "% more memory)\n";
 
   cout << "\nConclusion for sparse graphs:\n";

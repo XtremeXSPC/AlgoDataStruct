@@ -19,18 +19,25 @@ namespace ads::graphs {
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename VertexData, typename EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) : vertices_(), is_directed_(is_directed), num_edges_(0) {
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) :
+    vertices_(),
+    is_directed_(is_directed),
+    num_edges_(0) {
 }
 
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_t num_vertices, bool is_directed) :
-    vertices_(), is_directed_(is_directed), num_edges_(0) {
+    vertices_(),
+    is_directed_(is_directed),
+    num_edges_(0) {
   vertices_.reserve(num_vertices);
 }
 
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(GraphAdjacencyList&& other) noexcept :
-    vertices_(std::move(other.vertices_)), is_directed_(other.is_directed_), num_edges_(other.num_edges_) {
+    vertices_(std::move(other.vertices_)),
+    is_directed_(other.is_directed_),
+    num_edges_(other.num_edges_) {
   other.num_edges_ = 0;
 }
 
@@ -118,8 +125,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
     // For undirected graphs, remove reverse edge.
     if (!is_directed_ && from != to) {
       auto& adj_reverse = vertices_[to].adjacency;
-      auto  it_reverse =
-          std::find_if(adj_reverse.begin(), adj_reverse.end(), [from](const Edge& e) -> auto { return e.destination == from; });
+      auto  it_reverse  = std::find_if(adj_reverse.begin(), adj_reverse.end(),
+                                       [from](const Edge& e) -> auto { return e.destination == from; });
 
       if (it_reverse != adj_reverse.end()) {
         adj_reverse.erase(it_reverse);
@@ -139,7 +146,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const
+    -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
   }
@@ -215,6 +223,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::clear() -> void {
   vertices_.clear();
   num_edges_ = 0;
 }
+
 //===-------------------------- TRAVERSAL ALGORITHMS ---------------------------===//
 
 template <typename VertexData, typename EdgeWeight>
@@ -259,7 +268,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const 
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const
+    -> std::optional<std::vector<size_t>> {
   validate_vertex(from);
   validate_vertex(to);
 
@@ -359,8 +369,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_i
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const
-    -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited,
+                                                            std::vector<size_t>& result) const -> void {
   visited[vertex_id] = true;
   result.push_back(vertex_id);
 

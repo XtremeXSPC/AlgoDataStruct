@@ -16,6 +16,8 @@
 #ifndef LAZY_SEGMENT_TREE_HPP
 #define LAZY_SEGMENT_TREE_HPP
 
+#include "Segment_Tree_Exception.hpp"
+
 #include <concepts>
 #include <cstddef>
 #include <functional>
@@ -25,8 +27,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "Segment_Tree_Exception.hpp"
 
 namespace ads::trees {
 
@@ -57,7 +57,9 @@ concept LazySegmentTreeTraits =
  */
 template <typename Node>
 struct LazyDefaultCombine {
-  constexpr auto operator()(const Node& left, const Node& right) const noexcept(noexcept(left + right)) -> Node { return left + right; }
+  constexpr auto operator()(const Node& left, const Node& right) const noexcept(noexcept(left + right)) -> Node {
+    return left + right;
+  }
 };
 
 /**
@@ -66,8 +68,8 @@ struct LazyDefaultCombine {
  */
 template <typename Node, typename Tag>
 struct LazyDefaultApply {
-  constexpr auto operator()(const Node& node, const Tag& tag, std::size_t len) const noexcept(noexcept(node + tag * static_cast<Tag>(len)))
-      -> Node {
+  constexpr auto operator()(const Node& node, const Tag& tag, std::size_t len) const
+      noexcept(noexcept(node + tag * static_cast<Tag>(len))) -> Node {
     return node + tag * static_cast<Tag>(len);
   }
 };
@@ -127,13 +129,9 @@ struct LazyDefaultIdentity {
  * @tparam Compose Functor to compose two tags.
  * @tparam Identity Functor returning the identity element for Combine.
  */
-template <
-    typename Value,
-    typename Tag      = Value,
-    typename Combine  = detail::LazyDefaultCombine<Value>,
-    typename Apply    = detail::LazyDefaultApply<Value, Tag>,
-    typename Compose  = detail::LazyDefaultCompose<Tag>,
-    typename Identity = detail::LazyDefaultIdentity<Value>>
+template <typename Value, typename Tag = Value, typename Combine = detail::LazyDefaultCombine<Value>,
+          typename Apply = detail::LazyDefaultApply<Value, Tag>, typename Compose = detail::LazyDefaultCompose<Tag>,
+          typename Identity = detail::LazyDefaultIdentity<Value>>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 class LazySegmentTree {
 public:
@@ -356,10 +354,11 @@ private:
    */
   struct TreeNode {
     value_type              value;
-    std::optional<tag_type> lazy;
+    std::optional<tag_type> lazy = std::nullopt;
 
-    constexpr TreeNode() : value{}, lazy{std::nullopt} {}
-    constexpr explicit TreeNode(const value_type& v) : value(v), lazy{std::nullopt} {}
+    constexpr TreeNode() : value{}, lazy{} {}
+
+    constexpr explicit TreeNode(const value_type& v) : value(v), lazy{} {}
   };
 
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
@@ -392,12 +391,14 @@ private:
   /**
    * @brief Recursively updates a range.
    */
-  constexpr auto update_range(size_type v, size_type tl, size_type tr, size_type l, size_type r, const tag_type& tag) -> void;
+  constexpr auto update_range(size_type v, size_type tl, size_type tr, size_type l, size_type r, const tag_type& tag)
+      -> void;
 
   /**
    * @brief Recursively queries a range.
    */
-  [[nodiscard]] constexpr auto query_range(size_type v, size_type tl, size_type tr, size_type l, size_type r) const -> value_type;
+  [[nodiscard]] constexpr auto query_range(size_type v, size_type tl, size_type tr, size_type l, size_type r) const
+      -> value_type;
 
   /**
    * @brief Validates index bounds.

@@ -9,11 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/lists/Singly_Linked_List.hpp"
+
 #include <gtest/gtest.h>
+
 #include <string>
 #include <vector>
-
-#include "../include/ads/lists/Singly_Linked_List.hpp"
 
 using namespace ads::lists;
 
@@ -234,7 +235,7 @@ TEST_F(SinglyLinkedListTest, RangeBasedFor) {
 //===-------------------------- LARGE LIST OPERATIONS --------------------------===//
 
 TEST_F(SinglyLinkedListTest, LargeListOperations) {
-  const int N = 1000;
+  const int N = 1'000;
 
   for (int i = 0; i < N; ++i) {
     list.push_back(i);

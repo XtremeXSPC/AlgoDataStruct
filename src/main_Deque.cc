@@ -13,12 +13,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/queues/Circular_Array_Deque.hpp"
+#include "support/Demo_Utilities.hpp"
+
 #include <iostream>
 #include <string>
 #include <utility>
-
-#include "../include/ads/queues/Circular_Array_Deque.hpp"
-#include "support/Demo_Utilities.hpp"
 
 using std::cerr;
 using std::cout;

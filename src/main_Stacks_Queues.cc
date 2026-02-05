@@ -13,15 +13,15 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <chrono>
-#include <iostream>
-#include <string>
-
 #include "../include/ads/queues/Circular_Array_Queue.hpp"
 #include "../include/ads/queues/Linked_Queue.hpp"
 #include "../include/ads/stacks/Array_Stack.hpp"
 #include "../include/ads/stacks/Linked_Stack.hpp"
 #include "support/Demo_Utilities.hpp"
+
+#include <chrono>
+#include <iostream>
+#include <string>
 
 using std::cerr;
 using std::cout;
@@ -103,7 +103,7 @@ void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
 // Performance comparison function.
 void performance_comparison() {
   ads::demo::print_section("Performance Comparison");
-  const int iterations = 100000;
+  const int iterations = 100'000;
 
   // Stack performance test.
   {
@@ -176,7 +176,9 @@ void demo_emplace_functionality() {
     string name;
     int    age;
 
-    Person(string n, int a) : name(std::move(n)), age(a) { cout << "  Constructed: " << name << " (age " << age << ")\n"; }
+    Person(string n, int a) : name(std::move(n)), age(a) {
+      cout << "  Constructed: " << name << " (age " << age << ")\n";
+    }
   };
 
   ArrayStack<Person>         stack;

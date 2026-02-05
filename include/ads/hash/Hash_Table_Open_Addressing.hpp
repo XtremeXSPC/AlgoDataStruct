@@ -16,13 +16,13 @@
 #ifndef HASH_TABLE_OPEN_ADDRESSING_HPP
 #define HASH_TABLE_OPEN_ADDRESSING_HPP
 
+#include "Hash_Table_Exception.hpp"
+
 #include <cstddef>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
-
-#include "Hash_Table_Exception.hpp"
 
 namespace ads::hash {
 
@@ -67,10 +67,9 @@ public:
    * @complexity Time O(n) to allocate slots, Space O(n)
    * @throws InvalidOperationException if max_load_factor is not in (0, 1).
    */
-  explicit HashTableOpenAddressing(
-      size_t          initial_capacity = kInitialCapacity,
-      ProbingStrategy strategy         = ProbingStrategy::LINEAR,
-      float           max_load_factor  = kDefaultMaxLoadFactor);
+  explicit HashTableOpenAddressing(size_t          initial_capacity = kInitialCapacity,
+                                   ProbingStrategy strategy         = ProbingStrategy::LINEAR,
+                                   float           max_load_factor  = kDefaultMaxLoadFactor);
 
   /**
    * @brief Move constructor.
@@ -279,7 +278,9 @@ private:
     Value value;
 
     Entry() = default;
+
     Entry(const Key& k, const Value& v) : key(k), value(v) {}
+
     Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
 
     template <typename... Args>

@@ -40,6 +40,7 @@ public:
 class StackOverflowException : public StackException {
 public:
   using StackException::StackException;
+
   StackOverflowException() : StackException("Stack overflow: maximum capacity exceeded") {}
 };
 
@@ -49,6 +50,7 @@ public:
 class StackUnderflowException : public StackException {
 public:
   using StackException::StackException;
+
   StackUnderflowException() : StackException("Stack underflow: operation on empty stack") {}
 };
 

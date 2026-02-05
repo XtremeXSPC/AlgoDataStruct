@@ -9,12 +9,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-#include <string>
-#include <vector>
-
 #include "../include/ads/stacks/Array_Stack.hpp"
 #include "../include/ads/stacks/Linked_Stack.hpp"
+
+#include <gtest/gtest.h>
+
+#include <string>
+#include <vector>
 
 using namespace ads::stacks;
 
@@ -116,7 +117,7 @@ TEST_F(ArrayStackTest, LIFOOrder) {
 }
 
 TEST_F(ArrayStackTest, LargeStackOperations) {
-  const int N = 10000;
+  const int N = 10'000;
   for (int i = 0; i < N; ++i) {
     stack.push(i);
   }
@@ -228,7 +229,7 @@ TEST_F(LinkedStackTest, LIFOOrder) {
 }
 
 TEST_F(LinkedStackTest, LargeStackOperations) {
-  const int N = 10000;
+  const int N = 10'000;
   for (int i = 0; i < N; ++i) {
     stack.push(i);
   }

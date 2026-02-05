@@ -42,6 +42,7 @@ public:
 class ElementNotFoundException : public BinaryTreeException {
 public:
   using BinaryTreeException::BinaryTreeException;
+
   ElementNotFoundException() : BinaryTreeException("Element not found in tree") {}
 };
 
@@ -55,6 +56,7 @@ public:
 class EmptyTreeException : public BinaryTreeException {
 public:
   using BinaryTreeException::BinaryTreeException;
+
   EmptyTreeException() : BinaryTreeException("Operation on empty tree") {}
 };
 
@@ -68,6 +70,7 @@ public:
 class InvalidOperationException : public BinaryTreeException {
 public:
   using BinaryTreeException::BinaryTreeException;
+
   InvalidOperationException() : BinaryTreeException("Invalid tree operation") {}
 };
 

@@ -20,12 +20,16 @@ namespace ads::heaps {
 
 template <typename T>
 MaxHeap<T>::MaxHeap(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new(initial_capacity * sizeof(T)))), size_(0), capacity_(initial_capacity) {
+    data_(static_cast<T*>(::operator new(initial_capacity * sizeof(T)))),
+    size_(0),
+    capacity_(initial_capacity) {
 }
 
 template <typename T>
 MaxHeap<T>::MaxHeap(const std::vector<T>& elements) :
-    data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))), size_(elements.size()), capacity_(elements.size()) {
+    data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))),
+    size_(elements.size()),
+    capacity_(elements.size()) {
   // Copy elements to the array using placement new.
   for (size_t i = 0; i < size_; ++i) {
     new (&data_[i]) T(elements[i]);

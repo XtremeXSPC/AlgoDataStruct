@@ -679,7 +679,8 @@ auto counting_sort(Iter first, Iter last) -> void {
 
 template <std::random_access_iterator Iter>
   requires std::integral<std::iter_value_t<Iter>>
-auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std::iter_value_t<Iter> max_value) -> void {
+auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std::iter_value_t<Iter> max_value)
+    -> void {
   if (last - first <= 1) {
     return;
   }
@@ -807,7 +808,7 @@ auto bucket_sort(Iter first, Iter last, std::size_t bucket_count) -> void {
   }
 
   std::vector<std::vector<value_type>> buckets(bucket_count);
-  const long double                    range = static_cast<long double>(max_value) - static_cast<long double>(min_value);
+  const long double range = static_cast<long double>(max_value) - static_cast<long double>(min_value);
 
   // Distribute elements into buckets.
   for (std::size_t i = 0; i < count; ++i) {

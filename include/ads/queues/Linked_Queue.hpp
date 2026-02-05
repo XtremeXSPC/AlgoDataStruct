@@ -16,12 +16,12 @@
 #ifndef LINKED_QUEUE_HPP
 #define LINKED_QUEUE_HPP
 
+#include "Queue.hpp"
+#include "Queue_Exception.hpp"
+
 #include <algorithm>
 #include <memory>
 #include <utility>
-
-#include "Queue.hpp"
-#include "Queue_Exception.hpp"
 
 namespace ads::queues {
 

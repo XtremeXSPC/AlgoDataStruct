@@ -37,6 +37,7 @@ public:
 class ArrayOverflowException : public ArrayException {
 public:
   using ArrayException::ArrayException;
+
   ArrayOverflowException() : ArrayException("Array overflow: maximum capacity exceeded") {}
 };
 
@@ -46,6 +47,7 @@ public:
 class ArrayUnderflowException : public ArrayException {
 public:
   using ArrayException::ArrayException;
+
   ArrayUnderflowException() : ArrayException("Array underflow: operation on empty array") {}
 };
 
@@ -55,6 +57,7 @@ public:
 class ArrayOutOfRangeException : public ArrayException {
 public:
   using ArrayException::ArrayException;
+
   ArrayOutOfRangeException() : ArrayException("Array index out of range") {}
 };
 

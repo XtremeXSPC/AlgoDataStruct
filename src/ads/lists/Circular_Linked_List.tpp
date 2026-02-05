@@ -103,7 +103,9 @@ CircularLinkedList<T>::~CircularLinkedList() {
 }
 
 template <typename T>
-CircularLinkedList<T>::CircularLinkedList(CircularLinkedList&& other) noexcept : tail_(other.tail_), size_(other.size_) {
+CircularLinkedList<T>::CircularLinkedList(CircularLinkedList&& other) noexcept :
+    tail_(other.tail_),
+    size_(other.size_) {
   other.tail_ = nullptr;
   other.size_ = 0;
 }
