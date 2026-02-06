@@ -155,6 +155,25 @@ TEST_F(CircularArrayTest, ReverseIteration) {
   EXPECT_EQ(values, expected);
 }
 
+TEST_F(CircularArrayTest, IteratorArithmeticWithNegativeOffsets) {
+  for (int i = 0; i < 6; ++i) {
+    array.push_back(i);
+  }
+
+  auto it = array.begin();
+  it += 4;
+  it += -2;
+  EXPECT_EQ(*it, 2);
+
+  auto const_it = array.cend();
+  const_it -= 3;
+  EXPECT_EQ(*const_it, 3);
+
+  auto shifted = array.begin() + 5;
+  shifted      = shifted - 4;
+  EXPECT_EQ(*shifted, 1);
+}
+
 TEST_F(CircularArrayTest, IterationAfterWrapAround) {
   for (int i = 0; i < 10; ++i) {
     array.push_back(i);

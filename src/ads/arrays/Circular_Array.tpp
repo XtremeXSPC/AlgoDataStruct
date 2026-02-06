@@ -19,54 +19,54 @@ namespace ads::arrays {
 
 //===---------------------------- ITERATOR METHODS -----------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator*() const -> reference {
-  return (*array_)[logical_index_];
+  return (*array_)[static_cast<size_t>(logical_index_)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator->() const -> pointer {
-  return &(*array_)[logical_index_];
+  return &(*array_)[static_cast<size_t>(logical_index_)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator[](difference_type n) const -> reference {
-  return (*array_)[logical_index_ + n];
+  return (*array_)[static_cast<size_t>(logical_index_ + n)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator++() -> iterator& {
   ++logical_index_;
   return *this;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator++(int) -> iterator {
   iterator tmp = *this;
   ++(*this);
   return tmp;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator--() -> iterator& {
   --logical_index_;
   return *this;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator--(int) -> iterator {
   iterator tmp = *this;
   --(*this);
   return tmp;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator+=(difference_type n) -> iterator& {
   logical_index_ += n;
   return *this;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::iterator::operator-=(difference_type n) -> iterator& {
   logical_index_ -= n;
   return *this;
@@ -74,54 +74,54 @@ auto CircularArray<T>::iterator::operator-=(difference_type n) -> iterator& {
 
 //===------------------------- CONST_ITERATOR METHODS --------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator*() const -> reference {
-  return (*array_)[logical_index_];
+  return (*array_)[static_cast<size_t>(logical_index_)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator->() const -> pointer {
-  return &(*array_)[logical_index_];
+  return &(*array_)[static_cast<size_t>(logical_index_)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator[](difference_type n) const -> reference {
-  return (*array_)[logical_index_ + n];
+  return (*array_)[static_cast<size_t>(logical_index_ + n)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator++() -> const_iterator& {
   ++logical_index_;
   return *this;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator++(int) -> const_iterator {
   const_iterator tmp = *this;
   ++(*this);
   return tmp;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator--() -> const_iterator& {
   --logical_index_;
   return *this;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator--(int) -> const_iterator {
   const_iterator tmp = *this;
   --(*this);
   return tmp;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator+=(difference_type n) -> const_iterator& {
   logical_index_ += n;
   return *this;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_iterator& {
   logical_index_ -= n;
   return *this;
@@ -129,7 +129,7 @@ auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_it
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <ArrayElement T>
 CircularArray<T>::CircularArray(size_t initial_capacity) :
     data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }),
     head_(0),
@@ -141,7 +141,7 @@ CircularArray<T>::CircularArray(size_t initial_capacity) :
   data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
 }
 
-template <typename T>
+template <ArrayElement T>
 CircularArray<T>::CircularArray(std::initializer_list<T> values) :
     data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }),
     head_(0),
@@ -168,7 +168,7 @@ CircularArray<T>::CircularArray(std::initializer_list<T> values) :
   size_ = values.size();
 }
 
-template <typename T>
+template <ArrayElement T>
 CircularArray<T>::CircularArray(CircularArray&& other) noexcept :
     data_(std::move(other.data_)),
     head_(other.head_),
@@ -179,12 +179,12 @@ CircularArray<T>::CircularArray(CircularArray&& other) noexcept :
   other.capacity_ = 0;
 }
 
-template <typename T>
+template <ArrayElement T>
 CircularArray<T>::~CircularArray() {
   clear();
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::operator=(CircularArray&& other) noexcept -> CircularArray& {
   if (this != &other) {
     clear();
@@ -201,9 +201,11 @@ auto CircularArray<T>::operator=(CircularArray&& other) noexcept -> CircularArra
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 template <typename... Args>
-auto CircularArray<T>::emplace_front(Args&&... args) -> T& {
+auto CircularArray<T>::emplace_front(Args&&... args) -> T&
+  requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>
+{
   ensure_capacity(size_ + 1);
 
   head_  = (head_ + capacity_ - 1) % capacity_;
@@ -213,19 +215,25 @@ auto CircularArray<T>::emplace_front(Args&&... args) -> T& {
   return *ptr;
 }
 
-template <typename T>
-auto CircularArray<T>::push_front(const T& value) -> void {
+template <ArrayElement T>
+auto CircularArray<T>::push_front(const T& value) -> void
+  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+{
   emplace_front(value);
 }
 
-template <typename T>
-auto CircularArray<T>::push_front(T&& value) -> void {
+template <ArrayElement T>
+auto CircularArray<T>::push_front(T&& value) -> void
+  requires std::move_constructible<T> && RelocatableArrayElement<T>
+{
   emplace_front(std::move(value));
 }
 
-template <typename T>
+template <ArrayElement T>
 template <typename... Args>
-auto CircularArray<T>::emplace_back(Args&&... args) -> T& {
+auto CircularArray<T>::emplace_back(Args&&... args) -> T&
+  requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>
+{
   ensure_capacity(size_ + 1);
 
   size_t physical_index = to_physical_index(size_);
@@ -235,19 +243,23 @@ auto CircularArray<T>::emplace_back(Args&&... args) -> T& {
   return *ptr;
 }
 
-template <typename T>
-auto CircularArray<T>::push_back(const T& value) -> void {
+template <ArrayElement T>
+auto CircularArray<T>::push_back(const T& value) -> void
+  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+{
   emplace_back(value);
 }
 
-template <typename T>
-auto CircularArray<T>::push_back(T&& value) -> void {
+template <ArrayElement T>
+auto CircularArray<T>::push_back(T&& value) -> void
+  requires std::move_constructible<T> && RelocatableArrayElement<T>
+{
   emplace_back(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::pop_front() -> void {
   if (is_empty()) {
     throw ArrayUnderflowException("pop_front on empty circular array");
@@ -258,7 +270,7 @@ auto CircularArray<T>::pop_front() -> void {
   --size_;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::pop_back() -> void {
   if (is_empty()) {
     throw ArrayUnderflowException("pop_back on empty circular array");
@@ -269,7 +281,7 @@ auto CircularArray<T>::pop_back() -> void {
   --size_;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::clear() noexcept -> void {
   for (size_t i = 0; i < size_; ++i) {
     std::destroy_at(data_.get() + to_physical_index(i));
@@ -280,17 +292,17 @@ auto CircularArray<T>::clear() noexcept -> void {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::operator[](size_t index) -> T& {
   return data_.get()[to_physical_index(index)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::operator[](size_t index) const -> const T& {
   return data_.get()[to_physical_index(index)];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::at(size_t index) -> T& {
   if (index >= size_) {
     throw ArrayOutOfRangeException("CircularArray index out of range");
@@ -298,7 +310,7 @@ auto CircularArray<T>::at(size_t index) -> T& {
   return (*this)[index];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::at(size_t index) const -> const T& {
   if (index >= size_) {
     throw ArrayOutOfRangeException("CircularArray index out of range");
@@ -306,7 +318,7 @@ auto CircularArray<T>::at(size_t index) const -> const T& {
   return (*this)[index];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::front() -> T& {
   if (is_empty()) {
     throw ArrayUnderflowException("front on empty circular array");
@@ -314,7 +326,7 @@ auto CircularArray<T>::front() -> T& {
   return data_.get()[head_];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::front() const -> const T& {
   if (is_empty()) {
     throw ArrayUnderflowException("front on empty circular array");
@@ -322,7 +334,7 @@ auto CircularArray<T>::front() const -> const T& {
   return data_.get()[head_];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::back() -> T& {
   if (is_empty()) {
     throw ArrayUnderflowException("back on empty circular array");
@@ -330,7 +342,7 @@ auto CircularArray<T>::back() -> T& {
   return (*this)[size_ - 1];
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::back() const -> const T& {
   if (is_empty()) {
     throw ArrayUnderflowException("back on empty circular array");
@@ -340,32 +352,36 @@ auto CircularArray<T>::back() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
 //===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
-template <typename T>
-auto CircularArray<T>::reserve(size_t new_capacity) -> void {
+template <ArrayElement T>
+auto CircularArray<T>::reserve(size_t new_capacity) -> void
+  requires RelocatableArrayElement<T>
+{
   if (new_capacity > capacity_) {
     reallocate(new_capacity);
   }
 }
 
-template <typename T>
-auto CircularArray<T>::shrink_to_fit() -> void {
+template <ArrayElement T>
+auto CircularArray<T>::shrink_to_fit() -> void
+  requires RelocatableArrayElement<T>
+{
   if (size_ < capacity_) {
     const size_t new_capacity = std::max(size_, kMinCapacity);
     if (new_capacity != capacity_) {
@@ -376,62 +392,62 @@ auto CircularArray<T>::shrink_to_fit() -> void {
 
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::begin() noexcept -> iterator {
   return iterator(0, this);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::end() noexcept -> iterator {
-  return iterator(size_, this);
+  return iterator(static_cast<iterator::difference_type>(size_), this);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::begin() const noexcept -> const_iterator {
   return const_iterator(0, this);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::end() const noexcept -> const_iterator {
-  return const_iterator(size_, this);
+  return const_iterator(static_cast<const_iterator::difference_type>(size_), this);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::cbegin() const noexcept -> const_iterator {
   return const_iterator(0, this);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::cend() const noexcept -> const_iterator {
-  return const_iterator(size_, this);
+  return const_iterator(static_cast<const_iterator::difference_type>(size_), this);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::rbegin() noexcept -> reverse_iterator {
   return reverse_iterator(end());
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::rend() noexcept -> reverse_iterator {
   return reverse_iterator(begin());
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::rbegin() const noexcept -> const_reverse_iterator {
   return const_reverse_iterator(end());
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::rend() const noexcept -> const_reverse_iterator {
   return const_reverse_iterator(begin());
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::crbegin() const noexcept -> const_reverse_iterator {
   return const_reverse_iterator(end());
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::crend() const noexcept -> const_reverse_iterator {
   return const_reverse_iterator(begin());
 }
@@ -439,12 +455,12 @@ auto CircularArray<T>::crend() const noexcept -> const_reverse_iterator {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::to_physical_index(size_t logical_index) const noexcept -> size_t {
   return (head_ + logical_index) % capacity_;
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::ensure_capacity(size_t min_capacity) -> void {
   if (min_capacity <= capacity_) {
     return;
@@ -461,7 +477,7 @@ auto CircularArray<T>::ensure_capacity(size_t min_capacity) -> void {
   reallocate(new_capacity);
 }
 
-template <typename T>
+template <ArrayElement T>
 auto CircularArray<T>::reallocate(size_t new_capacity) -> void {
   if (new_capacity < size_) {
     new_capacity = size_;

@@ -16,6 +16,7 @@
 #ifndef CIRCULAR_ARRAY_HPP
 #define CIRCULAR_ARRAY_HPP
 
+#include "Array_Concepts.hpp"
 #include "Array_Exception.hpp"
 
 #include <algorithm>
@@ -40,7 +41,7 @@ namespace ads::arrays {
  *
  * @tparam T The type of elements stored in the array.
  */
-template <typename T>
+template <ArrayElement T>
 class CircularArray {
 public:
   //===---------------------------- ITERATOR CLASS -----------------------------===//
@@ -58,7 +59,7 @@ public:
 
     iterator() = default;
 
-    iterator(size_t logical_index, CircularArray<T>* array) : logical_index_(logical_index), array_(array) {}
+    iterator(difference_type logical_index, CircularArray<T>* array) : logical_index_(logical_index), array_(array) {}
 
     // Dereference operators.
     auto operator*() const -> reference;
@@ -95,7 +96,7 @@ public:
     auto operator==(const iterator& other) const noexcept -> bool = default;
 
   private:
-    size_t            logical_index_ = 0;
+    difference_type   logical_index_ = 0;
     CircularArray<T>* array_         = nullptr;
     friend class CircularArray<T>;
   };
@@ -115,7 +116,7 @@ public:
 
     const_iterator() = default;
 
-    const_iterator(size_t logical_index, const CircularArray<T>* array) :
+    const_iterator(difference_type logical_index, const CircularArray<T>* array) :
         logical_index_(logical_index),
         array_(array) {}
 
@@ -156,7 +157,7 @@ public:
     auto operator==(const const_iterator& other) const noexcept -> bool = default;
 
   private:
-    size_t                  logical_index_ = 0;
+    difference_type         logical_index_ = 0;
     const CircularArray<T>* array_         = nullptr;
     friend class CircularArray<T>;
   };
@@ -217,21 +218,24 @@ public:
    * @complexity Time O(1) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace_front(Args&&... args) -> T&;
+  auto emplace_front(Args&&... args) -> T&
+    requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>;
 
   /**
    * @brief Inserts an element at the front.
    * @param value The value to insert.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_front(const T& value) -> void;
+  auto push_front(const T& value) -> void
+    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Inserts an element at the front (move).
    * @param value The value to insert.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_front(T&& value) -> void;
+  auto push_front(T&& value) -> void
+    requires std::move_constructible<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Constructs an element in-place at the back.
@@ -241,21 +245,24 @@ public:
    * @complexity Time O(1) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace_back(Args&&... args) -> T&;
+  auto emplace_back(Args&&... args) -> T&
+    requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>;
 
   /**
    * @brief Inserts an element at the back.
    * @param value The value to insert.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_back(const T& value) -> void;
+  auto push_back(const T& value) -> void
+    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Inserts an element at the back (move).
    * @param value The value to insert.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_back(T&& value) -> void;
+  auto push_back(T&& value) -> void
+    requires std::move_constructible<T> && RelocatableArrayElement<T>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -373,13 +380,15 @@ public:
    * @param new_capacity The minimum capacity to reserve.
    * @complexity Time O(n), Space O(new_capacity)
    */
-  auto reserve(size_t new_capacity) -> void;
+  auto reserve(size_t new_capacity) -> void
+    requires RelocatableArrayElement<T>;
 
   /**
    * @brief Shrinks the capacity to fit the current size.
    * @complexity Time O(n), Space O(size)
    */
-  auto shrink_to_fit() -> void;
+  auto shrink_to_fit() -> void
+    requires RelocatableArrayElement<T>;
 
   //===------------------------- ITERATOR OPERATIONS ---------------------------===//
 
