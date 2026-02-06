@@ -497,6 +497,7 @@ endif()
 # GoogleTest support is optional and disabled by default.
 # Enable it with: cmake -DENABLE_TESTING=ON ...
 
+option(ENABLE_APPS "Build showcase applications and games" ON)
 option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 
 if(ENABLE_TESTING)
@@ -623,6 +624,19 @@ if(ENABLE_TESTING)
     endif()
 endif()
 
+# ------------------------------- Apps Integration -------------------------------- #
+# Showcase applications (for example games) live under apps/ and are
+# built separately from the data structure demos in src/.
+set(APPS_CONFIGURED OFF)
+if(ENABLE_APPS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apps/CMakeLists.txt")
+    add_subdirectory(apps)
+    set(APPS_CONFIGURED ON)
+elseif(ENABLE_APPS)
+    message(WARNING
+        "${ANSI_YELLOW}ENABLE_APPS=ON but apps/CMakeLists.txt was not found. Skipping apps build.${ANSI_RESET}"
+    )
+endif()
+
 # -------------------------------- Utility Targets -------------------------------- #
 # These targets provide convenience commands for common development tasks.
 
@@ -681,6 +695,14 @@ if(ENABLE_TESTING)
     message(STATUS "  ${ANSI_CYAN}Testing${ANSI_RESET}        : ${ANSI_GREEN}Enabled (GoogleTest)${ANSI_RESET}")
 else()
     message(STATUS "  ${ANSI_CYAN}Testing${ANSI_RESET}        : Disabled (use -DENABLE_TESTING=ON)")
+endif()
+
+if(ENABLE_APPS AND APPS_CONFIGURED)
+    message(STATUS "  ${ANSI_CYAN}Apps${ANSI_RESET}           : ${ANSI_GREEN}Enabled${ANSI_RESET}")
+elseif(ENABLE_APPS)
+    message(STATUS "  ${ANSI_CYAN}Apps${ANSI_RESET}           : ${ANSI_YELLOW}Requested but not configured${ANSI_RESET}")
+else()
+    message(STATUS "  ${ANSI_CYAN}Apps${ANSI_RESET}           : Disabled (use -DENABLE_APPS=ON)")
 endif()
 
 message(STATUS "")
