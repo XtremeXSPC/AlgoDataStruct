@@ -16,6 +16,7 @@
 #ifndef STATIC_ARRAY_HPP
 #define STATIC_ARRAY_HPP
 
+#include "Array_Concepts.hpp"
 #include "Array_Exception.hpp"
 
 #include <algorithm>
@@ -37,7 +38,7 @@ namespace ads::arrays {
  * @tparam T The type of elements stored in the array.
  * @tparam N The fixed size of the array (must be > 0).
  */
-template <typename T, size_t N>
+template <ArrayElement T, size_t N>
   requires(N > 0)
 class StaticArray {
 public:
@@ -68,14 +69,16 @@ public:
    * @throws ArrayOutOfRangeException if initializer list size != N.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(std::initializer_list<T> values);
+  StaticArray(std::initializer_list<T> values)
+    requires std::default_initializable<T> && std::assignable_from<T&, const T&>;
 
   /**
    * @brief Constructs a static array filled with a single value.
    * @param value The value to fill the array with.
    * @complexity Time O(N), Space O(1)
    */
-  explicit StaticArray(const T& value);
+  explicit StaticArray(const T& value)
+    requires std::default_initializable<T> && std::assignable_from<T&, const T&>;
 
   /**
    * @brief Copy constructor.
@@ -83,15 +86,15 @@ public:
    * @complexity Time O(N), Space O(1)
    */
   StaticArray(const StaticArray& other)
-    requires std::copy_constructible<T>;
+    requires std::default_initializable<T> && std::assignable_from<T&, const T&>;
 
   /**
    * @brief Move constructor.
    * @param other The array to move from.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(StaticArray&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
-    requires std::move_constructible<T>;
+  StaticArray(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>)
+    requires std::default_initializable<T> && std::assignable_from<T&, T>;
 
   /**
    * @brief Destructor. Destroys all elements.
@@ -106,7 +109,7 @@ public:
    * @complexity Time O(N), Space O(1)
    */
   auto operator=(const StaticArray& other) -> StaticArray&
-    requires std::is_copy_assignable_v<T>;
+    requires std::assignable_from<T&, const T&>;
 
   /**
    * @brief Move assignment operator.
@@ -114,8 +117,8 @@ public:
    * @return Reference to this instance.
    * @complexity Time O(N), Space O(1)
    */
-  auto operator=(StaticArray&& other) noexcept(std::is_nothrow_move_assignable_v<T>) -> StaticArray&
-    requires std::is_move_assignable_v<T>;
+  auto operator=(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) -> StaticArray&
+    requires std::assignable_from<T&, T>;
 
   //===------------------------ MODIFICATION OPERATIONS -------------------------===//
 
@@ -124,14 +127,16 @@ public:
    * @param value The value to fill with.
    * @complexity Time O(N), Space O(1)
    */
-  auto fill(const T& value) -> void;
+  auto fill(const T& value) -> void
+    requires std::assignable_from<T&, const T&>;
 
   /**
    * @brief Swaps contents with another StaticArray.
    * @param other The array to swap with.
    * @complexity Time O(N), Space O(1)
    */
-  auto swap(StaticArray& other) noexcept(std::is_nothrow_swappable_v<T>) -> void;
+  auto swap(StaticArray& other) noexcept(std::is_nothrow_swappable_v<T>) -> void
+    requires std::swappable<T>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -305,7 +310,7 @@ public:
    * @complexity Time O(N), Space O(1)
    */
   auto operator==(const StaticArray& other) const -> bool
-    requires std::equality_comparable<T>;
+    requires EqualityComparableArrayElement<T>;
 
   /**
    * @brief Three-way comparison operator.
@@ -314,7 +319,7 @@ public:
    * @complexity Time O(N), Space O(1)
    */
   auto operator<=>(const StaticArray& other) const
-    requires std::three_way_comparable<T>;
+    requires ThreeWayComparableArrayElement<T>;
 
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//

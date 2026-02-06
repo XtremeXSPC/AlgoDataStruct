@@ -13,10 +13,94 @@
 
 #include <gtest/gtest.h>
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 using namespace ads::arrays;
+
+namespace {
+
+struct ThrowingMoveAssignmentType {
+  inline static int live_count                = 0;
+  inline static int move_assignment_calls     = 0;
+  inline static int throw_on_move_assign_call = -1;
+
+  int value = 0;
+
+  ThrowingMoveAssignmentType() { ++live_count; }
+
+  explicit ThrowingMoveAssignmentType(int v) : value(v) { ++live_count; }
+
+  ThrowingMoveAssignmentType(const ThrowingMoveAssignmentType& other) : value(other.value) { ++live_count; }
+
+  ThrowingMoveAssignmentType(ThrowingMoveAssignmentType&& other) noexcept : value(other.value) { ++live_count; }
+
+  auto operator=(const ThrowingMoveAssignmentType& other) -> ThrowingMoveAssignmentType& {
+    value = other.value;
+    return *this;
+  }
+
+  auto operator=(ThrowingMoveAssignmentType&& other) -> ThrowingMoveAssignmentType& {
+    ++move_assignment_calls;
+    if (throw_on_move_assign_call > 0 && move_assignment_calls >= throw_on_move_assign_call) {
+      throw std::runtime_error("move assignment failed");
+    }
+    value = other.value;
+    return *this;
+  }
+
+  ~ThrowingMoveAssignmentType() { --live_count; }
+
+  static auto reset() -> void {
+    live_count                = 0;
+    move_assignment_calls     = 0;
+    throw_on_move_assign_call = -1;
+  }
+};
+
+struct ThrowingDefaultConstructionType {
+  inline static int live_count                = 0;
+  inline static int default_construction_call = 0;
+  inline static int throw_on_default_call     = -1;
+  int               value                     = 0;
+
+  ThrowingDefaultConstructionType() {
+    ++default_construction_call;
+    if (throw_on_default_call > 0 && default_construction_call == throw_on_default_call) {
+      throw std::runtime_error("default construction failed");
+    }
+    ++live_count;
+  }
+
+  explicit ThrowingDefaultConstructionType(int v) : value(v) { ++live_count; }
+
+  ThrowingDefaultConstructionType(const ThrowingDefaultConstructionType& other) : value(other.value) { ++live_count; }
+
+  ThrowingDefaultConstructionType(ThrowingDefaultConstructionType&& other) noexcept : value(other.value) {
+    ++live_count;
+  }
+
+  auto operator=(const ThrowingDefaultConstructionType& other) -> ThrowingDefaultConstructionType& {
+    value = other.value;
+    return *this;
+  }
+
+  auto operator=(ThrowingDefaultConstructionType&& other) noexcept -> ThrowingDefaultConstructionType& {
+    value = other.value;
+    return *this;
+  }
+
+  ~ThrowingDefaultConstructionType() { --live_count; }
+
+  static auto reset() -> void {
+    live_count                = 0;
+    default_construction_call = 0;
+    throw_on_default_call     = -1;
+  }
+};
+
+} // namespace
 
 // Test fixture for DynamicArray.
 class DynamicArrayTest : public ::testing::Test {
@@ -110,6 +194,42 @@ TEST_F(DynamicArrayTest, RangeBasedIteration) {
 
   std::vector<int> expected = {1, 2, 3, 4};
   EXPECT_EQ(values, expected);
+}
+
+TEST_F(DynamicArrayTest, EmplaceExceptionDoesNotLeakElements) {
+  ThrowingMoveAssignmentType::reset();
+
+  {
+    DynamicArray<ThrowingMoveAssignmentType> throwing_array;
+    throwing_array.emplace_back(1);
+    throwing_array.emplace_back(2);
+    throwing_array.emplace_back(3);
+
+    ThrowingMoveAssignmentType::move_assignment_calls     = 0;
+    ThrowingMoveAssignmentType::throw_on_move_assign_call = 1;
+
+    EXPECT_THROW(throwing_array.emplace(0, 99), std::runtime_error);
+    EXPECT_EQ(throwing_array.size(), 3u);
+  }
+
+  EXPECT_EQ(ThrowingMoveAssignmentType::live_count, 0);
+}
+
+TEST_F(DynamicArrayTest, ResizeDefaultConstructionExceptionKeepsArrayConsistent) {
+  ThrowingDefaultConstructionType::reset();
+
+  {
+    DynamicArray<ThrowingDefaultConstructionType> throwing_array;
+    throwing_array.emplace_back(10);
+
+    ThrowingDefaultConstructionType::default_construction_call = 0;
+    ThrowingDefaultConstructionType::throw_on_default_call     = 2;
+
+    EXPECT_THROW(throwing_array.resize(4), std::runtime_error);
+    EXPECT_EQ(throwing_array.size(), 2u);
+  }
+
+  EXPECT_EQ(ThrowingDefaultConstructionType::live_count, 0);
 }
 
 //===---------------------------------------------------------------------------===//

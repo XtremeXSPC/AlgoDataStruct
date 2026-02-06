@@ -16,6 +16,7 @@
 #ifndef DYNAMIC_ARRAY_HPP
 #define DYNAMIC_ARRAY_HPP
 
+#include "Array_Concepts.hpp"
 #include "Array_Exception.hpp"
 
 #include <algorithm>
@@ -41,7 +42,7 @@ namespace ads::arrays {
  *
  * @tparam T The type of elements stored in the array.
  */
-template <typename T>
+template <ArrayElement T>
 class DynamicArray {
 public:
   using value_type             = T;
@@ -116,21 +117,24 @@ public:
    * @complexity Time O(1) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace_back(Args&&... args) -> T&;
+  auto emplace_back(Args&&... args) -> T&
+    requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>;
 
   /**
    * @brief Appends an element to the end (copy).
    * @param value The value to append.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_back(const T& value) -> void;
+  auto push_back(const T& value) -> void
+    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Appends an element to the end (move).
    * @param value The value to append.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_back(T&& value) -> void;
+  auto push_back(T&& value) -> void
+    requires std::move_constructible<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Constructs an element in-place at the given index.
@@ -142,7 +146,8 @@ public:
    * @complexity Time O(n), Space O(1)
    */
   template <typename... Args>
-  auto emplace(size_t index, Args&&... args) -> T&;
+  auto emplace(size_t index, Args&&... args) -> T&
+    requires EmplaceConstructible<T, Args...> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Inserts an element at the given index (copy).
@@ -151,7 +156,8 @@ public:
    * @throws ArrayOutOfRangeException if index > size().
    * @complexity Time O(n), Space O(1)
    */
-  auto insert(size_t index, const T& value) -> void;
+  auto insert(size_t index, const T& value) -> void
+    requires std::copy_constructible<T> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Inserts an element at the given index (move).
@@ -160,7 +166,8 @@ public:
    * @throws ArrayOutOfRangeException if index > size().
    * @complexity Time O(n), Space O(1)
    */
-  auto insert(size_t index, T&& value) -> void;
+  auto insert(size_t index, T&& value) -> void
+    requires std::move_constructible<T> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -277,26 +284,29 @@ public:
    * @brief Reserves capacity for at least n elements.
    * @param new_capacity The minimum capacity to reserve.
    */
-  auto reserve(size_t new_capacity) -> void;
+  auto reserve(size_t new_capacity) -> void
+    requires RelocatableArrayElement<T>;
 
   /**
    * @brief Shrinks the capacity to fit the current size.
    */
-  auto shrink_to_fit() -> void;
+  auto shrink_to_fit() -> void
+    requires RelocatableArrayElement<T>;
 
   /**
    * @brief Resizes the array, default-initializing new elements.
    * @param new_size The desired size.
    */
   auto resize(size_t new_size) -> void
-    requires std::default_initializable<T>;
+    requires std::default_initializable<T> && RelocatableArrayElement<T>;
 
   /**
    * @brief Resizes the array, filling new elements with a value.
    * @param new_size The desired size.
    * @param value The value to fill new elements with.
    */
-  auto resize(size_t new_size, const T& value) -> void;
+  auto resize(size_t new_size, const T& value) -> void
+    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
 
   //===------------------------- ITERATOR OPERATIONS ---------------------------===//
 
