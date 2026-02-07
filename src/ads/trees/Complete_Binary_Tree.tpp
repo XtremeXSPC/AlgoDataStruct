@@ -19,25 +19,25 @@ namespace ads::trees {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 CompleteBinaryTree<T>::CompleteBinaryTree() : root_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 CompleteBinaryTree<T>::CompleteBinaryTree(std::initializer_list<T> values) : root_(nullptr), size_(0) {
   for (const auto& value : values) {
     insert(value);
   }
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 CompleteBinaryTree<T>::CompleteBinaryTree(CompleteBinaryTree&& other) noexcept :
     root_(std::move(other.root_)),
     size_(other.size_) {
   other.size_ = 0;
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::operator=(CompleteBinaryTree&& other) noexcept -> CompleteBinaryTree& {
   if (this != &other) {
     root_       = std::move(other.root_);
@@ -49,17 +49,17 @@ auto CompleteBinaryTree<T>::operator=(CompleteBinaryTree&& other) noexcept -> Co
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::insert(const T& value) -> void {
   emplace(value);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::insert(T&& value) -> void {
   emplace(std::move(value));
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 template <typename... Args>
 auto CompleteBinaryTree<T>::emplace(Args&&... args) -> T& {
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
@@ -100,7 +100,7 @@ auto CompleteBinaryTree<T>::emplace(Args&&... args) -> T& {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::clear() noexcept -> void {
   root_.reset();
   size_ = 0;
@@ -108,7 +108,7 @@ auto CompleteBinaryTree<T>::clear() noexcept -> void {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::root() -> T& {
   if (is_empty()) {
     throw EmptyTreeException("root() called on empty tree");
@@ -116,7 +116,7 @@ auto CompleteBinaryTree<T>::root() -> T& {
   return root_->data;
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::root() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("root() called on empty tree");
@@ -124,34 +124,34 @@ auto CompleteBinaryTree<T>::root() const -> const T& {
   return root_->data;
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::root_node() -> Node* {
   return root_.get();
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::root_node() const -> const Node* {
   return root_.get();
 }
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::height() const noexcept -> int {
   return compute_height(root_.get());
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::contains(const T& value) const -> bool {
   if (is_empty()) {
     return false;
@@ -181,22 +181,22 @@ auto CompleteBinaryTree<T>::contains(const T& value) const -> bool {
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const -> void {
   in_order_impl(root_.get(), visit);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const -> void {
   pre_order_impl(root_.get(), visit);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const -> void {
   post_order_impl(root_.get(), visit);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const -> void {
   if (is_empty()) {
     return;
@@ -220,7 +220,7 @@ auto CompleteBinaryTree<T>::level_order_traversal(const std::function<void(const
   }
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::to_vector() const -> std::vector<T> {
   std::vector<T> result;
   result.reserve(size_);
@@ -231,7 +231,7 @@ auto CompleteBinaryTree<T>::to_vector() const -> std::vector<T> {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::compute_height(const Node* node) const noexcept -> int {
   if (node == nullptr) {
     return -1;
@@ -241,7 +241,7 @@ auto CompleteBinaryTree<T>::compute_height(const Node* node) const noexcept -> i
   return 1 + std::max(left_height, right_height);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::in_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void {
   if (node == nullptr) {
     return;
@@ -251,7 +251,7 @@ auto CompleteBinaryTree<T>::in_order_impl(const Node* node, const std::function<
   in_order_impl(node->right.get(), visit);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::pre_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void {
   if (node == nullptr) {
     return;
@@ -261,7 +261,7 @@ auto CompleteBinaryTree<T>::pre_order_impl(const Node* node, const std::function
   pre_order_impl(node->right.get(), visit);
 }
 
-template <typename T>
+template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::post_order_impl(const Node* node, const std::function<void(const T&)>& visit) const
     -> void {
   if (node == nullptr) {

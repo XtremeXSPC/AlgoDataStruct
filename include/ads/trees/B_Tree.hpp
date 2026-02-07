@@ -17,6 +17,7 @@
 #define B_TREE_HPP
 
 #include "Binary_Tree_Exception.hpp"
+#include "Tree_Concepts.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -65,7 +66,8 @@ namespace ads::trees {
  * - Height: O(log_t n)
  * - Space:  O(n)
  */
-template <typename T, int MinDegree = 3>
+template <OrderedTreeElement T, int MinDegree = 3>
+  requires ValidBTreeDegree<MinDegree>
 class B_Tree {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -116,6 +118,16 @@ public:
   auto insert(const T& key) -> bool;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Remove a key from the tree.
+   * @param key Key to remove.
+   * @return true if removed, false if key was not found.
+   * @complexity O(n log_t n)
+   * @note This implementation rebuilds the tree after removing the key to preserve
+   *       all B-Tree invariants with strong exception safety.
+   */
+  auto remove(const T& key) -> bool;
 
   /**
    * @brief Clear all keys.

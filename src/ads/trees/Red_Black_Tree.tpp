@@ -18,7 +18,7 @@ namespace ads::trees {
 
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) :
     data(val),
     color(col),
@@ -27,7 +27,7 @@ Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) :
     parent(par) {
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 Red_Black_Tree<T>::Node::Node(T&& val, Color col, Node* par) :
     data(std::move(val)),
     color(col),
@@ -38,16 +38,16 @@ Red_Black_Tree<T>::Node::Node(T&& val, Color col, Node* par) :
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 Red_Black_Tree<T>::Red_Black_Tree() : root_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 Red_Black_Tree<T>::Red_Black_Tree(Red_Black_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_Tree& {
   if (this != &other) {
     root_       = std::move(other.root_);
@@ -59,7 +59,7 @@ auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::insert(const T& value) -> bool {
   auto [new_node, inserted] = insert_helper(root_, value, nullptr);
 
@@ -70,9 +70,40 @@ auto Red_Black_Tree<T>::insert(const T& value) -> bool {
   return false;
 }
 
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::remove(const T& value) -> bool {
+  if (is_empty()) {
+    return false;
+  }
+
+  std::vector<T> retained_values;
+  retained_values.reserve(size_ > 0 ? size_ - 1 : 0);
+
+  bool removed = false;
+  in_order_traversal([&](const T& current_value) {
+    if (!removed && current_value == value) {
+      removed = true;
+      return;
+    }
+    retained_values.push_back(current_value);
+  });
+
+  if (!removed) {
+    return false;
+  }
+
+  Red_Black_Tree rebuilt_tree;
+  for (const auto& current_value : retained_values) {
+    rebuilt_tree.insert(current_value);
+  }
+
+  *this = std::move(rebuilt_tree);
+  return true;
+}
+
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void Red_Black_Tree<T>::clear() {
   root_.reset();
   size_ = 0;
@@ -80,27 +111,27 @@ void Red_Black_Tree<T>::clear() {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::is_empty() const -> bool {
   return size_ == 0;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::size() const -> size_t {
   return size_;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::height() const -> int {
   return height_helper(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::contains(const T& value) const -> bool {
   return search(value);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::find_min() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Red-Black Tree is empty");
@@ -113,7 +144,7 @@ auto Red_Black_Tree<T>::find_min() const -> const T& {
   return node->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::find_max() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Red-Black Tree is empty");
@@ -126,19 +157,19 @@ auto Red_Black_Tree<T>::find_max() const -> const T& {
   return node->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::search(const T& value) const -> bool {
   return search_helper(root_.get(), value);
 }
 
 //===------------------- RED-BLACK TREE SPECIFIC OPERATIONS -------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::black_height() const -> int {
   return black_height_helper(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::validate_properties() const -> bool {
   if (!root_) {
     return true; // Empty tree is valid
@@ -155,20 +186,49 @@ auto Red_Black_Tree<T>::validate_properties() const -> bool {
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void Red_Black_Tree<T>::in_order_traversal(std::function<void(const T&)> visit) const {
   in_order_helper(root_.get(), visit);
+}
+
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::pre_order_traversal(std::function<void(const T&)> visit) const {
+  pre_order_helper(root_.get(), visit);
+}
+
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::level_order_traversal(std::function<void(const T&)> visit) const {
+  if (!root_) {
+    return;
+  }
+
+  std::queue<const Node*> node_queue;
+  node_queue.push(root_.get());
+
+  while (!node_queue.empty()) {
+    const Node* current = node_queue.front();
+    node_queue.pop();
+
+    visit(current->data);
+
+    if (current->left) {
+      node_queue.push(current->left.get());
+    }
+    if (current->right) {
+      node_queue.push(current->right.get());
+    }
+  }
 }
 
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::get_color(const Node* node) -> Color {
   return (node == nullptr) ? Color::Black : node->color;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void Red_Black_Tree<T>::set_color(Node* node, Color color) {
   if (node != nullptr) {
     node->color = color;
@@ -177,7 +237,7 @@ void Red_Black_Tree<T>::set_color(Node* node, Color color) {
 
 //===--------------------------- ROTATION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_ptr<Node> {
   auto  y_ptr = std::move(x_ptr->right);
   Node* x     = x_ptr.get();
@@ -199,7 +259,7 @@ auto Red_Black_Tree<T>::rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_
   return y_ptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique_ptr<Node> {
   auto  x_ptr = std::move(y_ptr->left);
   Node* y     = y_ptr.get();
@@ -223,7 +283,7 @@ auto Red_Black_Tree<T>::rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique
 
 //===---------------------------- INSERTION HELPERS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void Red_Black_Tree<T>::insert_fixup(Node* node) {
   // Continue until we reach root or parent is black.
   while (node != root_.get() && get_color(node->parent) == Color::Red) {
@@ -307,7 +367,7 @@ void Red_Black_Tree<T>::insert_fixup(Node* node) {
   root_->color = Color::Black;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent)
     -> std::pair<Node*, bool> {
   if (!node) {
@@ -318,7 +378,7 @@ auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, const T& valu
 
   if (value < node->data) {
     return insert_helper(node->left, value, node.get());
-  } else if (value > node->data) {
+  } else if (node->data < value) {
     return insert_helper(node->right, value, node.get());
   } else {
     // Duplicate - do not insert
@@ -328,7 +388,7 @@ auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, const T& valu
 
 //===----------------------------- SEARCH HELPERS ------------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::find_min_node(Node* node) -> Node* {
   while (node && node->left) {
     node = node->left.get();
@@ -336,7 +396,7 @@ auto Red_Black_Tree<T>::find_min_node(Node* node) -> Node* {
   return node;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::search_helper(const Node* node, const T& value) const -> bool {
   if (!node) {
     return false;
@@ -352,7 +412,7 @@ auto Red_Black_Tree<T>::search_helper(const Node* node, const T& value) const ->
 
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void Red_Black_Tree<T>::in_order_helper(const Node* node, std::function<void(const T&)> visit) const {
   if (node) {
     in_order_helper(node->left.get(), visit);
@@ -361,9 +421,18 @@ void Red_Black_Tree<T>::in_order_helper(const Node* node, std::function<void(con
   }
 }
 
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::pre_order_helper(const Node* node, std::function<void(const T&)> visit) const {
+  if (node) {
+    visit(node->data);
+    pre_order_helper(node->left.get(), visit);
+    pre_order_helper(node->right.get(), visit);
+  }
+}
+
 //===--------------------------- HEIGHT/VALIDATION -----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::height_helper(const Node* node) const -> int {
   if (!node) {
     return -1;
@@ -371,7 +440,7 @@ auto Red_Black_Tree<T>::height_helper(const Node* node) const -> int {
   return 1 + std::max(height_helper(node->left.get()), height_helper(node->right.get()));
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::black_height_helper(const Node* node) const -> int {
   if (!node) {
     return 0; // NIL is black.
@@ -380,7 +449,7 @@ auto Red_Black_Tree<T>::black_height_helper(const Node* node) const -> int {
   return left_bh + (node->color == Color::Black ? 1 : 0);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::validate_helper(const Node* node) const -> int {
   if (!node) {
     return 0; // NIL leaves are black.

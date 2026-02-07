@@ -223,19 +223,19 @@ auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> TrieNode* {
 }
 
 template <bool UseMap>
-auto Trie<UseMap>::get_or_create_child(TrieNode* node, char c) -> TrieNode*& {
+auto Trie<UseMap>::get_or_create_child(TrieNode* node, char c) -> TrieNode* {
   if constexpr (UseMap) {
     auto& child_ptr = node->children[c];
     if (!child_ptr) {
       child_ptr = std::make_unique<TrieNode>();
     }
-    return reinterpret_cast<TrieNode*&>(child_ptr);
+    return child_ptr.get();
   } else {
     int idx = char_to_index(c);
     if (!node->children[idx]) {
       node->children[idx] = std::make_unique<TrieNode>();
     }
-    return reinterpret_cast<TrieNode*&>(node->children[idx]);
+    return node->children[idx].get();
   }
 }
 
