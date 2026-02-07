@@ -16,22 +16,6 @@
 
 namespace ads::apps::snake {
 
-//===----------------------------- SCORE ENTRY OPS -----------------------------===//
-
-// Comparison operators for leaderboard sorting.
-auto ScoreEntry::operator<(const ScoreEntry& other) const noexcept -> bool {
-  if (score != other.score) {
-    return score < other.score;
-  }
-
-  return run_id < other.run_id;
-}
-
-// Define operator> in terms of operator< for consistency.
-auto ScoreEntry::operator>(const ScoreEntry& other) const noexcept -> bool {
-  return other < *this;
-}
-
 //===------------------------- SNAKE ENGINE LIFECYCLE --------------------------===//
 
 // Constructor initializes the engine with a given seed for reproducibility.

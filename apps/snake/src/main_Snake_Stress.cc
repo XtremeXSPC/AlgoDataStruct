@@ -28,14 +28,24 @@ using ads::apps::snake::Leaderboard;
 using ads::apps::snake::ScoreEntry;
 using ads::apps::snake::SnakeEngine;
 
+/**
+ * @brief Parses a string argument into a uint32_t, with error handling and fallback.
+ *
+ * @param value The C-string to parse.
+ * @param fallback The value to return if parsing fails.
+ * @return std::uint32_t The parsed value, or the fallback if parsing fails.
+ */
 [[nodiscard]] auto parse_u32_arg(const char* value, std::uint32_t fallback) -> std::uint32_t {
   if (value == nullptr) {
     return fallback;
   }
 
-  char*      end    = nullptr;
+  char* end = nullptr;
+
+  // Use strtoul for parsing and check for errors and overflow.
   const auto parsed = std::strtoul(value, &end, 10);
 
+  // Check for parsing errors and overflow.
   if (end == value || *end != '\0' || parsed > static_cast<unsigned long>(std::numeric_limits<std::uint32_t>::max())) {
     return fallback;
   }
@@ -43,14 +53,24 @@ using ads::apps::snake::SnakeEngine;
   return static_cast<std::uint32_t>(parsed);
 }
 
+/**
+ * @brief Parses a string argument into a size_t, with error handling and fallback.
+ *
+ * @param value The C-string to parse.
+ * @param fallback The value to return if parsing fails.
+ * @return std::size_t The parsed value, or the fallback if parsing fails.
+ */
 [[nodiscard]] auto parse_usize_arg(const char* value, std::size_t fallback) -> std::size_t {
   if (value == nullptr) {
     return fallback;
   }
 
-  char*      end    = nullptr;
+  char* end = nullptr;
+
+  // Use strtoul for parsing and check for errors and overflow.
   const auto parsed = std::strtoull(value, &end, 10);
 
+  // Check for parsing errors.
   if (end == value || *end != '\0') {
     return fallback;
   }
@@ -58,9 +78,16 @@ using ads::apps::snake::SnakeEngine;
   return static_cast<std::size_t>(parsed);
 }
 
+/**
+ * @brief Generates a random direction using the provided random number generator.
+ *
+ * @param rng The random number generator to use for direction selection.
+ * @return Direction A randomly selected direction (up, down, left, right).
+ */
 [[nodiscard]] auto random_direction(std::mt19937& rng) -> Direction {
   std::uniform_int_distribution<int> direction_dist(0, 3);
 
+  // Map the random integer to a direction enum value.
   switch (direction_dist(rng)) {
   case 0:
     return Direction::kUp;
@@ -75,9 +102,16 @@ using ads::apps::snake::SnakeEngine;
   }
 }
 
+/**
+ * @brief Prints the top scores from the leaderboard.
+ *
+ * @param leaderboard The leaderboard containing score entries.
+ * @param count The number of top scores to print.
+ */
 auto print_top_scores(const Leaderboard& leaderboard, std::size_t count) -> void {
   ads::arrays::DynamicArray<ScoreEntry> ordered_entries;
 
+  // Collect entries from the leaderboard into a dynamic array for sorting.
   for (const auto& entry : leaderboard) {
     ordered_entries.push_back(entry);
   }
@@ -87,8 +121,10 @@ auto print_top_scores(const Leaderboard& leaderboard, std::size_t count) -> void
     return;
   }
 
+  // Sort entries in ascending order (best scores last).
   const std::size_t actual_count = (count < ordered_entries.size()) ? count : ordered_entries.size();
 
+  // Print top scores from best to worst.
   std::cout << "Top scores (best to worst):\n";
   for (std::size_t rank = 0; rank < actual_count; ++rank) {
     const std::size_t index = ordered_entries.size() - 1U - rank;
@@ -103,24 +139,29 @@ auto print_top_scores(const Leaderboard& leaderboard, std::size_t count) -> void
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
 auto main(int argc, char** argv) -> int {
+  // Parse command-line arguments for stress test configuration.
   const std::size_t   episodes  = (argc > 1) ? parse_usize_arg(argv[1], 250U) : 250U;
   const std::size_t   max_ticks = (argc > 2) ? parse_usize_arg(argv[2], 2'000U) : 2'000U;
   const std::uint32_t seed = (argc > 3) ? parse_u32_arg(argv[3], SnakeEngine::kDefaultSeed) : SnakeEngine::kDefaultSeed;
 
+  // Initialize random number generator for the stress test suite.
   std::mt19937                                suite_rng(seed);
   std::bernoulli_distribution                 change_dir_dist(0.35);
   Leaderboard                                 leaderboard;
   ads::associative::HashMap<int, std::size_t> score_frequency;
 
+  // Statistics tracking variables.
   std::size_t total_ticks          = 0;
   std::size_t total_score          = 0;
   std::size_t consistency_failures = 0;
   std::size_t run_id_counter       = 0;
   std::size_t completed_runs       = 0;
 
+  // Print initial configuration.
   std::cout << "Snake stress started with episodes=" << episodes << ", max_ticks=" << max_ticks << ", seed=" << seed
             << "\n";
 
+  // Main stress test loop: run multiple episodes of the game with random direction changes.
   for (std::size_t run = 0; run < episodes; ++run) {
     const std::uint32_t episode_seed = suite_rng();
     SnakeEngine         engine(episode_seed);
@@ -133,6 +174,7 @@ auto main(int argc, char** argv) -> int {
 
       engine.step();
 
+      // Check for consistency after each step.
       if (!engine.is_consistent()) {
         ++consistency_failures;
         std::cerr << "Consistency failure detected at run=" << run << " tick=" << engine.tick()
@@ -142,6 +184,7 @@ auto main(int argc, char** argv) -> int {
       }
     }
 
+    // Final consistency check after episode completion.
     if (run_failed || !engine.is_consistent()) {
       if (!run_failed) {
         ++consistency_failures;
@@ -162,6 +205,7 @@ auto main(int argc, char** argv) -> int {
     ++completed_runs;
   }
 
+  // Print summary statistics after stress test completion.
   if (consistency_failures > 0U) {
     std::cerr << "Stress failed: consistency_failures=" << consistency_failures << "\n";
     return 2;
@@ -172,6 +216,7 @@ auto main(int argc, char** argv) -> int {
   const double avg_score =
       (completed_runs > 0U) ? static_cast<double>(total_score) / static_cast<double>(completed_runs) : 0.0;
 
+  // Print detailed statistics about the stress test results.
   std::cout << "\nStress summary\n";
   std::cout << "  Runs completed: " << completed_runs << "\n";
   std::cout << "  Total ticks: " << total_ticks << "\n";
@@ -179,6 +224,7 @@ auto main(int argc, char** argv) -> int {
   std::cout << std::format("  Avg score/run: {:.2f}\n", avg_score);
   std::cout << "  Distinct scores: " << score_frequency.size() << "\n";
 
+  // Print score distribution.
   if (!leaderboard.is_empty()) {
     const auto& best = leaderboard.find_max();
     std::cout << "  Best score: " << best.score << " (run_id=" << best.run_id << ")\n";
