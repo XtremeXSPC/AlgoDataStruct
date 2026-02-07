@@ -18,6 +18,7 @@
 
 #include "Binary_Tree.hpp"
 #include "Binary_Tree_Exception.hpp"
+#include "Tree_Concepts.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -51,7 +52,7 @@ namespace ads::trees {
  * @tparam T The type of data to store.
  *         Must be copyable and support "operator<" and "operator==".
  */
-template <typename T>
+template <OrderedTreeElement T>
 class BinarySearchTree : public BinaryTree<T> {
 private:
   struct Node;

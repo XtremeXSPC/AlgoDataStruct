@@ -17,12 +17,15 @@
 #define RED_BLACK_TREE_HPP
 
 #include "Binary_Tree_Exception.hpp"
+#include "Tree_Concepts.hpp"
 
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <queue>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 namespace ads::trees {
 
@@ -65,7 +68,7 @@ enum class Color { Red, Black };
  * - Search: O(log n) time
  * - Space:  O(n) with 1 bit per node for color
  */
-template <typename T>
+template <OrderedTreeElement T>
 class Red_Black_Tree {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -114,6 +117,16 @@ public:
    * @complexity O(log n) time, at most 2 rotations
    */
   auto insert(const T& value) -> bool;
+
+  /**
+   * @brief Remove a value from the tree.
+   * @param value Value to remove.
+   * @return true if removed, false if value was not found.
+   * @complexity O(n log n)
+   * @note This implementation rebuilds the tree after removal to preserve
+   *       Red-Black properties with strong exception safety.
+   */
+  auto remove(const T& value) -> bool;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
@@ -202,6 +215,20 @@ public:
    * @complexity O(n), Space O(h)
    */
   void in_order_traversal(std::function<void(const T&)> visit) const;
+
+  /**
+   * @brief Pre-order traversal.
+   * @param visit Function to call for each element.
+   * @complexity O(n), Space O(h)
+   */
+  void pre_order_traversal(std::function<void(const T&)> visit) const;
+
+  /**
+   * @brief Level-order traversal.
+   * @param visit Function to call for each element.
+   * @complexity O(n), Space O(n)
+   */
+  void level_order_traversal(std::function<void(const T&)> visit) const;
 
 private:
   //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
@@ -313,6 +340,13 @@ private:
    * @param visit Function to call for each node's value.
    */
   void in_order_helper(const Node* node, std::function<void(const T&)> visit) const;
+
+  /**
+   * @brief Pre-order traversal helper.
+   * @param node Current node being visited.
+   * @param visit Function to call for each node's value.
+   */
+  void pre_order_helper(const Node* node, std::function<void(const T&)> visit) const;
 
   //===-------------------------- HEIGHT/VALIDATION ----------------------------===//
 

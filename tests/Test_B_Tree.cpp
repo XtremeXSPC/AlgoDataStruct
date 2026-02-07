@@ -119,23 +119,67 @@ TEST_F(BTreeTest, FindMinMaxOnEmptyThrows) {
 //===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(BTreeTest, RemoveFromLeaf) {
-  GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
+  tree.insert(10);
+  tree.insert(20);
+  tree.insert(30);
+  tree.insert(40);
+
+  EXPECT_TRUE(tree.remove(40));
+  EXPECT_EQ(tree.size(), 3);
+  EXPECT_FALSE(tree.contains(40));
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(BTreeTest, RemoveFromInternalNode) {
-  GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
+  for (int i = 1; i <= 30; ++i) {
+    tree.insert(i);
+  }
+
+  EXPECT_TRUE(tree.remove(15));
+  EXPECT_EQ(tree.size(), 29);
+  EXPECT_FALSE(tree.contains(15));
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(BTreeTest, RemoveNonExistent) {
-  GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
+  for (int i = 1; i <= 20; ++i) {
+    tree.insert(i);
+  }
+
+  EXPECT_FALSE(tree.remove(999));
+  EXPECT_EQ(tree.size(), 20);
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(BTreeTest, RemoveWithMerge) {
-  GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
+  for (int i = 1; i <= 40; ++i) {
+    tree.insert(i);
+  }
+
+  EXPECT_TRUE(tree.remove(10));
+  EXPECT_TRUE(tree.remove(11));
+  EXPECT_TRUE(tree.remove(12));
+  EXPECT_TRUE(tree.remove(13));
+  EXPECT_TRUE(tree.remove(14));
+
+  EXPECT_EQ(tree.size(), 35);
+  EXPECT_FALSE(tree.contains(10));
+  EXPECT_FALSE(tree.contains(14));
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(BTreeTest, RemoveAll) {
-  GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
+  for (int i = 1; i <= 20; ++i) {
+    tree.insert(i);
+  }
+
+  for (int i = 1; i <= 20; ++i) {
+    EXPECT_TRUE(tree.remove(i));
+  }
+
+  EXPECT_TRUE(tree.is_empty());
+  EXPECT_EQ(tree.size(), 0);
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 //===----------------------------- TRAVERSAL TESTS -----------------------------===//
@@ -210,7 +254,23 @@ TEST_F(BTreeTest, LargeDatasetInsert) {
 }
 
 TEST_F(BTreeTest, LargeDatasetInsertAndRemove) {
-  GTEST_SKIP() << "Removal operations are not implemented for B-Tree yet.";
+  const int N = 1'000;
+  for (int i = 0; i < N; ++i) {
+    tree.insert(i);
+  }
+
+  for (int i = 0; i < N; i += 2) {
+    EXPECT_TRUE(tree.remove(i));
+  }
+
+  EXPECT_EQ(tree.size(), N / 2);
+  EXPECT_TRUE(tree.validate_properties());
+  EXPECT_EQ(tree.find_min(), 1);
+  EXPECT_EQ(tree.find_max(), N - 1);
+
+  for (int i = 1; i < N; i += 2) {
+    EXPECT_TRUE(tree.contains(i));
+  }
 }
 
 //===------------------------- DEGREE VARIATION TESTS --------------------------===//

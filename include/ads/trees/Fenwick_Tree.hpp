@@ -17,32 +17,15 @@
 #define FENWICK_TREE_HPP
 
 #include "Fenwick_Tree_Exception.hpp"
+#include "Tree_Concepts.hpp"
 
 #include <bit>
-#include <concepts>
 #include <cstddef>
 #include <initializer_list>
 #include <utility>
 #include <vector>
 
 namespace ads::trees {
-
-/**
- * @brief Concept for types that can be used as Fenwick tree elements.
- *
- * @details A type T satisfies FenwickElement if it supports:
- *          - Default construction (T{})
- *          - Compound addition (a += b)
- *          - Subtraction (a - b) for computing deltas
- *          - Comparison with < for lower_bound operations
- */
-template <typename T>
-concept FenwickElement = requires(T a, T b) {
-  { T{} };
-  { a += b } -> std::same_as<T&>;
-  { a - b } -> std::convertible_to<T>;
-  { a < b } -> std::convertible_to<bool>;
-};
 
 /**
  * @brief Fenwick Tree (Binary Indexed Tree) for efficient prefix and range sums.

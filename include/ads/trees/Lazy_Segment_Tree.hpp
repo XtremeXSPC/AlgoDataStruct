@@ -376,7 +376,7 @@ private:
   /**
    * @brief Pushes lazy tag down to children.
    */
-  constexpr auto push_down(size_type v, size_type tl, size_type tr) -> void;
+  constexpr auto push_down(size_type v, size_type tl, size_type tr) const -> void;
 
   /**
    * @brief Pulls values up from children.
@@ -386,7 +386,7 @@ private:
   /**
    * @brief Applies a tag to a node.
    */
-  constexpr auto apply_tag(size_type v, size_type len, const tag_type& tag) -> void;
+  constexpr auto apply_tag(size_type v, size_type len, const tag_type& tag) const -> void;
 
   /**
    * @brief Recursively updates a range.
