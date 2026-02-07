@@ -87,18 +87,20 @@ using ads::apps::snake::SnakeEngine;
 [[nodiscard]] auto random_direction(std::mt19937& rng) -> Direction {
   std::uniform_int_distribution<int> direction_dist(0, 3);
 
+  using enum Direction;
+
   // Map the random integer to a direction enum value.
   switch (direction_dist(rng)) {
   case 0:
-    return Direction::kUp;
+    return kUp;
   case 1:
-    return Direction::kDown;
+    return kDown;
   case 2:
-    return Direction::kLeft;
+    return kLeft;
   case 3:
-    return Direction::kRight;
+    return kRight;
   default:
-    return Direction::kRight;
+    return kRight;
   }
 }
 

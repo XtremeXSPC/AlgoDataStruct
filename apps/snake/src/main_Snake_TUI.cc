@@ -74,15 +74,17 @@ inline auto ansi_clear_line() -> void {
 [[nodiscard]] auto parse_direction(char raw) -> std::optional<Direction> {
   const auto command = static_cast<char>(std::tolower(static_cast<unsigned char>(raw)));
 
+  using enum Direction;
+
   switch (command) {
   case 'w':
-    return Direction::kUp;
+    return kUp;
   case 's':
-    return Direction::kDown;
+    return kDown;
   case 'a':
-    return Direction::kLeft;
+    return kLeft;
   case 'd':
-    return Direction::kRight;
+    return kRight;
   default:
     return std::nullopt;
   }
