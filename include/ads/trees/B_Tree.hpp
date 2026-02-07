@@ -42,29 +42,29 @@ namespace ads::trees {
  *          5. A non-leaf node with k keys has k+1 children.
  *
  *          Advantages:
- *          - Optimized for disk I/O (reduces seeks).
- *          - Very low height: O(log_t n).
- *          - Cache-friendly for large datasets.
- *          - Used in databases (B+ Tree variant) and file systems.
+ *            - Optimized for disk I/O (reduces seeks).
+ *            - Very low height: O(log_t n).
+ *            - Cache-friendly for large datasets.
+ *            - Used in databases (B+ Tree variant) and file systems.
  *
  *          Performance:
- *          - Search: O(t log_t n).
- *          - Insert: O(t log_t n) with at most O(log_t n) splits.
- *          - Height: O(log_t n) where t is minimum degree.
+ *            - Search: O(t log_t n).
+ *            - Insert: O(t log_t n) with at most O(log_t n) splits.
+ *            - Height: O(log_t n) where t is minimum degree.
  *
  *          Common Values:
- *          - t=2: 2-3-4 Tree (each node has 1-3 keys, 2-4 children).
- *          - t=3: Each node has 2-5 keys, 3-6 children.
- *          - t=128: Database block size optimization.
+ *            - t = 2: 2-3-4 Tree (each node has 1-3 keys, 2-4 children).
+ *            - t = 3: Each node has 2-5 keys, 3-6 children.
+ *            - t = 128: Database block size optimization.
  *
  * @tparam T Type of elements stored (must be comparable with <).
  * @tparam t Minimum degree (t >= 2).
  *
  * @complexity
- * - Insert: O(t log_t n)
- * - Search: O(t log_t n)
- * - Height: O(log_t n)
- * - Space:  O(n)
+ *   - Insert: O(t log_t n)
+ *   - Search: O(t log_t n)
+ *   - Height: O(log_t n)
+ *   - Space:  O(n)
  */
 template <OrderedTreeElement T, int MinDegree = 3>
   requires ValidBTreeDegree<MinDegree>
