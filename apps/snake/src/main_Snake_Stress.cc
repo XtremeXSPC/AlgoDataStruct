@@ -138,6 +138,16 @@ auto print_top_scores(const Leaderboard& leaderboard, std::size_t count) -> void
 
 //===------------------------------ MAIN FUNCTION ------------------------------===//
 
+/**
+ * @brief Main function for the Snake stress test.
+ * @details Runs multiple episodes of the Snake game with random direction changes,
+ *          checking for consistency after each step and summarizing results at the end.
+ *          Command-line arguments allow configuration of episodes, max ticks, and seed.
+ *
+ * @param argc Argument count.
+ * @param argv Argument vector (expects optional [episodes] [max_ticks] [seed]).
+ * @return int Exit code (0 on success, 2 on consistency failure).
+ */
 auto main(int argc, char** argv) -> int {
   // Parse command-line arguments for stress test configuration.
   const std::size_t   episodes  = (argc > 1) ? parse_usize_arg(argv[1], 250U) : 250U;
