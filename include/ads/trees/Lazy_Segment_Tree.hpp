@@ -36,12 +36,12 @@ namespace detail {
  * @brief Concept for lazy segment tree operations.
  *
  * @details Requirements for a valid lazy segment tree configuration:
- * - Combine: Merges two nodes (must be associative)
- * - Apply: Applies a lazy tag to a node, given the segment length
- * - Compose: Composes two lazy tags (must be associative)
- * - Identity: Returns the identity element for Combine
+ *   - Combine: Merges two nodes (must be associative)
+ *   - Apply: Applies a lazy tag to a node, given the segment length
+ *   - Compose: Composes two lazy tags (must be associative)
+ *   - Identity: Returns the identity element for Combine
  *
- * @note Both Combine and Compose MUST be associative for correct results.
+ * @note Both Combine and Compose "MUST" be associative for correct results.
  */
 template <typename Node, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
 concept LazySegmentTreeTraits =

@@ -35,25 +35,25 @@ namespace ads::trees {
  *          like autocomplete and spell checking.
  *
  *          Key Properties:
- *          - Search time: O(m) where m = string length (independent of # words)
- *          - Prefix sharing: Common prefixes stored once.
- *          - Space-efficient for large dictionaries with common prefixes.
+ *            - Search time: O(m) where m = string length (independent of # words)
+ *            - Prefix sharing: Common prefixes stored once.
+ *            - Space-efficient for large dictionaries with common prefixes.
  *
  *          Applications:
- *          - Autocomplete systems.
- *          - Spell checkers.
- *          - IP routing (longest prefix matching).
- *          - Text editors (word completion).
+ *            - Autocomplete systems.
+ *            - Spell checkers.
+ *            - IP routing (longest prefix matching).
+ *            - Text editors (word completion).
  *
  * @tparam UseMap If true, uses unordered_map for children (supports any char).
  *                If false, uses array for a-z lowercase only (faster but limited).
  *
  * @complexity
- * - Insert: O(m) time, O(m) space worst case (m = word length)
- * - Search: O(m) time, O(1) space
- * - StartsWith: O(m) time, O(1) space (m = prefix length)
- * - Remove: O(m) time, O(1) space
- * - GetAllWithPrefix: O(p + n*k) where p = prefix length, n = # results, k = avg word length
+ *   - Insert: O(m) time, O(m) space worst case (m = word length)
+ *   - Search: O(m) time, O(1) space
+ *   - StartsWith: O(m) time, O(1) space (m = prefix length)
+ *   - Remove: O(m) time, O(1) space
+ *   - GetAllWithPrefix: O(p + n*k) where p = prefix length, n = # results, k = avg word length
  */
 template <bool UseMap = true>
 class Trie {
