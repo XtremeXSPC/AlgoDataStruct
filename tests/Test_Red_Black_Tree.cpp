@@ -13,6 +13,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -106,19 +107,53 @@ TEST_F(RedBlackTreeTest, FindMinMaxOnEmptyThrows) {
 //===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(RedBlackTreeTest, RemoveLeafNode) {
-  GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+  tree.insert(20);
+
+  EXPECT_TRUE(tree.remove(20));
+  EXPECT_EQ(tree.size(), 3);
+  EXPECT_FALSE(tree.contains(20));
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(RedBlackTreeTest, RemoveNodeWithChildren) {
-  GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+  tree.insert(20);
+  tree.insert(40);
+
+  EXPECT_TRUE(tree.remove(30));
+  EXPECT_EQ(tree.size(), 4);
+  EXPECT_FALSE(tree.contains(30));
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(RedBlackTreeTest, RemoveRoot) {
-  GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+  tree.insert(20);
+  tree.insert(40);
+  tree.insert(60);
+  tree.insert(80);
+
+  EXPECT_TRUE(tree.remove(50));
+  EXPECT_EQ(tree.size(), 6);
+  EXPECT_FALSE(tree.contains(50));
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(RedBlackTreeTest, RemoveNonExistent) {
-  GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+
+  EXPECT_FALSE(tree.remove(999));
+  EXPECT_EQ(tree.size(), 3);
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 //===----------------------------- TRAVERSAL TESTS -----------------------------===//
@@ -138,11 +173,37 @@ TEST_F(RedBlackTreeTest, InOrderTraversal) {
 }
 
 TEST_F(RedBlackTreeTest, PreOrderTraversal) {
-  GTEST_SKIP() << "Pre-order traversal helper is not available for Red-Black Tree.";
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+  tree.insert(20);
+  tree.insert(40);
+
+  std::vector<int> result;
+  tree.pre_order_traversal([&result](const int& val) { result.push_back(val); });
+
+  std::vector<int> sorted = result;
+  std::sort(sorted.begin(), sorted.end());
+  std::vector<int> expected = {20, 30, 40, 50, 70};
+  EXPECT_EQ(sorted, expected);
+  EXPECT_EQ(result.size(), expected.size());
 }
 
 TEST_F(RedBlackTreeTest, LevelOrderTraversal) {
-  GTEST_SKIP() << "Level-order traversal helper is not available for Red-Black Tree.";
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+  tree.insert(20);
+  tree.insert(40);
+
+  std::vector<int> result;
+  tree.level_order_traversal([&result](const int& val) { result.push_back(val); });
+
+  std::vector<int> sorted = result;
+  std::sort(sorted.begin(), sorted.end());
+  std::vector<int> expected = {20, 30, 40, 50, 70};
+  EXPECT_EQ(sorted, expected);
+  EXPECT_EQ(result.size(), expected.size());
 }
 
 //===----------------------------- ITERATOR TESTS ------------------------------===//
@@ -209,7 +270,23 @@ TEST_F(RedBlackTreeTest, BalanceAfterDescendingInsertions) {
 }
 
 TEST_F(RedBlackTreeTest, BalanceAfterMultipleOperations) {
-  GTEST_SKIP() << "Removal is not implemented for Red-Black Tree yet.";
+  for (int i = 1; i <= 100; ++i) {
+    tree.insert(i);
+  }
+
+  for (int i = 2; i <= 100; i += 2) {
+    EXPECT_TRUE(tree.remove(i));
+  }
+
+  EXPECT_EQ(tree.size(), 50);
+  EXPECT_TRUE(tree.validate_properties());
+
+  for (int i = 1; i <= 100; i += 2) {
+    EXPECT_TRUE(tree.contains(i));
+  }
+  for (int i = 2; i <= 100; i += 2) {
+    EXPECT_FALSE(tree.contains(i));
+  }
 }
 
 //===----------------------------- EDGE CASE TESTS -----------------------------===//

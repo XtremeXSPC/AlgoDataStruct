@@ -16,6 +16,8 @@
 #ifndef BINARY_TREE_HPP
 #define BINARY_TREE_HPP
 
+#include "Tree_Concepts.hpp"
+
 #include <cstddef>
 #include <functional>
 
@@ -35,7 +37,7 @@ namespace ads::trees {
  * @tparam T The data type to store in the tree. Must be copyable and support comparison
  *           operations for ordered tree implementations.
  */
-template <typename T>
+template <TreeElement T>
 class BinaryTree {
 public:
   // A virtual destructor is mandatory for polymorphic base classes.

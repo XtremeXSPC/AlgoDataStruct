@@ -246,9 +246,9 @@ private:
    * @brief Create or get child node for a character.
    * @param node Current node.
    * @param c Character key.
-   * @return Reference to child node (creates if doesn't exist).
+   * @return Pointer to child node (creates if doesn't exist).
    */
-  auto get_or_create_child(TrieNode* node, char c) -> TrieNode*&;
+  auto get_or_create_child(TrieNode* node, char c) -> TrieNode*;
 
   /**
    * @brief Navigate to node representing given prefix.

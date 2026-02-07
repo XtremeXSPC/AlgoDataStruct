@@ -18,7 +18,8 @@ namespace ads::trees {
 
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 B_Tree<T, MinDegree>::Node::Node(bool leaf) : is_leaf(leaf) {
   keys.reserve(MAX_KEYS);
   if (!leaf) {
@@ -28,16 +29,19 @@ B_Tree<T, MinDegree>::Node::Node(bool leaf) : is_leaf(leaf) {
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 B_Tree<T, MinDegree>::B_Tree() : root_(nullptr), size_(0) {
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 B_Tree<T, MinDegree>::B_Tree(B_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::operator=(B_Tree&& other) noexcept -> B_Tree& {
   if (this != &other) {
     root_       = std::move(other.root_);
@@ -49,7 +53,8 @@ auto B_Tree<T, MinDegree>::operator=(B_Tree&& other) noexcept -> B_Tree& {
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::insert(const T& key) -> bool {
   if (!root_) {
     root_ = std::make_unique<Node>(true);
@@ -76,7 +81,40 @@ auto B_Tree<T, MinDegree>::insert(const T& key) -> bool {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+auto B_Tree<T, MinDegree>::remove(const T& key) -> bool {
+  if (is_empty()) {
+    return false;
+  }
+
+  std::vector<T> retained_keys;
+  retained_keys.reserve(size_ > 0 ? size_ - 1 : 0);
+
+  bool removed = false;
+  in_order_traversal([&](const T& current_key) {
+    if (!removed && current_key == key) {
+      removed = true;
+      return;
+    }
+    retained_keys.push_back(current_key);
+  });
+
+  if (!removed) {
+    return false;
+  }
+
+  B_Tree rebuilt_tree;
+  for (const auto& current_key : retained_keys) {
+    rebuilt_tree.insert(current_key);
+  }
+
+  *this = std::move(rebuilt_tree);
+  return true;
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 void B_Tree<T, MinDegree>::clear() {
   root_.reset();
   size_ = 0;
@@ -84,27 +122,32 @@ void B_Tree<T, MinDegree>::clear() {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::is_empty() const -> bool {
   return size_ == 0;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::size() const -> size_t {
   return size_;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::height() const -> int {
   return height_helper(root_.get());
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::contains(const T& key) const -> bool {
   return search(key);
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::find_min() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("B-Tree is empty");
@@ -117,7 +160,8 @@ auto B_Tree<T, MinDegree>::find_min() const -> const T& {
   return node->keys.front();
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::find_max() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("B-Tree is empty");
@@ -130,34 +174,40 @@ auto B_Tree<T, MinDegree>::find_max() const -> const T& {
   return node->keys.back();
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::search(const T& key) const -> bool {
   return search_helper(root_.get(), key);
 }
 
 //===----------------------- B-TREE SPECIFIC OPERATIONS ------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 constexpr auto B_Tree<T, MinDegree>::get_min_degree() -> int {
   return t;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 constexpr auto B_Tree<T, MinDegree>::get_max_keys() -> int {
   return MAX_KEYS;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 constexpr auto B_Tree<T, MinDegree>::get_min_keys() -> int {
   return MIN_KEYS;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::count_nodes() const -> size_t {
   return count_nodes_helper(root_.get());
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::validate_properties() const -> bool {
   if (!root_) {
     return true;
@@ -169,7 +219,8 @@ auto B_Tree<T, MinDegree>::validate_properties() const -> bool {
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 void B_Tree<T, MinDegree>::in_order_traversal(std::function<void(const T&)> visit) const {
   in_order_helper(root_.get(), visit);
 }
@@ -177,7 +228,8 @@ void B_Tree<T, MinDegree>::in_order_traversal(std::function<void(const T&)> visi
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 void B_Tree<T, MinDegree>::split_child(Node* parent, int index) {
   Node* full_child = parent->children[index].get();
   auto  new_child  = std::make_unique<Node>(full_child->is_leaf);
@@ -212,7 +264,8 @@ void B_Tree<T, MinDegree>::split_child(Node* parent, int index) {
   }
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::insert_non_full(Node* node, const T& key) -> bool {
   int i = node->n - 1;
 
@@ -249,7 +302,7 @@ auto B_Tree<T, MinDegree>::insert_non_full(Node* node, const T& key) -> bool {
       split_child(node, i);
 
       // After split, determine which child to insert into.
-      if (key > node->keys[i]) {
+      if (node->keys[i] < key) {
         i++;
       } else if (key == node->keys[i]) {
         return false; // Duplicate.
@@ -260,7 +313,8 @@ auto B_Tree<T, MinDegree>::insert_non_full(Node* node, const T& key) -> bool {
   }
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::search_helper(const Node* node, const T& key) const -> bool {
   if (!node) {
     return false;
@@ -268,7 +322,7 @@ auto B_Tree<T, MinDegree>::search_helper(const Node* node, const T& key) const -
 
   // Find first key >= search key.
   int i = 0;
-  while (i < node->n && key > node->keys[i]) {
+  while (i < node->n && node->keys[i] < key) {
     i++;
   }
 
@@ -286,7 +340,8 @@ auto B_Tree<T, MinDegree>::search_helper(const Node* node, const T& key) const -
   return search_helper(node->children[i].get(), key);
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::height_helper(const Node* node) const -> int {
   if (!node) {
     return -1;
@@ -297,7 +352,8 @@ auto B_Tree<T, MinDegree>::height_helper(const Node* node) const -> int {
   return 1 + height_helper(node->children[0].get());
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::count_nodes_helper(const Node* node) const -> size_t {
   if (!node) {
     return 0;
@@ -312,7 +368,8 @@ auto B_Tree<T, MinDegree>::count_nodes_helper(const Node* node) const -> size_t 
   return count;
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 void B_Tree<T, MinDegree>::in_order_helper(const Node* node, std::function<void(const T&)> visit) const {
   if (!node) {
     return;
@@ -333,7 +390,8 @@ void B_Tree<T, MinDegree>::in_order_helper(const Node* node, std::function<void(
   }
 }
 
-template <typename T, int MinDegree>
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::validate_helper(const Node* node, int min_keys, int max_keys, int level) const -> bool {
   if (!node) {
     return true;
@@ -346,7 +404,7 @@ auto B_Tree<T, MinDegree>::validate_helper(const Node* node, int min_keys, int m
 
   // Check keys are sorted.
   for (int i = 1; i < node->n; i++) {
-    if (node->keys[i - 1] >= node->keys[i]) {
+    if (!(node->keys[i - 1] < node->keys[i])) {
       return false;
     }
   }

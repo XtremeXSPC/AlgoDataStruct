@@ -18,7 +18,7 @@ namespace ads::trees {
 
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 BinarySearchTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
   push_left(root);
   if (!stack_.empty()) {
@@ -27,7 +27,7 @@ BinarySearchTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
   }
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::iterator::push_left(Node* node) {
   while (node) {
     stack_.push(node);
@@ -35,17 +35,17 @@ void BinarySearchTree<T>::iterator::push_left(Node* node) {
   }
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::iterator::operator*() const -> reference {
   return current_->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::iterator::operator->() const -> pointer {
   return &current_->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::iterator::operator++() -> iterator& {
   // If current has a right child, go to it and then all the way left.
   if (current_->right) {
@@ -63,32 +63,32 @@ auto BinarySearchTree<T>::iterator::operator++() -> iterator& {
   return *this;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::iterator::operator++(int) -> iterator {
   iterator temp = *this;
   ++(*this);
   return temp;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 BinarySearchTree<T>::BinarySearchTree() : root_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 BinarySearchTree<T>::BinarySearchTree(BinarySearchTree&& other) noexcept :
     root_(std::move(other.root_)),
     size_(other.size_) {
   other.size_ = 0;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> BinarySearchTree<T>& {
   if (this != &other) {
     root_       = std::move(other.root_);
@@ -100,17 +100,17 @@ auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> Binary
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::insert(const T& value) -> bool {
   return insert_helper(root_, value);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::insert(T&& value) -> bool {
   return insert_helper(root_, std::move(value));
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 template <typename... Args>
 auto BinarySearchTree<T>::emplace(Args&&... args) -> bool {
   // Construct the value in place and use move semantics.
@@ -119,12 +119,12 @@ auto BinarySearchTree<T>::emplace(Args&&... args) -> bool {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::remove(const T& value) -> bool {
   return remove_helper(root_, value);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::clear() noexcept {
   // Simply reset the root - the chain of unique_ptr will handle deallocation.
   // For very deep trees, we might want an iterative approach to avoid stack overflow
@@ -135,27 +135,27 @@ void BinarySearchTree<T>::clear() noexcept {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::is_empty() const noexcept -> bool {
   return root_ == nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::height() const noexcept -> int {
   return height_helper(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::contains(const T& value) const -> bool {
   return find_helper(root_.get(), value) != nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_min() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Cannot find minimum in empty tree");
@@ -163,7 +163,7 @@ auto BinarySearchTree<T>::find_min() const -> const T& {
   return find_min_node(root_.get())->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_max() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Cannot find maximum in empty tree");
@@ -173,22 +173,22 @@ auto BinarySearchTree<T>::find_max() const -> const T& {
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
   in_order_helper(root_.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const {
   pre_order_helper(root_.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const {
   post_order_helper(root_.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const {
   if (!root_) {
     return;
@@ -215,7 +215,7 @@ void BinarySearchTree<T>::level_order_traversal(const std::function<void(const T
 
 //===------------------ ADDITIONAL BST-SPECIFIC FUNCTIONALITY ------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::successor(const T& value) const -> const T* {
   Node* current   = root_.get();
   Node* successor = nullptr;
@@ -234,7 +234,7 @@ auto BinarySearchTree<T>::successor(const T& value) const -> const T* {
   return successor ? &successor->data : nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::predecessor(const T& value) const -> const T* {
   Node* current     = root_.get();
   Node* predecessor = nullptr;
@@ -255,32 +255,32 @@ auto BinarySearchTree<T>::predecessor(const T& value) const -> const T* {
 
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::begin() -> iterator {
   return iterator(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::begin() const -> iterator {
   return iterator(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::end() -> iterator {
   return iterator(); // Default-constructed iterator represents end
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::end() const -> iterator {
   return iterator();
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::cbegin() const -> iterator {
   return begin();
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::cend() const -> iterator {
   return end();
 }
@@ -288,7 +288,7 @@ auto BinarySearchTree<T>::cend() const -> iterator {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 template <typename U>
 auto BinarySearchTree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value) -> bool {
   // Base case: found the insertion point.
@@ -309,7 +309,7 @@ auto BinarySearchTree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value) 
   }
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::remove_helper(std::unique_ptr<Node>& node, const T& value) -> bool {
   // Base case: value not found.
   if (!node) {
@@ -357,7 +357,7 @@ auto BinarySearchTree<T>::remove_helper(std::unique_ptr<Node>& node, const T& va
   return true;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node> {
   // If no left child, this node is the minimum.
   if (!node->left) {
@@ -374,7 +374,7 @@ auto BinarySearchTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique
 
 //===----------------------------- SEARCH HELPERS ------------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_helper(Node* node, const T& value) const -> Node* {
   if (!node) {
     return nullptr;
@@ -390,7 +390,7 @@ auto BinarySearchTree<T>::find_helper(Node* node, const T& value) const -> Node*
   }
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_min_node(Node* node) const -> Node* {
   // The minimum is the leftmost node.
   while (node->left) {
@@ -399,7 +399,7 @@ auto BinarySearchTree<T>::find_min_node(Node* node) const -> Node* {
   return node;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_max_node(Node* node) const -> Node* {
   // The maximum is the rightmost node
   while (node->right) {
@@ -408,7 +408,7 @@ auto BinarySearchTree<T>::find_max_node(Node* node) const -> Node* {
   return node;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int {
   if (!node) {
     return -1; // Height of empty tree is -1
@@ -422,7 +422,7 @@ auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int 
 
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
@@ -433,7 +433,7 @@ void BinarySearchTree<T>::in_order_helper(const Node* node, const std::function<
   in_order_helper(node->right.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
@@ -444,7 +444,7 @@ void BinarySearchTree<T>::pre_order_helper(const Node* node, const std::function
   pre_order_helper(node->right.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void BinarySearchTree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;

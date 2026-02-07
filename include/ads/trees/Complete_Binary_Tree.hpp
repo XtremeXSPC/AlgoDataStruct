@@ -17,11 +17,15 @@
 #define COMPLETE_BINARY_TREE_HPP
 
 #include "Binary_Tree_Exception.hpp"
+#include "Tree_Concepts.hpp"
 
+#include <algorithm>
+#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <memory>
 #include <queue>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -44,7 +48,7 @@ namespace ads::trees {
  *
  * @tparam T The type of data to store in the tree.
  */
-template <typename T>
+template <EqualityComparableTreeElement T>
 class CompleteBinaryTree {
 public:
   //===---------------------------- NODE STRUCTURE -----------------------------===//

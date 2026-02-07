@@ -300,7 +300,7 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::b
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::push_down(size_type v, size_type tl,
-                                                                                         size_type tr) -> void {
+                                                                                         size_type tr) const -> void {
   if (!tree_[v].lazy.has_value()) {
     return;
   }
@@ -323,7 +323,8 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::p
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::apply_tag(size_type v, size_type len,
-                                                                                         const tag_type& tag) -> void {
+                                                                                         const tag_type& tag) const
+    -> void {
   tree_[v].value = apply_(tree_[v].value, tag, len);
   if (tree_[v].lazy.has_value()) {
     tree_[v].lazy = compose_(tree_[v].lazy.value(), tag);
@@ -366,8 +367,8 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::q
     return tree_[v].value;
   }
 
-  // Push down lazy tags - mark tree_ as mutable in header instead of const_cast.
-  const_cast<LazySegmentTree*>(this)->push_down(v, tl, tr);
+  // Push down lazy tags (logical const operation over mutable lazy state).
+  push_down(v, tl, tr);
 
   const size_type mid = std::midpoint(tl, tr);
   return combine_(query_range(2 * v, tl, mid, l, r), query_range(2 * v + 1, mid + 1, tr, l, r));

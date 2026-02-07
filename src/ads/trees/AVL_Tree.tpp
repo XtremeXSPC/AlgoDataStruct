@@ -18,12 +18,12 @@ namespace ads::trees {
 
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 AVLTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
   push_left(root);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::iterator::push_left(Node* node) {
   while (node) {
     stack_.push(node);
@@ -34,17 +34,17 @@ void AVLTree<T>::iterator::push_left(Node* node) {
   }
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::iterator::operator*() const -> reference {
   return current_->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::iterator::operator->() const -> pointer {
   return &(current_->data);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::iterator::operator++() -> iterator& {
   if (stack_.empty()) {
     current_ = nullptr;
@@ -67,30 +67,30 @@ auto AVLTree<T>::iterator::operator++() -> iterator& {
   return *this;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::iterator::operator++(int) -> iterator {
   iterator temp = *this;
   ++(*this);
   return temp;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 AVLTree<T>::AVLTree() : root_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 AVLTree<T>::AVLTree(AVLTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
   if (this != &other) {
     root_       = std::move(other.root_);
@@ -102,7 +102,7 @@ auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::insert(const T& value) -> bool {
   bool inserted = false;
   root_         = insert_helper(std::move(root_), value, inserted);
@@ -112,7 +112,7 @@ auto AVLTree<T>::insert(const T& value) -> bool {
   return inserted;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::insert(T&& value) -> bool {
   bool inserted = false;
   root_         = insert_helper(std::move(root_), std::move(value), inserted);
@@ -122,7 +122,7 @@ auto AVLTree<T>::insert(T&& value) -> bool {
   return inserted;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 template <typename... Args>
 auto AVLTree<T>::emplace(Args&&... args) -> bool {
   return insert(T(std::forward<Args>(args)...));
@@ -130,7 +130,7 @@ auto AVLTree<T>::emplace(Args&&... args) -> bool {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::remove(const T& value) -> bool {
   bool removed = false;
   root_        = remove_helper(std::move(root_), value, removed);
@@ -140,7 +140,7 @@ auto AVLTree<T>::remove(const T& value) -> bool {
   return removed;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::clear() noexcept {
   root_.reset();
   size_ = 0;
@@ -148,39 +148,39 @@ void AVLTree<T>::clear() noexcept {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::is_empty() const noexcept -> bool {
   return root_ == nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::height() const noexcept -> int {
   return get_height(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::contains(const T& value) const -> bool {
   return find_helper(root_.get(), value) != nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find(const T& value) -> T* {
   Node* node = find_helper(root_.get(), value);
   return node ? &node->data : nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find(const T& value) const -> const T* {
   Node* node = find_helper(root_.get(), value);
   return node ? &node->data : nullptr;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find_min() const -> const T& {
   if (!root_) {
     throw EmptyTreeException("Cannot find minimum in empty tree");
@@ -188,7 +188,7 @@ auto AVLTree<T>::find_min() const -> const T& {
   return find_min_node(root_.get())->data;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find_max() const -> const T& {
   if (!root_) {
     throw EmptyTreeException("Cannot find maximum in empty tree");
@@ -198,22 +198,22 @@ auto AVLTree<T>::find_max() const -> const T& {
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
   in_order_helper(root_.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const {
   pre_order_helper(root_.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const {
   post_order_helper(root_.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const {
   if (!root_) {
     return;
@@ -239,44 +239,44 @@ void AVLTree<T>::level_order_traversal(const std::function<void(const T&)>& visi
 
 //===------------------ ADDITIONAL AVL-SPECIFIC FUNCTIONALITY ------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::get_balance() const noexcept -> int {
   return get_balance_factor(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::is_balanced() const noexcept -> bool {
   return is_balanced_helper(root_.get());
 }
 
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::begin() -> iterator {
   return iterator(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::begin() const -> iterator {
   return iterator(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::end() -> iterator {
   return iterator();
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::end() const -> iterator {
   return iterator();
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::cbegin() const -> iterator {
   return iterator(root_.get());
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::cend() const -> iterator {
   return iterator();
 }
@@ -284,17 +284,17 @@ auto AVLTree<T>::cend() const -> iterator {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::get_height(const Node* node) const noexcept -> int {
   return node ? node->height : 0;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::get_balance_factor(const Node* node) const noexcept -> int {
   return node ? get_height(node->left.get()) - get_height(node->right.get()) : 0;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::update_height(Node* node) noexcept {
   if (node) {
     node->height = 1 + std::max(get_height(node->left.get()), get_height(node->right.get()));
@@ -303,7 +303,7 @@ void AVLTree<T>::update_height(Node* node) noexcept {
 
 //===--------------------------- ROTATION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::rotate_right(std::unique_ptr<Node> y) -> std::unique_ptr<Node> {
   // Save x (left child of y).
   auto x = std::move(y->left);
@@ -311,17 +311,17 @@ auto AVLTree<T>::rotate_right(std::unique_ptr<Node> y) -> std::unique_ptr<Node> 
   // Move B subtree from x to y.
   y->left = std::move(x->right);
 
-  // Update heights
-  update_height(y.get());
-  update_height(x.get());
-
   // Make y the right child of x.
   x->right = std::move(y);
+
+  // Heights must be updated after pointers are fully rewired.
+  update_height(x->right.get());
+  update_height(x.get());
 
   return x;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::rotate_left(std::unique_ptr<Node> x) -> std::unique_ptr<Node> {
   // Save y (right child of x).
   auto y = std::move(x->right);
@@ -329,17 +329,17 @@ auto AVLTree<T>::rotate_left(std::unique_ptr<Node> x) -> std::unique_ptr<Node> {
   // Move B subtree from y to x.
   x->right = std::move(y->left);
 
-  // Update heights.
-  update_height(x.get());
-  update_height(y.get());
-
   // Make x the left child of y.
   y->left = std::move(x);
+
+  // Heights must be updated after pointers are fully rewired.
+  update_height(y->left.get());
+  update_height(y.get());
 
   return y;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::rotate_left_right(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
   // First: rotate left on left child.
   node->left = rotate_left(std::move(node->left));
@@ -347,7 +347,7 @@ auto AVLTree<T>::rotate_left_right(std::unique_ptr<Node> node) -> std::unique_pt
   return rotate_right(std::move(node));
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::rotate_right_left(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
   // First: rotate right on right child.
   node->right = rotate_right(std::move(node->right));
@@ -357,7 +357,7 @@ auto AVLTree<T>::rotate_right_left(std::unique_ptr<Node> node) -> std::unique_pt
 
 //===-------------------------------- BALANCING --------------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
   if (!node) {
     return node;
@@ -393,7 +393,7 @@ auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
   return node;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::is_balanced_helper(const Node* node) const noexcept -> bool {
   if (!node) {
     return true;
@@ -410,7 +410,7 @@ auto AVLTree<T>::is_balanced_helper(const Node* node) const noexcept -> bool {
 
 //===----------------------- MODIFICATION HELPER METHODS -----------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 template <typename U>
 auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted) -> std::unique_ptr<Node> {
   // Base case: create new node.
@@ -422,7 +422,7 @@ auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inse
   // Recursive BST insertion.
   if (value < node->data) {
     node->left = insert_helper(std::move(node->left), std::forward<U>(value), inserted);
-  } else if (value > node->data) {
+  } else if (node->data < value) {
     node->right = insert_helper(std::move(node->right), std::forward<U>(value), inserted);
   } else {
     // Duplicate value, don't insert.
@@ -434,7 +434,7 @@ auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inse
   return balance(std::move(node));
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed) -> std::unique_ptr<Node> {
   // Base case: value not found.
   if (!node) {
@@ -445,7 +445,7 @@ auto AVLTree<T>::remove_helper(std::unique_ptr<Node> node, const T& value, bool&
   // Recursive search for node to remove.
   if (value < node->data) {
     node->left = remove_helper(std::move(node->left), value, removed);
-  } else if (value > node->data) {
+  } else if (node->data < value) {
     node->right = remove_helper(std::move(node->right), value, removed);
   } else {
     // Found the node to remove.
@@ -476,7 +476,7 @@ auto AVLTree<T>::remove_helper(std::unique_ptr<Node> node, const T& value, bool&
   return balance(std::move(node));
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node> {
   if (!node->left) {
     // This is the minimum node.
@@ -496,7 +496,7 @@ auto AVLTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node
 
 //===---------------------------- SEARCH OPERATIONS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find_helper(Node* node, const T& value) const -> Node* {
   if (!node) {
     return nullptr;
@@ -506,14 +506,14 @@ auto AVLTree<T>::find_helper(Node* node, const T& value) const -> Node* {
     return find_helper(node->left.get(), value);
   }
 
-  if (value > node->data) {
+  if (node->data < value) {
     return find_helper(node->right.get(), value);
   }
 
   return node;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find_min_node(Node* node) const -> Node* {
   while (node->left) {
     node = node->left.get();
@@ -521,7 +521,7 @@ auto AVLTree<T>::find_min_node(Node* node) const -> Node* {
   return node;
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
   while (node->right) {
     node = node->right.get();
@@ -531,7 +531,7 @@ auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
 
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
@@ -542,7 +542,7 @@ void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(cons
   in_order_helper(node->right.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
@@ -553,7 +553,7 @@ void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(con
   pre_order_helper(node->right.get(), visit);
 }
 
-template <typename T>
+template <OrderedTreeElement T>
 void AVLTree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (!node) {
     return;
