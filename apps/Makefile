@@ -1,5 +1,5 @@
 # ================================================================================= #
-# --------------------------- Makefile for Snake Apps ----------------------------- #
+# ---------------------------- Makefile for Snake Apps ---------------------------- #
 # ================================================================================= #
 #
 # This Makefile provides convenient commands to configure and run the applications
@@ -235,10 +235,10 @@ help:
 	@echo "  make reconfigure  - Clean and reconfigure with Clang"
 	@echo ""
 	@echo "Specific Configuration:"
-	@echo "  make configure-clang   - Configure with Clang (recommended)"
-	@echo "  make configure-gcc     - Configure with GCC"
-	@echo "  make configure-debug   - Configure Debug build"
-	@echo "  make configure-release - Configure Release build"
+	@echo "  make configure-clang    - Configure with Clang (recommended)"
+	@echo "  make configure-gcc      - Configure with GCC"
+	@echo "  make configure-debug    - Configure Debug build"
+	@echo "  make configure-release  - Configure Release build"
 	@echo "  make configure-sanitize - Configure Sanitize build"
 	@echo ""
 	@echo "Runtime Variables (override from CLI):"
@@ -246,7 +246,7 @@ help:
 	@echo "  STRESS_EPISODES, STRESS_MAX_TICKS, STRESS_SEED"
 	@echo ""
 	@echo "Examples:"
-	@echo "  make                                # Initial setup"
+	@echo "  make
 	@echo "  make run RUN_SEED=42 RUN_MAX_TICKS=300"
 	@echo "  make stress STRESS_EPISODES=500 STRESS_MAX_TICKS=1500"
 	@echo "  make test"
