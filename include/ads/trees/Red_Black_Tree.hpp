@@ -20,6 +20,7 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -32,7 +33,7 @@ namespace ads::trees {
 /**
  * @brief Node color enum for Red-Black Tree
  */
-enum class Color { Red, Black };
+enum class Color : std::uint8_t { Red, Black };
 
 /**
  * @brief Red-Black Tree implementation.
@@ -49,24 +50,24 @@ enum class Color { Red, Black };
  *          5. Every path from root to leaf contains the same number of black nodes.
  *
  *          Performance Advantages:
- *          - O(log n) worst-case for insert/delete/search.
- *          - Fewer rotations than AVL (better for insert-heavy workloads).
- *          - Maximum height: 2 * log(n + 1).
- *          - Used in std::map, std::set, Linux kernel's CFS scheduler.
+ *            - O(log n) worst-case for insert/delete/search.
+ *            - Fewer rotations than AVL (better for insert-heavy workloads).
+ *            - Maximum height: 2 * log(n + 1).
+ *            - Used in std::map, std::set, Linux kernel's CFS scheduler.
  *
  *          Comparison with AVL:
- *          - AVL: More strictly balanced (faster search).
- *          - RB:  Fewer rotations (faster insert/delete).
- *          - AVL: Max 1 rotation on insert, O(log n) on delete.
- *          - RB:  Max 2 rotations on insert, max 3 on delete.
+ *            - AVL: More strictly balanced (faster search).
+ *            - RB:  Fewer rotations (faster insert/delete).
+ *            - AVL: Max 1 rotation on insert, O(log n) on delete.
+ *            - RB:  Max 2 rotations on insert, max 3 on delete.
  *
  * @tparam T Type of elements stored (must be comparable with <).
  *
  * @complexity
- * - Insert: O(log n) time, at most 2 rotations
- * - Delete: O(log n) time, at most 3 rotations
- * - Search: O(log n) time
- * - Space:  O(n) with 1 bit per node for color
+ *   - Insert: O(log n) time, at most 2 rotations
+ *   - Delete: O(log n) time, at most 3 rotations
+ *   - Search: O(log n) time
+ *   - Space:  O(n) with 1 bit per node for color
  */
 template <OrderedTreeElement T>
 class Red_Black_Tree {
