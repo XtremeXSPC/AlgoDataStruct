@@ -114,15 +114,15 @@ auto SnakeEngine::step() -> bool {
   }
 
   // Record cell deltas for differential rendering.
-  deltas_.push_back(CellDelta{next_head.row, next_head.col, '@'});
-  deltas_.push_back(CellDelta{current_head.row, current_head.col, 'o'});
+  deltas_.push_back(CellDelta{.row = next_head.row, .col = next_head.col, .glyph = '@'});
+  deltas_.push_back(CellDelta{.row = current_head.row, .col = current_head.col, .glyph = 'o'});
 
   if (!grew_this_tick) {
-    deltas_.push_back(CellDelta{old_tail.row, old_tail.col, ' '});
+    deltas_.push_back(CellDelta{.row = old_tail.row, .col = old_tail.col, .glyph = ' '});
   }
 
   if (grew_this_tick && has_food_) {
-    deltas_.push_back(CellDelta{food_.row, food_.col, '*'});
+    deltas_.push_back(CellDelta{.row = food_.row, .col = food_.col, .glyph = '*'});
   }
 
   ++tick_;
@@ -206,9 +206,7 @@ auto SnakeEngine::is_consistent() const -> bool {
 
   ads::associative::HashMap<std::size_t, bool> visited(snake_.size() * 2U + 1U);
 
-  for (std::size_t i = 0; i < snake_.size(); ++i) {
-    const Position segment = snake_[i];
-
+  for (const auto& segment : snake_) {
     if (!in_bounds(segment)) {
       return false;
     }
@@ -247,9 +245,10 @@ auto SnakeEngine::is_consistent() const -> bool {
 //===--------------------------- INTERNAL UTILITIES ----------------------------===//
 
 auto SnakeEngine::is_opposite(Direction lhs, Direction rhs) noexcept -> bool {
-  return (lhs == Direction::kUp && rhs == Direction::kDown) || (lhs == Direction::kDown && rhs == Direction::kUp)
-         || (lhs == Direction::kLeft && rhs == Direction::kRight)
-         || (lhs == Direction::kRight && rhs == Direction::kLeft);
+  using enum Direction;
+
+  return (lhs == kUp && rhs == kDown) || (lhs == kDown && rhs == kUp) || (lhs == kLeft && rhs == kRight)
+         || (lhs == kRight && rhs == kLeft);
 }
 
 auto SnakeEngine::in_bounds(const Position& position) noexcept -> bool {
@@ -262,19 +261,21 @@ auto SnakeEngine::to_key(const Position& position) noexcept -> std::size_t {
 }
 
 auto SnakeEngine::next_position(const Position& current) const -> Position {
+  using enum Direction;
+
   Position next = current;
 
   switch (direction_) {
-  case Direction::kUp:
+  case kUp:
     --next.row;
     break;
-  case Direction::kDown:
+  case kDown:
     ++next.row;
     break;
-  case Direction::kLeft:
+  case kLeft:
     --next.col;
     break;
-  case Direction::kRight:
+  case kRight:
     ++next.col;
     break;
   }
@@ -339,14 +340,16 @@ auto SnakeEngine::append_snapshot(bool grew) -> void {
 }
 
 auto to_char(Direction direction) noexcept -> char {
+  using enum Direction;
+
   switch (direction) {
-  case Direction::kUp:
+  case kUp:
     return 'U';
-  case Direction::kDown:
+  case kDown:
     return 'D';
-  case Direction::kLeft:
+  case kLeft:
     return 'L';
-  case Direction::kRight:
+  case kRight:
     return 'R';
   }
 
