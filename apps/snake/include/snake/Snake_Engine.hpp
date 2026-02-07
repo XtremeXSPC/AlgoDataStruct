@@ -53,6 +53,15 @@ struct Position {
 };
 
 /**
+ * @brief Single cell change produced by a tick, used for differential rendering.
+ */
+struct CellDelta {
+  int  row   = 0;
+  int  col   = 0;
+  char glyph = ' ';
+};
+
+/**
  * @brief Immutable snapshot of the engine state for replay and diagnostics.
  */
 struct TickSnapshot {
@@ -207,10 +216,17 @@ public:
    */
   [[nodiscard]] auto replay_log() const noexcept -> const ads::arrays::DynamicArray<TickSnapshot>&;
 
+  /**
+   * @brief Returns cell deltas produced by the most recent tick.
+   * @return Reference to the delta list (empty on death or before first step).
+   */
+  [[nodiscard]] auto deltas() const noexcept -> const ads::arrays::DynamicArray<CellDelta>&;
+
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//
   ads::arrays::CircularArray<Position>         snake_;      ///< Snake body segments from head to tail.
   ads::arrays::DynamicArray<TickSnapshot>      replay_log_; ///< Replay history of game ticks.
+  ads::arrays::DynamicArray<CellDelta>         deltas_;     ///< Cell changes from the most recent tick.
   ads::associative::HashMap<std::size_t, bool> occupied_;   ///< Occupancy map for O(1) checks.
 
   /// Game state variables.

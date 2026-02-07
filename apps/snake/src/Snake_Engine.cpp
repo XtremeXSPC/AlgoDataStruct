@@ -35,6 +35,7 @@ auto SnakeEngine::reset(std::uint32_t seed) -> void {
   snake_.clear();
   occupied_.clear();
   replay_log_.clear();
+  deltas_.clear();
 
   direction_ = Direction::kRight;
   alive_     = true;
@@ -71,6 +72,8 @@ auto SnakeEngine::set_direction(Direction direction) -> void {
 }
 
 auto SnakeEngine::step() -> bool {
+  deltas_.clear();
+
   if (!alive_) {
     return false;
   }
@@ -108,6 +111,18 @@ auto SnakeEngine::step() -> bool {
   } else {
     occupied_.erase(to_key(old_tail));
     snake_.pop_back();
+  }
+
+  // Record cell deltas for differential rendering.
+  deltas_.push_back(CellDelta{next_head.row, next_head.col, '@'});
+  deltas_.push_back(CellDelta{current_head.row, current_head.col, 'o'});
+
+  if (!grew_this_tick) {
+    deltas_.push_back(CellDelta{old_tail.row, old_tail.col, ' '});
+  }
+
+  if (grew_this_tick && has_food_) {
+    deltas_.push_back(CellDelta{food_.row, food_.col, '*'});
   }
 
   ++tick_;
@@ -152,6 +167,10 @@ auto SnakeEngine::food() const -> Position {
 
 auto SnakeEngine::replay_log() const noexcept -> const ads::arrays::DynamicArray<TickSnapshot>& {
   return replay_log_;
+}
+
+auto SnakeEngine::deltas() const noexcept -> const ads::arrays::DynamicArray<CellDelta>& {
+  return deltas_;
 }
 
 //===-------------------------------- RENDERING --------------------------------===//
