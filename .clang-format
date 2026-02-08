@@ -17,7 +17,7 @@ UseTab: Never
 AlwaysBreakTemplateDeclarations: Yes
 
 # Function arguments formatting.
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: AlwaysBreak
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
@@ -45,7 +45,7 @@ SpacesInAngles: false
 # Configure handling of structs and classes.
 AlwaysBreakAfterReturnType: None
 AllowShortBlocksOnASingleLine: false
-BinPackParameters: true
+BinPackParameters: false
 BinPackArguments: true
 
 # Configure handling of operators and parameters.
@@ -57,7 +57,7 @@ MacroBlockBegin: AlwaysBreak
 MacroBlockEnd: AlwaysBreak
 
 # Penalties to make breaks smarter.
-PenaltyReturnTypeOnItsOwnLine: 200
+PenaltyReturnTypeOnItsOwnLine: 60
 PenaltyBreakBeforeFirstCallParameter: 100
 PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1200000
