@@ -11,6 +11,9 @@
 
 #include "snake/Snake_Engine.hpp"
 
+#include <termios.h>
+#include <unistd.h>
+
 #include <cctype>
 #include <cstdint>
 #include <cstdlib>
@@ -28,14 +31,32 @@ using ads::apps::snake::SnakeEngine;
 //===--------------------------- TERMINAL ROW LAYOUT ---------------------------===//
 
 // Fixed terminal row indices for different sections of the TUI. These are 1-indexed
-// for ANSI cursor positioning and are calculated based on the board size and layout.
-constexpr int kTopBorderRow    = 1;
-constexpr int kBoardStartRow   = 2;
-constexpr int kBoardStartCol   = 2; // column offset inside border '|'
+// for ANSI cursor positioning and include spacing for a title and controls legend.
+constexpr int kTitleRow        = 1;
+constexpr int kLegendRow       = 2;
+constexpr int kTopBorderRow    = 4;
+constexpr int kBoardStartRow   = kTopBorderRow + 1;
+constexpr int kBoardStartCol   = 2; // Column offset inside border '|'.
 constexpr int kBottomBorderRow = static_cast<int>(SnakeEngine::kRows) + kBoardStartRow;
-constexpr int kStatusRow       = kBottomBorderRow + 1;
+constexpr int kStatusRow       = kBottomBorderRow + 2;
 constexpr int kFoodRow         = kStatusRow + 1;
 constexpr int kPromptRow       = kFoodRow + 1;
+
+//===--------------------------------- STYLING ---------------------------------===//
+
+constexpr const char* kStyleReset  = "\033[0m";
+constexpr const char* kStyleBold   = "\033[1m";
+constexpr const char* kStyleDim    = "\033[2m";
+constexpr const char* kStyleTitle  = "\033[1;97m";
+constexpr const char* kStyleFrame  = "\033[96m";
+constexpr const char* kStyleHead   = "\033[1;92m";
+constexpr const char* kStyleBody   = "\033[32m";
+constexpr const char* kStyleFood   = "\033[1;91m";
+constexpr const char* kStyleAccent = "\033[93m";
+constexpr const char* kStyleMuted  = "\033[90m";
+constexpr const char* kStyleAlive  = "\033[1;92m";
+constexpr const char* kStyleDead   = "\033[1;91m";
+constexpr const char* kStylePrompt = "\033[1;96m";
 
 //===------------------------------ ANSI HELPERS -------------------------------===//
 
@@ -62,6 +83,161 @@ inline auto ansi_show_cursor() -> void {
 /// @brief Erases the entire current line without moving the cursor.
 inline auto ansi_clear_line() -> void {
   std::cout << "\033[2K";
+}
+
+//===------------------------------ STYLE HELPERS ------------------------------===//
+
+/// @brief Returns a string label for the given direction enum value.
+[[nodiscard]] auto direction_label(Direction direction) -> const char* {
+  using enum Direction;
+
+  switch (direction) {
+  case kUp:
+    return "UP";
+  case kDown:
+    return "DOWN";
+  case kLeft:
+    return "LEFT";
+  case kRight:
+    return "RIGHT";
+  }
+
+  return "UNKNOWN";
+}
+
+/// @brief Returns a checkerboard glyph for empty cells based on their coordinates.
+[[nodiscard]] auto checker_empty_glyph(int row, int col) -> char {
+  return ((row + col) % 2 == 0) ? '.' : ' ';
+}
+
+/// @brief Draws a single cell at the given board coordinates with styling based on its content.
+auto draw_cell(int row, int col, char glyph) -> void {
+  switch (glyph) {
+  case '@':
+    std::cout << kStyleHead << '@' << kStyleReset;
+    return;
+  case 'o':
+    std::cout << kStyleBody << 'o' << kStyleReset;
+    return;
+  case '*':
+    std::cout << kStyleFood << '*' << kStyleReset;
+    return;
+  case ' ': {
+    const char empty_glyph = checker_empty_glyph(row, col);
+    std::cout << kStyleDim << kStyleMuted << empty_glyph << kStyleReset;
+    return;
+  }
+  default:
+    std::cout << kStyleAccent << glyph << kStyleReset;
+    return;
+  }
+}
+
+/// @brief Draws the horizontal border of the game board at the specified row.
+auto draw_horizontal_border(int row) -> void {
+  ansi_move_to(row, 1);
+  std::cout << kStyleBold << kStyleFrame << '+';
+  for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
+    std::cout << '=';
+  }
+  std::cout << '+' << kStyleReset;
+}
+
+/// @brief Draws the entire game board based on the current state of the SnakeEngine.
+auto draw_header() -> void {
+  ansi_move_to(kTitleRow, 1);
+  ansi_clear_line();
+  std::cout << kStyleTitle << "ADS Snake TUI" << kStyleReset << " " << kStyleAccent << "[Differential Render]"
+            << kStyleReset;
+
+  ansi_move_to(kLegendRow, 1);
+  ansi_clear_line();
+  std::cout << kStyleMuted << "Controls: W/A/S/D move (no Enter) | Q quit" << kStyleReset;
+}
+
+/// @brief Draws the entire game board based on the current state of the SnakeEngine.
+auto draw_prompt() -> void {
+  ansi_move_to(kPromptRow, 1);
+  ansi_clear_line();
+  std::cout << kStylePrompt << "Key [W/A/S/D, Q]> " << kStyleReset << std::flush;
+}
+
+//===------------------------------ INPUT HELPERS ------------------------------===//
+
+/**
+ * @brief RAII guard enabling non-canonical terminal input for single-key controls.
+ * @details When stdin is a TTY, disables canonical mode and echo so movement keys are
+ *          processed immediately without requiring Enter. Original terminal settings
+ *          are restored on destruction.
+ */
+class TerminalInputModeGuard {
+public:
+  TerminalInputModeGuard() { enable_raw_mode(); }
+
+  ~TerminalInputModeGuard() { restore(); }
+
+  TerminalInputModeGuard(const TerminalInputModeGuard&)                    = delete;
+  auto operator=(const TerminalInputModeGuard&) -> TerminalInputModeGuard& = delete;
+
+  [[nodiscard]] auto is_raw_mode() const noexcept -> bool { return raw_mode_enabled_; }
+
+private:
+  auto enable_raw_mode() -> void {
+    if (::isatty(STDIN_FILENO) == 0) {
+      return;
+    }
+
+    if (::tcgetattr(STDIN_FILENO, &original_mode_) != 0) {
+      return;
+    }
+
+    struct termios raw_mode = original_mode_;
+    raw_mode.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO));
+    raw_mode.c_cc[VMIN]  = 1;
+    raw_mode.c_cc[VTIME] = 0;
+
+    if (::tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw_mode) == 0) {
+      raw_mode_enabled_ = true;
+    }
+  }
+
+  auto restore() -> void {
+    if (!raw_mode_enabled_) {
+      return;
+    }
+
+    (void)::tcsetattr(STDIN_FILENO, TCSAFLUSH, &original_mode_);
+  }
+
+  struct termios original_mode_    = {};
+  bool           raw_mode_enabled_ = false;
+};
+
+/**
+ * @brief Reads one input command in raw mode (TTY) or line mode (non-TTY).
+ * @param raw_mode_enabled Whether terminal raw mode is active.
+ * @return A single character command, '\0' for ignorable input, or std::nullopt on EOF.
+ */
+[[nodiscard]] auto read_input_command(bool raw_mode_enabled) -> std::optional<char> {
+  if (raw_mode_enabled) {
+    char key = '\0';
+    if (::read(STDIN_FILENO, &key, 1) <= 0) {
+      return std::nullopt;
+    }
+
+    return key;
+  }
+
+  std::string line;
+  if (!std::getline(std::cin, line)) {
+    return std::nullopt;
+  }
+
+  if (line.empty()) {
+    return '\0';
+  }
+
+  return line.front();
 }
 
 //===------------------------------ INPUT PARSING ------------------------------===//
@@ -142,17 +318,23 @@ inline auto ansi_clear_line() -> void {
  * @param engine Engine instance to read score, tick, length, and food data from.
  */
 auto draw_status_line(const SnakeEngine& engine) -> void {
+  const bool  alive       = engine.is_alive();
+  const char* state_style = alive ? kStyleAlive : kStyleDead;
+
   ansi_move_to(kStatusRow, 1);
   ansi_clear_line();
-  std::cout << "Score: " << engine.score() << " | Tick: " << engine.tick() << " | Length: " << engine.body_size();
+  std::cout << kStyleAccent << "Score: " << engine.score() << kStyleReset << " | " << kStyleAccent
+            << "Tick: " << engine.tick() << kStyleReset << " | " << kStyleAccent << "Length: " << engine.body_size()
+            << kStyleReset << " | " << kStyleAccent << "Dir: " << direction_label(engine.direction()) << kStyleReset
+            << " | " << kStyleAccent << "State: " << state_style << (alive ? "ALIVE" : "DEAD") << kStyleReset;
 
   ansi_move_to(kFoodRow, 1);
   ansi_clear_line();
   if (engine.has_food()) {
     const auto food = engine.food();
-    std::cout << "Food: (" << food.row << ", " << food.col << ")";
+    std::cout << kStyleFood << "Food: (" << food.row << ", " << food.col << ")" << kStyleReset;
   } else {
-    std::cout << "Food: none (board fully occupied)";
+    std::cout << kStyleMuted << "Food: none (board fully occupied)" << kStyleReset;
   }
 }
 
@@ -169,39 +351,28 @@ auto draw_full_board(const SnakeEngine& engine) -> void {
 
   ansi_clear_screen();
   ansi_hide_cursor();
+  draw_header();
 
   // Top border.
-  ansi_move_to(kTopBorderRow, 1);
-  std::cout << '+';
-  for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
-    std::cout << '-';
-  }
-  std::cout << '+';
+  draw_horizontal_border(kTopBorderRow);
 
   // Board rows.
   for (std::size_t row = 0; row < SnakeEngine::kRows; ++row) {
     ansi_move_to(kBoardStartRow + static_cast<int>(row), 1);
-    std::cout << '|';
+    std::cout << kStyleBold << kStyleFrame << '|' << kStyleReset;
     for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
-      std::cout << board[row][col];
+      draw_cell(static_cast<int>(row), static_cast<int>(col), board[row][col]);
     }
-    std::cout << '|';
+    std::cout << kStyleBold << kStyleFrame << '|' << kStyleReset;
   }
 
   // Bottom border.
-  ansi_move_to(kBottomBorderRow, 1);
-  std::cout << '+';
-  for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
-    std::cout << '-';
-  }
-  std::cout << '+';
+  draw_horizontal_border(kBottomBorderRow);
 
   draw_status_line(engine);
 
   // Position cursor at prompt row.
-  ansi_move_to(kPromptRow, 1);
-  ansi_clear_line();
-  std::cout << "Move> " << std::flush;
+  draw_prompt();
 }
 
 /**
@@ -216,14 +387,11 @@ auto apply_deltas(const SnakeEngine& engine) -> void {
 
   for (const auto& delta : deltas) {
     ansi_move_to(delta.row + kBoardStartRow, delta.col + kBoardStartCol);
-    std::cout << delta.glyph;
+    draw_cell(delta.row, delta.col, delta.glyph);
   }
 
   draw_status_line(engine);
-
-  ansi_move_to(kPromptRow, 1);
-  ansi_clear_line();
-  std::cout << "Move> " << std::flush;
+  draw_prompt();
 }
 
 } // namespace
@@ -246,34 +414,60 @@ auto main(int argc, char** argv) -> int {
   const std::uint32_t seed = (argc > 1) ? parse_u32_arg(argv[1], SnakeEngine::kDefaultSeed) : SnakeEngine::kDefaultSeed;
   const std::size_t   max_ticks = (argc > 2) ? parse_usize_arg(argv[2], 500U) : 500U;
 
-  SnakeEngine engine(seed);
+  SnakeEngine            engine(seed);
+  TerminalInputModeGuard input_mode_guard;
 
   // Initial full render.
   draw_full_board(engine);
 
   // Main game loop with differential rendering.
+  bool skipping_escape_sequence = false;
   while (engine.is_alive() && engine.tick() < max_ticks) {
-    ansi_show_cursor();
-
-    std::string line;
-    if (!std::getline(std::cin, line)) {
+    const auto command_input = read_input_command(input_mode_guard.is_raw_mode());
+    if (!command_input.has_value()) {
       break;
     }
 
-    ansi_hide_cursor();
+    const char raw_command = *command_input;
+    if (input_mode_guard.is_raw_mode()) {
+      if (skipping_escape_sequence) {
+        // CSI/SS3 escape prefixes and parameter bytes (e.g. ESC [ A, ESC [ 1 ; 5 A).
+        if (raw_command == '[' || raw_command == 'O' || (raw_command >= '0' && raw_command <= '?')) {
+          continue;
+        }
 
-    if (!line.empty()) {
-      const auto command = static_cast<char>(std::tolower(static_cast<unsigned char>(line.front())));
-      if (command == 'q') {
-        break;
+        // Final byte of escape sequence.
+        if (raw_command >= '@' && raw_command <= '~') {
+          skipping_escape_sequence = false;
+          continue;
+        }
+
+        skipping_escape_sequence = false;
+        continue;
       }
 
-      const auto next_direction = parse_direction(command);
-      if (next_direction.has_value()) {
-        engine.set_direction(*next_direction);
+      if (raw_command == '\033') {
+        skipping_escape_sequence = true;
+        continue;
       }
     }
 
+    if (raw_command == '\0' || raw_command == '\n' || raw_command == '\r') {
+      continue;
+    }
+
+    const auto command = static_cast<char>(std::tolower(static_cast<unsigned char>(raw_command)));
+    if (command == 'q') {
+      break;
+    }
+
+    const auto next_direction = parse_direction(command);
+    if (!next_direction.has_value()) {
+      draw_prompt();
+      continue;
+    }
+
+    engine.set_direction(*next_direction);
     engine.step();
 
     if (!engine.is_consistent()) {
