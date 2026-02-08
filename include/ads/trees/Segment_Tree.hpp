@@ -132,9 +132,12 @@ inline constexpr bool is_leaf_builder_nothrow_v = noexcept(std::declval<LeafBuil
  * @tparam Identity Functor that returns the identity node for Combine.
  * @tparam LeafBuilder Functor that converts a Value into a Node.
  */
-template <typename Value, typename Node = Value, typename Combine = std::plus<Node>,
-          typename Identity    = detail::DefaultIdentity<Node>,
-          typename LeafBuilder = detail::DefaultLeafBuilder<Value, Node>>
+template <
+    typename Value,
+    typename Node        = Value,
+    typename Combine     = std::plus<Node>,
+    typename Identity    = detail::DefaultIdentity<Node>,
+    typename LeafBuilder = detail::DefaultLeafBuilder<Value, Node>>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 class SegmentTree {
 public:
@@ -214,8 +217,8 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(size_type size, const Value& value, Combine combine, Identity identity = {},
-                        LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(
+      size_type size, const Value& value, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from a vector of values (copy).
@@ -240,8 +243,8 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(const std::vector<Value>& values, Combine combine, Identity identity = {},
-                        LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(
+      const std::vector<Value>& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from a vector with custom functors (move).
@@ -251,11 +254,9 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity = {},
-                        LeafBuilder leaf_builder = {}) noexcept(std::is_nothrow_move_constructible_v<std::vector<Value>>
-                                                                && std::is_nothrow_move_constructible_v<Combine>
-                                                                && std::is_nothrow_move_constructible_v<Identity>
-                                                                && std::is_nothrow_move_constructible_v<LeafBuilder>);
+  constexpr SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {}) noexcept(
+      std::is_nothrow_move_constructible_v<std::vector<Value>> && std::is_nothrow_move_constructible_v<Combine>
+      && std::is_nothrow_move_constructible_v<Identity> && std::is_nothrow_move_constructible_v<LeafBuilder>);
 
   /**
    * @brief Constructs a Segment Tree from an initializer list.
@@ -272,8 +273,8 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(std::initializer_list<Value> values, Combine combine, Identity identity = {},
-                        LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(
+      std::initializer_list<Value> values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from an iterator range.
@@ -296,8 +297,8 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  constexpr SegmentTree(InputIt first, InputIt last, Combine combine, Identity identity = {},
-                        LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(
+      InputIt first, InputIt last, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Move constructor.

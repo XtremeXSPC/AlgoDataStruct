@@ -129,9 +129,13 @@ struct LazyDefaultIdentity {
  * @tparam Compose Functor to compose two tags.
  * @tparam Identity Functor returning the identity element for Combine.
  */
-template <typename Value, typename Tag = Value, typename Combine = detail::LazyDefaultCombine<Value>,
-          typename Apply = detail::LazyDefaultApply<Value, Tag>, typename Compose = detail::LazyDefaultCompose<Tag>,
-          typename Identity = detail::LazyDefaultIdentity<Value>>
+template <
+    typename Value,
+    typename Tag      = Value,
+    typename Combine  = detail::LazyDefaultCombine<Value>,
+    typename Apply    = detail::LazyDefaultApply<Value, Tag>,
+    typename Compose  = detail::LazyDefaultCompose<Tag>,
+    typename Identity = detail::LazyDefaultIdentity<Value>>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 class LazySegmentTree {
 public:
