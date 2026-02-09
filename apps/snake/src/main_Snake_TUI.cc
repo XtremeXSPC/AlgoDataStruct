@@ -11,6 +11,7 @@
 
 #include "snake/Snake_Engine.hpp"
 
+#include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -43,6 +44,10 @@ constexpr int kFoodRow         = kStatusRow + 1;
 constexpr int kPromptRow       = kFoodRow + 1;
 constexpr int kFinalOutputRow  = kPromptRow + 1;
 
+// Minimum terminal dimensions for proper rendering.
+constexpr int kMinTerminalRows = kFinalOutputRow + 3;                      // Final output needs ~3-4 lines.
+constexpr int kMinTerminalCols = static_cast<int>(SnakeEngine::kCols) + 2; // Board + borders.
+
 //===--------------------------------- STYLING ---------------------------------===//
 
 constexpr const char* kStyleReset  = "\033[0m";
@@ -59,6 +64,21 @@ constexpr const char* kStyleAlive  = "\033[1;92m";
 constexpr const char* kStyleDead   = "\033[1;91m";
 constexpr const char* kStylePrompt = "\033[1;96m";
 constexpr const char* kStyleError  = "\033[1;91m";
+
+//===---------------------------- BOX-DRAWING GLYPHS ---------------------------===//
+
+// Unicode box-drawing characters for cleaner borders.
+constexpr const char* kBoxTopLeft     = "╔";
+constexpr const char* kBoxTopRight    = "╗";
+constexpr const char* kBoxBottomLeft  = "╚";
+constexpr const char* kBoxBottomRight = "╝";
+constexpr const char* kBoxHorizontal  = "═";
+constexpr const char* kBoxVertical    = "║";
+
+// Single-width Unicode glyphs for cute snake rendering.
+constexpr const char* kSnakeHead = "◉"; // U+25C9: Fisheye (filled circle with outline)
+constexpr const char* kSnakeBody = "○"; // U+25CB: White circle
+constexpr const char* kSnakeFood = "●"; // U+25CF: Black circle
 
 //===------------------------------ ANSI HELPERS -------------------------------===//
 
@@ -85,6 +105,26 @@ inline auto ansi_show_cursor() -> void {
 /// @brief Erases the entire current line without moving the cursor.
 inline auto ansi_clear_line() -> void {
   std::cout << "\033[2K";
+}
+
+/**
+ * @brief Retrieves current terminal dimensions using ioctl.
+ * @param rows Output parameter for terminal height (0 if unavailable).
+ * @param cols Output parameter for terminal width (0 if unavailable).
+ * @return true if dimensions were successfully retrieved, false otherwise.
+ */
+[[nodiscard]] auto get_terminal_size(int& rows, int& cols) -> bool {
+  struct winsize ws = {};
+
+  if (::ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) != 0) {
+    rows = 0;
+    cols = 0;
+    return false;
+  }
+
+  rows = static_cast<int>(ws.ws_row);
+  cols = static_cast<int>(ws.ws_col);
+  return true;
 }
 
 //===------------------------------ STYLE HELPERS ------------------------------===//
@@ -116,13 +156,13 @@ inline auto ansi_clear_line() -> void {
 auto draw_cell(int row, int col, char glyph) -> void {
   switch (glyph) {
   case '@':
-    std::cout << kStyleHead << '@' << kStyleReset;
+    std::cout << kStyleHead << kSnakeHead << kStyleReset;
     return;
   case 'o':
-    std::cout << kStyleBody << 'o' << kStyleReset;
+    std::cout << kStyleBody << kSnakeBody << kStyleReset;
     return;
   case '*':
-    std::cout << kStyleFood << '*' << kStyleReset;
+    std::cout << kStyleFood << kSnakeFood << kStyleReset;
     return;
   case ' ': {
     const char empty_glyph = checker_empty_glyph(row, col);
@@ -136,13 +176,17 @@ auto draw_cell(int row, int col, char glyph) -> void {
 }
 
 /// @brief Draws the horizontal border of the game board at the specified row.
-auto draw_horizontal_border(int row) -> void {
+/// @param row Terminal row position for the border.
+/// @param is_top True for top border, false for bottom border.
+auto draw_horizontal_border(int row, bool is_top) -> void {
   ansi_move_to(row, 1);
-  std::cout << kStyleBold << kStyleFrame << '+';
+  std::cout << kStyleBold << kStyleFrame;
+  std::cout << (is_top ? kBoxTopLeft : kBoxBottomLeft);
   for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
-    std::cout << '=';
+    std::cout << kBoxHorizontal;
   }
-  std::cout << '+' << kStyleReset;
+  std::cout << (is_top ? kBoxTopRight : kBoxBottomRight);
+  std::cout << kStyleReset;
 }
 
 /// @brief Draws the title and controls legend at the top of the screen.
@@ -358,20 +402,20 @@ auto draw_full_board(const SnakeEngine& engine) -> void {
   draw_header();
 
   // Top border.
-  draw_horizontal_border(kTopBorderRow);
+  draw_horizontal_border(kTopBorderRow, true);
 
   // Board rows.
   for (std::size_t row = 0; row < SnakeEngine::kRows; ++row) {
     ansi_move_to(kBoardStartRow + static_cast<int>(row), 1);
-    std::cout << kStyleBold << kStyleFrame << '|' << kStyleReset;
+    std::cout << kStyleBold << kStyleFrame << kBoxVertical << kStyleReset;
     for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
       draw_cell(static_cast<int>(row), static_cast<int>(col), board[row][col]);
     }
-    std::cout << kStyleBold << kStyleFrame << '|' << kStyleReset;
+    std::cout << kStyleBold << kStyleFrame << kBoxVertical << kStyleReset;
   }
 
   // Bottom border.
-  draw_horizontal_border(kBottomBorderRow);
+  draw_horizontal_border(kBottomBorderRow, false);
 
   draw_status_line(engine);
 
@@ -414,12 +458,26 @@ auto apply_deltas(const SnakeEngine& engine) -> void {
  *             Default seed: SnakeEngine::kDefaultSeed
  *             Default max_ticks: 500
  * @return 0 on success and consistent final state
+ *         1 on terminal size validation failure
  *         2 on internal consistency failure during gameplay
  *         3 on final state consistency failure
  */
 auto main(int argc, char** argv) -> int {
   const std::uint32_t seed = (argc > 1) ? parse_u32_arg(argv[1], SnakeEngine::kDefaultSeed) : SnakeEngine::kDefaultSeed;
   const std::size_t   max_ticks = (argc > 2) ? parse_usize_arg(argv[2], 500U) : 500U;
+
+  // Validate terminal dimensions before starting.
+  int terminal_rows = 0;
+  int terminal_cols = 0;
+  if (get_terminal_size(terminal_rows, terminal_cols)) {
+    if (terminal_rows < kMinTerminalRows || terminal_cols < kMinTerminalCols) {
+      std::cerr << kStyleError << "Error: Terminal too small!" << kStyleReset << "\n";
+      std::cerr << "Required: " << kMinTerminalRows << " rows x " << kMinTerminalCols << " cols minimum\n";
+      std::cerr << "Current:  " << terminal_rows << " rows x " << terminal_cols << " cols\n";
+      std::cerr << "Please resize your terminal and try again.\n";
+      return 1;
+    }
+  }
 
   SnakeEngine            engine(seed);
   TerminalInputModeGuard input_mode_guard;
@@ -502,7 +560,8 @@ auto main(int argc, char** argv) -> int {
   std::cout << "Replay snapshots: " << replay.size() << "\n";
 
   if (!replay.is_empty()) {
-    const std::size_t history_to_print = (replay.size() < kRecentMovesDisplayCount) ? replay.size() : kRecentMovesDisplayCount;
+    const std::size_t history_to_print =
+        (replay.size() < kRecentMovesDisplayCount) ? replay.size() : kRecentMovesDisplayCount;
     std::cout << "Recent moves: ";
     for (std::size_t i = replay.size() - history_to_print; i < replay.size(); ++i) {
       std::cout << ads::apps::snake::to_char(replay[i].direction);
