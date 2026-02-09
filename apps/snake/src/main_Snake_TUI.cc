@@ -41,6 +41,7 @@ constexpr int kBottomBorderRow = static_cast<int>(SnakeEngine::kRows) + kBoardSt
 constexpr int kStatusRow       = kBottomBorderRow + 2;
 constexpr int kFoodRow         = kStatusRow + 1;
 constexpr int kPromptRow       = kFoodRow + 1;
+constexpr int kFinalOutputRow  = kPromptRow + 1;
 
 //===--------------------------------- STYLING ---------------------------------===//
 
@@ -57,6 +58,7 @@ constexpr const char* kStyleMuted  = "\033[90m";
 constexpr const char* kStyleAlive  = "\033[1;92m";
 constexpr const char* kStyleDead   = "\033[1;91m";
 constexpr const char* kStylePrompt = "\033[1;96m";
+constexpr const char* kStyleError  = "\033[1;91m";
 
 //===------------------------------ ANSI HELPERS -------------------------------===//
 
@@ -143,7 +145,7 @@ auto draw_horizontal_border(int row) -> void {
   std::cout << '+' << kStyleReset;
 }
 
-/// @brief Draws the entire game board based on the current state of the SnakeEngine.
+/// @brief Draws the title and controls legend at the top of the screen.
 auto draw_header() -> void {
   ansi_move_to(kTitleRow, 1);
   ansi_clear_line();
@@ -155,7 +157,7 @@ auto draw_header() -> void {
   std::cout << kStyleMuted << "Controls: W/A/S/D move (no Enter) | Q quit" << kStyleReset;
 }
 
-/// @brief Draws the entire game board based on the current state of the SnakeEngine.
+/// @brief Draws the input prompt line at the bottom of the TUI.
 auto draw_prompt() -> void {
   ansi_move_to(kPromptRow, 1);
   ansi_clear_line();
@@ -304,7 +306,7 @@ private:
 
   const auto parsed = std::strtoull(value, &end, 10);
 
-  if (end == value || *end != '\0') {
+  if (end == value || *end != '\0' || parsed > std::numeric_limits<std::size_t>::max()) {
     return fallback;
   }
 
@@ -312,6 +314,8 @@ private:
 }
 
 //===---------------------------- RENDERING HELPERS ----------------------------===//
+
+constexpr std::size_t kRecentMovesDisplayCount = 5;
 
 /**
  * @brief Refreshes the status and food information lines at their fixed terminal rows.
@@ -407,8 +411,11 @@ auto apply_deltas(const SnakeEngine& engine) -> void {
  *
  * @param argc Argument count.
  * @param argv Argument vector (expects optional [seed] [max_ticks]).
- * @return 0 on success, 2 on consistency failure during play, 3 on final consistency
- *         failure.
+ *             Default seed: SnakeEngine::kDefaultSeed
+ *             Default max_ticks: 500
+ * @return 0 on success and consistent final state
+ *         2 on internal consistency failure during gameplay
+ *         3 on final state consistency failure
  */
 auto main(int argc, char** argv) -> int {
   const std::uint32_t seed = (argc > 1) ? parse_u32_arg(argv[1], SnakeEngine::kDefaultSeed) : SnakeEngine::kDefaultSeed;
@@ -442,8 +449,8 @@ auto main(int argc, char** argv) -> int {
           continue;
         }
 
+        // Not a valid escape sequence, reset and process this character normally.
         skipping_escape_sequence = false;
-        continue;
       }
 
       if (raw_command == '\033') {
@@ -472,8 +479,8 @@ auto main(int argc, char** argv) -> int {
 
     if (!engine.is_consistent()) {
       ansi_show_cursor();
-      ansi_move_to(kPromptRow + 1, 1);
-      std::cerr << "Internal consistency check failed at tick " << engine.tick() << "\n";
+      ansi_move_to(kFinalOutputRow, 1);
+      std::cerr << kStyleError << "Internal consistency check failed at tick " << engine.tick() << kStyleReset << "\n";
       return 2;
     }
 
@@ -486,7 +493,7 @@ auto main(int argc, char** argv) -> int {
 
   // Final output below the TUI frame.
   ansi_show_cursor();
-  ansi_move_to(kPromptRow + 1, 1);
+  ansi_move_to(kFinalOutputRow, 1);
 
   const auto& replay = engine.replay_log();
   std::cout << "\nFinal state: " << (engine.is_alive() ? "alive" : "dead") << "\n";
@@ -495,7 +502,7 @@ auto main(int argc, char** argv) -> int {
   std::cout << "Replay snapshots: " << replay.size() << "\n";
 
   if (!replay.is_empty()) {
-    const std::size_t history_to_print = (replay.size() < 5U) ? replay.size() : 5U;
+    const std::size_t history_to_print = (replay.size() < kRecentMovesDisplayCount) ? replay.size() : kRecentMovesDisplayCount;
     std::cout << "Recent moves: ";
     for (std::size_t i = replay.size() - history_to_print; i < replay.size(); ++i) {
       std::cout << ads::apps::snake::to_char(replay[i].direction);
