@@ -17,6 +17,16 @@
       }
     },
     {
+      "name": "base-gcc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/gcc-toolchain.cmake",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_APPS": "ON",
+        "ENABLE_TESTING": "OFF"
+      }
+    },
+    {
       "name": "debug",
       "displayName": "Debug (Clang)",
       "inherits": "base-clang",
@@ -90,6 +100,101 @@
       "environment": {
         "CPATH": ""
       }
+    },
+    {
+      "name": "debug-gcc",
+      "displayName": "Debug (GCC)",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release-gcc",
+      "displayName": "Release (GCC)",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build-release-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "sanitize-gcc",
+      "displayName": "ASan+UBSan (GCC)",
+      "inherits": "base-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "binaryDir": "${sourceDir}/build-sanitize-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Sanitize"
+      }
+    },
+    {
+      "name": "sanitize-tests-gcc",
+      "displayName": "ASan+UBSan + Tests (GCC)",
+      "inherits": "base-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "binaryDir": "${sourceDir}/build-sanitize-tests-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Sanitize",
+        "ENABLE_TESTING": "ON"
+      },
+      "environment": {
+        "CPATH": ""
+      }
+    },
+    {
+      "name": "thread-sanitize-gcc",
+      "displayName": "ThreadSanitizer (GCC)",
+      "inherits": "base-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "binaryDir": "${sourceDir}/build-thread-sanitize-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "ThreadSanitize"
+      }
+    },
+    {
+      "name": "thread-sanitize-tests-gcc",
+      "displayName": "ThreadSanitizer + Tests (GCC)",
+      "inherits": "base-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "binaryDir": "${sourceDir}/build-thread-sanitize-tests-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "ThreadSanitize",
+        "ENABLE_TESTING": "ON"
+      },
+      "environment": {
+        "CPATH": ""
+      }
+    },
+    {
+      "name": "debug-tests-gcc",
+      "displayName": "Debug + Tests (GCC)",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build-tests-gcc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_TESTING": "ON"
+      },
+      "environment": {
+        "CPATH": ""
+      }
     }
   ],
   "buildPresets": [
@@ -120,6 +225,54 @@
     {
       "name": "build-debug-tests",
       "configurePreset": "debug-tests"
+    },
+    {
+      "name": "build-debug-gcc",
+      "configurePreset": "debug-gcc"
+    },
+    {
+      "name": "build-release-gcc",
+      "configurePreset": "release-gcc"
+    },
+    {
+      "name": "build-sanitize-gcc",
+      "configurePreset": "sanitize-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "build-sanitize-tests-gcc",
+      "configurePreset": "sanitize-tests-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "build-thread-sanitize-gcc",
+      "configurePreset": "thread-sanitize-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "build-thread-sanitize-tests-gcc",
+      "configurePreset": "thread-sanitize-tests-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "build-debug-tests-gcc",
+      "configurePreset": "debug-tests-gcc"
     }
   ],
   "testPresets": [
@@ -140,6 +293,37 @@
     {
       "name": "test-thread-sanitize",
       "configurePreset": "thread-sanitize-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "test-debug-gcc",
+      "configurePreset": "debug-tests-gcc",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "test-sanitize-gcc",
+      "configurePreset": "sanitize-tests-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "test-thread-sanitize-gcc",
+      "configurePreset": "thread-sanitize-tests-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
       "output": {
         "outputOnFailure": true
       }
