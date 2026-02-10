@@ -1,83 +1,299 @@
 {
+  //===-------------------------------------------------------------------------===//
+  // Advanced Debug Configurations for AlgoDataStruct Project
+  //
+  // Architecture:
+  //   - Platform-specific configurations (macOS LLDB, Linux LLDB/GDB)
+  //   - Separate test and app configurations for optimal settings
+  //   - Dedicated sanitizer builds with enhanced error detection
+  //   - Cross-platform fallback configurations
+  //
+  // Key Features:
+  //   - AddressSanitizer & UndefinedBehaviorSanitizer support
+  //   - Custom LLDB formatters for ADS containers
+  //   - Enhanced memory debugging (macOS malloc guards)
+  //   - Automatic build tasks with preLaunchTask
+  //
+  // Common Environment Variables:
+  //   ASAN_OPTIONS  - AddressSanitizer runtime configuration
+  //   UBSAN_OPTIONS - UndefinedBehaviorSanitizer configuration
+  //   TERM          - Terminal type for TUI applications
+  //
+  // Directory Structure:
+  //   build/          - Standard Debug builds
+  //   build-sanitize/ - Sanitizer-instrumented builds
+  //   build-tests/    - GoogleTest builds (optional)
+  //===-------------------------------------------------------------------------===//
   "version": "0.2.0",
+
+  //===--------------------- SHARED CONFIGURATION SNIPPETS ---------------------===//
+  // These are reference snippets for common patterns used below.
+  // VS Code doesn't support true snippet reuse, but these document common patterns.
+  //
+  // LLDB_INIT_COMMANDS (used in all LLDB configurations):
+  //   "command script import ~/.lldb/LLDB_Formatters",
+  //   "settings set target.process.follow-fork-mode child",
+  //   "settings set target.inline-breakpoint-strategy always",
+  //   "settings set target.prefer-dynamic-value run-target",
+  //   "settings set target.process.thread.step-avoid-regexp ^std::",
+  //   "settings set stop-disassembly-display never"
+  //
+  // STANDARD_ENV (used in standard debug builds):
+  //   ASAN_OPTIONS: "detect_leaks=1:check_initialization_order=1:strict_init_order=1"
+  //   UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1"
+  //
+  // SANITIZER_ENV (used in sanitizer builds):
+  //   ASAN_OPTIONS: "...strict_init_order=1:detect_stack_use_after_return=1:allocator_may_return_null=1:fast_unwind_on_malloc=0"
+  //   UBSAN_OPTIONS: "...suppressions=${workspaceFolder}/.vscode/ubsan.supp"
+  //   LSAN_OPTIONS: "verbosity=1:log_threads=1:suppressions=.vscode/lsan.supp"
+  //===-------------------------------------------------------------------------===//
+
   "configurations": [
+    //===------------------------ MACOS: LLDB (Primary) ------------------------===//
+    // Primary development platform. Uses native LLDB with custom formatters.
+    // Separate configurations for tests (console) vs apps (integrated terminal).
+
     {
-      "name": "(macOS) Debug with CodeLLDB",
+      "name": "[macOS] Debug Test",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+      "stopOnEntry": false,
+      "env": {
+        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1:detect_stack_use_after_return=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1",
+        "LLDB_DEBUGSERVER_LOG_FILE": "/tmp/debugserver.log",
+        "LLDB_DEBUGSERVER_LOG_FLAGS": "default"
+      },
+      "initCommands": [
+        "command script import ~/.lldb/LLDB_Formatters",
+        "settings set target.process.follow-fork-mode child",
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target",
+        "settings set target.process.thread.step-avoid-regexp ^std::",
+        "settings set stop-disassembly-display never"
+      ],
+      "postRunCommands": ["command source -s 1 ${workspaceFolder}/.vscode/lldb-summary.txt"]
     },
     {
-      "name": "(macOS) Debug with MS C/C++",
-      "type": "cppdbg",
-      "targetArchitecture": "aarch64",
+      "name": "[macOS] Debug App",
+      "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
       "args": [],
-      "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
       "preLaunchTask": "CMake: Build All",
-      "setupCommands": [
-        {
-          "description": "Load Custom LLDB Formatters",
-          "text": "command script import ~/.lldb/LLDB_Formatters",
-          "ignoreFailures": true
-        },
-        {
-          "description": "Set inline breakpoint strategy",
-          "text": "settings set target.inline-breakpoint-strategy always",
-          "ignoreFailures": true
-        }
+      "sourceLanguages": ["cpp"],
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "env": {
+        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1",
+        "TERM": "xterm-256color"
+      },
+      "initCommands": [
+        "command script import ~/.lldb/LLDB_Formatters",
+        "settings set target.process.follow-fork-mode child",
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target",
+        "settings set target.process.thread.step-avoid-regexp ^std::",
+        "settings set stop-disassembly-display never"
+      ]
+    },
+
+    //===----------------------- MACOS: Sanitizer Builds -----------------------===//
+    // Enhanced memory debugging with full sanitizer instrumentation.
+    // Uses separate build directory (build-sanitize/) with -fsanitize flags.
+    // Includes macOS-specific malloc guards and detailed leak detection.
+
+    {
+      "name": "[macOS] Debug Test + Sanitizers",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-sanitize/bin/${input:testExecutable}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build (Sanitize)",
+      "sourceLanguages": ["cpp"],
+      "terminal": "console",
+      "stopOnEntry": false,
+      "env": {
+        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1:detect_stack_use_after_return=1:allocator_may_return_null=1:fast_unwind_on_malloc=0",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1:suppressions=${workspaceFolder}/.vscode/ubsan.supp",
+        "LSAN_OPTIONS": "verbosity=1:log_threads=1:suppressions=${workspaceFolder}/.vscode/lsan.supp",
+        "MallocStackLogging": "1",
+        "MallocScribble": "1",
+        "MallocPreScribble": "1",
+        "MallocGuardEdges": "1"
+      },
+      "initCommands": [
+        "command script import ~/.lldb/LLDB_Formatters",
+        "settings set target.process.follow-fork-mode child",
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target"
       ]
     },
     {
-      "name": "(Linux) Debug with CodeLLDB",
+      "name": "[macOS] Debug App + Sanitizers",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "program": "${workspaceFolder}/build-sanitize/bin/${input:appExecutable}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build (Sanitize)",
+      "sourceLanguages": ["cpp"],
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "env": {
+        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1:detect_stack_use_after_return=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1",
+        "TERM": "xterm-256color"
+      },
+      "initCommands": [
+        "command script import ~/.lldb/LLDB_Formatters",
+        "settings set target.process.follow-fork-mode child",
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target"
+      ]
+    },
+
+    //===----------------------------- LINUX: LLDB -----------------------------===//
+    // Linux debugging with LLDB (when available).
+    // Similar to macOS but without macOS-specific malloc guards.
+
+    {
+      "name": "[Linux] Debug Test (LLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
-      "initCommands": ["command script import ~/.lldb/LLDB_Formatters"]
+      "stopOnEntry": false,
+      "env": {
+        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1"
+      },
+      "initCommands": [
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target",
+        "settings set target.process.thread.step-avoid-regexp ^std::"
+      ]
     },
     {
-      "name": "(Linux) Debug with MS C/C++",
-      "type": "cppdbg",
-      "targetArchitecture": "x64",
+      "name": "[Linux] Debug App (LLDB)",
+      "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build All",
+      "sourceLanguages": ["cpp"],
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "env": {
+        "TERM": "xterm-256color"
+      },
+      "initCommands": [
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target"
+      ]
+    },
+
+    //===----------------------------- LINUX: GDB ------------------------------===//
+    // Linux debugging with GDB (most common on Linux).
+    // Uses GDB-specific pretty-printing and Intel disassembly syntax.
+
+    {
+      "name": "[Linux] Debug Test (GDB)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "environment": [],
+      "environment": [
+        {
+          "name": "ASAN_OPTIONS",
+          "value": "detect_leaks=1:check_initialization_order=1:strict_init_order=1"
+        },
+        { "name": "UBSAN_OPTIONS", "value": "print_stacktrace=1:halt_on_error=1" }
+      ],
       "externalConsole": false,
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
       "preLaunchTask": "CMake: Build All",
       "setupCommands": [
         {
-          "description": "Enable Pretty-Printing for GDB",
+          "description": "Enable Pretty-Printing",
           "text": "-enable-pretty-printing",
+          "ignoreFailures": false
+        },
+        {
+          "description": "Intel disassembly",
+          "text": "set disassembly-flavor intel",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Disable pagination",
+          "text": "set pagination off",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Hide thread events",
+          "text": "set print thread-events off",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Skip std:: when stepping",
+          "text": "skip -rfu ^std::",
           "ignoreFailures": true
         }
       ]
     },
     {
-      "name": "Debug C/C++ (Cross-Platform)",
+      "name": "[Linux] Debug App (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:executableName}",
+      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [{ "name": "TERM", "value": "xterm-256color" }],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "CMake: Build All",
+      "setupCommands": [
+        {
+          "description": "Enable Pretty-Printing",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": false
+        },
+        {
+          "description": "Intel disassembly",
+          "text": "set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ]
+    },
+
+    //===----------------------- CROSS-PLATFORM FALLBACK -----------------------===//
+    // Universal configurations that adapt to the current OS.
+    // Use these if platform-specific configurations have issues.
+
+    {
+      "name": "[Cross-Platform] Debug Test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -85,43 +301,100 @@
       "externalConsole": false,
       "preLaunchTask": "CMake: Build All",
       "windows": {
-        "program": "${workspaceFolder}/build/bin/${input:executableName}.exe",
+        "program": "${workspaceFolder}/build/bin/${input:testExecutable}.exe",
         "MIMode": "gdb",
         "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
       },
       "linux": {
-        "program": "${workspaceFolder}/build/bin/${input:executableName}",
         "MIMode": "gdb",
-        "miDebuggerPath": "/usr/bin/gdb"
+        "miDebuggerPath": "/usr/bin/gdb",
+        "environment": [
+          { "name": "ASAN_OPTIONS", "value": "detect_leaks=1:check_initialization_order=1" }
+        ]
       },
       "osx": {
-        "program": "${workspaceFolder}/build/bin/${input:executableName}",
-        "MIMode": "lldb"
+        "MIMode": "lldb",
+        "environment": [
+          { "name": "ASAN_OPTIONS", "value": "detect_leaks=1:check_initialization_order=1" }
+        ]
       },
       "setupCommands": [
         {
-          "description": "Load Custom LLDB Formatters (macOS)",
+          "description": "Load LLDB Formatters (macOS)",
           "text": "command script import ~/.lldb/LLDB_Formatters",
           "ignoreFailures": true
         },
         {
-          "description": "Enable Pretty-Printing for GDB (Linux/Windows)",
+          "description": "Enable Pretty-Printing (GDB)",
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         },
         {
-          "description": "Set inline breakpoint strategy (LLDB)",
+          "description": "Inline breakpoints (LLDB)",
+          "text": "settings set target.inline-breakpoint-strategy always",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Skip std:: when stepping",
+          "text": "skip -rfu ^std::",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "[Cross-Platform] Debug App",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "preLaunchTask": "CMake: Build All",
+      "windows": {
+        "program": "${workspaceFolder}/build/bin/${input:appExecutable}.exe",
+        "MIMode": "gdb",
+        "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
+      },
+      "linux": {
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "environment": [{ "name": "TERM", "value": "xterm-256color" }]
+      },
+      "osx": {
+        "MIMode": "lldb",
+        "environment": [{ "name": "TERM", "value": "xterm-256color" }]
+      },
+      "setupCommands": [
+        {
+          "description": "Load LLDB Formatters (macOS)",
+          "text": "command script import ~/.lldb/LLDB_Formatters",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Enable Pretty-Printing (GDB)",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Inline breakpoints (LLDB)",
           "text": "settings set target.inline-breakpoint-strategy always",
           "ignoreFailures": true
         }
       ]
     }
   ],
+
+  //===--------------------------- INPUT DEFINITIONS ---------------------------===//
+  // User-selectable targets for debugging.
+  // These appear as dropdown menus when launching debug sessions.
+
   "inputs": [
     {
-      "id": "executableName",
+      "id": "testExecutable",
       "type": "pickString",
-      "description": "Select executable to debug",
+      "description": "Select test executable [src/]",
       "options": [
         "test_Static_Array",
         "test_Dynamic_Array",
@@ -148,9 +421,18 @@
         "test_HashMap",
         "test_Hash_Chaining",
         "test_Hash_Open_Addr",
-        "test_Heaps"
+        "test_Heaps",
+        "runTests"
       ],
       "default": "test_BST"
+    },
+    {
+      "id": "appExecutable",
+      "type": "pickString",
+      "description": "Select application executable [apps/]",
+      "options": ["app_Snake_TUI", "app_Snake_Stress", "runSnakeTests"],
+      "default": "app_Snake_TUI"
     }
   ]
 }
+//===---------------------------------------------------------------------------===//

@@ -1,117 +1,159 @@
 {
-  //===----------------------- CMAKE TASKS CONFIGURATION -----------------------===//
+  //===-------------------------------------------------------------------------===//
+  // CMake Task Configuration for AlgoDataStruct Project
+  //
+  // Task Organization:
+  //   1. Configuration tasks - Set up CMake with different build types
+  //   2. Build tasks - Compile targets with parallel jobs
+  //   3. Clean tasks - Remove and reconfigure build directories
+  //   4. Run tasks - Execute built binaries
+  //   5. Utility tasks - Format and lint operations
+  //
+  // Build Types:
+  //   Debug       - Standard debug build (build/)
+  //   Release     - Optimized production build (build/)
+  //   Sanitize    - AddressSanitizer + UBSan (build-sanitize/)
+  //   Debug+Tests - GoogleTest enabled (build-tests/)
+  //
+  // Common Variables:
+  //   ${input:cmakeToolchain} - Toolchain file selection
+  //   ${input:buildJobs}      - Parallel compilation jobs
+  //   ${workspaceFolder}      - Project root directory
+  //===-------------------------------------------------------------------------===//
   "version": "2.0.0",
+
   "tasks": [
+    //===------------------------- CONFIGURATION TASKS -------------------------===//
+    // These tasks configure CMake with different build types and options.
+    // They create separate build directories for each configuration.
+
     {
       "label": "CMake: Configure (Debug)",
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DENABLE_TESTING=OFF",
         "-B",
         "build"
       ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
       "problemMatcher": [],
-      "detail": "Configure project with CMake for Debug build"
+      "detail": "Configure Debug build with Clang toolchain"
     },
     {
       "label": "CMake: Configure (Release)",
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
         "-DCMAKE_BUILD_TYPE=Release",
         "-B",
         "build"
       ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
       "problemMatcher": [],
-      "detail": "Configure project with CMake for Release build"
+      "detail": "Configure Release build with optimizations"
+    },
+    {
+      "label": "CMake: Configure (Sanitize)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_BUILD_TYPE=Sanitize",
+        "-DENABLE_TESTING=OFF",
+        "-B",
+        "build-sanitize"
+      ],
+      "problemMatcher": [],
+      "detail": "Configure with AddressSanitizer + UndefinedBehaviorSanitizer"
     },
     {
       "label": "CMake: Configure (Debug + Tests)",
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DENABLE_TESTING=ON",
         "-B",
         "build-tests"
       ],
       "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "CPATH": ""
-        }
+        "env": { "CPATH": "" }
       },
       "problemMatcher": [],
-      "detail": "Configure project with CMake for Debug build and GoogleTest"
+      "detail": "Configure Debug build with GoogleTest support"
     },
 
     //===----------------------------- BUILD TASKS -----------------------------===//
+    // These tasks compile the project using the configured build directory.
+    // Parallel jobs are configurable via input variable.
+
     {
       "label": "CMake: Build All",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "-j8"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "args": ["--build", "build", "-j${input:buildJobs}"],
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "problemMatcher": ["$gcc"],
-      "detail": "Build all targets using CMake"
+      "detail": "Build all targets in Debug mode"
     },
     {
       "label": "CMake: Build (Debug + Tests)",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build-tests", "-j8"],
+      "args": ["--build", "build-tests", "-j${input:buildJobs}"],
       "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "CPATH": ""
-        }
+        "env": { "CPATH": "" }
       },
       "group": "build",
       "dependsOn": ["CMake: Configure (Debug + Tests)"],
       "problemMatcher": ["$gcc"],
-      "detail": "Build all targets with testing enabled"
+      "detail": "Build all targets with GoogleTest enabled"
     },
     {
-      "label": "CMake: Build Active Target",
+      "label": "CMake: Build (Sanitize)",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "--target", "${input:targetName}", "-j8"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "args": ["--build", "build-sanitize", "-j${input:buildJobs}"],
+      "group": "build",
+      "dependsOn": ["CMake: Configure (Sanitize)"],
+      "problemMatcher": ["$gcc"],
+      "detail": "Build with AddressSanitizer and UndefinedBehaviorSanitizer"
+    },
+    {
+      "label": "CMake: Build Test Target [src/]",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "--target", "${input:testTarget}", "-j${input:buildJobs}"],
       "group": "build",
       "problemMatcher": ["$gcc"],
-      "detail": "Build specific target (prompts for target name)"
+      "detail": "Build specific test target from src/"
+    },
+    {
+      "label": "CMake: Build App Target [apps/]",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "--target", "${input:appTarget}", "-j${input:buildJobs}"],
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Build specific app target from apps/"
     },
 
     //===----------------------------- CLEAN TASKS -----------------------------===//
+    // These tasks clean or completely remove build directories.
+
     {
       "label": "CMake: Clean",
       "type": "shell",
       "command": "cmake",
       "args": ["--build", "build", "--target", "clean"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
       "problemMatcher": [],
-      "detail": "Clean build artifacts"
+      "detail": "Clean build artifacts without removing configuration"
     },
     {
       "label": "CMake: Clean & Reconfigure (Debug)",
@@ -119,13 +161,10 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build && cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build"
+        "cmake -E remove_directory build && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build"
       ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
       "problemMatcher": [],
-      "detail": "Remove build directory and reconfigure for Debug"
+      "detail": "Remove build/ directory and reconfigure for Debug"
     },
     {
       "label": "CMake: Clean & Reconfigure (Debug + Tests)",
@@ -133,23 +172,33 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build-tests && cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build-tests"
+        "cmake -E remove_directory build-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build-tests"
       ],
       "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "CPATH": ""
-        }
+        "env": { "CPATH": "" }
       },
       "problemMatcher": [],
-      "detail": "Remove build-tests directory and reconfigure for Debug with tests"
+      "detail": "Remove build-tests/ directory and reconfigure with GoogleTest"
+    },
+    {
+      "label": "CMake: Clean & Reconfigure (Sanitize)",
+      "type": "shell",
+      "command": "sh",
+      "args": [
+        "-c",
+        "cmake -E remove_directory build-sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=OFF -B build-sanitize"
+      ],
+      "problemMatcher": [],
+      "detail": "Remove build-sanitize/ directory and reconfigure"
     },
 
     //===----------------------------- RUN & TEST ------------------------------===//
+    // These tasks execute built binaries and run tests.
+
     {
-      "label": "Run: Select Target",
+      "label": "Run: Test Binary [src/]",
       "type": "shell",
-      "command": "./bin/${input:runTarget}",
+      "command": "./bin/${input:runTestTarget}",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
@@ -165,7 +214,25 @@
       },
       "dependsOn": ["CMake: Build All"],
       "problemMatcher": [],
-      "detail": "Build and run selected test binary"
+      "detail": "Build and run selected test binary from src/"
+    },
+    {
+      "label": "Run: App Binary [apps/]",
+      "type": "shell",
+      "command": "./bin/${input:runAppTarget}",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "clear": true
+      },
+      "dependsOn": ["CMake: Build All"],
+      "problemMatcher": [],
+      "detail": "Build and run selected app binary from apps/"
     },
     {
       "label": "Test: Run GoogleTest Suite",
@@ -174,9 +241,7 @@
       "args": ["--output-on-failure", "--verbose"],
       "options": {
         "cwd": "${workspaceFolder}/build-tests",
-        "env": {
-          "CPATH": ""
-        }
+        "env": { "CPATH": "" }
       },
       "group": "test",
       "dependsOn": ["CMake: Build (Debug + Tests)"],
@@ -189,7 +254,9 @@
       "detail": "Run all GoogleTest unit tests (requires ENABLE_TESTING=ON)"
     },
 
-    //===--------------------------- UTILITIES TASKS ---------------------------===//
+    //===---------------------------- UTILITY TASKS ----------------------------===//
+    // Code formatting, linting, and other development utilities.
+
     {
       "label": "Format: clang-format Active File",
       "type": "shell",
@@ -208,46 +275,29 @@
     }
   ],
 
-  //===--------------------------- BUILD/RUN TARGETS ---------------------------===//
+  //===-------------------------- INPUT DEFINITIONS ---------------------------===//
+  // User-configurable variables used across multiple tasks.
+  // These reduce duplication and make tasks easier to customize.
+
   "inputs": [
     {
-      "id": "targetName",
+      "id": "cmakeToolchain",
       "type": "pickString",
-      "description": "Select target to build",
-      "options": [
-        "all",
-        "test_Static_Array",
-        "test_Dynamic_Array",
-        "test_Circular_Array",
-        "test_Singly_Linked_List",
-        "test_Doubly_Linked_List",
-        "test_Circular_Linked_List",
-        "test_Stacks_Queues",
-        "test_Deque",
-        "test_Priority_Queue",
-        "test_Complete_Binary_Tree",
-        "test_BST",
-        "test_BBT",
-        "test_AVL",
-        "test_RBT",
-        "test_Trie",
-        "test_Fenwick_Tree",
-        "test_Dijkstra",
-        "test_Graph_ADJ_List",
-        "test_Graph_ADJ_Matrix",
-        "test_Disjoint_Set_Union",
-        "test_Tree_Map",
-        "test_HashMap",
-        "test_Hash_Chaining",
-        "test_Hash_Open_Addr",
-        "test_Heaps"
-      ],
-      "default": "test_BST"
+      "description": "Select CMake toolchain file",
+      "options": ["clang-toolchain.cmake", "gcc-toolchain.cmake"],
+      "default": "clang-toolchain.cmake"
     },
     {
-      "id": "runTarget",
+      "id": "buildJobs",
       "type": "pickString",
-      "description": "Select test binary to run",
+      "description": "Number of parallel build jobs",
+      "options": ["4", "8", "12", "16"],
+      "default": "8"
+    },
+    {
+      "id": "testTarget",
+      "type": "pickString",
+      "description": "Select test target to build [src/]",
       "options": [
         "test_Static_Array",
         "test_Dynamic_Array",
@@ -274,9 +324,64 @@
         "test_HashMap",
         "test_Hash_Chaining",
         "test_Hash_Open_Addr",
-        "test_Heaps"
+        "test_Heaps",
+        "runTests"
       ],
       "default": "test_BST"
+    },
+    {
+      "id": "appTarget",
+      "type": "pickString",
+      "description": "Select app target to build [apps/]",
+      "options": ["app_Snake_TUI", "app_Snake_Stress", "runSnakeTests"],
+      "default": "app_Snake_TUI"
+    },
+    {
+      "id": "runTestTarget",
+      "type": "pickString",
+      "description": "Select test binary to run [src/]",
+      "options": [
+        "test_Static_Array",
+        "test_Dynamic_Array",
+        "test_Circular_Array",
+        "test_Singly_Linked_List",
+        "test_Doubly_Linked_List",
+        "test_Circular_Linked_List",
+        "test_Stacks_Queues",
+        "test_Deque",
+        "test_Priority_Queue",
+        "test_Complete_Binary_Tree",
+        "test_BST",
+        "test_BBT",
+        "test_AVL",
+        "test_RBT",
+        "test_Trie",
+        "test_Fenwick_Tree",
+        "test_Segment_Tree",
+        "test_Dijkstra",
+        "test_Graph_ADJ_List",
+        "test_Graph_ADJ_Matrix",
+        "test_Disjoint_Set_Union",
+        "test_Tree_Map",
+        "test_HashMap",
+        "test_Hash_Chaining",
+        "test_Hash_Open_Addr",
+        "test_Heaps",
+        "runTests"
+      ],
+      "default": "test_BST"
+    },
+    {
+      "id": "runAppTarget",
+      "type": "pickString",
+      "description": "Select app binary to run [apps/]",
+      "options": ["app_Snake_TUI", "app_Snake_Stress", "runSnakeTests"],
+      "default": "app_Snake_TUI"
     }
   ]
 }
+//===-------------------------------------------------------------------------===//
+// Configuration maintained by: Claude Code
+// Last major refactoring: 2026-02-10
+// See .vscode/AUDIT.md for optimization details and design rationale
+//===-------------------------------------------------------------------------===//
