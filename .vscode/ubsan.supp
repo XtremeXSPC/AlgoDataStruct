@@ -1,0 +1,32 @@
+# UndefinedBehaviorSanitizer Suppressions File
+# This file allows you to suppress known undefined behavior issues or
+# false positives reported by UndefinedBehaviorSanitizer.
+#
+# Format:
+#   <check_name>:<pattern>
+#
+# Common check names:
+#   - alignment      : Misaligned pointer use
+#   - bool           : Invalid boolean value
+#   - bounds         : Array bounds overflow
+#   - enum           : Invalid enum value
+#   - float-cast-overflow : Floating point cast overflow
+#   - integer-divide-by-zero
+#   - null           : Null pointer dereference
+#   - object-size    : Access to object with insufficient size
+#   - pointer-overflow : Pointer arithmetic overflow
+#   - return         : Non-void function doesn't return a value
+#   - shift          : Invalid shift operation
+#   - signed-integer-overflow
+#   - unsigned-integer-overflow
+#   - vla-bound      : Variable-length array bound not positive
+#   - vptr           : Use of object whose vptr indicates wrong type
+#
+# Example:
+#   signed-integer-overflow:some_library.cpp
+#   vptr:^std::
+#
+# Suppress std library false positives (uncomment if needed)
+# vptr:^std::
+
+# Add your suppressions below:

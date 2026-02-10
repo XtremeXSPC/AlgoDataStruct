@@ -9,17 +9,19 @@
 # Exclude Visual Studio Code configuration directory
 *!.vscode/
 
-# Claude AI files
-.claude/
-docs/Claude/
-Plans/
-
 # AI Agent files
 .agents/
 AGENTS.md
 
+# Claude AI files
+.claude/
+docs/Claude/
+Documentation/Audits/
+
 # Exclude CMake build directories
 /build
+/build-sanitize
+/build-tests
 /bin
 
 # Exclude generated documentation
@@ -62,7 +64,6 @@ AGENTS.md
 *.so
 
 # Temporary files
-.tmp.driveupload
 .fake
+.tmp.driveupload
 compile_commands.json
-Update-Plan.md

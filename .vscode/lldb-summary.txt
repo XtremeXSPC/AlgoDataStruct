@@ -1,0 +1,12 @@
+# LLDB Post-Run Summary Commands
+# This file is automatically sourced after debug sessions complete
+# Used by advanced debug configurations in launch.json
+
+# Display custom type summaries for ADS containers
+type summary add -F LLDB_Formatters.StaticArray_SummaryProvider "ads::containers::StaticArray" -w ads
+type summary add -F LLDB_Formatters.DynamicArray_SummaryProvider "ads::containers::DynamicArray" -w ads
+type summary add -F LLDB_Formatters.SinglyLinkedList_SummaryProvider "ads::containers::SinglyLinkedList" -w ads
+type summary add -F LLDB_Formatters.DoublyLinkedList_SummaryProvider "ads::containers::DoublyLinkedList" -w ads
+
+# Enable category
+type category enable ads
