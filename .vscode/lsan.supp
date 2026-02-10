@@ -1,0 +1,19 @@
+# LeakSanitizer Suppressions File
+# This file allows you to suppress known memory leaks or false positives
+# reported by LeakSanitizer (part of AddressSanitizer).
+#
+# Format:
+#   leak:<pattern>
+#
+# Where <pattern> matches function names in the leak stack trace.
+#
+# Example:
+#   leak:libsystem_pthread.dylib
+#   leak:^CFRunLoopRun$
+#
+# Suppress macOS system library leaks (common false positives on macOS)
+# leak:libsystem_
+# leak:dyld
+# leak:CoreFoundation
+
+# Add your suppressions below:

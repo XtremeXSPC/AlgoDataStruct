@@ -470,12 +470,15 @@ auto main(int argc, char** argv) -> int {
   int terminal_rows = 0;
   int terminal_cols = 0;
   if (get_terminal_size(terminal_rows, terminal_cols)) {
-    if (terminal_rows < kMinTerminalRows || terminal_cols < kMinTerminalCols) {
-      std::cerr << kStyleError << "Error: Terminal too small!" << kStyleReset << "\n";
-      std::cerr << "Required: " << kMinTerminalRows << " rows x " << kMinTerminalCols << " cols minimum\n";
-      std::cerr << "Current:  " << terminal_rows << " rows x " << terminal_cols << " cols\n";
-      std::cerr << "Please resize your terminal and try again.\n";
-      return 1;
+    // Skip validation if dimensions are 0x0 (e.g., running in debugger without real terminal).
+    if (terminal_rows > 0 && terminal_cols > 0) {
+      if (terminal_rows < kMinTerminalRows || terminal_cols < kMinTerminalCols) {
+        std::cerr << kStyleError << "Error: Terminal too small!" << kStyleReset << "\n";
+        std::cerr << "Required: " << kMinTerminalRows << " rows x " << kMinTerminalCols << " cols minimum\n";
+        std::cerr << "Current:  " << terminal_rows << " rows x " << terminal_cols << " cols\n";
+        std::cerr << "Please resize your terminal and try again.\n";
+        return 1;
+      }
     }
   }
 
