@@ -38,19 +38,10 @@
   //   "settings set target.process.thread.step-avoid-regexp ^std::",
   //   "settings set stop-disassembly-display never"
   //
-  // STANDARD_ENV (used in standard debug builds):
-  //   ASAN_OPTIONS: "detect_leaks=1:check_initialization_order=1:strict_init_order=1"
-  //   UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1"
-  //
-  // SANITIZER_ENV (used in sanitizer builds):
-  //   ASAN_OPTIONS: "...strict_init_order=1:detect_stack_use_after_return=1:allocator_may_return_null=1:fast_unwind_on_malloc=0"
-  //   UBSAN_OPTIONS: "...suppressions=${workspaceFolder}/.vscode/ubsan.supp"
-  //   LSAN_OPTIONS: "verbosity=1:log_threads=1:suppressions=.vscode/lsan.supp"
-  //   Defined in: .vscode/sanitizers.env
-  //
-  // THREAD_SANITIZER_ENV (used in thread sanitizer builds):
-  //   TSAN_OPTIONS: "halt_on_error=1:history_size=7"
-  //   Defined in: .vscode/threadsanitizer.env
+  // Environment variable files:
+  // STANDARD_ENV (used in standard debug builds).
+  // SANITIZER_ENV (used in sanitizer builds).
+  // THREAD_SANITIZER_ENV (used in thread sanitizer builds).
   //===-------------------------------------------------------------------------===//
 
   "configurations": [
@@ -166,7 +157,7 @@
       "sourceLanguages": ["cpp"],
       "terminal": "console",
       "stopOnEntry": false,
-      "envFile": "${workspaceFolder}/.vscode/threadsanitizer.env",
+      "envFile": "${workspaceFolder}/.vscode/thread_sanitizer.env",
       "initCommands": [
         "command script import ~/.lldb/LLDB_Formatters",
         "settings set target.process.follow-fork-mode child",
@@ -185,7 +176,7 @@
       "sourceLanguages": ["cpp"],
       "terminal": "integrated",
       "stopOnEntry": false,
-      "envFile": "${workspaceFolder}/.vscode/threadsanitizer.env",
+      "envFile": "${workspaceFolder}/.vscode/thread_sanitizer.env",
       "env": { "TERM": "xterm-256color" },
       "initCommands": [
         "command script import ~/.lldb/LLDB_Formatters",
