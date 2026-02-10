@@ -20,8 +20,7 @@ Documentation/Audits/
 
 # Exclude CMake build directories
 /build
-/build-sanitize
-/build-tests
+/build-*
 /bin
 
 # Exclude generated documentation
@@ -56,7 +55,6 @@ Documentation/Audits/
 .emacs.desktop.lock
 
 # Build files
-/build/
 *.o
 *.out
 *.exe
