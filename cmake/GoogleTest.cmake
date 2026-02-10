@@ -138,7 +138,19 @@ endif()
 # Create test executable if we have test files.
 if(TEST_SOURCES)
     add_executable(runTests ${TEST_SOURCES})
-    target_compile_options(runTests PRIVATE -Wall -Wextra -Wpedantic -g)
+    target_compile_options(runTests PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        $<$<CONFIG:Debug>:-g -O0>
+        $<$<CONFIG:Release>:-O3 -DNDEBUG>
+        $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
+        $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
+    )
+    target_link_options(runTests PRIVATE
+        $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
+        $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
+    )
     if(GTest_FOUND)
         target_link_libraries(runTests PRIVATE ads_lib GTest::gtest_main)
     else()

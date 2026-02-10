@@ -111,8 +111,11 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
         # Release configuration: Maximum optimization, no debug info.
         $<$<CONFIG:Release>:-O3 -DNDEBUG>
 
-        # Sanitizer configuration (if using sanitizer build type).
+        # Address/UB sanitizers configuration.
         $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
+
+        # Thread sanitizer configuration.
+        $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
     )
 
     # Compiler-specific definitions for enhanced debugging.
@@ -138,8 +141,11 @@ function(ads_add_executable TARGET_NAME SOURCE_FILE)
     # ------------------------- Linker Configuration ------------------------- #
     # Configuration-specific linker flags.
     target_link_options(${TARGET_NAME} PRIVATE
-        # Link sanitizer libraries for Sanitize builds.
+        # Link Address/UB sanitizer runtime libraries.
         $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
+
+        # Link thread sanitizer runtime library.
+        $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
 
         # Strip symbols in Release builds to reduce executable size.
         $<$<CONFIG:Release>:-s>

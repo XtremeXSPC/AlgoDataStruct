@@ -46,6 +46,11 @@
   //   ASAN_OPTIONS: "...strict_init_order=1:detect_stack_use_after_return=1:allocator_may_return_null=1:fast_unwind_on_malloc=0"
   //   UBSAN_OPTIONS: "...suppressions=${workspaceFolder}/.vscode/ubsan.supp"
   //   LSAN_OPTIONS: "verbosity=1:log_threads=1:suppressions=.vscode/lsan.supp"
+  //   Defined in: .vscode/sanitizers.env
+  //
+  // THREAD_SANITIZER_ENV (used in thread sanitizer builds):
+  //   TSAN_OPTIONS: "halt_on_error=1:history_size=7"
+  //   Defined in: .vscode/threadsanitizer.env
   //===-------------------------------------------------------------------------===//
 
   "configurations": [
@@ -122,15 +127,7 @@
       "sourceLanguages": ["cpp"],
       "terminal": "console",
       "stopOnEntry": false,
-      "env": {
-        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1:detect_stack_use_after_return=1:allocator_may_return_null=1:fast_unwind_on_malloc=0",
-        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1:suppressions=${workspaceFolder}/.vscode/ubsan.supp",
-        "LSAN_OPTIONS": "verbosity=1:log_threads=1:suppressions=${workspaceFolder}/.vscode/lsan.supp",
-        "MallocStackLogging": "1",
-        "MallocScribble": "1",
-        "MallocPreScribble": "1",
-        "MallocGuardEdges": "1"
-      },
+      "envFile": "${workspaceFolder}/.vscode/sanitizers.env",
       "initCommands": [
         "command script import ~/.lldb/LLDB_Formatters",
         "settings set target.process.follow-fork-mode child",
@@ -149,11 +146,47 @@
       "sourceLanguages": ["cpp"],
       "terminal": "integrated",
       "stopOnEntry": false,
-      "env": {
-        "ASAN_OPTIONS": "detect_leaks=1:check_initialization_order=1:strict_init_order=1:detect_stack_use_after_return=1",
-        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1",
-        "TERM": "xterm-256color"
-      },
+      "envFile": "${workspaceFolder}/.vscode/sanitizers.env",
+      "env": { "TERM": "xterm-256color" },
+      "initCommands": [
+        "command script import ~/.lldb/LLDB_Formatters",
+        "settings set target.process.follow-fork-mode child",
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target"
+      ]
+    },
+    {
+      "name": "[macOS] Debug Test + ThreadSanitizer",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-thread-sanitize/bin/${input:testExecutable}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build (ThreadSanitize)",
+      "sourceLanguages": ["cpp"],
+      "terminal": "console",
+      "stopOnEntry": false,
+      "envFile": "${workspaceFolder}/.vscode/threadsanitizer.env",
+      "initCommands": [
+        "command script import ~/.lldb/LLDB_Formatters",
+        "settings set target.process.follow-fork-mode child",
+        "settings set target.inline-breakpoint-strategy always",
+        "settings set target.prefer-dynamic-value run-target"
+      ]
+    },
+    {
+      "name": "[macOS] Debug App + ThreadSanitizer",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-thread-sanitize/bin/${input:appExecutable}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build (ThreadSanitize)",
+      "sourceLanguages": ["cpp"],
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "envFile": "${workspaceFolder}/.vscode/threadsanitizer.env",
+      "env": { "TERM": "xterm-256color" },
       "initCommands": [
         "command script import ~/.lldb/LLDB_Formatters",
         "settings set target.process.follow-fork-mode child",
@@ -421,8 +454,7 @@
         "test_HashMap",
         "test_Hash_Chaining",
         "test_Hash_Open_Addr",
-        "test_Heaps",
-        "runTests"
+        "test_Heaps"
       ],
       "default": "test_BST"
     },
@@ -430,7 +462,7 @@
       "id": "appExecutable",
       "type": "pickString",
       "description": "Select application executable [apps/]",
-      "options": ["app_Snake_TUI", "app_Snake_Stress", "runSnakeTests"],
+      "options": ["app_Snake_TUI", "app_Snake_Stress"],
       "default": "app_Snake_TUI"
     }
   ]
