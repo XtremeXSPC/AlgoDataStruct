@@ -65,11 +65,13 @@ target_compile_options(snake_engine PRIVATE
     $<$<CONFIG:Debug>:-g -O0>
     $<$<CONFIG:Release>:-O3 -DNDEBUG>
     $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
+    $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
 )
 
 # Enable sanitizers for link stage when in Sanitize build.
 target_link_options(snake_engine PRIVATE
     $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
+    $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
 )
 
 # Add system include paths if provided (for external dependencies).
@@ -96,11 +98,13 @@ function(snake_add_executable TARGET_NAME SOURCE_FILE)
         $<$<CONFIG:Debug>:-g -O0>
         $<$<CONFIG:Release>:-O3 -DNDEBUG>
         $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
+        $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
     )
 
     # Enable sanitizers for link stage.
     target_link_options(${TARGET_NAME} PRIVATE
         $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
+        $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
     )
 
     # Add system include paths if available.
@@ -153,11 +157,13 @@ if(ENABLE_TESTING)
             $<$<CONFIG:Debug>:-g -O0>
             $<$<CONFIG:Release>:-O3 -DNDEBUG>
             $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
+            $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
         )
 
         # Enable sanitizers for link stage.
         target_link_options(runSnakeTests PRIVATE
             $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
+            $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
         )
 
         # Add system include paths if provided.
