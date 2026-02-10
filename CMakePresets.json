@@ -1,0 +1,148 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base-clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/clang-toolchain.cmake",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_APPS": "ON",
+        "ENABLE_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "sanitize",
+      "displayName": "ASan+UBSan (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build-sanitize",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Sanitize"
+      }
+    },
+    {
+      "name": "sanitize-tests",
+      "displayName": "ASan+UBSan + Tests (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build-sanitize-tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Sanitize",
+        "ENABLE_TESTING": "ON"
+      },
+      "environment": {
+        "CPATH": ""
+      }
+    },
+    {
+      "name": "thread-sanitize",
+      "displayName": "ThreadSanitizer (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build-thread-sanitize",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "ThreadSanitize"
+      }
+    },
+    {
+      "name": "thread-sanitize-tests",
+      "displayName": "ThreadSanitizer + Tests (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build-thread-sanitize-tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "ThreadSanitize",
+        "ENABLE_TESTING": "ON"
+      },
+      "environment": {
+        "CPATH": ""
+      }
+    },
+    {
+      "name": "debug-tests",
+      "displayName": "Debug + Tests (Clang)",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build-tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_TESTING": "ON"
+      },
+      "environment": {
+        "CPATH": ""
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "build-release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "build-sanitize",
+      "configurePreset": "sanitize"
+    },
+    {
+      "name": "build-sanitize-tests",
+      "configurePreset": "sanitize-tests"
+    },
+    {
+      "name": "build-thread-sanitize",
+      "configurePreset": "thread-sanitize"
+    },
+    {
+      "name": "build-thread-sanitize-tests",
+      "configurePreset": "thread-sanitize-tests"
+    },
+    {
+      "name": "build-debug-tests",
+      "configurePreset": "debug-tests"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test-debug",
+      "configurePreset": "debug-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "test-sanitize",
+      "configurePreset": "sanitize-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "test-thread-sanitize",
+      "configurePreset": "thread-sanitize-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

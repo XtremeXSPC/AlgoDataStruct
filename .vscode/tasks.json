@@ -10,15 +10,17 @@
   //   5. Utility tasks - Format and lint operations
   //
   // Build Types:
-  //   Debug       - Standard debug build (build/)
-  //   Release     - Optimized production build (build/)
-  //   Sanitize    - AddressSanitizer + UBSan (build-sanitize/)
-  //   Debug+Tests - GoogleTest enabled (build-tests/)
+  //   Debug           - Standard debug build (build/)
+  //   Release         - Optimized production build (build/)
+  //   Sanitize        - AddressSanitizer + UBSan (build-sanitize/)
+  //   Sanitize+Tests  - ASan + UBSan with GoogleTest (build-sanitize-tests/)
+  //   ThreadSanitize  - ThreadSanitizer (build-thread-sanitize/)
+  //   Debug+Tests     - GoogleTest enabled (build-tests/)
   //
   // Common Variables:
-  //   ${input:cmakeToolchain} - Toolchain file selection
-  //   ${input:buildJobs}      - Parallel compilation jobs
-  //   ${workspaceFolder}      - Project root directory
+  //   ${input:cmakeToolchain}  - Toolchain file selection
+  //   ${input:buildJobs}       - Parallel compilation jobs
+  //   ${workspaceFolder}       - Project root directory
   //===-------------------------------------------------------------------------===//
   "version": "2.0.0",
 
@@ -67,6 +69,54 @@
       ],
       "problemMatcher": [],
       "detail": "Configure with AddressSanitizer + UndefinedBehaviorSanitizer"
+    },
+    {
+      "label": "CMake: Configure (Sanitize + Tests)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_BUILD_TYPE=Sanitize",
+        "-DENABLE_TESTING=ON",
+        "-B",
+        "build-sanitize-tests"
+      ],
+      "options": {
+        "env": { "CPATH": "" }
+      },
+      "problemMatcher": [],
+      "detail": "Configure sanitizer build with GoogleTest support"
+    },
+    {
+      "label": "CMake: Configure (ThreadSanitize)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_BUILD_TYPE=ThreadSanitize",
+        "-DENABLE_TESTING=OFF",
+        "-B",
+        "build-thread-sanitize"
+      ],
+      "problemMatcher": [],
+      "detail": "Configure with ThreadSanitizer"
+    },
+    {
+      "label": "CMake: Configure (ThreadSanitize + Tests)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_BUILD_TYPE=ThreadSanitize",
+        "-DENABLE_TESTING=ON",
+        "-B",
+        "build-thread-sanitize-tests"
+      ],
+      "options": {
+        "env": { "CPATH": "" }
+      },
+      "problemMatcher": [],
+      "detail": "Configure ThreadSanitizer build with GoogleTest support"
     },
     {
       "label": "CMake: Configure (Debug + Tests)",
@@ -124,6 +174,42 @@
       "dependsOn": ["CMake: Configure (Sanitize)"],
       "problemMatcher": ["$gcc"],
       "detail": "Build with AddressSanitizer and UndefinedBehaviorSanitizer"
+    },
+    {
+      "label": "CMake: Build (Sanitize + Tests)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build-sanitize-tests", "-j${input:buildJobs}"],
+      "options": {
+        "env": { "CPATH": "" }
+      },
+      "group": "build",
+      "dependsOn": ["CMake: Configure (Sanitize + Tests)"],
+      "problemMatcher": ["$gcc"],
+      "detail": "Build sanitizer targets with GoogleTest enabled"
+    },
+    {
+      "label": "CMake: Build (ThreadSanitize)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build-thread-sanitize", "-j${input:buildJobs}"],
+      "group": "build",
+      "dependsOn": ["CMake: Configure (ThreadSanitize)"],
+      "problemMatcher": ["$gcc"],
+      "detail": "Build with ThreadSanitizer"
+    },
+    {
+      "label": "CMake: Build (ThreadSanitize + Tests)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build-thread-sanitize-tests", "-j${input:buildJobs}"],
+      "options": {
+        "env": { "CPATH": "" }
+      },
+      "group": "build",
+      "dependsOn": ["CMake: Configure (ThreadSanitize + Tests)"],
+      "problemMatcher": ["$gcc"],
+      "detail": "Build ThreadSanitizer targets with GoogleTest enabled"
     },
     {
       "label": "CMake: Build Test Target [src/]",
@@ -191,6 +277,45 @@
       "problemMatcher": [],
       "detail": "Remove build-sanitize/ directory and reconfigure"
     },
+    {
+      "label": "CMake: Clean & Reconfigure (Sanitize + Tests)",
+      "type": "shell",
+      "command": "sh",
+      "args": [
+        "-c",
+        "cmake -E remove_directory build-sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=ON -B build-sanitize-tests"
+      ],
+      "options": {
+        "env": { "CPATH": "" }
+      },
+      "problemMatcher": [],
+      "detail": "Remove build-sanitize-tests/ directory and reconfigure"
+    },
+    {
+      "label": "CMake: Clean & Reconfigure (ThreadSanitize)",
+      "type": "shell",
+      "command": "sh",
+      "args": [
+        "-c",
+        "cmake -E remove_directory build-thread-sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=OFF -B build-thread-sanitize"
+      ],
+      "problemMatcher": [],
+      "detail": "Remove build-thread-sanitize/ directory and reconfigure"
+    },
+    {
+      "label": "CMake: Clean & Reconfigure (ThreadSanitize + Tests)",
+      "type": "shell",
+      "command": "sh",
+      "args": [
+        "-c",
+        "cmake -E remove_directory build-thread-sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=ON -B build-thread-sanitize-tests"
+      ],
+      "options": {
+        "env": { "CPATH": "" }
+      },
+      "problemMatcher": [],
+      "detail": "Remove build-thread-sanitize-tests/ directory and reconfigure"
+    },
 
     //===----------------------------- RUN & TEST ------------------------------===//
     // These tasks execute built binaries and run tests.
@@ -252,6 +377,44 @@
       },
       "problemMatcher": [],
       "detail": "Run all GoogleTest unit tests (requires ENABLE_TESTING=ON)"
+    },
+    {
+      "label": "Test: Run GoogleTest Suite (Sanitize)",
+      "type": "shell",
+      "command": "ctest",
+      "args": ["--output-on-failure", "--verbose"],
+      "options": {
+        "cwd": "${workspaceFolder}/build-sanitize-tests",
+        "env": { "CPATH": "" }
+      },
+      "group": "test",
+      "dependsOn": ["CMake: Build (Sanitize + Tests)"],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Run GoogleTest suite with AddressSanitizer and UBSan enabled"
+    },
+    {
+      "label": "Test: Run GoogleTest Suite (ThreadSanitize)",
+      "type": "shell",
+      "command": "ctest",
+      "args": ["--output-on-failure", "--verbose"],
+      "options": {
+        "cwd": "${workspaceFolder}/build-thread-sanitize-tests",
+        "env": { "CPATH": "" }
+      },
+      "group": "test",
+      "dependsOn": ["CMake: Build (ThreadSanitize + Tests)"],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Run GoogleTest suite with ThreadSanitizer enabled"
     },
 
     //===---------------------------- UTILITY TASKS ----------------------------===//
@@ -324,8 +487,7 @@
         "test_HashMap",
         "test_Hash_Chaining",
         "test_Hash_Open_Addr",
-        "test_Heaps",
-        "runTests"
+        "test_Heaps"
       ],
       "default": "test_BST"
     },
@@ -333,7 +495,7 @@
       "id": "appTarget",
       "type": "pickString",
       "description": "Select app target to build [apps/]",
-      "options": ["app_Snake_TUI", "app_Snake_Stress", "runSnakeTests"],
+      "options": ["app_Snake_TUI", "app_Snake_Stress"],
       "default": "app_Snake_TUI"
     },
     {
@@ -366,8 +528,7 @@
         "test_HashMap",
         "test_Hash_Chaining",
         "test_Hash_Open_Addr",
-        "test_Heaps",
-        "runTests"
+        "test_Heaps"
       ],
       "default": "test_BST"
     },
@@ -375,13 +536,9 @@
       "id": "runAppTarget",
       "type": "pickString",
       "description": "Select app binary to run [apps/]",
-      "options": ["app_Snake_TUI", "app_Snake_Stress", "runSnakeTests"],
+      "options": ["app_Snake_TUI", "app_Snake_Stress"],
       "default": "app_Snake_TUI"
     }
   ]
 }
-//===-------------------------------------------------------------------------===//
-// Configuration maintained by: Claude Code
-// Last major refactoring: 2026-02-10
-// See .vscode/AUDIT.md for optimization details and design rationale
 //===-------------------------------------------------------------------------===//

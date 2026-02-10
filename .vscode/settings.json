@@ -39,6 +39,7 @@
   ],
   "clangd.detectExtensionConflicts": true,
   "clangd.checkUpdates": false,
+  "cmake.useCMakePresets": "always",
   "cmake.configureOnOpen": false,
 
   //===--------- Build and Run Configuration ---------===//

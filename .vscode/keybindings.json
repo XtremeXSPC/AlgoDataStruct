@@ -1,8 +1,7 @@
 [
   {
     "key": "ctrl+shift+b",
-    "command": "workbench.action.tasks.runTask",
-    "args": "CMake: Build Active Target"
+    "command": "workbench.action.tasks.build"
   },
   {
     "key": "f5",
