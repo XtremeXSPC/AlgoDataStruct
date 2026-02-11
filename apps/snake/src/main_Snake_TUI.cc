@@ -193,8 +193,7 @@ auto draw_horizontal_border(int row, bool is_top) -> void {
 auto draw_header() -> void {
   ansi_move_to(kTitleRow, 1);
   ansi_clear_line();
-  std::cout << kStyleTitle << "ADS Snake TUI" << kStyleReset << " " << kStyleAccent << "[Differential Render]"
-            << kStyleReset;
+  std::cout << kStyleTitle << "ADS Snake TUI" << kStyleReset;
 
   ansi_move_to(kLegendRow, 1);
   ansi_clear_line();
