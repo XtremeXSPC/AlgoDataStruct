@@ -1,3 +1,4 @@
+# ================================================================================= #
 # LeakSanitizer Suppressions File
 # This file allows you to suppress known memory leaks or false positives
 # reported by LeakSanitizer (part of AddressSanitizer).
@@ -11,9 +12,23 @@
 #   leak:libsystem_pthread.dylib
 #   leak:^CFRunLoopRun$
 #
-# Suppress macOS system library leaks (common false positives on macOS)
-# leak:libsystem_
-# leak:dyld
-# leak:CoreFoundation
+# ================================================================================= #
 
-# Add your suppressions below:
+# Suppress macOS system library leaks (common false positives).
+leak:libsystem_
+leak:dyld
+leak:CoreFoundation
+leak:libobjc
+leak:libxpc
+
+# Suppress Linux system library leaks (common false positives).
+leak:ld-linux
+leak:libc.so
+leak:libpthread
+leak:libdl
+
+# Cross-platform suppressions
+leak:libstdc++
+leak:libgcc_s
+
+# Custom suppressions below:
