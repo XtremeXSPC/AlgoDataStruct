@@ -132,3 +132,22 @@ target_sources(ads_lib
         src/ads/associative/Hash_Set.tpp
         src/ads/associative/Tree_Set.tpp
 )
+
+# ------------------------------ Precompiled Headers ------------------------------ #
+# Apply precompiled headers to reduce compilation times for STL includes.
+# The PCH includes the most frequently used standard library headers across
+# the project. This provides significant speedup for incremental builds.
+#
+# To disable PCH: cmake -DDISABLE_PCH=ON ...
+
+if(NOT DISABLE_PCH)
+    # Use BUILD_INTERFACE generator expression to ensure the PCH path is only
+    # used during build, not in exported configurations.
+    target_precompile_headers(ads_lib INTERFACE
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ads_pch.hpp>"
+    )
+
+    message(STATUS "${ANSI_GREEN}Precompiled headers enabled for ads_lib${ANSI_RESET}")
+else()
+    message(STATUS "${ANSI_YELLOW}Precompiled headers disabled (DISABLE_PCH=ON)${ANSI_RESET}")
+endif()
