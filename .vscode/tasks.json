@@ -10,15 +10,15 @@
   //   5. Utility tasks - Format and lint operations
   //
   // Build Types:
-  //   Debug           - Standard debug build (build/)
-  //   Release         - Optimized production build (build/)
-  //   Sanitize        - AddressSanitizer + UBSan (build-sanitize/)
-  //   Sanitize+Tests  - ASan + UBSan with GoogleTest (build-sanitize-tests/)
-  //   ThreadSanitize  - ThreadSanitizer (build-thread-sanitize/)
-  //   Debug+Tests     - GoogleTest enabled (build-tests/)
+  //   Debug           - Standard debug build (build/${input:toolchain}/debug/)
+  //   Release         - Optimized production build (build/${input:toolchain}/release/)
+  //   Sanitize        - AddressSanitizer + UBSan (build/${input:toolchain}/sanitize/)
+  //   Sanitize+Tests  - ASan + UBSan with GoogleTest (build/${input:toolchain}/sanitize-tests/)
+  //   ThreadSanitize  - ThreadSanitizer (build/${input:toolchain}/thread-sanitize/)
+  //   Debug+Tests     - GoogleTest enabled (build/${input:toolchain}/debug-tests/)
   //
   // Common Variables:
-  //   ${input:cmakeToolchain}  - Toolchain file selection
+  //   ${input:toolchain}      - Toolchain family (clang|gcc)
   //   ${input:buildJobs}       - Parallel compilation jobs
   //   ${workspaceFolder}       - Project root directory
   //===-------------------------------------------------------------------------===//
@@ -34,24 +34,24 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DENABLE_TESTING=OFF",
         "-B",
-        "build"
+        "build/${input:toolchain}/debug"
       ],
       "problemMatcher": [],
-      "detail": "Configure Debug build with Clang toolchain"
+      "detail": "Configure Debug build with selected toolchain"
     },
     {
       "label": "CMake: Configure (Release)",
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=Release",
         "-B",
-        "build"
+        "build/${input:toolchain}/release"
       ],
       "problemMatcher": [],
       "detail": "Configure Release build with optimizations"
@@ -61,11 +61,11 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=Sanitize",
         "-DENABLE_TESTING=OFF",
         "-B",
-        "build-sanitize"
+        "build/${input:toolchain}/sanitize"
       ],
       "problemMatcher": [],
       "detail": "Configure with AddressSanitizer + UndefinedBehaviorSanitizer"
@@ -75,11 +75,11 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=Sanitize",
         "-DENABLE_TESTING=ON",
         "-B",
-        "build-sanitize-tests"
+        "build/${input:toolchain}/sanitize-tests"
       ],
       "options": {
         "env": { "CPATH": "" }
@@ -92,11 +92,11 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=ThreadSanitize",
         "-DENABLE_TESTING=OFF",
         "-B",
-        "build-thread-sanitize"
+        "build/${input:toolchain}/thread-sanitize"
       ],
       "problemMatcher": [],
       "detail": "Configure with ThreadSanitizer"
@@ -106,11 +106,11 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=ThreadSanitize",
         "-DENABLE_TESTING=ON",
         "-B",
-        "build-thread-sanitize-tests"
+        "build/${input:toolchain}/thread-sanitize-tests"
       ],
       "options": {
         "env": { "CPATH": "" }
@@ -123,11 +123,11 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain}",
+        "-DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DENABLE_TESTING=ON",
         "-B",
-        "build-tests"
+        "build/${input:toolchain}/debug-tests"
       ],
       "options": {
         "env": { "CPATH": "" }
@@ -143,20 +143,23 @@
     {
       "label": "CMake: Build All",
       "type": "shell",
-      "command": "cmake",
-      "args": ["--build", "build", "-j${input:buildJobs}"],
+      "command": "sh",
+      "args": [
+        "-c",
+        "if [ ! -f build/${input:toolchain}/debug/CMakeCache.txt ]; then cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build/${input:toolchain}/debug; fi && cmake --build build/${input:toolchain}/debug -j${input:buildJobs}"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "problemMatcher": ["$gcc"],
-      "detail": "Build all targets in Debug mode"
+      "detail": "Incremental Debug build (auto-configures once if missing)"
     },
     {
       "label": "CMake: Build (Debug + Tests)",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build-tests", "-j${input:buildJobs}"],
+      "args": ["--build", "build/${input:toolchain}/debug-tests", "-j${input:buildJobs}"],
       "options": {
         "env": { "CPATH": "" }
       },
@@ -168,18 +171,20 @@
     {
       "label": "CMake: Build (Sanitize)",
       "type": "shell",
-      "command": "cmake",
-      "args": ["--build", "build-sanitize", "-j${input:buildJobs}"],
+      "command": "sh",
+      "args": [
+        "-c",
+        "if [ \"${input:toolchain}\" = \"gcc\" ] && [ \"$(uname)\" = \"Darwin\" ]; then echo \"GCC sanitizer builds are not supported on macOS in this setup. Use toolchain=clang for sanitizer debug sessions.\"; exit 2; fi; if [ ! -f build/${input:toolchain}/sanitize/CMakeCache.txt ]; then cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/sanitize; fi && cmake --build build/${input:toolchain}/sanitize -j${input:buildJobs}"
+      ],
       "group": "build",
-      "dependsOn": ["CMake: Configure (Sanitize)"],
       "problemMatcher": ["$gcc"],
-      "detail": "Build with AddressSanitizer and UndefinedBehaviorSanitizer"
+      "detail": "Incremental Sanitize build (auto-configures once if missing)"
     },
     {
       "label": "CMake: Build (Sanitize + Tests)",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build-sanitize-tests", "-j${input:buildJobs}"],
+      "args": ["--build", "build/${input:toolchain}/sanitize-tests", "-j${input:buildJobs}"],
       "options": {
         "env": { "CPATH": "" }
       },
@@ -191,18 +196,20 @@
     {
       "label": "CMake: Build (ThreadSanitize)",
       "type": "shell",
-      "command": "cmake",
-      "args": ["--build", "build-thread-sanitize", "-j${input:buildJobs}"],
+      "command": "sh",
+      "args": [
+        "-c",
+        "if [ \"${input:toolchain}\" = \"gcc\" ] && [ \"$(uname)\" = \"Darwin\" ]; then echo \"GCC thread sanitizer builds are not supported on macOS in this setup. Use toolchain=clang for TSan debug sessions.\"; exit 2; fi; if [ ! -f build/${input:toolchain}/thread-sanitize/CMakeCache.txt ]; then cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/thread-sanitize; fi && cmake --build build/${input:toolchain}/thread-sanitize -j${input:buildJobs}"
+      ],
       "group": "build",
-      "dependsOn": ["CMake: Configure (ThreadSanitize)"],
       "problemMatcher": ["$gcc"],
-      "detail": "Build with ThreadSanitizer"
+      "detail": "Incremental ThreadSanitize build (auto-configures once if missing)"
     },
     {
       "label": "CMake: Build (ThreadSanitize + Tests)",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build-thread-sanitize-tests", "-j${input:buildJobs}"],
+      "args": ["--build", "build/${input:toolchain}/thread-sanitize-tests", "-j${input:buildJobs}"],
       "options": {
         "env": { "CPATH": "" }
       },
@@ -215,7 +222,7 @@
       "label": "CMake: Build Test Target [src/]",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "--target", "${input:testTarget}", "-j${input:buildJobs}"],
+      "args": ["--build", "build/${input:toolchain}/debug", "--target", "${input:testTarget}", "-j${input:buildJobs}"],
       "group": "build",
       "problemMatcher": ["$gcc"],
       "detail": "Build specific test target from src/"
@@ -224,7 +231,7 @@
       "label": "CMake: Build App Target [apps/]",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "--target", "${input:appTarget}", "-j${input:buildJobs}"],
+      "args": ["--build", "build/${input:toolchain}/debug", "--target", "${input:appTarget}", "-j${input:buildJobs}"],
       "group": "build",
       "problemMatcher": ["$gcc"],
       "detail": "Build specific app target from apps/"
@@ -237,7 +244,7 @@
       "label": "CMake: Clean",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "--target", "clean"],
+      "args": ["--build", "build/${input:toolchain}/debug", "--target", "clean"],
       "problemMatcher": [],
       "detail": "Clean build artifacts without removing configuration"
     },
@@ -247,10 +254,10 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build"
+        "cmake -E remove_directory build/${input:toolchain}/debug && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build/${input:toolchain}/debug"
       ],
       "problemMatcher": [],
-      "detail": "Remove build/ directory and reconfigure for Debug"
+      "detail": "Remove build/${input:toolchain}/debug/ directory and reconfigure for Debug"
     },
     {
       "label": "CMake: Clean & Reconfigure (Debug + Tests)",
@@ -258,13 +265,13 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build-tests"
+        "cmake -E remove_directory build/${input:toolchain}/debug-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build/${input:toolchain}/debug-tests"
       ],
       "options": {
         "env": { "CPATH": "" }
       },
       "problemMatcher": [],
-      "detail": "Remove build-tests/ directory and reconfigure with GoogleTest"
+      "detail": "Remove build/${input:toolchain}/debug-tests/ directory and reconfigure with GoogleTest"
     },
     {
       "label": "CMake: Clean & Reconfigure (Sanitize)",
@@ -272,10 +279,10 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build-sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=OFF -B build-sanitize"
+        "cmake -E remove_directory build/${input:toolchain}/sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/sanitize"
       ],
       "problemMatcher": [],
-      "detail": "Remove build-sanitize/ directory and reconfigure"
+      "detail": "Remove build/${input:toolchain}/sanitize/ directory and reconfigure"
     },
     {
       "label": "CMake: Clean & Reconfigure (Sanitize + Tests)",
@@ -283,13 +290,13 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build-sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=ON -B build-sanitize-tests"
+        "cmake -E remove_directory build/${input:toolchain}/sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=ON -B build/${input:toolchain}/sanitize-tests"
       ],
       "options": {
         "env": { "CPATH": "" }
       },
       "problemMatcher": [],
-      "detail": "Remove build-sanitize-tests/ directory and reconfigure"
+      "detail": "Remove build/${input:toolchain}/sanitize-tests/ directory and reconfigure"
     },
     {
       "label": "CMake: Clean & Reconfigure (ThreadSanitize)",
@@ -297,10 +304,10 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build-thread-sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=OFF -B build-thread-sanitize"
+        "cmake -E remove_directory build/${input:toolchain}/thread-sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/thread-sanitize"
       ],
       "problemMatcher": [],
-      "detail": "Remove build-thread-sanitize/ directory and reconfigure"
+      "detail": "Remove build/${input:toolchain}/thread-sanitize/ directory and reconfigure"
     },
     {
       "label": "CMake: Clean & Reconfigure (ThreadSanitize + Tests)",
@@ -308,13 +315,13 @@
       "command": "sh",
       "args": [
         "-c",
-        "cmake -E remove_directory build-thread-sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:cmakeToolchain} -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=ON -B build-thread-sanitize-tests"
+        "cmake -E remove_directory build/${input:toolchain}/thread-sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=ON -B build/${input:toolchain}/thread-sanitize-tests"
       ],
       "options": {
         "env": { "CPATH": "" }
       },
       "problemMatcher": [],
-      "detail": "Remove build-thread-sanitize-tests/ directory and reconfigure"
+      "detail": "Remove build/${input:toolchain}/thread-sanitize-tests/ directory and reconfigure"
     },
 
     //===----------------------------- RUN & TEST ------------------------------===//
@@ -325,7 +332,7 @@
       "type": "shell",
       "command": "./bin/${input:runTestTarget}",
       "options": {
-        "cwd": "${workspaceFolder}/build"
+        "cwd": "${workspaceFolder}/build/${input:toolchain}/debug"
       },
       "group": {
         "kind": "test",
@@ -346,7 +353,7 @@
       "type": "shell",
       "command": "./bin/${input:runAppTarget}",
       "options": {
-        "cwd": "${workspaceFolder}/build"
+        "cwd": "${workspaceFolder}/build/${input:toolchain}/debug"
       },
       "group": "test",
       "presentation": {
@@ -365,7 +372,7 @@
       "command": "ctest",
       "args": ["--output-on-failure", "--verbose"],
       "options": {
-        "cwd": "${workspaceFolder}/build-tests",
+        "cwd": "${workspaceFolder}/build/${input:toolchain}/debug-tests",
         "env": { "CPATH": "" }
       },
       "group": "test",
@@ -384,7 +391,7 @@
       "command": "ctest",
       "args": ["--output-on-failure", "--verbose"],
       "options": {
-        "cwd": "${workspaceFolder}/build-sanitize-tests",
+        "cwd": "${workspaceFolder}/build/${input:toolchain}/sanitize-tests",
         "env": { "CPATH": "" }
       },
       "group": "test",
@@ -403,7 +410,7 @@
       "command": "ctest",
       "args": ["--output-on-failure", "--verbose"],
       "options": {
-        "cwd": "${workspaceFolder}/build-thread-sanitize-tests",
+        "cwd": "${workspaceFolder}/build/${input:toolchain}/thread-sanitize-tests",
         "env": { "CPATH": "" }
       },
       "group": "test",
@@ -444,11 +451,11 @@
 
   "inputs": [
     {
-      "id": "cmakeToolchain",
+      "id": "toolchain",
       "type": "pickString",
-      "description": "Select CMake toolchain file",
-      "options": ["clang-toolchain.cmake", "gcc-toolchain.cmake"],
-      "default": "clang-toolchain.cmake"
+      "description": "Select toolchain family",
+      "options": ["clang", "gcc"],
+      "default": "clang"
     },
     {
       "id": "buildJobs",
