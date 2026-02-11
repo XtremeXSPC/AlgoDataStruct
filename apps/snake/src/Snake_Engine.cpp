@@ -183,8 +183,9 @@ auto SnakeEngine::render_board() const -> Board {
   }
 
   for (std::size_t i = 0; i < snake_.size(); ++i) {
-    const Position segment                                                              = snake_[i];
-    const char     glyph                                                                = (i == 0U) ? '@' : 'o';
+    const Position segment = snake_[i];
+    const char     glyph   = (i == 0U) ? '@' : 'o';
+
     board[static_cast<std::size_t>(segment.row)][static_cast<std::size_t>(segment.col)] = glyph;
   }
 
