@@ -161,6 +161,36 @@ if(TEST_SOURCES)
     include(GoogleTest)
     gtest_discover_tests(runTests)
 
+    # ---------------------------- Precompiled Headers ---------------------------- #
+    # Apply test-specific PCH that includes GoogleTest framework headers.
+    # Since GoogleTest headers are expensive to parse and included in 100% of
+    # test files, precompiling them provides substantial compilation speedup.
+
+    if(NOT DISABLE_PCH)
+        target_precompile_headers(runTests PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tests_pch.hpp"
+        )
+        message(STATUS "${ANSI_GREEN}Test precompiled headers enabled for runTests${ANSI_RESET}")
+    endif()
+
+    # -------------------------------- Unity Build -------------------------------- #
+    # Enable Unity Build for test files to further reduce compilation time.
+    # Unity Build combines multiple source files into a single translation unit,
+    # eliminating redundant header parsing.
+    #
+    # To disable Unity Build: cmake -DDISABLE_UNITY_BUILD=ON ...
+
+    if(NOT DISABLE_UNITY_BUILD)
+        set_target_properties(runTests PROPERTIES
+            UNITY_BUILD ON
+            UNITY_BUILD_MODE BATCH
+            UNITY_BUILD_BATCH_SIZE 8  # Group tests in batches of 8 files.
+        )
+        message(STATUS "${ANSI_GREEN}Unity Build enabled for runTests (batch size: 8)${ANSI_RESET}")
+    else()
+        message(STATUS "${ANSI_YELLOW}Unity Build disabled (DISABLE_UNITY_BUILD=ON)${ANSI_RESET}")
+    endif()
+
     list(LENGTH TEST_SOURCES TEST_COUNT)
     message(STATUS "${ANSI_GREEN}GoogleTest enabled: runTests executable created with ${TEST_COUNT} test files${ANSI_RESET}")
 endif()
