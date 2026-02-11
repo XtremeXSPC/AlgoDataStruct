@@ -16,17 +16,19 @@
 #include <unistd.h>
 
 #include <cctype>
+#include <charconv>
 #include <cstdint>
-#include <cstdlib>
 #include <iostream>
-#include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace {
 
 using ads::apps::snake::CellDelta;
 using ads::apps::snake::Direction;
+using ads::apps::snake::Position;
 using ads::apps::snake::SnakeEngine;
 
 //===--------------------------- TERMINAL ROW LAYOUT ---------------------------===//
@@ -109,22 +111,22 @@ inline auto ansi_clear_line() -> void {
 
 /**
  * @brief Retrieves current terminal dimensions using ioctl.
- * @param rows Output parameter for terminal height (0 if unavailable).
- * @param cols Output parameter for terminal width (0 if unavailable).
- * @return true if dimensions were successfully retrieved, false otherwise.
+ * @return Terminal size when available, std::nullopt otherwise.
  */
-[[nodiscard]] auto get_terminal_size(int& rows, int& cols) -> bool {
+struct TerminalSize {
+  int rows = 0;
+  int cols = 0;
+};
+
+/// @brief Gets the current terminal size in rows and columns.
+[[nodiscard]] auto get_terminal_size() -> std::optional<TerminalSize> {
   struct winsize ws = {};
 
   if (::ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) != 0) {
-    rows = 0;
-    cols = 0;
-    return false;
+    return std::nullopt;
   }
 
-  rows = static_cast<int>(ws.ws_row);
-  cols = static_cast<int>(ws.ws_col);
-  return true;
+  return TerminalSize{.rows = static_cast<int>(ws.ws_row), .cols = static_cast<int>(ws.ws_col)};
 }
 
 //===------------------------------ STYLE HELPERS ------------------------------===//
@@ -142,18 +144,18 @@ inline auto ansi_clear_line() -> void {
     return "LEFT";
   case kRight:
     return "RIGHT";
+  default:
+    return "UNKNOWN";
   }
-
-  return "UNKNOWN";
 }
 
 /// @brief Returns a checkerboard glyph for empty cells based on their coordinates.
-[[nodiscard]] auto checker_empty_glyph(int row, int col) -> char {
-  return ((row + col) % 2 == 0) ? '.' : ' ';
+[[nodiscard]] auto checker_empty_glyph(const Position& cell) -> char {
+  return ((cell.row + cell.col) % 2 == 0) ? '.' : ' ';
 }
 
 /// @brief Draws a single cell at the given board coordinates with styling based on its content.
-auto draw_cell(int row, int col, char glyph) -> void {
+auto draw_cell(const Position& cell, char glyph) -> void {
   switch (glyph) {
   case '@':
     std::cout << kStyleHead << kSnakeHead << kStyleReset;
@@ -165,7 +167,7 @@ auto draw_cell(int row, int col, char glyph) -> void {
     std::cout << kStyleFood << kSnakeFood << kStyleReset;
     return;
   case ' ': {
-    const char empty_glyph = checker_empty_glyph(row, col);
+    const char empty_glyph = checker_empty_glyph(cell);
     std::cout << kStyleDim << kStyleMuted << empty_glyph << kStyleReset;
     return;
   }
@@ -311,6 +313,70 @@ private:
   }
 }
 
+/// @brief Determines if a raw input character should be ignored as part of an escape sequence.
+[[nodiscard]] auto is_escape_prefix_or_parameter(char raw_command) -> bool {
+  return raw_command == '[' || raw_command == 'O' || (raw_command >= '0' && raw_command <= '?');
+}
+
+/// @brief Determines if a raw input character is the final byte of an escape sequence.
+[[nodiscard]] auto is_escape_final_byte(char raw_command) -> bool {
+  return raw_command >= '@' && raw_command <= '~';
+}
+
+/// @brief Checks if a raw input character should be ignored due to being part of an escape sequence.
+[[nodiscard]] auto should_ignore_raw_key(bool raw_mode_enabled, char raw_command, bool& skipping_escape_sequence)
+    -> bool {
+  if (!raw_mode_enabled) {
+    return false;
+  }
+
+  if (raw_command == '\033') {
+    skipping_escape_sequence = true;
+    return true;
+  }
+
+  if (!skipping_escape_sequence) {
+    return false;
+  }
+
+  if (is_escape_prefix_or_parameter(raw_command)) {
+    return true;
+  }
+
+  if (is_escape_final_byte(raw_command)) {
+    skipping_escape_sequence = false;
+    return true;
+  }
+
+  // Not a valid escape sequence, reset and process this character normally.
+  skipping_escape_sequence = false;
+  return false;
+}
+
+/// @brief Generic helper to parse an unsigned integer argument with error handling.
+template <typename UInt>
+[[nodiscard]] auto parse_unsigned_arg(const char* value, UInt fallback) -> UInt {
+  static_assert(std::is_unsigned_v<UInt>);
+
+  if (value == nullptr) {
+    return fallback;
+  }
+
+  const std::string_view input(value);
+  if (input.empty()) {
+    return fallback;
+  }
+
+  UInt parsed          = 0;
+  const auto [ptr, ec] = std::from_chars(input.data(), input.data() + input.size(), parsed, 10);
+
+  if (ec != std::errc{} || ptr != input.data() + input.size()) {
+    return fallback;
+  }
+
+  return parsed;
+}
+
 /**
  * @brief Parses a C-string into a uint32_t with overflow protection.
  * @param value Null-terminated string to parse (may be nullptr).
@@ -318,20 +384,7 @@ private:
  * @return The parsed integer, or @p fallback on error.
  */
 [[nodiscard]] auto parse_u32_arg(const char* value, std::uint32_t fallback) -> std::uint32_t {
-  if (value == nullptr) {
-    return fallback;
-  }
-
-  char* end = nullptr;
-
-  const auto parsed  = std::strtoul(value, &end, 10);
-  const auto max_u32 = static_cast<unsigned long>(std::numeric_limits<std::uint32_t>::max());
-
-  if (end == value || *end != '\0' || parsed > max_u32) {
-    return fallback;
-  }
-
-  return static_cast<std::uint32_t>(parsed);
+  return parse_unsigned_arg(value, fallback);
 }
 
 /**
@@ -341,19 +394,7 @@ private:
  * @return The parsed value, or @p fallback on error.
  */
 [[nodiscard]] auto parse_usize_arg(const char* value, std::size_t fallback) -> std::size_t {
-  if (value == nullptr) {
-    return fallback;
-  }
-
-  char* end = nullptr;
-
-  const auto parsed = std::strtoull(value, &end, 10);
-
-  if (end == value || *end != '\0' || parsed > std::numeric_limits<std::size_t>::max()) {
-    return fallback;
-  }
-
-  return static_cast<std::size_t>(parsed);
+  return parse_unsigned_arg(value, fallback);
 }
 
 //===---------------------------- RENDERING HELPERS ----------------------------===//
@@ -408,7 +449,8 @@ auto draw_full_board(const SnakeEngine& engine) -> void {
     ansi_move_to(kBoardStartRow + static_cast<int>(row), 1);
     std::cout << kStyleBold << kStyleFrame << kBoxVertical << kStyleReset;
     for (std::size_t col = 0; col < SnakeEngine::kCols; ++col) {
-      draw_cell(static_cast<int>(row), static_cast<int>(col), board[row][col]);
+      const Position cell{.row = static_cast<int>(row), .col = static_cast<int>(col)};
+      draw_cell(cell, board[row][col]);
     }
     std::cout << kStyleBold << kStyleFrame << kBoxVertical << kStyleReset;
   }
@@ -434,7 +476,8 @@ auto apply_deltas(const SnakeEngine& engine) -> void {
 
   for (const auto& delta : deltas) {
     ansi_move_to(delta.row + kBoardStartRow, delta.col + kBoardStartCol);
-    draw_cell(delta.row, delta.col, delta.glyph);
+    const Position cell{.row = delta.row, .col = delta.col};
+    draw_cell(cell, delta.glyph);
   }
 
   draw_status_line(engine);
@@ -466,19 +509,14 @@ auto main(int argc, char** argv) -> int {
   const std::size_t   max_ticks = (argc > 2) ? parse_usize_arg(argv[2], 500U) : 500U;
 
   // Validate terminal dimensions before starting.
-  int terminal_rows = 0;
-  int terminal_cols = 0;
-  if (get_terminal_size(terminal_rows, terminal_cols)) {
-    // Skip validation if dimensions are 0x0 (e.g., running in debugger without real terminal).
-    if (terminal_rows > 0 && terminal_cols > 0) {
-      if (terminal_rows < kMinTerminalRows || terminal_cols < kMinTerminalCols) {
-        std::cerr << kStyleError << "Error: Terminal too small!" << kStyleReset << "\n";
-        std::cerr << "Required: " << kMinTerminalRows << " rows x " << kMinTerminalCols << " cols minimum\n";
-        std::cerr << "Current:  " << terminal_rows << " rows x " << terminal_cols << " cols\n";
-        std::cerr << "Please resize your terminal and try again.\n";
-        return 1;
-      }
-    }
+  if (const auto terminal_size = get_terminal_size();
+      terminal_size && terminal_size->rows > 0 && terminal_size->cols > 0
+      && (terminal_size->rows < kMinTerminalRows || terminal_size->cols < kMinTerminalCols)) {
+    std::cerr << kStyleError << "Error: Terminal too small!" << kStyleReset << "\n";
+    std::cerr << "Required: " << kMinTerminalRows << " rows x " << kMinTerminalCols << " cols minimum\n";
+    std::cerr << "Current:  " << terminal_size->rows << " rows x " << terminal_size->cols << " cols\n";
+    std::cerr << "Please resize your terminal and try again.\n";
+    return 1;
   }
 
   SnakeEngine            engine(seed);
@@ -489,34 +527,17 @@ auto main(int argc, char** argv) -> int {
 
   // Main game loop with differential rendering.
   bool skipping_escape_sequence = false;
-  while (engine.is_alive() && engine.tick() < max_ticks) {
+  bool stop_requested           = false;
+  while (!stop_requested && engine.is_alive() && engine.tick() < max_ticks) {
     const auto command_input = read_input_command(input_mode_guard.is_raw_mode());
     if (!command_input.has_value()) {
-      break;
+      stop_requested = true;
+      continue;
     }
 
     const char raw_command = *command_input;
-    if (input_mode_guard.is_raw_mode()) {
-      if (skipping_escape_sequence) {
-        // CSI/SS3 escape prefixes and parameter bytes (e.g. ESC [ A, ESC [ 1 ; 5 A).
-        if (raw_command == '[' || raw_command == 'O' || (raw_command >= '0' && raw_command <= '?')) {
-          continue;
-        }
-
-        // Final byte of escape sequence.
-        if (raw_command >= '@' && raw_command <= '~') {
-          skipping_escape_sequence = false;
-          continue;
-        }
-
-        // Not a valid escape sequence, reset and process this character normally.
-        skipping_escape_sequence = false;
-      }
-
-      if (raw_command == '\033') {
-        skipping_escape_sequence = true;
-        continue;
-      }
+    if (should_ignore_raw_key(input_mode_guard.is_raw_mode(), raw_command, skipping_escape_sequence)) {
+      continue;
     }
 
     if (raw_command == '\0' || raw_command == '\n' || raw_command == '\r') {
@@ -525,7 +546,8 @@ auto main(int argc, char** argv) -> int {
 
     const auto command = static_cast<char>(std::tolower(static_cast<unsigned char>(raw_command)));
     if (command == 'q') {
-      break;
+      stop_requested = true;
+      continue;
     }
 
     const auto next_direction = parse_direction(command);
