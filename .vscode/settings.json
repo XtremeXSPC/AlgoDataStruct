@@ -41,10 +41,11 @@
   "clangd.checkUpdates": false,
   "cmake.useCMakePresets": "always",
   "cmake.configureOnOpen": false,
+  "cmake.buildBeforeRun": false,
 
   //===--------- Build and Run Configuration ---------===//
   "code-runner.executorMap": {
-    "cpp": "cd ${workspaceFolder} && cmake --build build && ./build/bin/${fileBasenameNoExtension}"
+    "cpp": "cd ${workspaceFolder} && cmake --build build/clang/debug && ./build/clang/debug/bin/${fileBasenameNoExtension}"
   },
   "code-runner.runInTerminal": true,
   "code-runner.saveFileBeforeRun": true,
@@ -215,5 +216,5 @@
     "queue": "cpp"
   },
   "sarif-viewer.connectToGithubCodeScanning": "off",
-  "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json"
+  "sonarlint.pathToCompileCommands": "${workspaceFolder}/compile_commands.json"
 }

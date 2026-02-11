@@ -12,17 +12,17 @@
   //   - AddressSanitizer & UndefinedBehaviorSanitizer support
   //   - Custom LLDB formatters for ADS containers
   //   - Enhanced memory debugging (macOS malloc guards)
-  //   - Automatic build tasks with preLaunchTask
+  //   - Incremental build before debug (like running make twice)
   //
   // Common Environment Variables:
-  //   ASAN_OPTIONS  - AddressSanitizer runtime configuration
-  //   UBSAN_OPTIONS - UndefinedBehaviorSanitizer configuration
-  //   TERM          - Terminal type for TUI applications
+  //   ASAN_OPTIONS   - AddressSanitizer runtime configuration
+  //   UBSAN_OPTIONS  - UndefinedBehaviorSanitizer configuration
+  //   TERM           - Terminal type for TUI applications
   //
   // Directory Structure:
-  //   build/          - Standard Debug builds
-  //   build-sanitize/ - Sanitizer-instrumented builds
-  //   build-tests/    - GoogleTest builds (optional)
+  //   build/${input:toolchain}/debug/          - Standard Debug builds
+  //   build/${input:toolchain}/sanitize/       - Sanitizer-instrumented builds
+  //   build/${input:toolchain}/debug-tests/    - GoogleTest builds (optional)
   //===-------------------------------------------------------------------------===//
   "version": "0.2.0",
 
@@ -53,7 +53,7 @@
       "name": "[macOS] Debug Test",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:testExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
@@ -80,7 +80,7 @@
       "name": "[macOS] Debug App",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:appExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
@@ -104,14 +104,14 @@
 
     //===----------------------- MACOS: Sanitizer Builds -----------------------===//
     // Enhanced memory debugging with full sanitizer instrumentation.
-    // Uses separate build directory (build-sanitize/) with -fsanitize flags.
+    // Uses separate build directory (build/${input:toolchain}/sanitize/) with -fsanitize flags.
     // Includes macOS-specific malloc guards and detailed leak detection.
 
     {
       "name": "[macOS] Debug Test + Sanitizers",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build-sanitize/bin/${input:testExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/sanitize/bin/${input:testExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build (Sanitize)",
@@ -130,7 +130,7 @@
       "name": "[macOS] Debug App + Sanitizers",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build-sanitize/bin/${input:appExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/sanitize/bin/${input:appExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build (Sanitize)",
@@ -150,7 +150,7 @@
       "name": "[macOS] Debug Test + ThreadSanitizer",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build-thread-sanitize/bin/${input:testExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/thread-sanitize/bin/${input:testExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build (ThreadSanitize)",
@@ -169,7 +169,7 @@
       "name": "[macOS] Debug App + ThreadSanitizer",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build-thread-sanitize/bin/${input:appExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/thread-sanitize/bin/${input:appExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build (ThreadSanitize)",
@@ -194,7 +194,7 @@
       "name": "[Linux] Debug Test (LLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:testExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
@@ -215,7 +215,7 @@
       "name": "[Linux] Debug App (LLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:appExecutable}",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CMake: Build All",
@@ -239,10 +239,11 @@
       "name": "[Linux] Debug Test (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:testExecutable}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build All",
       "environment": [
         {
           "name": "ASAN_OPTIONS",
@@ -253,7 +254,6 @@
       "externalConsole": false,
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "CMake: Build All",
       "setupCommands": [
         {
           "description": "Enable Pretty-Printing",
@@ -286,15 +286,15 @@
       "name": "[Linux] Debug App (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:appExecutable}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build All",
       "environment": [{ "name": "TERM", "value": "xterm-256color" }],
       "externalConsole": false,
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "CMake: Build All",
       "setupCommands": [
         {
           "description": "Enable Pretty-Printing",
@@ -317,15 +317,15 @@
       "name": "[Cross-Platform] Debug Test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:testExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:testExecutable}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build All",
       "environment": [],
       "externalConsole": false,
-      "preLaunchTask": "CMake: Build All",
       "windows": {
-        "program": "${workspaceFolder}/build/bin/${input:testExecutable}.exe",
+        "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:testExecutable}.exe",
         "MIMode": "gdb",
         "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
       },
@@ -369,15 +369,15 @@
       "name": "[Cross-Platform] Debug App",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/${input:appExecutable}",
+      "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:appExecutable}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: Build All",
       "environment": [],
       "externalConsole": false,
-      "preLaunchTask": "CMake: Build All",
       "windows": {
-        "program": "${workspaceFolder}/build/bin/${input:appExecutable}.exe",
+        "program": "${workspaceFolder}/build/${input:toolchain}/debug/bin/${input:appExecutable}.exe",
         "MIMode": "gdb",
         "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
       },
@@ -411,10 +411,17 @@
   ],
 
   //===--------------------------- INPUT DEFINITIONS ---------------------------===//
-  // User-selectable targets for debugging.
+  // User-selectable toolchain and targets for debugging.
   // These appear as dropdown menus when launching debug sessions.
 
   "inputs": [
+    {
+      "id": "toolchain",
+      "type": "pickString",
+      "description": "Select toolchain family",
+      "options": ["clang", "gcc"],
+      "default": "clang"
+    },
     {
       "id": "testExecutable",
       "type": "pickString",
