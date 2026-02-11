@@ -145,8 +145,13 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "if [ ! -f build/${input:toolchain}/debug/CMakeCache.txt ]; then cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build/${input:toolchain}/debug; fi && cmake --build build/${input:toolchain}/debug -j${input:buildJobs}"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "build",
+        "${input:toolchain}",
+        "Debug",
+        "OFF",
+        "${input:buildJobs}",
+        "ON"
       ],
       "group": {
         "kind": "build",
@@ -173,8 +178,13 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "if [ \"${input:toolchain}\" = \"gcc\" ] && [ \"$(uname)\" = \"Darwin\" ]; then echo \"GCC sanitizer builds are not supported on macOS in this setup. Use toolchain=clang for sanitizer debug sessions.\"; exit 2; fi; if [ ! -f build/${input:toolchain}/sanitize/CMakeCache.txt ]; then cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/sanitize; fi && cmake --build build/${input:toolchain}/sanitize -j${input:buildJobs}"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "build",
+        "${input:toolchain}",
+        "Sanitize",
+        "OFF",
+        "${input:buildJobs}",
+        "ON"
       ],
       "group": "build",
       "problemMatcher": ["$gcc"],
@@ -198,8 +208,13 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "if [ \"${input:toolchain}\" = \"gcc\" ] && [ \"$(uname)\" = \"Darwin\" ]; then echo \"GCC thread sanitizer builds are not supported on macOS in this setup. Use toolchain=clang for TSan debug sessions.\"; exit 2; fi; if [ ! -f build/${input:toolchain}/thread-sanitize/CMakeCache.txt ]; then cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/thread-sanitize; fi && cmake --build build/${input:toolchain}/thread-sanitize -j${input:buildJobs}"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "build",
+        "${input:toolchain}",
+        "ThreadSanitize",
+        "OFF",
+        "${input:buildJobs}",
+        "ON"
       ],
       "group": "build",
       "problemMatcher": ["$gcc"],
@@ -222,7 +237,13 @@
       "label": "CMake: Build Test Target [src/]",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build/${input:toolchain}/debug", "--target", "${input:testTarget}", "-j${input:buildJobs}"],
+      "args": [
+        "--build",
+        "build/${input:toolchain}/debug",
+        "--target",
+        "${input:testTarget}",
+        "-j${input:buildJobs}"
+      ],
       "group": "build",
       "problemMatcher": ["$gcc"],
       "detail": "Build specific test target from src/"
@@ -231,7 +252,13 @@
       "label": "CMake: Build App Target [apps/]",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build/${input:toolchain}/debug", "--target", "${input:appTarget}", "-j${input:buildJobs}"],
+      "args": [
+        "--build",
+        "build/${input:toolchain}/debug",
+        "--target",
+        "${input:appTarget}",
+        "-j${input:buildJobs}"
+      ],
       "group": "build",
       "problemMatcher": ["$gcc"],
       "detail": "Build specific app target from apps/"
@@ -253,8 +280,11 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "cmake -E remove_directory build/${input:toolchain}/debug && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=OFF -B build/${input:toolchain}/debug"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "reconfigure",
+        "${input:toolchain}",
+        "Debug",
+        "OFF"
       ],
       "problemMatcher": [],
       "detail": "Remove build/${input:toolchain}/debug/ directory and reconfigure for Debug"
@@ -264,22 +294,28 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "cmake -E remove_directory build/${input:toolchain}/debug-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -B build/${input:toolchain}/debug-tests"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "reconfigure",
+        "${input:toolchain}",
+        "Debug",
+        "ON"
       ],
       "options": {
         "env": { "CPATH": "" }
       },
       "problemMatcher": [],
-      "detail": "Remove build/${input:toolchain}/debug-tests/ directory and reconfigure with GoogleTest"
+      "detail": "Remove debug-tests build dir and reconfigure with GoogleTest"
     },
     {
       "label": "CMake: Clean & Reconfigure (Sanitize)",
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "cmake -E remove_directory build/${input:toolchain}/sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/sanitize"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "reconfigure",
+        "${input:toolchain}",
+        "Sanitize",
+        "OFF"
       ],
       "problemMatcher": [],
       "detail": "Remove build/${input:toolchain}/sanitize/ directory and reconfigure"
@@ -289,8 +325,11 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "cmake -E remove_directory build/${input:toolchain}/sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=Sanitize -DENABLE_TESTING=ON -B build/${input:toolchain}/sanitize-tests"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "reconfigure",
+        "${input:toolchain}",
+        "Sanitize",
+        "ON"
       ],
       "options": {
         "env": { "CPATH": "" }
@@ -303,8 +342,11 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "cmake -E remove_directory build/${input:toolchain}/thread-sanitize && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=OFF -B build/${input:toolchain}/thread-sanitize"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "reconfigure",
+        "${input:toolchain}",
+        "ThreadSanitize",
+        "OFF"
       ],
       "problemMatcher": [],
       "detail": "Remove build/${input:toolchain}/thread-sanitize/ directory and reconfigure"
@@ -314,8 +356,11 @@
       "type": "shell",
       "command": "sh",
       "args": [
-        "-c",
-        "cmake -E remove_directory build/${input:toolchain}/thread-sanitize-tests && cmake -DCMAKE_TOOLCHAIN_FILE=${input:toolchain}-toolchain.cmake -DCMAKE_BUILD_TYPE=ThreadSanitize -DENABLE_TESTING=ON -B build/${input:toolchain}/thread-sanitize-tests"
+        "${workspaceFolder}/.vscode/scripts/cmake_task_helper.sh",
+        "reconfigure",
+        "${input:toolchain}",
+        "ThreadSanitize",
+        "ON"
       ],
       "options": {
         "env": { "CPATH": "" }
