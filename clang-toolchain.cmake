@@ -111,9 +111,7 @@ endif()
 if(NOT CLANG_EXECUTABLE)
     message(FATAL_ERROR
         "\n"
-        "╔═══════════════════════════════════════════════════════════════╗\n"
-        "║                    CLANG COMPILER NOT FOUND                   ║\n"
-        "╚═══════════════════════════════════════════════════════════════╝\n"
+        "═══════════════════ CLANG COMPILER NOT FOUND ════════════════════\n"
         "\n"
         "This toolchain file requires Clang to be installed.\n"
         "\n"
@@ -130,7 +128,7 @@ if(NOT CLANG_EXECUTABLE)
             "\n"
             "After installation:\n"
             "  cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         message(FATAL_ERROR
             "  Linux:\n"
@@ -145,14 +143,14 @@ if(NOT CLANG_EXECUTABLE)
             "\n"
             "After installation:\n"
             "  cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     else()
         message(FATAL_ERROR
             "  Please install Clang using your system's package manager.\n"
             "\n"
             "After installation:\n"
             "  cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     endif()
 endif()
 
@@ -296,7 +294,7 @@ message(STATUS "    C++ Standard: C++20")
 # ---------------------------- Success Summary Message ---------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
-message(STATUS "║            Clang Toolchain Successfully Configured            ║")
+message(STATUS "║ ---------- Clang Toolchain Successfully Configured ---------- ║")
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "  Platform       : ${PLATFORM_NAME}")
 if(IS_LLVM_CLANG)
@@ -311,7 +309,7 @@ message(STATUS "  C++ Standard   : C++20")
 if(APPLE AND IS_LLVM_CLANG AND EXISTS "${LLVM_LIBCXX_LIB}")
     message(STATUS "  libc++ RPATH   : ${LLVM_LIBCXX_LIB}")
 endif()
-message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
+message(STATUS "═════════════════════════════════════════════════════════════════")
 message(STATUS "")
 
 # ================================================================================= #

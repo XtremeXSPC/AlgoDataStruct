@@ -174,7 +174,7 @@ endif()
 
 message(STATUS "")
 message(STATUS "${ANSI_BLUE}╔═══════════════════════════════════════════════════════════════╗${ANSI_RESET}")
-message(STATUS "${ANSI_BLUE}║${ANSI_RESET}            AlgoDataStruct - Configuration Summary             ${ANSI_BLUE}║${ANSI_RESET}")
+message(STATUS "${ANSI_BLUE}║${ANSI_RESET} ---------- AlgoDataStruct - Configuration Summary ----------- ${ANSI_BLUE}║${ANSI_RESET}")
 message(STATUS "${ANSI_BLUE}╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}")
 message(STATUS "")
 
@@ -230,7 +230,7 @@ else()
 endif()
 
 message(STATUS "")
-message(STATUS "${ANSI_BLUE}╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}")
+message(STATUS "${ANSI_BLUE}═════════════════════════════════════════════════════════════════${ANSI_RESET}")
 message(STATUS "")
 
 # ================================================================================= #
