@@ -543,6 +543,7 @@ auto main(int argc, char** argv) -> int {
       continue;
     }
 
+    // Handle escape sequences by ignoring all characters until the sequence is fully consumed.
     const char raw_command = *command_input;
     if (should_ignore_raw_key(input_mode_guard.is_raw_mode(), raw_command, skipping_escape_sequence)) {
       continue;
@@ -552,12 +553,15 @@ auto main(int argc, char** argv) -> int {
       continue;
     }
 
+    // Process valid command input.
     const auto command = static_cast<char>(std::tolower(static_cast<unsigned char>(raw_command)));
     if (command == 'q') {
       stop_requested = true;
       continue;
     }
 
+    // Parse direction and step the engine.
+    // If the command is invalid, simply redraw the prompt and wait for the nextinput.
     const auto next_direction = parse_direction(command);
     if (!next_direction.has_value()) {
       draw_prompt();
@@ -567,6 +571,7 @@ auto main(int argc, char** argv) -> int {
     engine.set_direction(*next_direction);
     engine.step();
 
+    // Check internal consistency after each step. If it fails, exit immediately with an error.
     if (!engine.is_consistent()) {
       ansi_show_cursor();
       ansi_move_to(kFinalOutputRow, 1);
@@ -574,6 +579,7 @@ auto main(int argc, char** argv) -> int {
       return 2;
     }
 
+    // Apply differential rendering for alive state, full redraw if the snake just died.
     if (engine.is_alive()) {
       apply_deltas(engine);
     } else {
@@ -585,12 +591,14 @@ auto main(int argc, char** argv) -> int {
   ansi_show_cursor();
   ansi_move_to(kFinalOutputRow, 1);
 
+  // Print final summary and replay information.
   const auto& replay = engine.replay_log();
   std::cout << "\nFinal state: " << (engine.is_alive() ? "alive" : "dead") << "\n";
   std::cout << "Final score: " << engine.score() << "\n";
   std::cout << "Ticks executed: " << engine.tick() << "\n";
   std::cout << "Replay snapshots: " << replay.size() << "\n";
 
+  // Display the most recent moves from the replay log, if available.
   if (!replay.is_empty()) {
     const std::size_t history_to_print =
         (replay.size() < kRecentMovesDisplayCount) ? replay.size() : kRecentMovesDisplayCount;
