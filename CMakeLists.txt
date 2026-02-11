@@ -124,6 +124,13 @@ include(cmake/MainExecutables.cmake)
 option(ENABLE_APPS "Build showcase applications and games" ON)
 option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 
+# -------------------------- Build Optimization Options --------------------------- #
+# Precompiled headers (PCH) and Unity Build can significantly reduce compilation
+# times, especially for incremental builds and test suites.
+
+option(DISABLE_PCH "Disable precompiled headers (for debugging)" OFF)
+option(DISABLE_UNITY_BUILD "Disable Unity Build for tests (for faster incremental builds)" OFF)
+
 include(cmake/GoogleTest.cmake)
 
 # ------------------------------- Apps Integration -------------------------------- #
@@ -205,6 +212,21 @@ elseif(ENABLE_APPS)
     message(STATUS "  ${ANSI_CYAN}Apps${ANSI_RESET}           : ${ANSI_YELLOW}Requested but not configured${ANSI_RESET}")
 else()
     message(STATUS "  ${ANSI_CYAN}Apps${ANSI_RESET}           : Disabled (use -DENABLE_APPS=ON)")
+endif()
+
+# Report on build optimizations.
+if(NOT DISABLE_PCH)
+    message(STATUS "  ${ANSI_CYAN}PCH${ANSI_RESET}            : ${ANSI_GREEN}Enabled${ANSI_RESET} (STL + GoogleTest headers)")
+else()
+    message(STATUS "  ${ANSI_CYAN}PCH${ANSI_RESET}            : ${ANSI_YELLOW}Disabled${ANSI_RESET} (use -DDISABLE_PCH=OFF)")
+endif()
+
+if(ENABLE_TESTING AND NOT DISABLE_UNITY_BUILD)
+    message(STATUS "  ${ANSI_CYAN}Unity Build${ANSI_RESET}    : ${ANSI_GREEN}Enabled${ANSI_RESET} (tests only, batch size: 8)")
+elseif(ENABLE_TESTING AND DISABLE_UNITY_BUILD)
+    message(STATUS "  ${ANSI_CYAN}Unity Build${ANSI_RESET}    : ${ANSI_YELLOW}Disabled${ANSI_RESET} (use -DDISABLE_UNITY_BUILD=OFF)")
+else()
+    message(STATUS "  ${ANSI_CYAN}Unity Build${ANSI_RESET}    : N/A (testing not enabled)")
 endif()
 
 message(STATUS "")
