@@ -219,16 +219,21 @@ auto draw_prompt() -> void {
  */
 class TerminalInputModeGuard {
 public:
+  /// @brief Constructs the guard and enables raw mode if possible.
   TerminalInputModeGuard() { enable_raw_mode(); }
 
+  /// @brief Destructor restores original terminal settings if raw mode was enabled.
   ~TerminalInputModeGuard() { restore(); }
 
+  // Disable copying and assignment to prevent multiple guards interfering with each other.
   TerminalInputModeGuard(const TerminalInputModeGuard&)                    = delete;
   auto operator=(const TerminalInputModeGuard&) -> TerminalInputModeGuard& = delete;
 
+  /// @brief Checks if raw mode was successfully enabled.
   [[nodiscard]] auto is_raw_mode() const noexcept -> bool { return raw_mode_enabled_; }
 
 private:
+  /// @brief Enables raw mode on the terminal if stdin is a TTY, saving original settings.
   auto enable_raw_mode() -> void {
     if (::isatty(STDIN_FILENO) == 0) {
       return;
@@ -248,6 +253,7 @@ private:
     }
   }
 
+  /// @brief Restores the original terminal settings if raw mode was enabled.
   auto restore() -> void {
     if (!raw_mode_enabled_) {
       return;
@@ -256,8 +262,9 @@ private:
     (void)::tcsetattr(STDIN_FILENO, TCSAFLUSH, &original_mode_);
   }
 
-  struct termios original_mode_    = {};
-  bool           raw_mode_enabled_ = false;
+  // DATA MEMBERS
+  struct termios original_mode_    = {};    ///< Original terminal settings for restoration.
+  bool           raw_mode_enabled_ = false; ///< Whether raw mode is currently enabled.
 };
 
 /**
@@ -399,6 +406,7 @@ template <typename UInt>
 
 //===---------------------------- RENDERING HELPERS ----------------------------===//
 
+// Number of recent moves to display in the final summary.
 constexpr std::size_t kRecentMovesDisplayCount = 5;
 
 /**
