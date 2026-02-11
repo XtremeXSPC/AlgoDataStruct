@@ -36,6 +36,7 @@ Documentation/Audits/
 
 # Log files
 *.log
+logs/
 
 # Cache files
 .cache
