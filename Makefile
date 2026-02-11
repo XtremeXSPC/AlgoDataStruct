@@ -26,10 +26,10 @@
 #   make docs-clean       - Remove generated documentation
 #
 # Specific configuration commands:
-#   make configure-clang  - Configure with Clang (recommended)
-#   make configure-gcc    - Configure with GCC
-#   make configure-debug  - Configure Debug build with Clang
-#   make configure-release - Configure Release build with Clang
+#   make configure-clang    - Configure with Clang (recommended)
+#   make configure-gcc      - Configure with GCC
+#   make configure-debug    - Configure Debug build with Clang
+#   make configure-release  - Configure Release build with Clang
 #
 # ================================================================================= #
 
@@ -167,32 +167,40 @@ clean-all:
 clean-clang:
 	@echo "Removing Clang build directories..."
 	$(call remove_dirs,$(BUILD_DIRS_CLANG))
-	$(call remove_dirs,build-release build-tests build-sanitize build-sanitize-tests build-thread-sanitize build-thread-sanitize-tests)
+	$(call remove_dirs,build-release build-tests build-sanitize \
+		build-sanitize-tests build-thread-sanitize \
+		build-thread-sanitize-tests)
 	rm -f compile_commands.json
 	@echo "✓ Clang build directories cleaned"
 
 clean-gcc:
 	@echo "Removing GCC build directories..."
 	$(call remove_dirs,$(BUILD_DIRS_GCC))
-	$(call remove_dirs,build-gcc build-release-gcc build-tests-gcc build-sanitize-gcc build-sanitize-tests-gcc build-thread-sanitize-gcc build-thread-sanitize-tests-gcc)
+	$(call remove_dirs,build-gcc build-release-gcc build-tests-gcc \
+		build-sanitize-gcc build-sanitize-tests-gcc \
+		build-thread-sanitize-gcc build-thread-sanitize-tests-gcc)
 	@echo "✓ GCC build directories cleaned"
 
 clean-sanitize:
 	@echo "Removing sanitizer build directories..."
 	$(call remove_dirs,$(BUILD_DIRS_SANITIZE))
-	$(call remove_dirs,build-sanitize build-sanitize-tests build-sanitize-gcc build-sanitize-tests-gcc)
+	$(call remove_dirs,build-sanitize build-sanitize-tests \
+		build-sanitize-gcc build-sanitize-tests-gcc)
 	@echo "✓ Sanitizer build directories cleaned"
 
 clean-thread:
 	@echo "Removing thread-sanitizer build directories..."
 	$(call remove_dirs,$(BUILD_DIRS_THREAD))
-	$(call remove_dirs,build-thread-sanitize build-thread-sanitize-tests build-thread-sanitize-gcc build-thread-sanitize-tests-gcc)
+	$(call remove_dirs,build-thread-sanitize build-thread-sanitize-tests \
+		build-thread-sanitize-gcc build-thread-sanitize-tests-gcc)
 	@echo "✓ Thread-sanitizer build directories cleaned"
 
 clean-tests:
 	@echo "Removing test-enabled build directories..."
 	$(call remove_dirs,$(BUILD_DIRS_TESTS))
-	$(call remove_dirs,build-tests build-sanitize-tests build-thread-sanitize-tests build-tests-gcc build-sanitize-tests-gcc build-thread-sanitize-tests-gcc)
+	$(call remove_dirs,build-tests build-sanitize-tests \
+		build-thread-sanitize-tests build-tests-gcc \
+		build-sanitize-tests-gcc build-thread-sanitize-tests-gcc)
 	@echo "✓ Test-enabled build directories cleaned"
 
 # ----------------------------- Configuration Targets ----------------------------- #
