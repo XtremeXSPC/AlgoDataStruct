@@ -66,3 +66,4 @@ logs/
 .fake
 .tmp.driveupload
 compile_commands.json
+.last_build_dir

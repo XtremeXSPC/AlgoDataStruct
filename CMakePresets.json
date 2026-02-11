@@ -30,7 +30,7 @@
       "name": "debug",
       "displayName": "Debug (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/clang/debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -39,7 +39,7 @@
       "name": "release",
       "displayName": "Release (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build-release",
+      "binaryDir": "${sourceDir}/build/clang/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -48,7 +48,7 @@
       "name": "sanitize",
       "displayName": "ASan+UBSan (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build-sanitize",
+      "binaryDir": "${sourceDir}/build/clang/sanitize",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize"
       }
@@ -57,7 +57,7 @@
       "name": "sanitize-tests",
       "displayName": "ASan+UBSan + Tests (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build-sanitize-tests",
+      "binaryDir": "${sourceDir}/build/clang/sanitize-tests",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize",
         "ENABLE_TESTING": "ON"
@@ -70,7 +70,7 @@
       "name": "thread-sanitize",
       "displayName": "ThreadSanitizer (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build-thread-sanitize",
+      "binaryDir": "${sourceDir}/build/clang/thread-sanitize",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "ThreadSanitize"
       }
@@ -79,7 +79,7 @@
       "name": "thread-sanitize-tests",
       "displayName": "ThreadSanitizer + Tests (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build-thread-sanitize-tests",
+      "binaryDir": "${sourceDir}/build/clang/thread-sanitize-tests",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "ThreadSanitize",
         "ENABLE_TESTING": "ON"
@@ -92,7 +92,7 @@
       "name": "debug-tests",
       "displayName": "Debug + Tests (Clang)",
       "inherits": "base-clang",
-      "binaryDir": "${sourceDir}/build-tests",
+      "binaryDir": "${sourceDir}/build/clang/debug-tests",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_TESTING": "ON"
@@ -105,7 +105,7 @@
       "name": "debug-gcc",
       "displayName": "Debug (GCC)",
       "inherits": "base-gcc",
-      "binaryDir": "${sourceDir}/build-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -114,7 +114,7 @@
       "name": "release-gcc",
       "displayName": "Release (GCC)",
       "inherits": "base-gcc",
-      "binaryDir": "${sourceDir}/build-release-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -128,7 +128,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "binaryDir": "${sourceDir}/build-sanitize-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/sanitize",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize"
       }
@@ -142,7 +142,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "binaryDir": "${sourceDir}/build-sanitize-tests-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/sanitize-tests",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize",
         "ENABLE_TESTING": "ON"
@@ -160,7 +160,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "binaryDir": "${sourceDir}/build-thread-sanitize-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/thread-sanitize",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "ThreadSanitize"
       }
@@ -174,7 +174,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "binaryDir": "${sourceDir}/build-thread-sanitize-tests-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/thread-sanitize-tests",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "ThreadSanitize",
         "ENABLE_TESTING": "ON"
@@ -187,7 +187,7 @@
       "name": "debug-tests-gcc",
       "displayName": "Debug + Tests (GCC)",
       "inherits": "base-gcc",
-      "binaryDir": "${sourceDir}/build-tests-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/debug-tests",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_TESTING": "ON"

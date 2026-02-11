@@ -88,6 +88,21 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)  # Disable GNU extensions for portability.
 
+# Default build type for single-config generators (Ninja/Unix Makefiles).
+# Multi-config generators (Xcode, Visual Studio) manage configurations differently.
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+    message(STATUS "${ANSI_YELLOW}No build type selected, defaulting to Debug${ANSI_RESET}")
+endif()
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    Debug
+    Release
+    RelWithDebInfo
+    MinSizeRel
+    Sanitize
+    ThreadSanitize
+)
+
 # Generate compile_commands.json for clangd and other tools.
 # This is essential for IDE support and code navigation.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -174,7 +189,7 @@ endif()
 
 message(STATUS "")
 message(STATUS "${ANSI_BLUE}╔═══════════════════════════════════════════════════════════════╗${ANSI_RESET}")
-message(STATUS "${ANSI_BLUE}║${ANSI_RESET} ---------- AlgoDataStruct - Configuration Summary ----------- ${ANSI_BLUE}║${ANSI_RESET}")
+message(STATUS "${ANSI_BLUE}╟${ANSI_RESET}─────────── AlgoDataStruct - Configuration Summary ────────────${ANSI_BLUE}╢${ANSI_RESET}")
 message(STATUS "${ANSI_BLUE}╚═══════════════════════════════════════════════════════════════╝${ANSI_RESET}")
 message(STATUS "")
 
