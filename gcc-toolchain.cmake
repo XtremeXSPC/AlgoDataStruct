@@ -129,9 +129,7 @@ endif()
 if(NOT GCC_EXECUTABLE)
     message(FATAL_ERROR
         "\n"
-        "╔═══════════════════════════════════════════════════════════════╗\n"
-        "║                     GCC COMPILER NOT FOUND                    ║\n"
-        "╚═══════════════════════════════════════════════════════════════╝\n"
+        "════════════════════ GCC COMPILER NOT FOUND ═════════════════════\n"
         "\n"
         "This toolchain file requires GCC to be installed.\n"
         "\n"
@@ -150,7 +148,7 @@ if(NOT GCC_EXECUTABLE)
             "\n"
             "After installation:\n"
             "  cmake -DCMAKE_TOOLCHAIN_FILE=gcc-toolchain.cmake -B build\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         set(INSTALL_CMD "sudo apt install g++")
         if(LINUX_DISTRO MATCHES "RedHat")
@@ -165,14 +163,14 @@ if(NOT GCC_EXECUTABLE)
             "\n"
             "After installation:\n"
             "  cmake -DCMAKE_TOOLCHAIN_FILE=gcc-toolchain.cmake -B build\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     else()
         message(FATAL_ERROR
             "  Please install GCC using your system's package manager.\n"
             "\n"
             "After installation:\n"
             "  cmake -DCMAKE_TOOLCHAIN_FILE=gcc-toolchain.cmake -B build\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     endif()
 endif()
 
@@ -199,9 +197,7 @@ endif()
 if(GCC_VERSION_OUTPUT MATCHES "clang" OR GCC_VERSION_OUTPUT MATCHES "Apple")
     message(WARNING
         "\n"
-        "╔═══════════════════════════════════════════════════════════════╗\n"
-        "║              WARNING: CLANG DETECTED AS 'g++'                 ║\n"
-        "╚═══════════════════════════════════════════════════════════════╝\n"
+        "═══════════════ WARNING: CLANG DETECTED AS 'g++' ════════════════\n"
         "\n"
         "The executable at ${GCC_EXECUTABLE} is actually Clang,\n"
         "not GCC (common on macOS where 'g++' is aliased to Clang).\n"
@@ -239,7 +235,7 @@ if(GCC_VERSION_OUTPUT MATCHES "clang" OR GCC_VERSION_OUTPUT MATCHES "Apple")
             "\n"
             "Please install GCC using the instructions above, or use\n"
             "the clang-toolchain.cmake file if you want to use Clang.\n"
-            "╚═══════════════════════════════════════════════════════════════╝\n")
+            "═════════════════════════════════════════════════════════════════\n")
     endif()
 endif()
 
@@ -346,10 +342,6 @@ endif()
 set(CMAKE_C_COMPILER   ${C_COMPILER_PATH} CACHE PATH "C compiler"   FORCE)
 set(CMAKE_CXX_COMPILER ${GCC_EXECUTABLE}  CACHE PATH "C++ compiler" FORCE)
 
-# Set compiler IDs explicitly (helps CMake understand what we're using).
-set(CMAKE_C_COMPILER_ID "GNU" CACHE STRING "C compiler ID" FORCE)
-set(CMAKE_CXX_COMPILER_ID "GNU" CACHE STRING "C++ compiler ID" FORCE)
-
 # -------------------- macOS-Specific libstdc++ Configuration --------------------- #
 # On macOS, GCC uses libstdc++ instead of libc++.
 # We need to be explicit about this.
@@ -365,15 +357,12 @@ set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard" FORCE)
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require C++ standard" FORCE)
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler extensions" FORCE)
 
-# Add -std=c++20 explicitly to ensure it's in compile_commands.json for clangd.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20" CACHE STRING "" FORCE)
-
 message(STATUS "    C++ Standard: C++20")
 
 # ---------------------------- Success Summary Message ---------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
-message(STATUS "║ ----------- GCC Toolchain Successfully Configured ----------- ║")
+message(STATUS "╟──────────── GCC Toolchain Successfully Configured ────────────╢")
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "  Platform       : ${PLATFORM_NAME}")
 message(STATUS "  Compiler Type  : GNU GCC")

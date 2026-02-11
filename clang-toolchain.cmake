@@ -286,15 +286,12 @@ set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard" FORCE)
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require C++ standard" FORCE)
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Disable compiler extensions" FORCE)
 
-# Add -std=c++20 explicitly to ensure it's in compile_commands.json for clangd.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20" CACHE STRING "" FORCE)
-
 message(STATUS "    C++ Standard: C++20")
 
 # ---------------------------- Success Summary Message ---------------------------- #
 message(STATUS "")
 message(STATUS "╔═══════════════════════════════════════════════════════════════╗")
-message(STATUS "║ ---------- Clang Toolchain Successfully Configured ---------- ║")
+message(STATUS "╟─────────── Clang Toolchain Successfully Configured ───────────╢")
 message(STATUS "╚═══════════════════════════════════════════════════════════════╝")
 message(STATUS "  Platform       : ${PLATFORM_NAME}")
 if(IS_LLVM_CLANG)

@@ -17,8 +17,16 @@
 # With toolchain files handling compiler selection, we only need basic include path
 # detection for clangd support.
 function(detect_compiler_system_includes OUTPUT_VARIABLE)
+    # Include-path cache must be tied to the active compiler to avoid stale paths
+    # when reconfiguring the same build directory with a different toolchain.
+    set(CURRENT_COMPILER_CACHE_KEY
+        "${CMAKE_CXX_COMPILER}|${CMAKE_CXX_COMPILER_ID}|${CMAKE_CXX_COMPILER_VERSION}"
+    )
+
     # Check if we've already detected paths in this configuration.
-    if(DEFINED CACHE{COMPILER_SYSTEM_INCLUDES_CACHED})
+    if(DEFINED CACHE{COMPILER_SYSTEM_INCLUDES_CACHED}
+       AND DEFINED CACHE{COMPILER_SYSTEM_INCLUDES_CACHE_KEY}
+       AND COMPILER_SYSTEM_INCLUDES_CACHE_KEY STREQUAL CURRENT_COMPILER_CACHE_KEY)
         set(${OUTPUT_VARIABLE} "${COMPILER_SYSTEM_INCLUDES_CACHED}" PARENT_SCOPE)
         message(STATUS "${ANSI_CYAN}Using cached compiler include paths${ANSI_RESET}")
         return()
@@ -63,6 +71,8 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
         list(REMOVE_DUPLICATES DETECTED_PATHS)
         set(COMPILER_SYSTEM_INCLUDES_CACHED "${DETECTED_PATHS}" CACHE INTERNAL
             "Cached compiler include paths")
+        set(COMPILER_SYSTEM_INCLUDES_CACHE_KEY "${CURRENT_COMPILER_CACHE_KEY}" CACHE INTERNAL
+            "Compiler identity for cached compiler include paths")
         set(${OUTPUT_VARIABLE} "${DETECTED_PATHS}" PARENT_SCOPE)
 
         list(LENGTH DETECTED_PATHS PATH_COUNT)
