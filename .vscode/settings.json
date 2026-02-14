@@ -75,6 +75,7 @@
   //===------------- Debug Configuration -------------===//
   "debug.console.fontSize": 13,
   "debug.internalConsoleOptions": "openOnSessionStart",
+  "sonarlint.pathToCompileCommands": "${workspaceFolder}/compile_commands.json",
 
   //===-------------- Files and Search ---------------===//
   "files.exclude": {
@@ -214,7 +215,5 @@
     "valarray": "cpp",
     "variant": "cpp",
     "queue": "cpp"
-  },
-  "sarif-viewer.connectToGithubCodeScanning": "off",
-  "sonarlint.pathToCompileCommands": "${workspaceFolder}/compile_commands.json"
+  }
 }
