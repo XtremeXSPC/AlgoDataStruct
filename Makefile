@@ -106,7 +106,7 @@ TARGET := test_BST
 # Declare all targets as phony (not real files).
 .PHONY: all build run clean clean-all clean-clang clean-gcc clean-sanitize clean-thread clean-tests \
 	configure configure-clang configure-gcc configure-debug configure-release configure-sanitize \
-	reconfigure test help symlink check docs docs-open docs-clean sanitize
+	reconfigure test help symlink compile-commands check docs docs-open docs-clean sanitize
 
 # --------------------------------- Main Targets ---------------------------------- #
 # 'all' target: full configuration and build.
@@ -299,11 +299,13 @@ sanitize: clean configure-sanitize build
 # -------------------------------- Utility Targets -------------------------------- #
 # Create symlink for compile_commands.json
 # Needed for clangd and other LSPs.
-symlink:
+symlink: compile-commands
+
+compile-commands:
 	@BUILD_DIR_TO_USE=$$(if [ -f "$(LAST_BUILD_DIR_FILE)" ]; then cat "$(LAST_BUILD_DIR_FILE)"; else echo "$(DEFAULT_BUILD_DIR)"; fi); \
 	if [ -f "$$BUILD_DIR_TO_USE/compile_commands.json" ]; then \
 		ln -sf "$$BUILD_DIR_TO_USE/compile_commands.json" compile_commands.json; \
-		echo "✓ Symlink to compile_commands.json created"; \
+		echo "✓ Symlink to compile_commands.json created (from $$BUILD_DIR_TO_USE)"; \
 	else \
 		echo "⚠ Warning: compile_commands.json not found in $$BUILD_DIR_TO_USE"; \
 	fi
@@ -394,9 +396,10 @@ help:
 	@echo "  make docs-clean   - Remove generated documentation"
 	@echo ""
 	@echo "Utility:"
-	@echo "  make symlink      - Create symlink for compile_commands.json"
-	@echo "  make check        - Check for toolchain files"
-	@echo "  make help         - Show this message"
+	@echo "  make compile-commands - Create symlink for compile_commands.json"
+	@echo "  make symlink         - Alias of compile-commands"
+	@echo "  make check           - Check for toolchain files"
+	@echo "  make help            - Show this message"
 	@echo ""
 	@echo "Notes:"
 	@echo "  - Build directories are dedicated per toolchain/profile"
