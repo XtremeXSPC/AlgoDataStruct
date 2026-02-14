@@ -18,24 +18,24 @@
 # ---------------------------- Configuration Variables ---------------------------- #
 
 # Root project directory (one level above apps/).
-PROJECT_ROOT := ..
+PROJECT_ROOT := $(abspath ..)
 
 # Default toolchain/build settings.
 DEFAULT_BUILD_TYPE := Debug
-CLANG_TOOLCHAIN := $(PROJECT_ROOT)/clang-toolchain.cmake
-GCC_TOOLCHAIN := $(PROJECT_ROOT)/gcc-toolchain.cmake
+CLANG_TOOLCHAIN := $(abspath $(PROJECT_ROOT)/clang-toolchain.cmake)
+GCC_TOOLCHAIN := $(abspath $(PROJECT_ROOT)/gcc-toolchain.cmake)
 
-# Shared build directory used by the root project.
-BUILD_DIR := $(PROJECT_ROOT)/build
+# Build directories matching the root Makefile structure.
+BUILD_ROOT := $(PROJECT_ROOT)/build
+BUILD_DIR_CLANG_DEBUG := $(BUILD_ROOT)/clang/debug
+BUILD_DIR_GCC_DEBUG := $(BUILD_ROOT)/gcc/debug
+DEFAULT_BUILD_DIR := $(BUILD_DIR_CLANG_DEBUG)
+LAST_BUILD_DIR_FILE := $(PROJECT_ROOT)/.last_build_dir
 
-# Snake targets and executables.
+# Snake targets.
 APP_TARGET := app_Snake_TUI
 STRESS_TARGET := app_Snake_Stress
 TEST_TARGET := runSnakeTests
-
-APP_EXECUTABLE := $(BUILD_DIR)/bin/$(APP_TARGET)
-STRESS_EXECUTABLE := $(BUILD_DIR)/bin/$(STRESS_TARGET)
-TEST_EXECUTABLE := $(BUILD_DIR)/bin/$(TEST_TARGET)
 
 # Runtime defaults (override from CLI, e.g. make stress STRESS_EPISODES=500).
 RUN_SEED ?= 1337
@@ -62,45 +62,50 @@ all: configure-clang build
 	@echo ""
 
 build:
-	@if [ ! -d "$(BUILD_DIR)" ]; then \
-		echo "Error: Build directory not found."; \
+	@BUILD_DIR_TO_USE=$$(if [ -f "$(LAST_BUILD_DIR_FILE)" ]; then cat "$(LAST_BUILD_DIR_FILE)"; else echo "$(DEFAULT_BUILD_DIR)"; fi); \
+	if [ ! -f "$$BUILD_DIR_TO_USE/CMakeCache.txt" ]; then \
+		echo "Error: Build directory '$$BUILD_DIR_TO_USE' not configured."; \
 		echo "Run 'make configure' or 'make configure-clang' first"; \
 		exit 1; \
-	fi
-	@echo "Building Snake targets..."
-	cmake --build $(BUILD_DIR) --target $(APP_TARGET) $(STRESS_TARGET)
+	fi; \
+	echo "Building Snake targets in $$BUILD_DIR_TO_USE..."; \
+	cmake --build "$$BUILD_DIR_TO_USE" --target $(APP_TARGET) $(STRESS_TARGET)
 
 run-tui: run
 
 run: build
-	@echo ""
-	@echo "Running $(APP_TARGET) (seed=$(RUN_SEED), max_ticks=$(RUN_MAX_TICKS))..."
-	@echo ""
-	@if [ ! -f "$(APP_EXECUTABLE)" ]; then \
-		echo "Error: $(APP_EXECUTABLE) not found."; \
+	@BUILD_DIR_TO_USE=$$(if [ -f "$(LAST_BUILD_DIR_FILE)" ]; then cat "$(LAST_BUILD_DIR_FILE)"; else echo "$(DEFAULT_BUILD_DIR)"; fi); \
+	APP_EXE="$$BUILD_DIR_TO_USE/bin/$(APP_TARGET)"; \
+	echo ""; \
+	echo "Running $(APP_TARGET) (seed=$(RUN_SEED), max_ticks=$(RUN_MAX_TICKS))..."; \
+	echo ""; \
+	if [ ! -f "$$APP_EXE" ]; then \
+		echo "Error: $$APP_EXE not found."; \
 		echo "Run 'make build' first"; \
 		exit 1; \
-	fi
-	@$(APP_EXECUTABLE) $(RUN_SEED) $(RUN_MAX_TICKS)
+	fi; \
+	"$$APP_EXE" $(RUN_SEED) $(RUN_MAX_TICKS)
 
 run-stress: stress
 
 stress: build
-	@echo ""
-	@echo "Running $(STRESS_TARGET) (episodes=$(STRESS_EPISODES), max_ticks=$(STRESS_MAX_TICKS), seed=$(STRESS_SEED))..."
-	@echo ""
-	@if [ ! -f "$(STRESS_EXECUTABLE)" ]; then \
-		echo "Error: $(STRESS_EXECUTABLE) not found."; \
+	@BUILD_DIR_TO_USE=$$(if [ -f "$(LAST_BUILD_DIR_FILE)" ]; then cat "$(LAST_BUILD_DIR_FILE)"; else echo "$(DEFAULT_BUILD_DIR)"; fi); \
+	STRESS_EXE="$$BUILD_DIR_TO_USE/bin/$(STRESS_TARGET)"; \
+	echo ""; \
+	echo "Running $(STRESS_TARGET) (episodes=$(STRESS_EPISODES), max_ticks=$(STRESS_MAX_TICKS), seed=$(STRESS_SEED))..."; \
+	echo ""; \
+	if [ ! -f "$$STRESS_EXE" ]; then \
+		echo "Error: $$STRESS_EXE not found."; \
 		echo "Run 'make build' first"; \
 		exit 1; \
-	fi
-	@$(STRESS_EXECUTABLE) $(STRESS_EPISODES) $(STRESS_MAX_TICKS) $(STRESS_SEED)
+	fi; \
+	"$$STRESS_EXE" $(STRESS_EPISODES) $(STRESS_MAX_TICKS) $(STRESS_SEED)
 
 clean:
-	@echo "Removing shared build directory..."
-	rm -rf $(BUILD_DIR)
-	rm -f $(PROJECT_ROOT)/compile_commands.json
-	@echo "✓ Build directory cleaned"
+	@echo "Removing build directories..."
+	rm -rf $(BUILD_ROOT)
+	rm -f $(PROJECT_ROOT)/compile_commands.json $(LAST_BUILD_DIR_FILE)
+	@echo "✓ Build directories cleaned"
 
 # ----------------------------- Configuration Targets ----------------------------- #
 configure-clang:
@@ -109,11 +114,13 @@ configure-clang:
 				-DENABLE_APPS=ON \
 				-DENABLE_SNAKE_APP=ON \
 				-DCMAKE_BUILD_TYPE=$(DEFAULT_BUILD_TYPE) \
-				-S $(PROJECT_ROOT) -B $(BUILD_DIR)
+				-S $(PROJECT_ROOT) -B $(BUILD_DIR_CLANG_DEBUG)
+	@echo "$(BUILD_DIR_CLANG_DEBUG)" > $(LAST_BUILD_DIR_FILE)
 	@echo ""
 	@echo "✓ Configuration complete!"
 	@echo "  Compiler: Clang"
 	@echo "  Build Type: $(DEFAULT_BUILD_TYPE)"
+	@echo "  Build Dir: $(BUILD_DIR_CLANG_DEBUG)"
 	@echo ""
 
 configure-gcc:
@@ -122,11 +129,13 @@ configure-gcc:
 				-DENABLE_APPS=ON \
 				-DENABLE_SNAKE_APP=ON \
 				-DCMAKE_BUILD_TYPE=$(DEFAULT_BUILD_TYPE) \
-				-S $(PROJECT_ROOT) -B $(BUILD_DIR)
+				-S $(PROJECT_ROOT) -B $(BUILD_DIR_GCC_DEBUG)
+	@echo "$(BUILD_DIR_GCC_DEBUG)" > $(LAST_BUILD_DIR_FILE)
 	@echo ""
 	@echo "✓ Configuration complete!"
 	@echo "  Compiler: GCC"
 	@echo "  Build Type: $(DEFAULT_BUILD_TYPE)"
+	@echo "  Build Dir: $(BUILD_DIR_GCC_DEBUG)"
 	@echo ""
 
 configure-debug:
@@ -135,9 +144,11 @@ configure-debug:
 				-DENABLE_APPS=ON \
 				-DENABLE_SNAKE_APP=ON \
 				-DCMAKE_BUILD_TYPE=Debug \
-				-S $(PROJECT_ROOT) -B $(BUILD_DIR)
+				-S $(PROJECT_ROOT) -B $(BUILD_DIR_CLANG_DEBUG)
+	@echo "$(BUILD_DIR_CLANG_DEBUG)" > $(LAST_BUILD_DIR_FILE)
 	@echo ""
 	@echo "✓ Debug configuration complete!"
+	@echo "  Build Dir: $(BUILD_DIR_CLANG_DEBUG)"
 	@echo ""
 
 configure-release:
@@ -146,9 +157,11 @@ configure-release:
 				-DENABLE_APPS=ON \
 				-DENABLE_SNAKE_APP=ON \
 				-DCMAKE_BUILD_TYPE=Release \
-				-S $(PROJECT_ROOT) -B $(BUILD_DIR)
+				-S $(PROJECT_ROOT) -B $(BUILD_ROOT)/clang/release
+	@echo "$(BUILD_ROOT)/clang/release" > $(LAST_BUILD_DIR_FILE)
 	@echo ""
 	@echo "✓ Release configuration complete!"
+	@echo "  Build Dir: $(BUILD_ROOT)/clang/release"
 	@echo ""
 
 configure-sanitize:
@@ -157,11 +170,13 @@ configure-sanitize:
 	      -DENABLE_APPS=ON \
 	      -DENABLE_SNAKE_APP=ON \
 	      -DCMAKE_BUILD_TYPE=Sanitize \
-	      -S $(PROJECT_ROOT) -B $(BUILD_DIR)
+	      -S $(PROJECT_ROOT) -B $(BUILD_ROOT)/clang/sanitize
+	@echo "$(BUILD_ROOT)/clang/sanitize" > $(LAST_BUILD_DIR_FILE)
 	@echo ""
 	@echo "✓ Sanitize configuration complete!"
 	@echo "  Address Sanitizer: Enabled"
 	@echo "  UB Sanitizer: Enabled"
+	@echo "  Build Dir: $(BUILD_ROOT)/clang/sanitize"
 	@echo ""
 
 configure: configure-clang
@@ -177,18 +192,20 @@ test:
 				-DENABLE_SNAKE_APP=ON \
 				-DENABLE_TESTING=ON \
 				-DCMAKE_BUILD_TYPE=Debug \
-				-S $(PROJECT_ROOT) -B $(BUILD_DIR)
+				-S $(PROJECT_ROOT) -B $(BUILD_ROOT)/clang/debug-tests
+	@echo "$(BUILD_ROOT)/clang/debug-tests" > $(LAST_BUILD_DIR_FILE)
 	@echo "Building Snake test target..."
-	cmake --build $(BUILD_DIR) --target $(TEST_TARGET)
+	cmake --build $(BUILD_ROOT)/clang/debug-tests --target $(TEST_TARGET)
 	@echo ""
 	@echo "Running $(TEST_TARGET)..."
 	@echo "========================="
-	@if [ ! -f "$(TEST_EXECUTABLE)" ]; then \
-		echo "Error: $(TEST_EXECUTABLE) not found."; \
+	@TEST_EXE="$(BUILD_ROOT)/clang/debug-tests/bin/$(TEST_TARGET)"; \
+	if [ ! -f "$$TEST_EXE" ]; then \
+		echo "Error: $$TEST_EXE not found."; \
 		echo "Ensure ENABLE_TESTING=ON and rebuild"; \
 		exit 1; \
-	fi
-	@$(TEST_EXECUTABLE)
+	fi; \
+	"$$TEST_EXE"
 
 sanitize: clean configure-sanitize build
 	@echo ""
