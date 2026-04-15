@@ -77,9 +77,13 @@ auto MinHeap<T>::insert(const T& value) -> void {
     grow();
   }
 
-  // Construct element at the end using placement new.
   new (&data_[size_]) T(value);
-  heapify_up(size_);
+  try {
+    heapify_up(size_);
+  } catch (...) {
+    data_[size_].~T();
+    throw;
+  }
   ++size_;
 }
 
@@ -89,9 +93,13 @@ auto MinHeap<T>::insert(T&& value) -> void {
     grow();
   }
 
-  // Construct element at the end using placement new (move version).
   new (&data_[size_]) T(std::move(value));
-  heapify_up(size_);
+  try {
+    heapify_up(size_);
+  } catch (...) {
+    data_[size_].~T();
+    throw;
+  }
   ++size_;
 }
 
@@ -102,12 +110,16 @@ auto MinHeap<T>::emplace(Args&&... args) -> T& {
     grow();
   }
 
-  // Construct element in-place using placement new.
   new (&data_[size_]) T(std::forward<Args>(args)...);
-  heapify_up(size_);
-  T& ref = data_[size_];
+  size_t final_index{};
+  try {
+    final_index = heapify_up(size_);
+  } catch (...) {
+    data_[size_].~T();
+    throw;
+  }
   ++size_;
-  return ref;
+  return data_[final_index];
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
@@ -201,7 +213,7 @@ auto MinHeap<T>::decrease_key(size_t index, const T& new_value) -> void {
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <typename T>
-auto MinHeap<T>::heapify_up(size_t index) -> void {
+auto MinHeap<T>::heapify_up(size_t index) -> size_t {
   while (index > 0) {
     size_t parent_idx = parent(index);
 
@@ -212,6 +224,7 @@ auto MinHeap<T>::heapify_up(size_t index) -> void {
     std::swap(data_[index], data_[parent_idx]);
     index = parent_idx;
   }
+  return index;
 }
 
 template <typename T>

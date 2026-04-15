@@ -202,7 +202,7 @@ private:
    * @param index Index of the element to bubble up.
    * @complexity Time O(log n), Space O(1)
    */
-  auto heapify_up(size_t index) -> void;
+  auto heapify_up(size_t index) -> size_t;
 
   /**
    * @brief Restores heap property by moving element down.

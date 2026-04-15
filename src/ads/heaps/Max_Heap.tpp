@@ -77,9 +77,13 @@ auto MaxHeap<T>::insert(const T& value) -> void {
     grow();
   }
 
-  // Construct element at the end using placement new.
   new (&data_[size_]) T(value);
-  heapify_up(size_);
+  try {
+    heapify_up(size_);
+  } catch (...) {
+    data_[size_].~T();
+    throw;
+  }
   ++size_;
 }
 
@@ -89,9 +93,13 @@ auto MaxHeap<T>::insert(T&& value) -> void {
     grow();
   }
 
-  // Construct element at the end using placement new (move version).
   new (&data_[size_]) T(std::move(value));
-  heapify_up(size_);
+  try {
+    heapify_up(size_);
+  } catch (...) {
+    data_[size_].~T();
+    throw;
+  }
   ++size_;
 }
 
@@ -102,9 +110,14 @@ auto MaxHeap<T>::emplace(Args&&... args) -> T& {
     grow();
   }
 
-  // Construct element in-place using placement new.
   new (&data_[size_]) T(std::forward<Args>(args)...);
-  size_t final_index = heapify_up(size_);
+  size_t final_index{};
+  try {
+    final_index = heapify_up(size_);
+  } catch (...) {
+    data_[size_].~T();
+    throw;
+  }
   ++size_;
   return data_[final_index];
 }
