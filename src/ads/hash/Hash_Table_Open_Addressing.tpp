@@ -375,31 +375,21 @@ auto HashTableOpenAddressing<Key, Value>::find_insert_slot(const Key& key) -> Sl
 
 template <typename Key, typename Value>
 void HashTableOpenAddressing<Key, Value>::rehash(size_t new_capacity) {
-  // Create new table.
-  auto new_table = std::make_unique<Slot[]>(new_capacity);
-
-  // Save old data.
   auto   old_table    = std::move(table_);
   size_t old_capacity = capacity_;
 
-  // Update to new table.
-  table_    = std::move(new_table);
+  // Switch to new table so find_insert_slot probes the correct array.
+  table_    = std::make_unique<Slot[]>(new_capacity);
   capacity_ = new_capacity;
   size_     = 0;
 
-  // Reinsert all occupied entries (skip tombstones!).
+  // Reinsert occupied entries directly — no insert() call, so no spurious
+  // check_and_rehash and no --size_ / restoration-loop dance.
   for (size_t i = 0; i < old_capacity; ++i) {
     if (old_table[i].state == SlotState::OCCUPIED) {
-      // Reinsert the entry.
-      insert(std::move(old_table[i].entry->key), std::move(old_table[i].entry->value));
-      // Decrement size since insert increments it.
-      --size_;
-    }
-  }
-
-  // Restore correct size.
-  for (size_t i = 0; i < old_capacity; ++i) {
-    if (old_table[i].state == SlotState::OCCUPIED) {
+      Slot* slot = find_insert_slot(old_table[i].entry->key);
+      slot->entry = std::move(old_table[i].entry);
+      slot->state = SlotState::OCCUPIED;
       ++size_;
     }
   }

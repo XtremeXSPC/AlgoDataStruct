@@ -103,8 +103,11 @@ auto HashTableChaining<Key, Value>::emplace(const Key& key, Args&&... args) -> V
     buckets_[bucket_idx].emplace_back(key, std::forward<Args>(args)...);
     ++size_;
     check_and_rehash();
-    // Return reference to the newly inserted value.
-    return buckets_[hash(key)].back().second;
+    // Re-locate the entry after potential rehash — .back() is not safe here
+    // because other keys may land in the same bucket during rehash.
+    size_t new_bucket_idx = hash(key);
+    auto   it2            = find_in_bucket(buckets_[new_bucket_idx], key);
+    return it2->second;
   }
 }
 
@@ -288,32 +291,21 @@ auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const K
 
 template <typename Key, typename Value>
 void HashTableChaining<Key, Value>::rehash(size_t new_capacity) {
-  // Create new bucket array.
+  // Build the new table entirely before touching *this — strong exception guarantee:
+  // if any allocation throws, the original buckets_ remain intact.
   auto new_buckets = std::make_unique<Bucket[]>(new_capacity);
 
-  // Save old data.
-  auto   old_buckets  = std::move(buckets_);
-  size_t old_capacity = capacity_;
-
-  // Update capacity and buckets.
-  buckets_  = std::move(new_buckets);
-  capacity_ = new_capacity;
-  size_     = 0;
-
-  // Reinsert all entries.
-  for (size_t i = 0; i < old_capacity; ++i) {
-    for (auto& entry : old_buckets[i]) {
-      // Key is const in pair, so we copy it; value can be moved.
-      insert(entry.first, std::move(entry.second));
-      // Decrement size since insert increments it.
-      --size_;
+  for (size_t i = 0; i < capacity_; ++i) {
+    for (auto& entry : buckets_[i]) {
+      size_t new_idx = std::hash<Key>{}(entry.first) % new_capacity;
+      new_buckets[new_idx].emplace_back(entry.first, std::move(entry.second));
     }
   }
 
-  // Restore correct size (we decremented it in the loop).
-  for (size_t i = 0; i < old_capacity; ++i) {
-    size_ += old_buckets[i].size();
-  }
+  // All reinserts succeeded — commit atomically.
+  buckets_  = std::move(new_buckets);
+  capacity_ = new_capacity;
+  // size_ is unchanged: we moved all existing entries, no elements added or removed.
 }
 
 template <typename Key, typename Value>

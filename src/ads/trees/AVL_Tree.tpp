@@ -515,6 +515,9 @@ auto AVLTree<T>::find_helper(Node* node, const T& value) const -> Node* {
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::find_min_node(Node* node) const -> Node* {
+  if (!node) {
+    return nullptr;
+  }
   while (node->left) {
     node = node->left.get();
   }
@@ -523,6 +526,9 @@ auto AVLTree<T>::find_min_node(Node* node) const -> Node* {
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
+  if (!node) {
+    return nullptr;
+  }
   while (node->right) {
     node = node->right.get();
   }

@@ -75,7 +75,11 @@ auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
   }
 
   tree_.insert(Entry(key, Value{}));
-  return find_entry(key)->value.value();
+  Entry* inserted = find_entry(key);
+  if (!inserted) {
+    throw TreeMapException("TreeMap::operator[]: failed to locate entry after insertion");
+  }
+  return inserted->value.value();
 }
 
 template <typename Key, typename Value>

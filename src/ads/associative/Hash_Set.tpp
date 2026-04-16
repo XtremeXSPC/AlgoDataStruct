@@ -64,42 +64,42 @@ auto HashSet<T, Hash>::operator=(HashSet&& other) noexcept -> HashSet& {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::insert(const T& value) -> bool {
-  check_load_factor();
-
-  // Find the appropriate bucket.
+  // Duplicate check first — avoids a needless rehash when the element already exists.
   size_t idx   = bucket_index(value);
   auto&  chain = buckets_[idx];
 
-  // Check for duplicates.
   for (const auto& elem : chain) {
     if (elem == value) {
       return false;
     }
   }
 
-  // Insert the new element.
-  chain.push_back(value);
+  check_load_factor();
+
+  // bucket_index must be recomputed: check_load_factor may have rehashed.
+  idx   = bucket_index(value);
+  auto& chain2 = buckets_[idx];
+  chain2.push_back(value);
   ++size_;
   return true;
 }
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::insert(T&& value) -> bool {
-  check_load_factor();
-
-  // Find the appropriate bucket.
   size_t idx   = bucket_index(value);
   auto&  chain = buckets_[idx];
 
-  // Check for duplicates.
   for (const auto& elem : chain) {
     if (elem == value) {
       return false;
     }
   }
 
-  // Insert the new element.
-  chain.push_back(std::move(value));
+  check_load_factor();
+
+  idx         = bucket_index(value);
+  auto& chain2 = buckets_[idx];
+  chain2.push_back(std::move(value));
   ++size_;
   return true;
 }
