@@ -24,6 +24,7 @@
 #include <limits>
 #include <memory>
 #include <new>
+#include <type_traits>
 #include <utility>
 
 namespace ads::stacks {
@@ -65,7 +66,7 @@ public:
    * @brief Destructor. Empties the stack and deallocates all elements.
    * @complexity Time O(n), Space O(1)
    */
-  ~ArrayStack() override = default;
+  ~ArrayStack() override;
 
   /**
    * @brief Move assignment operator.

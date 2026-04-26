@@ -36,7 +36,7 @@ auto CircularLinkedList<T>::iterator::operator++() -> iterator& {
     if (remaining_ == 0) {
       node_ = nullptr;
     } else {
-      node_ = node_->next;
+      node_ = node_->next.get();
     }
   }
   return *this;
@@ -73,7 +73,7 @@ auto CircularLinkedList<T>::const_iterator::operator++() -> const_iterator& {
     if (remaining_ == 0) {
       node_ = nullptr;
     } else {
-      node_ = node_->next;
+      node_ = node_->next.get();
     }
   }
   return *this;
@@ -94,7 +94,7 @@ auto CircularLinkedList<T>::const_iterator::operator==(const const_iterator& oth
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
-CircularLinkedList<T>::CircularLinkedList() : tail_(nullptr), size_(0) {
+CircularLinkedList<T>::CircularLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
 }
 
 template <typename T>
@@ -104,6 +104,7 @@ CircularLinkedList<T>::~CircularLinkedList() {
 
 template <typename T>
 CircularLinkedList<T>::CircularLinkedList(CircularLinkedList&& other) noexcept :
+    head_(std::move(other.head_)),
     tail_(other.tail_),
     size_(other.size_) {
   other.tail_ = nullptr;
@@ -114,6 +115,7 @@ template <typename T>
 auto CircularLinkedList<T>::operator=(CircularLinkedList&& other) noexcept -> CircularLinkedList& {
   if (this != &other) {
     clear();
+    head_       = std::move(other.head_);
     tail_       = other.tail_;
     size_       = other.size_;
     other.tail_ = nullptr;
@@ -127,18 +129,18 @@ auto CircularLinkedList<T>::operator=(CircularLinkedList&& other) noexcept -> Ci
 template <typename T>
 template <typename... Args>
 auto CircularLinkedList<T>::emplace_front(Args&&... args) -> T& {
-  Node* new_node = new Node(std::forward<Args>(args)...);
+  auto  new_node = std::make_unique<Node>(std::forward<Args>(args)...);
+  Node* node_ptr = new_node.get();
 
   if (is_empty()) {
-    new_node->next = new_node;
-    tail_          = new_node;
+    tail_ = node_ptr;
   } else {
-    new_node->next = tail_->next;
-    tail_->next    = new_node;
+    new_node->next = std::move(head_);
   }
 
+  head_ = std::move(new_node);
   ++size_;
-  return new_node->data;
+  return head_->data;
 }
 
 template <typename T>
@@ -154,19 +156,19 @@ auto CircularLinkedList<T>::push_front(T&& value) -> void {
 template <typename T>
 template <typename... Args>
 auto CircularLinkedList<T>::emplace_back(Args&&... args) -> T& {
-  Node* new_node = new Node(std::forward<Args>(args)...);
+  auto  new_node = std::make_unique<Node>(std::forward<Args>(args)...);
+  Node* node_ptr = new_node.get();
 
   if (is_empty()) {
-    new_node->next = new_node;
-    tail_          = new_node;
+    head_ = std::move(new_node);
+    tail_ = node_ptr;
   } else {
-    new_node->next = tail_->next;
-    tail_->next    = new_node;
-    tail_          = new_node;
+    tail_->next = std::move(new_node);
+    tail_       = node_ptr;
   }
 
   ++size_;
-  return new_node->data;
+  return tail_->data;
 }
 
 template <typename T>
@@ -187,15 +189,13 @@ auto CircularLinkedList<T>::pop_front() -> void {
     throw ListException("pop_front on empty circular list");
   }
 
-  Node* head = tail_->next;
-
   if (size_ == 1) {
+    head_.reset();
     tail_ = nullptr;
   } else {
-    tail_->next = head->next;
+    head_ = std::move(head_->next);
   }
 
-  delete head;
   --size_;
 }
 
@@ -206,42 +206,29 @@ auto CircularLinkedList<T>::pop_back() -> void {
   }
 
   if (size_ == 1) {
-    delete tail_;
+    head_.reset();
     tail_ = nullptr;
     --size_;
     return;
   }
 
   // Find the second-to-last node.
-  Node* current = tail_->next;
-  while (current->next != tail_) {
-    current = current->next;
+  Node* current = head_.get();
+  while (current->next.get() != tail_) {
+    current = current->next.get();
   }
 
-  current->next = tail_->next;
-  delete tail_;
+  current->next.reset();
   tail_ = current;
   --size_;
 }
 
 template <typename T>
 auto CircularLinkedList<T>::clear() noexcept -> void {
-  if (is_empty()) {
-    return;
+  while (head_) {
+    // Detach each successor before destruction so clearing cannot recurse deeply.
+    head_ = std::move(head_->next);
   }
-
-  Node* head    = tail_->next;
-  Node* current = head;
-
-  // Break the circle first.
-  tail_->next = nullptr;
-
-  while (current != nullptr) {
-    Node* next = current->next;
-    delete current;
-    current = next;
-  }
-
   tail_ = nullptr;
   size_ = 0;
 }
@@ -253,7 +240,7 @@ auto CircularLinkedList<T>::front() -> T& {
   if (is_empty()) {
     throw ListException("front on empty circular list");
   }
-  return tail_->next->data;
+  return head_->data;
 }
 
 template <typename T>
@@ -261,7 +248,7 @@ auto CircularLinkedList<T>::front() const -> const T& {
   if (is_empty()) {
     throw ListException("front on empty circular list");
   }
-  return tail_->next->data;
+  return head_->data;
 }
 
 template <typename T>
@@ -299,7 +286,12 @@ auto CircularLinkedList<T>::rotate() -> void {
   if (size_ <= 1) {
     return;
   }
-  tail_ = tail_->next;
+  // Move ownership through the chain so rotation stays RAII-managed.
+  auto old_head = std::move(head_);
+  head_         = std::move(old_head->next);
+  old_head->next.reset();
+  tail_->next = std::move(old_head);
+  tail_       = tail_->next.get();
 }
 
 template <typename T>
@@ -308,13 +300,13 @@ auto CircularLinkedList<T>::contains(const T& value) const -> bool {
     return false;
   }
 
-  Node* current = tail_->next;
-  do {
+  Node* current = head_.get();
+  while (current != nullptr) {
     if (current->data == value) {
       return true;
     }
-    current = current->next;
-  } while (current != tail_->next);
+    current = current->next.get();
+  }
 
   return false;
 }
@@ -326,7 +318,7 @@ auto CircularLinkedList<T>::begin() -> iterator {
   if (is_empty()) {
     return end();
   }
-  return iterator(tail_->next, size_, this);
+  return iterator(head_.get(), size_, this);
 }
 
 template <typename T>
@@ -339,7 +331,7 @@ auto CircularLinkedList<T>::begin() const -> const_iterator {
   if (is_empty()) {
     return end();
   }
-  return const_iterator(tail_->next, size_, this);
+  return const_iterator(head_.get(), size_, this);
 }
 
 template <typename T>

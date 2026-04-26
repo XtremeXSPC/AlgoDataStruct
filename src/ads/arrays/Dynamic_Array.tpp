@@ -522,15 +522,25 @@ auto DynamicArray<T>::reallocate(size_t new_capacity) -> void {
   }
 
   // Allocate new memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
-                                              [](T* ptr) { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) {
+    ::operator delete[](ptr);
+  });
 
-  // Move or copy existing elements to new storage.
-  // Use uninitialized algorithms to enable bulk optimizations when possible.
-  if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-    std::uninitialized_move_n(data_.get(), size_, new_data.get());
-  } else {
-    std::uninitialized_copy_n(data_.get(), size_, new_data.get());
+  size_t constructed = 0;
+  try {
+    for (; constructed < size_; ++constructed) {
+      if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+        std::construct_at(new_data.get() + constructed, std::move(data_.get()[constructed]));
+      } else {
+        std::construct_at(new_data.get() + constructed, data_.get()[constructed]);
+      }
+    }
+  } catch (...) {
+    // The old buffer remains authoritative, so rollback only the new partial copy.
+    for (size_t i = 0; i < constructed; ++i) {
+      std::destroy_at(new_data.get() + i);
+    }
+    throw;
   }
 
   // Destroy old elements only after all new elements are constructed.

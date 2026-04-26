@@ -23,6 +23,7 @@
 #include <limits>
 #include <memory>
 #include <new>
+#include <type_traits>
 #include <utility>
 
 namespace ads::queues {
@@ -221,7 +222,8 @@ private:
    * @return true if the queue cannot accept more elements without growing.
    */
   [[nodiscard]] auto is_full() const noexcept -> bool {
-    return size_ == capacity_ - 1; // One slot is always kept empty
+    // size_ disambiguates empty and full, so no sentinel slot is needed.
+    return size_ == capacity_;
   }
 
   /**

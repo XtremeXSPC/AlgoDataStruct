@@ -143,7 +143,7 @@ auto DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept -> Doubly
 
 template <typename T>
 template <typename... Args>
-auto DoublyLinkedList<T>::emplace_front(Args&&... args) {
+auto DoublyLinkedList<T>::emplace_front(Args&&... args) -> T& {
   auto newNode = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
   if (head_) {
     head_->prev   = newNode.get();
@@ -168,7 +168,7 @@ void DoublyLinkedList<T>::push_front(T&& value) {
 
 template <typename T>
 template <typename... Args>
-auto DoublyLinkedList<T>::emplace_back(Args&&... args) {
+auto DoublyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   if (!tail_) { // Empty list.
     head_ = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
     tail_ = head_.get();
@@ -270,7 +270,12 @@ auto DoublyLinkedList<T>::size() const noexcept -> size_t {
 
 template <typename T>
 void DoublyLinkedList<T>::clear() noexcept {
-  head_.reset(); // The chain destruction of "unique_ptr" deallocates all nodes.
+  while (head_) {
+    // Detach each successor before destroying the current node to keep teardown iterative.
+    auto next = std::move(head_->next);
+    head_.reset();
+    head_ = std::move(next);
+  }
   tail_ = nullptr;
   size_ = 0;
 }

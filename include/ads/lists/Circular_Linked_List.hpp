@@ -307,20 +307,20 @@ private:
   /**
    * @brief Internal node structure.
    *
-   * @details Each node contains data and a raw pointer to the next node.
-   *          Unlike non-circular lists, the tail's next always points to head.
+   * @details Each node owns its successor. Circular behavior is exposed by the
+   *          list operations while ownership stays as a linear RAII chain.
    */
   struct Node {
-    T     data;
-    Node* next = nullptr;
+    T                     data;
+    std::unique_ptr<Node> next;
 
     template <typename... Args>
-      requires(!std::is_same_v<std::remove_cvref_t<Args>..., Node>)
-    explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
+    explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
   };
 
-  Node*  tail_; ///< Pointer to the last node (tail->next is head).
-  size_t size_; ///< Number of elements in the list.
+  std::unique_ptr<Node> head_; ///< Owning pointer to the first node.
+  Node*                 tail_; ///< Non-owning pointer to the last node.
+  size_t                size_; ///< Number of elements in the list.
 };
 
 } // namespace ads::lists

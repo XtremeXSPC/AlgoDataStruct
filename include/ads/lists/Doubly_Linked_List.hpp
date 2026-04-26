@@ -152,7 +152,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
-  auto emplace_front(Args&&... args);
+  auto emplace_front(Args&&... args) -> T&;
 
   /**
    * @brief Inserts an element at the front of the list.
@@ -176,7 +176,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
-  auto emplace_back(Args&&... args);
+  auto emplace_back(Args&&... args) -> T&;
 
   /**
    * @brief Inserts an element at the back of the list.

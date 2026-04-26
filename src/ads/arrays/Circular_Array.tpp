@@ -208,9 +208,11 @@ auto CircularArray<T>::emplace_front(Args&&... args) -> T&
 {
   ensure_capacity(size_ + 1);
 
-  head_  = (head_ + capacity_ - 1) % capacity_;
-  T* ptr = data_.get() + head_;
+  const size_t new_head = (head_ + capacity_ - 1) % capacity_;
+  T*           ptr      = data_.get() + new_head;
   std::construct_at(ptr, std::forward<Args>(args)...);
+  // Publish the new head only after construction so a throwing T leaves the array unchanged.
+  head_ = new_head;
   ++size_;
   return *ptr;
 }
@@ -487,8 +489,9 @@ auto CircularArray<T>::reallocate(size_t new_capacity) -> void {
     throw ArrayOverflowException("CircularArray capacity overflow");
   }
 
-  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
-                                              [](T* ptr) { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) {
+    ::operator delete[](ptr);
+  });
 
   // Move elements to new buffer in linear order.
   size_t constructed = 0;

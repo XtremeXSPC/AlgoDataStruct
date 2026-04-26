@@ -21,11 +21,16 @@ namespace ads::queues {
 
 template <typename T>
 CircularArrayDeque<T>::CircularArrayDeque(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new[](std::max(initial_capacity, kMinCapacity) * sizeof(T))),
-          [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
     front_(0),
     size_(0),
     capacity_(std::max(initial_capacity, kMinCapacity)) {
+  // Keep even zero-capacity requests growable through the normal push path.
+  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw QueueOverflowException("Deque capacity overflow");
+  }
+
+  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
 }
 
 template <typename T>
@@ -114,10 +119,11 @@ template <typename... Args>
 auto CircularArrayDeque<T>::emplace_front(Args&&... args) -> T& {
   ensure_capacity(size_ + 1);
 
-  // Move front index backward.
-  front_         = prev_index(front_);
-  T* element_ptr = data_.get() + front_;
-  new (element_ptr) T(std::forward<Args>(args)...);
+  const size_t new_front   = prev_index(front_);
+  T*           element_ptr = data_.get() + new_front;
+  std::construct_at(element_ptr, std::forward<Args>(args)...);
+  // Publish the new front only after construction so a throwing T leaves the deque unchanged.
+  front_ = new_front;
   ++size_;
   return *element_ptr;
 }
@@ -130,7 +136,7 @@ auto CircularArrayDeque<T>::emplace_back(Args&&... args) -> T& {
   // Calculate the index for the new back element.
   const size_t insert_index = index_from_front(size_);
   T*           element_ptr  = data_.get() + insert_index;
-  new (element_ptr) T(std::forward<Args>(args)...);
+  std::construct_at(element_ptr, std::forward<Args>(args)...);
   ++size_;
   return *element_ptr;
 }
@@ -164,7 +170,7 @@ auto CircularArrayDeque<T>::pop_front() -> void {
   }
 
   // Destroy the front element.
-  data_[front_].~T();
+  std::destroy_at(data_.get() + front_);
   front_ = next_index(front_);
   --size_;
 
@@ -191,7 +197,7 @@ auto CircularArrayDeque<T>::pop_back() -> void {
 
   // Destroy the back element.
   const size_t back_index = index_from_front(size_ - 1);
-  data_[back_index].~T();
+  std::destroy_at(data_.get() + back_index);
   --size_;
 
   // Reset front_ if deque is now empty.
@@ -213,7 +219,7 @@ template <typename T>
 auto CircularArrayDeque<T>::clear() noexcept -> void {
   size_t current = front_;
   for (size_t i = 0; i < size_; ++i) {
-    data_[current].~T();
+    std::destroy_at(data_.get() + current);
     current = next_index(current);
   }
   size_  = 0;
@@ -381,8 +387,16 @@ auto CircularArrayDeque<T>::ensure_capacity(size_t min_capacity) -> void {
 
 template <typename T>
 auto CircularArrayDeque<T>::reallocate(size_t new_capacity) -> void {
-  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
-                                              [](T* ptr) -> auto { ::operator delete[](ptr); });
+  if (new_capacity < size_) {
+    new_capacity = size_;
+  }
+
+  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw QueueOverflowException("Deque capacity overflow");
+  }
+
+  std::unique_ptr<T[], void (*)(T*)> new_data(
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Move existing elements to new storage.
   size_t constructed = 0;
@@ -391,17 +405,17 @@ auto CircularArrayDeque<T>::reallocate(size_t new_capacity) -> void {
   try {
     // Move elements in logical order.
     for (; constructed < size_; ++constructed) {
-      if constexpr (std::is_nothrow_move_constructible_v<T>) {
-        new (new_data.get() + constructed) T(std::move(data_[current]));
+      if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+        std::construct_at(new_data.get() + constructed, std::move(data_[current]));
       } else {
-        new (new_data.get() + constructed) T(data_[current]);
+        std::construct_at(new_data.get() + constructed, data_[current]);
       }
       current = next_index(current);
     }
   } catch (...) {
-    // Rollback: destroy any constructed elements in new_data.
+    // The old deque remains authoritative, so only the partial replacement is rolled back.
     for (size_t i = 0; i < constructed; ++i) {
-      new_data[i].~T();
+      std::destroy_at(new_data.get() + i);
     }
     throw;
   }
@@ -409,7 +423,7 @@ auto CircularArrayDeque<T>::reallocate(size_t new_capacity) -> void {
   // Destroy old elements only after all new elements are constructed.
   current = front_;
   for (size_t i = 0; i < size_; ++i) {
-    data_[current].~T();
+    std::destroy_at(data_.get() + current);
     current = next_index(current);
   }
 

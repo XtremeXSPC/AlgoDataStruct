@@ -20,12 +20,17 @@ namespace ads::queues {
 
 template <typename T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new[](initial_capacity * sizeof(T))),
-          [](T* ptr) -> auto { ::operator delete[](ptr); }), // Custom deleter.
+    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
     front_(0),
     rear_(0),
     size_(0),
-    capacity_(initial_capacity) {
+    capacity_(std::max(initial_capacity, kMinCapacity)) {
+  // Keep even zero-capacity requests growable through the normal enqueue path.
+  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw QueueOverflowException("Queue capacity overflow");
+  }
+
+  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
 }
 
 template <typename T>
@@ -72,12 +77,11 @@ auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
     grow();
   }
 
-  // Construct the element in-place at the rear position.
-  T* rear_ptr = &data_[rear_];
-  new (rear_ptr) T(std::forward<Args>(args)...);
+  T* rear_ptr = data_.get() + rear_;
+  std::construct_at(rear_ptr, std::forward<Args>(args)...);
 
   rear_ = next_index(rear_);
-  size_++;
+  ++size_;
 
   return *rear_ptr;
 }
@@ -101,7 +105,7 @@ void CircularArrayQueue<T>::dequeue() {
   }
 
   // Explicitly destroy the front element.
-  data_[front_].~T();
+  std::destroy_at(data_.get() + front_);
 
   front_ = next_index(front_);
   size_--;
@@ -121,9 +125,9 @@ template <typename T>
 void CircularArrayQueue<T>::clear() noexcept {
   // Explicitly destroy all elements in the queue.
   while (!is_empty()) {
-    data_[front_].~T();
+    std::destroy_at(data_.get() + front_);
     front_ = next_index(front_);
-    size_--;
+    --size_;
   }
   front_ = 0;
   rear_  = 0;
@@ -188,28 +192,36 @@ void CircularArrayQueue<T>::reserve(size_t n) {
 
 template <typename T>
 void CircularArrayQueue<T>::shrink_to_fit() {
-  if (size_ < capacity_ - 1) {
-    size_t new_capacity = std::max(size_ + 1, kMinCapacity);
+  if (size_ < capacity_) {
+    size_t new_capacity = std::max(size_, kMinCapacity);
     reallocate(new_capacity);
   }
 }
 
 template <typename T>
 void CircularArrayQueue<T>::grow() {
-  // Check for overflow BEFORE multiplication.
   if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw QueueOverflowException("Queue capacity overflow");
   }
 
-  size_t new_capacity = capacity_ * kGrowthFactor;
+  // A moved-from queue has zero capacity; grow it before touching storage.
+  size_t new_capacity = std::max(capacity_ * kGrowthFactor, kMinCapacity);
   reallocate(new_capacity);
 }
 
 template <typename T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
+  if (new_capacity < size_) {
+    new_capacity = size_;
+  }
+
+  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
+    throw QueueOverflowException("Queue capacity overflow");
+  }
+
   // Allocate raw memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))),
-                                              [](T* ptr) -> auto { ::operator delete[](ptr); });
+  std::unique_ptr<T[], void (*)(T*)> new_data(
+      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
 
   // Copy elements to new array in logical order with exception safety.
   size_t constructed_count = 0;
@@ -217,17 +229,17 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
 
   try {
     for (; constructed_count < size_; ++constructed_count) {
-      if constexpr (std::is_nothrow_move_constructible_v<T>) {
-        new (new_data.get() + constructed_count) T(std::move(data_[current]));
+      if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+        std::construct_at(new_data.get() + constructed_count, std::move(data_[current]));
       } else {
-        new (new_data.get() + constructed_count) T(data_[current]);
+        std::construct_at(new_data.get() + constructed_count, data_[current]);
       }
       current = next_index(current);
     }
   } catch (...) {
-    // Destroy already-constructed elements in new array.
+    // The old queue remains authoritative, so only the partial replacement is rolled back.
     for (size_t i = 0; i < constructed_count; ++i) {
-      new_data[i].~T();
+      std::destroy_at(new_data.get() + i);
     }
     throw;
   }
@@ -235,7 +247,7 @@ void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   // Destroy old elements only after all new elements are constructed.
   current = front_;
   for (size_t i = 0; i < size_; ++i) {
-    data_[current].~T();
+    std::destroy_at(data_.get() + current);
     current = next_index(current);
   }
 
