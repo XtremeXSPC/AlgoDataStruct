@@ -13,6 +13,9 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+#include <iterator>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -97,6 +100,43 @@ struct ThrowingDefaultConstructionType {
     live_count                = 0;
     default_construction_call = 0;
     throw_on_default_call     = -1;
+  }
+};
+
+struct ThrowingCopyConstructionType {
+  inline static int live_count         = 0;
+  inline static int copy_call          = 0;
+  inline static int throw_on_copy_call = -1;
+  int               value              = 0;
+
+  explicit ThrowingCopyConstructionType(int v = 0) : value(v) { ++live_count; }
+
+  ThrowingCopyConstructionType(const ThrowingCopyConstructionType& other) : value(other.value) {
+    ++copy_call;
+    if (throw_on_copy_call > 0 && copy_call == throw_on_copy_call) {
+      throw std::runtime_error("copy construction failed");
+    }
+    ++live_count;
+  }
+
+  ThrowingCopyConstructionType(ThrowingCopyConstructionType&& other) noexcept : value(other.value) { ++live_count; }
+
+  auto operator=(const ThrowingCopyConstructionType& other) -> ThrowingCopyConstructionType& {
+    value = other.value;
+    return *this;
+  }
+
+  auto operator=(ThrowingCopyConstructionType&& other) noexcept -> ThrowingCopyConstructionType& {
+    value = other.value;
+    return *this;
+  }
+
+  ~ThrowingCopyConstructionType() { --live_count; }
+
+  static auto reset() -> void {
+    live_count         = 0;
+    copy_call          = 0;
+    throw_on_copy_call = -1;
   }
 };
 
@@ -196,6 +236,40 @@ TEST_F(DynamicArrayTest, RangeBasedIteration) {
   EXPECT_EQ(values, expected);
 }
 
+TEST_F(DynamicArrayTest, ConstructAndAssignFromRanges) {
+  std::vector<int> values = {1, 2, 3};
+
+  DynamicArray<int> from_range(values.begin(), values.end());
+  EXPECT_EQ(from_range.size(), 3u);
+  EXPECT_EQ(from_range[0], 1);
+  EXPECT_EQ(from_range[2], 3);
+
+  from_range.assign({4, 5});
+  EXPECT_EQ(from_range.size(), 2u);
+  EXPECT_EQ(from_range.front(), 4);
+  EXPECT_EQ(from_range.back(), 5);
+
+  from_range.assign(3, 9);
+  EXPECT_EQ(from_range.size(), 3u);
+  EXPECT_EQ(from_range[0], 9);
+  EXPECT_EQ(from_range[2], 9);
+}
+
+TEST_F(DynamicArrayTest, AssignFromMoveIteratorRange) {
+  std::vector<std::unique_ptr<int>> values;
+  values.push_back(std::make_unique<int>(10));
+  values.push_back(std::make_unique<int>(20));
+
+  DynamicArray<std::unique_ptr<int>> moved_values;
+  moved_values.assign(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
+
+  EXPECT_EQ(moved_values.size(), 2u);
+  EXPECT_EQ(*moved_values[0], 10);
+  EXPECT_EQ(*moved_values[1], 20);
+  EXPECT_EQ(values[0], nullptr);
+  EXPECT_EQ(values[1], nullptr);
+}
+
 TEST_F(DynamicArrayTest, EmplaceExceptionDoesNotLeakElements) {
   ThrowingMoveAssignmentType::reset();
 
@@ -230,6 +304,29 @@ TEST_F(DynamicArrayTest, ResizeDefaultConstructionExceptionKeepsArrayConsistent)
   }
 
   EXPECT_EQ(ThrowingDefaultConstructionType::live_count, 0);
+}
+
+TEST_F(DynamicArrayTest, AssignRangeExceptionKeepsExistingArray) {
+  ThrowingCopyConstructionType::reset();
+
+  {
+    DynamicArray<ThrowingCopyConstructionType> throwing_array;
+    throwing_array.emplace_back(1);
+    throwing_array.emplace_back(2);
+
+    std::array<ThrowingCopyConstructionType, 3> replacements = {
+        ThrowingCopyConstructionType(10), ThrowingCopyConstructionType(20), ThrowingCopyConstructionType(30)};
+
+    ThrowingCopyConstructionType::copy_call          = 0;
+    ThrowingCopyConstructionType::throw_on_copy_call = 2;
+
+    EXPECT_THROW(throwing_array.assign(replacements.begin(), replacements.end()), std::runtime_error);
+    EXPECT_EQ(throwing_array.size(), 2u);
+    EXPECT_EQ(throwing_array[0].value, 1);
+    EXPECT_EQ(throwing_array[1].value, 2);
+  }
+
+  EXPECT_EQ(ThrowingCopyConstructionType::live_count, 0);
 }
 
 //===---------------------------------------------------------------------------===//

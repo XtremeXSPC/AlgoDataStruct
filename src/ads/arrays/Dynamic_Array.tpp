@@ -91,6 +91,31 @@ DynamicArray<T>::DynamicArray(size_t count, const T& value) :
 }
 
 template <ArrayElement T>
+template <std::input_iterator InputIt>
+DynamicArray<T>::DynamicArray(InputIt first, InputIt last)
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>
+    : data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }), size_(0), capacity_(kMinCapacity) {
+  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+
+  if constexpr (std::forward_iterator<InputIt>) {
+    const auto count = std::distance(first, last);
+    if (count > 0) {
+      reserve(static_cast<size_t>(count));
+    }
+  }
+
+  try {
+    for (; first != last; ++first) {
+      emplace_back(*first);
+    }
+  } catch (...) {
+    // Constructors do not call ~DynamicArray on failure, so clean live elements here.
+    clear();
+    throw;
+  }
+}
+
+template <ArrayElement T>
 DynamicArray<T>::DynamicArray(DynamicArray&& other) noexcept :
     data_(std::move(other.data_)),
     size_(other.size_),
@@ -259,6 +284,32 @@ auto DynamicArray<T>::clear() noexcept -> void {
     }
   }
   size_ = 0;
+}
+
+template <ArrayElement T>
+auto DynamicArray<T>::assign(size_t count, const T& value) -> void
+  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+{
+  // Build first so a failed copy leaves the existing array untouched.
+  DynamicArray replacement(count, value);
+  *this = std::move(replacement);
+}
+
+template <ArrayElement T>
+auto DynamicArray<T>::assign(std::initializer_list<T> values) -> void
+  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+{
+  assign(values.begin(), values.end());
+}
+
+template <ArrayElement T>
+template <std::input_iterator InputIt>
+auto DynamicArray<T>::assign(InputIt first, InputIt last) -> void
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>
+{
+  // Build first so a failed range copy/move leaves the existing array untouched.
+  DynamicArray replacement(first, last);
+  *this = std::move(replacement);
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//

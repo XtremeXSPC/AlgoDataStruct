@@ -83,6 +83,17 @@ public:
   DynamicArray(size_t count, const T& value);
 
   /**
+   * @brief Constructs a dynamic array from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  DynamicArray(InputIt first, InputIt last)
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>;
+
+  /**
    * @brief Move constructor.
    * @param other The array to move from.
    * @complexity Time O(1), Space O(1)
@@ -191,6 +202,34 @@ public:
    * @complexity Time O(n), Space O(1)
    */
   auto clear() noexcept -> void;
+
+  /**
+   * @brief Replaces all elements with count copies of value.
+   * @param count Number of elements to create.
+   * @param value Value to fill the array with.
+   * @complexity Time O(n), Space O(n)
+   */
+  auto assign(size_t count, const T& value) -> void
+    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
+
+  /**
+   * @brief Replaces all elements from an initializer list.
+   * @param values Elements to copy into the array.
+   * @complexity Time O(n), Space O(n)
+   */
+  auto assign(std::initializer_list<T> values) -> void
+    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
+
+  /**
+   * @brief Replaces all elements from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  auto assign(InputIt first, InputIt last) -> void
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
