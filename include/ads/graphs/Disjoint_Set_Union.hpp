@@ -16,12 +16,12 @@
 #ifndef DISJOINT_SET_UNION_HPP
 #define DISJOINT_SET_UNION_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+
 #include <algorithm>
 #include <cstddef>
-#include <numeric>
 #include <stdexcept>
 #include <utility>
-#include <vector>
 
 namespace ads::graphs {
 
@@ -157,12 +157,14 @@ public:
 private:
   auto validate_index(size_t element) const -> void;
 
-  std::vector<size_t> parent_;
-  std::vector<size_t> rank_;
-  size_t              set_count_ = 0;
+  ads::arrays::DynamicArray<size_t> parent_;
+  ads::arrays::DynamicArray<size_t> rank_;
+  size_t                            set_count_ = 0;
 };
 
 //===-------------------------- INLINE IMPLEMENTATION --------------------------===//
+
+// Storage choice: DynamicArray keeps Union-Find's parent/rank tables contiguous.
 
 inline DisjointSetUnion::DisjointSetUnion(size_t num_elements) {
   reset(num_elements);
@@ -186,9 +188,15 @@ inline auto DisjointSetUnion::operator=(DisjointSetUnion&& other) noexcept -> Di
 }
 
 inline auto DisjointSetUnion::reset(size_t num_elements) -> void {
-  parent_.resize(num_elements);
-  rank_.assign(num_elements, 0);
-  std::iota(parent_.begin(), parent_.end(), 0);
+  ads::arrays::DynamicArray<size_t> new_parent(num_elements, 0);
+  ads::arrays::DynamicArray<size_t> new_rank(num_elements, 0);
+
+  for (size_t i = 0; i < num_elements; ++i) {
+    new_parent[i] = i;
+  }
+
+  parent_    = std::move(new_parent);
+  rank_      = std::move(new_rank);
   set_count_ = num_elements;
 }
 

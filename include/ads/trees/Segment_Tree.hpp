@@ -16,6 +16,7 @@
 #ifndef SEGMENT_TREE_HPP
 #define SEGMENT_TREE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
 #include "Segment_Tree_Exception.hpp"
 
 #include <algorithm>
@@ -107,7 +108,7 @@ inline constexpr bool is_leaf_builder_nothrow_v = noexcept(std::declval<LeafBuil
  *
  * @details This implementation uses an iterative approach with exactly 2n memory
  *          (where n is the number of elements). The tree is stored implicitly in
- *          a vector using 0-based indexing for the public API.
+ *          contiguous storage using 0-based indexing for the public API.
  *
  *          **Memory Layout:**
  *            - Indices [0, n-1]: Internal nodes (index 0 unused, root at index 1)
@@ -157,8 +158,8 @@ public:
   /**
    * @brief Const iterator for traversing the original values.
    */
-  using const_iterator         = typename std::vector<Value>::const_iterator;
-  using const_reverse_iterator = typename std::vector<Value>::const_reverse_iterator;
+  using const_iterator         = typename ads::arrays::DynamicArray<Value>::const_iterator;
+  using const_reverse_iterator = typename ads::arrays::DynamicArray<Value>::const_reverse_iterator;
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
@@ -232,8 +233,7 @@ public:
    * @param values Input values (0-based indexing), moved from.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr explicit SegmentTree(std::vector<Value>&& values) noexcept(
-      std::is_nothrow_move_constructible_v<std::vector<Value>>);
+  constexpr explicit SegmentTree(std::vector<Value>&& values);
 
   /**
    * @brief Constructs a Segment Tree from a vector with custom functors (copy).
@@ -254,9 +254,8 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {}) noexcept(
-      std::is_nothrow_move_constructible_v<std::vector<Value>> && std::is_nothrow_move_constructible_v<Combine>
-      && std::is_nothrow_move_constructible_v<Identity> && std::is_nothrow_move_constructible_v<LeafBuilder>);
+  constexpr SegmentTree(
+      std::vector<Value>&& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from an initializer list.
@@ -338,8 +337,7 @@ public:
    * @param values Input values (0-based indexing), moved from.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr auto build(std::vector<Value>&& values) noexcept(std::is_nothrow_move_assignable_v<std::vector<Value>>)
-      -> void;
+  constexpr auto build(std::vector<Value>&& values) -> void;
 
   /**
    * @brief Rebuilds the tree from an initializer list of values.
@@ -594,12 +592,12 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  Combine                combine_{};      ///< Functor to combine two nodes.
-  Identity               identity_{};     ///< Functor to get the identity node.
-  LeafBuilder            leaf_builder_{}; ///< Functor to build leaf nodes from values.
-  std::vector<Value>     values_{};       ///< Original values for point access.
-  std::vector<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
-  size_type              size_ = 0;       ///< Number of elements in the tree.
+  Combine                              combine_{};      ///< Functor to combine two nodes.
+  Identity                             identity_{};     ///< Functor to get the identity node.
+  LeafBuilder                          leaf_builder_{}; ///< Functor to build leaf nodes from values.
+  ads::arrays::DynamicArray<Value>     values_{};       ///< Original values for point access.
+  ads::arrays::DynamicArray<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
+  size_type                            size_ = 0;       ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees

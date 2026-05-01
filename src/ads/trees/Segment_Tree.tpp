@@ -17,6 +17,9 @@
 
 namespace ads::trees {
 
+// Storage choice: DynamicArray provides the contiguous leaf and node tables
+// required by the iterative segment-tree layout.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
@@ -87,7 +90,7 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
     combine_(),
     identity_(),
     leaf_builder_(),
-    values_(values),
+    values_(values.begin(), values.end()),
     tree_(),
     size_(values.size()) {
   build_tree();
@@ -95,14 +98,15 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(std::vector<Value>&& values) noexcept(
-    std::is_nothrow_move_constructible_v<std::vector<Value>>) :
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(std::vector<Value>&& values) :
     combine_(),
     identity_(),
     leaf_builder_(),
-    values_(std::move(values)),
+    values_(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())),
     tree_(),
     size_(0) {
+  // Preserve the previous vector-backed move behavior that callers may observe.
+  values.clear();
   size_ = values_.size();
   build_tree();
 }
@@ -114,7 +118,7 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
     combine_(std::move(combine)),
     identity_(std::move(identity)),
     leaf_builder_(std::move(leaf_builder)),
-    values_(values),
+    values_(values.begin(), values.end()),
     tree_(),
     size_(values.size()) {
   build_tree();
@@ -122,16 +126,16 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::
-    SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity, LeafBuilder leaf_builder) noexcept(
-        std::is_nothrow_move_constructible_v<std::vector<Value>> && std::is_nothrow_move_constructible_v<Combine>
-        && std::is_nothrow_move_constructible_v<Identity> && std::is_nothrow_move_constructible_v<LeafBuilder>) :
+constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
+    std::vector<Value>&& values, Combine combine, Identity identity, LeafBuilder leaf_builder) :
     combine_(std::move(combine)),
     identity_(std::move(identity)),
     leaf_builder_(std::move(leaf_builder)),
-    values_(std::move(values)),
+    values_(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())),
     tree_(),
     size_(0) {
+  // Preserve the previous vector-backed move behavior that callers may observe.
+  values.clear();
   size_ = values_.size();
   build_tree();
 }
@@ -224,17 +228,18 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(const std::vector<Value>& values)
     -> void {
-  values_ = values;
-  size_   = values_.size();
+  values_.assign(values.begin(), values.end());
+  size_ = values_.size();
   build_tree();
 }
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(std::vector<Value>&& values) noexcept(
-    std::is_nothrow_move_assignable_v<std::vector<Value>>) -> void {
-  values_ = std::move(values);
-  size_   = values_.size();
+constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(std::vector<Value>&& values) -> void {
+  values_.assign(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
+  // Preserve the previous vector-backed move behavior that callers may observe.
+  values.clear();
+  size_ = values_.size();
   build_tree();
 }
 
@@ -242,7 +247,7 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(std::initializer_list<Value> values)
     -> void {
-  values_.assign(values.begin(), values.end());
+  values_.assign(values);
   size_ = values_.size();
   build_tree();
 }

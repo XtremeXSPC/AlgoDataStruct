@@ -16,6 +16,7 @@
 #ifndef FENWICK_TREE_HPP
 #define FENWICK_TREE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
 #include "Fenwick_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
 
@@ -249,9 +250,9 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::vector<T> values_;   ///< Original values for value_at() and set().
-  std::vector<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
-  size_t         size_ = 0; ///< Number of elements.
+  ads::arrays::DynamicArray<T> values_;   ///< Original values for value_at() and set().
+  ads::arrays::DynamicArray<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
+  size_t                       size_ = 0; ///< Number of elements.
 };
 
 } // namespace ads::trees

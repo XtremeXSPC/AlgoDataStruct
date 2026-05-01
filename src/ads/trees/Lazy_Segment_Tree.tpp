@@ -19,6 +19,9 @@
 
 namespace ads::trees {
 
+// Storage choice: DynamicArray keeps the value table and lazy tree nodes
+// contiguous for recursive lazy propagation.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -64,7 +67,7 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(values),
+    values_(values.begin(), values.end()),
     tree_(),
     size_(values.size()) {
   build_tree();
@@ -77,9 +80,11 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(std::move(values)),
+    values_(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())),
     tree_(),
     size_(0) {
+  // Preserve the previous vector-backed move behavior that callers may observe.
+  values.clear();
   size_ = values_.size();
   build_tree();
 }
@@ -151,8 +156,8 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(const std::vector<Value>& values)
     -> void {
-  values_ = values;
-  size_   = values_.size();
+  values_.assign(values.begin(), values.end());
+  size_ = values_.size();
   build_tree();
 }
 
@@ -160,8 +165,10 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(std::vector<Value>&& values)
     -> void {
-  values_ = std::move(values);
-  size_   = values_.size();
+  values_.assign(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
+  // Preserve the previous vector-backed move behavior that callers may observe.
+  values.clear();
+  size_ = values_.size();
   build_tree();
 }
 
@@ -169,7 +176,7 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto
 LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(std::initializer_list<Value> values) -> void {
-  values_.assign(values.begin(), values.end());
+  values_.assign(values);
   size_ = values_.size();
   build_tree();
 }

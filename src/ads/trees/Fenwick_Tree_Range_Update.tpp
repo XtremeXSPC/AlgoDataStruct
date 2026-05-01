@@ -17,6 +17,8 @@
 
 namespace ads::trees {
 
+// Storage choice: DynamicArray keeps the 1-based difference BIT contiguous.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <FenwickElement T>

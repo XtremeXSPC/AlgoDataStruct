@@ -20,7 +20,6 @@
 #include "Fenwick_Tree_Exception.hpp"
 
 #include <cstddef>
-#include <vector>
 
 namespace ads::trees {
 
@@ -171,8 +170,8 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::vector<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
-  size_t         size_ = 0; ///< Number of elements.
+  ads::arrays::DynamicArray<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
+  size_t                       size_ = 0; ///< Number of elements.
 };
 
 } // namespace ads::trees

@@ -16,6 +16,7 @@
 #ifndef LAZY_SEGMENT_TREE_HPP
 #define LAZY_SEGMENT_TREE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
 #include "Segment_Tree_Exception.hpp"
 
 #include <concepts>
@@ -416,13 +417,13 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  Combine                       combine_{};  ///< Functor to combine two nodes.
-  Apply                         apply_{};    ///< Functor to apply a tag to a node.
-  Compose                       compose_{};  ///< Functor to compose two tags.
-  Identity                      identity_{}; ///< Functor to get the identity node.
-  std::vector<Value>            values_{};   ///< Original values for point access.
-  mutable std::vector<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
-  size_type                     size_ = 0;   ///< Number of elements in the tree.
+  Combine                                     combine_{};  ///< Functor to combine two nodes.
+  Apply                                       apply_{};    ///< Functor to apply a tag to a node.
+  Compose                                     compose_{};  ///< Functor to compose two tags.
+  Identity                                    identity_{}; ///< Functor to get the identity node.
+  ads::arrays::DynamicArray<Value>            values_{};   ///< Original values for point access.
+  mutable ads::arrays::DynamicArray<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
+  size_type                                   size_ = 0;   ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees
