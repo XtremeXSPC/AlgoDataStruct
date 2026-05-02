@@ -16,11 +16,13 @@
 #ifndef HASH_SET_HPP
 #define HASH_SET_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+#include "../lists/Doubly_Linked_List.hpp"
+
 #include <cstddef>
 #include <functional>
 #include <initializer_list>
-#include <list>
-#include <vector>
+#include <iterator>
 
 namespace ads::associative {
 
@@ -65,7 +67,7 @@ public:
   private:
     friend class HashSet<T, Hash>;
 
-    using BucketType     = std::list<T>;
+    using BucketType     = ads::lists::DoublyLinkedList<T>;
     using BucketIterator = typename BucketType::const_iterator;
 
     const HashSet<T, Hash>* set_        = nullptr;
@@ -247,10 +249,10 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::vector<std::list<T>> buckets_;         ///< Buckets for separate chaining.
-  size_t                    size_;            ///< Number of elements in the set.
-  double                    max_load_factor_; ///< Load factor threshold.
-  Hash                      hasher_;          ///< Hash function object.
+  ads::arrays::DynamicArray<ads::lists::DoublyLinkedList<T>> buckets_;         ///< Buckets for separate chaining.
+  size_t                                                     size_;            ///< Number of elements in the set.
+  double                                                     max_load_factor_; ///< Load factor threshold.
+  Hash                                                       hasher_;          ///< Hash function object.
 };
 
 } // namespace ads::associative

@@ -14,19 +14,25 @@
 #pragma once
 #include "../../../include/ads/hash/Hash_Table_Chaining.hpp"
 
+#include <algorithm>
+
 namespace ads::hash {
+
+// Storage choice: DynamicArray owns the bucket table and
+// DoublyLinkedList provides stable separate-chaining nodes without std::list.
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename Key, typename Value>
 HashTableChaining<Key, Value>::HashTableChaining(size_t initial_capacity, float max_load_factor) :
-    buckets_(std::make_unique<Bucket[]>(initial_capacity)),
-    capacity_(initial_capacity),
+    buckets_(),
+    capacity_(std::max<size_t>(initial_capacity, 1)),
     size_(0),
     max_load_factor_(max_load_factor) {
   if (max_load_factor <= 0.0f) {
     throw InvalidOperationException("Max load factor must be positive");
   }
+  buckets_.resize(capacity_);
 }
 
 template <typename Key, typename Value>
@@ -293,18 +299,20 @@ template <typename Key, typename Value>
 void HashTableChaining<Key, Value>::rehash(size_t new_capacity) {
   // Build the new table entirely before touching *this — strong exception guarantee:
   // if any allocation throws, the original buckets_ remain intact.
-  auto new_buckets = std::make_unique<Bucket[]>(new_capacity);
+  const size_t                      bucket_count = std::max<size_t>(new_capacity, 1);
+  ads::arrays::DynamicArray<Bucket> new_buckets;
+  new_buckets.resize(bucket_count);
 
   for (size_t i = 0; i < capacity_; ++i) {
     for (auto& entry : buckets_[i]) {
-      size_t new_idx = std::hash<Key>{}(entry.first) % new_capacity;
+      size_t new_idx = std::hash<Key>{}(entry.first) % bucket_count;
       new_buckets[new_idx].emplace_back(entry.first, std::move(entry.second));
     }
   }
 
   // All reinserts succeeded — commit atomically.
   buckets_  = std::move(new_buckets);
-  capacity_ = new_capacity;
+  capacity_ = bucket_count;
   // size_ is unchanged: we moved all existing entries, no elements added or removed.
 }
 

@@ -16,6 +16,9 @@
 
 namespace ads::associative {
 
+// Storage choice: HashMap stores entries through HashTableChaining; the
+// iterators use that table's ads:: bucket type rather than baking in std::list.
+
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <typename Key, typename Value, typename Hash>
@@ -72,7 +75,7 @@ auto HashMap<Key, Value, Hash>::iterator::advance_to_next_bucket() -> void {
   ++bucket_idx_;
 
   // Find next non-empty bucket.
-  while (bucket_idx_ < map_->table_.capacity_ && map_->table_.buckets_[bucket_idx_].empty()) {
+  while (bucket_idx_ < map_->table_.capacity_ && map_->table_.buckets_[bucket_idx_].is_empty()) {
     ++bucket_idx_;
   }
 
@@ -142,7 +145,7 @@ auto HashMap<Key, Value, Hash>::const_iterator::advance_to_next_bucket() -> void
 
   ++bucket_idx_;
 
-  while (bucket_idx_ < map_->table_.capacity_ && map_->table_.buckets_[bucket_idx_].empty()) {
+  while (bucket_idx_ < map_->table_.capacity_ && map_->table_.buckets_[bucket_idx_].is_empty()) {
     ++bucket_idx_;
   }
 
@@ -383,7 +386,7 @@ template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::begin() -> iterator {
   // Find first non-empty bucket
   for (size_t i = 0; i < table_.capacity_; ++i) {
-    if (!table_.buckets_[i].empty()) {
+    if (!table_.buckets_[i].is_empty()) {
       return iterator(this, i, table_.buckets_[i].begin());
     }
   }
@@ -393,7 +396,7 @@ auto HashMap<Key, Value, Hash>::begin() -> iterator {
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::begin() const -> const_iterator {
   for (size_t i = 0; i < table_.capacity_; ++i) {
-    if (!table_.buckets_[i].empty()) {
+    if (!table_.buckets_[i].is_empty()) {
       return const_iterator(this, i, table_.buckets_[i].begin());
     }
   }
@@ -427,7 +430,7 @@ auto HashMap<Key, Value, Hash>::cend() const -> const_iterator {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find_in_table(const Key& key)
-    -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator> {
+    -> std::pair<size_t, typename hash::HashTableChaining<Key, Value>::Bucket::iterator> {
   size_t bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 
@@ -442,7 +445,7 @@ auto HashMap<Key, Value, Hash>::find_in_table(const Key& key)
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) const
-    -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator> {
+    -> std::pair<size_t, typename hash::HashTableChaining<Key, Value>::Bucket::const_iterator> {
   size_t      bucket_idx = table_.hash(key);
   const auto& bucket     = table_.buckets_[bucket_idx];
 

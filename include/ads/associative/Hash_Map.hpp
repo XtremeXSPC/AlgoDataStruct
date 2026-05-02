@@ -78,7 +78,7 @@ public:
   private:
     friend class HashMap;
 
-    using BucketIterator = typename std::list<Entry>::iterator;
+    using BucketIterator = typename hash::HashTableChaining<Key, Value>::Bucket::iterator;
 
     HashMap*       map_;        ///< Pointer to the hash map being iterated.
     size_t         bucket_idx_; ///< Current bucket index.
@@ -125,7 +125,7 @@ public:
   private:
     friend class HashMap;
 
-    using BucketIterator = typename std::list<Entry>::const_iterator;
+    using BucketIterator = typename hash::HashTableChaining<Key, Value>::Bucket::const_iterator;
 
     const HashMap* map_;
     size_t         bucket_idx_;
@@ -441,7 +441,8 @@ private:
    * @return Bucket index and iterator to entry (or end of bucket if not found).
    * @complexity Time O(1) average, O(n) worst case
    */
-  auto find_in_table(const Key& key) -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::iterator>;
+  auto find_in_table(const Key& key)
+      -> std::pair<size_t, typename hash::HashTableChaining<Key, Value>::Bucket::iterator>;
 
   /**
    * @brief Finds an entry in the underlying table (const).
@@ -450,7 +451,7 @@ private:
    * @complexity Time O(1) average, O(n) worst case
    */
   auto find_in_table(const Key& key) const
-      -> std::pair<size_t, typename std::list<std::pair<Key, Value>>::const_iterator>;
+      -> std::pair<size_t, typename hash::HashTableChaining<Key, Value>::Bucket::const_iterator>;
 
   // Access to internal table structure (for iterators).
   friend class iterator;

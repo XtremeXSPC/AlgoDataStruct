@@ -19,14 +19,18 @@
 
 namespace ads::associative {
 
+// Storage choice: DynamicArray stores the bucket table while
+// DoublyLinkedList keeps separate chains with stable erase-by-iterator support.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T, typename Hash>
 HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor) :
-    buckets_(initial_capacity),
+    buckets_(),
     size_(0),
     max_load_factor_(max_load_factor),
     hasher_() {
+  buckets_.resize(std::max<size_t>(initial_capacity, 1));
   if (max_load_factor_ <= 0) {
     max_load_factor_ = 0.75;
   }
@@ -77,7 +81,7 @@ auto HashSet<T, Hash>::insert(const T& value) -> bool {
   check_load_factor();
 
   // bucket_index must be recomputed: check_load_factor may have rehashed.
-  idx   = bucket_index(value);
+  idx          = bucket_index(value);
   auto& chain2 = buckets_[idx];
   chain2.push_back(value);
   ++size_;
@@ -97,7 +101,7 @@ auto HashSet<T, Hash>::insert(T&& value) -> bool {
 
   check_load_factor();
 
-  idx         = bucket_index(value);
+  idx          = bucket_index(value);
   auto& chain2 = buckets_[idx];
   chain2.push_back(std::move(value));
   ++size_;
@@ -167,7 +171,7 @@ auto HashSet<T, Hash>::bucket_count() const noexcept -> size_t {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::load_factor() const noexcept -> double {
-  if (buckets_.empty()) {
+  if (buckets_.is_empty()) {
     return 0.0;
   }
   return static_cast<double>(size_) / static_cast<double>(buckets_.size());
@@ -178,7 +182,7 @@ auto HashSet<T, Hash>::load_factor() const noexcept -> double {
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::begin() const -> iterator {
   for (size_t i = 0; i < buckets_.size(); ++i) {
-    if (!buckets_[i].empty()) {
+    if (!buckets_[i].is_empty()) {
       return iterator(this, i, buckets_[i].begin());
     }
   }
@@ -210,11 +214,13 @@ auto HashSet<T, Hash>::bucket_index(const T& value) const -> size_t {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::rehash(size_t new_bucket_count) -> void {
-  std::vector<std::list<T>> new_buckets(new_bucket_count);
+  const size_t                                               bucket_count = std::max<size_t>(new_bucket_count, 1);
+  ads::arrays::DynamicArray<ads::lists::DoublyLinkedList<T>> new_buckets;
+  new_buckets.resize(bucket_count);
 
   for (auto& bucket : buckets_) {
     for (auto& elem : bucket) {
-      size_t idx = hasher_(elem) % new_bucket_count;
+      size_t idx = hasher_(elem) % bucket_count;
       new_buckets[idx].push_back(std::move(elem));
     }
   }
@@ -268,7 +274,7 @@ auto HashSet<T, Hash>::iterator::operator==(const iterator& other) const -> bool
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::iterator::advance_to_next_bucket() -> void {
   ++bucket_idx_;
-  while (bucket_idx_ < set_->buckets_.size() && set_->buckets_[bucket_idx_].empty()) {
+  while (bucket_idx_ < set_->buckets_.size() && set_->buckets_[bucket_idx_].is_empty()) {
     ++bucket_idx_;
   }
   if (bucket_idx_ < set_->buckets_.size()) {

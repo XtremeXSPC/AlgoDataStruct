@@ -16,12 +16,12 @@
 #ifndef HASH_TABLE_CHAINING_HPP
 #define HASH_TABLE_CHAINING_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+#include "../lists/Doubly_Linked_List.hpp"
 #include "Hash_Table_Exception.hpp"
 
 #include <cstddef>
 #include <functional>
-#include <list>
-#include <memory>
 #include <utility>
 
 // Forward declaration for HashMap friend
@@ -262,7 +262,7 @@ private:
   /**
    * @brief A bucket is a list of entries.
    */
-  using Bucket = std::list<Entry>;
+  using Bucket = ads::lists::DoublyLinkedList<Entry>;
 
   //===============================================================================//
   //===------------------------ PRIVATE HASHING METHODS ------------------------===//
@@ -312,10 +312,10 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::unique_ptr<Bucket[]> buckets_;         ///< Array of buckets.
-  size_t                    capacity_;        ///< Number of buckets.
-  size_t                    size_;            ///< Number of entries.
-  float                     max_load_factor_; ///< Threshold for rehashing.
+  ads::arrays::DynamicArray<Bucket> buckets_;         ///< Array of buckets.
+  size_t                            capacity_;        ///< Number of buckets.
+  size_t                            size_;            ///< Number of entries.
+  float                             max_load_factor_; ///< Threshold for rehashing.
 
   static constexpr size_t kInitialCapacity      = 16;
   static constexpr float  kDefaultMaxLoadFactor = 0.75f;
