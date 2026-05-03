@@ -16,11 +16,12 @@
 #ifndef MAX_HEAP_HPP
 #define MAX_HEAP_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
 #include "Heap_Exception.hpp"
 
 #include <algorithm>
-#include <memory>
-#include <new>
+#include <concepts>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -61,6 +62,18 @@ public:
    * @note Uses bottom-up heapify for O(n) construction
    */
   explicit MaxHeap(const std::vector<T>& elements);
+
+  /**
+   * @brief Constructs a heap from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   * @note Uses bottom-up heapify for O(n) construction.
+   */
+  template <std::input_iterator InputIt>
+  explicit MaxHeap(InputIt first, InputIt last)
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Move constructor.
@@ -187,12 +200,9 @@ public:
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  T*     data_;     ///< Pointer to the dynamic array.
-  size_t size_;     ///< Number of elements in the heap.
-  size_t capacity_; ///< Current capacity of the array.
+  ads::arrays::DynamicArray<T> data_; ///< Contiguous heap storage.
 
   static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity.
-  static constexpr size_t kGrowthFactor    = 2;  ///< Growth factor for reallocation.
 
   //===============================================================================//
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
@@ -217,14 +227,6 @@ private:
    * @complexity Time O(n), Space O(1)
    */
   auto build_heap() -> void;
-
-  /**
-   * @brief Grows the heap capacity when full.
-   * @complexity Time O(n), Space O(n)
-   * @throws HeapException if capacity would overflow.
-   * @throws std::bad_alloc if allocation fails.
-   */
-  auto grow() -> void;
 
   //===----------------------- INDEX CALCULATION METHODS -----------------------===//
 

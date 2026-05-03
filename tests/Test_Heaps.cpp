@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -54,6 +55,13 @@ TEST_F(MinHeapTest, ExtractMin) {
   EXPECT_TRUE(heap.is_empty());
 }
 
+TEST_F(MinHeapTest, ExtractSingleElement) {
+  heap.insert(10);
+
+  EXPECT_EQ(heap.extract_min(), 10);
+  EXPECT_TRUE(heap.is_empty());
+}
+
 TEST_F(MinHeapTest, TopOnEmptyThrows) {
   EXPECT_THROW(heap.top(), HeapException);
 }
@@ -76,6 +84,14 @@ TEST_F(MinHeapTest, BuildFromVector) {
   MinHeap<int>     built_heap(data);
 
   EXPECT_EQ(built_heap.size(), 5);
+  EXPECT_EQ(built_heap.top(), 10);
+}
+
+TEST_F(MinHeapTest, BuildFromRange) {
+  const std::array<int, 5> data = {50, 30, 40, 10, 20};
+  MinHeap<int>             built_heap(data.begin(), data.end());
+
+  EXPECT_EQ(built_heap.size(), data.size());
   EXPECT_EQ(built_heap.top(), 10);
 }
 
@@ -103,6 +119,16 @@ TEST_F(MinHeapTest, MoveSemantics) {
   heap = std::move(moved_heap);
   EXPECT_TRUE(moved_heap.is_empty());
   EXPECT_EQ(heap.size(), 3);
+}
+
+TEST_F(MinHeapTest, DecreaseKeyMovesElementUp) {
+  heap.insert(30);
+  heap.insert(20);
+  heap.insert(40);
+
+  heap.decrease_key(2, 10);
+
+  EXPECT_EQ(heap.top(), 10);
 }
 
 TEST_F(MinHeapTest, HeapPropertyMaintained) {
@@ -169,6 +195,13 @@ TEST_F(MaxHeapTest, ExtractMax) {
   EXPECT_TRUE(heap.is_empty());
 }
 
+TEST_F(MaxHeapTest, ExtractSingleElement) {
+  heap.insert(30);
+
+  EXPECT_EQ(heap.extract_max(), 30);
+  EXPECT_TRUE(heap.is_empty());
+}
+
 TEST_F(MaxHeapTest, TopOnEmptyThrows) {
   EXPECT_THROW(heap.top(), HeapException);
 }
@@ -191,6 +224,14 @@ TEST_F(MaxHeapTest, BuildFromVector) {
   MaxHeap<int>     built_heap(data);
 
   EXPECT_EQ(built_heap.size(), 5);
+  EXPECT_EQ(built_heap.top(), 50);
+}
+
+TEST_F(MaxHeapTest, BuildFromRange) {
+  const std::array<int, 5> data = {10, 30, 20, 50, 40};
+  MaxHeap<int>             built_heap(data.begin(), data.end());
+
+  EXPECT_EQ(built_heap.size(), data.size());
   EXPECT_EQ(built_heap.top(), 50);
 }
 
@@ -218,6 +259,16 @@ TEST_F(MaxHeapTest, MoveSemantics) {
   heap = std::move(moved_heap);
   EXPECT_TRUE(moved_heap.is_empty());
   EXPECT_EQ(heap.size(), 3);
+}
+
+TEST_F(MaxHeapTest, IncreaseKeyMovesElementUp) {
+  heap.insert(10);
+  heap.insert(20);
+  heap.insert(30);
+
+  heap.increase_key(1, 40);
+
+  EXPECT_EQ(heap.top(), 40);
 }
 
 TEST_F(MaxHeapTest, HeapPropertyMaintained) {

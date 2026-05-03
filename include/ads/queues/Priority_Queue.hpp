@@ -16,10 +16,13 @@
 #ifndef PRIORITY_QUEUE_HPP
 #define PRIORITY_QUEUE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
 #include "Queue_Exception.hpp"
 
+#include <concepts>
 #include <functional>
 #include <initializer_list>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -67,6 +70,19 @@ public:
    * @note Uses bottom-up heapify for O(n) construction.
    */
   PriorityQueue(const std::vector<T>& elements, Compare comp = Compare{});
+
+  /**
+   * @brief Constructs a priority queue from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @param comp Comparison function object.
+   * @complexity Time O(n), Space O(n)
+   * @note Uses bottom-up heapify for O(n) construction.
+   */
+  template <std::input_iterator InputIt>
+  PriorityQueue(InputIt first, InputIt last, Compare comp = Compare{})
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Constructs a priority queue from an initializer list.
@@ -196,8 +212,8 @@ public:
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::vector<T> heap_; ///< Dynamic array storing the heap.
-  Compare        comp_; ///< Comparison function object.
+  ads::arrays::DynamicArray<T> heap_; ///< Dynamic array storing the heap.
+  Compare                      comp_; ///< Comparison function object.
 
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 

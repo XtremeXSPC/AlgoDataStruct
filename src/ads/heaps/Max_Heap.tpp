@@ -16,55 +16,37 @@
 
 namespace ads::heaps {
 
+// DynamicArray keeps heap storage contiguous while centralizing RAII ownership.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
-MaxHeap<T>::MaxHeap(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new(initial_capacity * sizeof(T)))),
-    size_(0),
-    capacity_(initial_capacity) {
+MaxHeap<T>::MaxHeap(size_t initial_capacity) : data_(initial_capacity) {
 }
 
 template <typename T>
-MaxHeap<T>::MaxHeap(const std::vector<T>& elements) :
-    data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))),
-    size_(elements.size()),
-    capacity_(elements.size()) {
-  // Copy elements to the array using placement new.
-  for (size_t i = 0; i < size_; ++i) {
-    new (&data_[i]) T(elements[i]);
-  }
-
-  // Build heap in O(n) time.
+MaxHeap<T>::MaxHeap(const std::vector<T>& elements) : data_(elements.begin(), elements.end()) {
   build_heap();
 }
 
 template <typename T>
-MaxHeap<T>::MaxHeap(MaxHeap&& other) noexcept : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
-  other.data_     = nullptr;
-  other.size_     = 0;
-  other.capacity_ = 0;
+template <std::input_iterator InputIt>
+MaxHeap<T>::MaxHeap(InputIt first, InputIt last)
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+    : data_(first, last) {
+  build_heap();
 }
 
 template <typename T>
-MaxHeap<T>::~MaxHeap() {
-  clear();
-  ::operator delete(data_);
-}
+MaxHeap<T>::MaxHeap(MaxHeap&& other) noexcept = default;
+
+template <typename T>
+MaxHeap<T>::~MaxHeap() = default;
 
 template <typename T>
 auto MaxHeap<T>::operator=(MaxHeap&& other) noexcept -> MaxHeap& {
   if (this != &other) {
-    clear();
-    ::operator delete(data_);
-
-    data_     = other.data_;
-    size_     = other.size_;
-    capacity_ = other.capacity_;
-
-    other.data_     = nullptr;
-    other.size_     = 0;
-    other.capacity_ = 0;
+    data_ = std::move(other.data_);
   }
   return *this;
 }
@@ -73,52 +55,21 @@ auto MaxHeap<T>::operator=(MaxHeap&& other) noexcept -> MaxHeap& {
 
 template <typename T>
 auto MaxHeap<T>::insert(const T& value) -> void {
-  if (size_ == capacity_) {
-    grow();
-  }
-
-  new (&data_[size_]) T(value);
-  try {
-    heapify_up(size_);
-  } catch (...) {
-    data_[size_].~T();
-    throw;
-  }
-  ++size_;
+  data_.push_back(value);
+  heapify_up(data_.size() - 1);
 }
 
 template <typename T>
 auto MaxHeap<T>::insert(T&& value) -> void {
-  if (size_ == capacity_) {
-    grow();
-  }
-
-  new (&data_[size_]) T(std::move(value));
-  try {
-    heapify_up(size_);
-  } catch (...) {
-    data_[size_].~T();
-    throw;
-  }
-  ++size_;
+  data_.push_back(std::move(value));
+  heapify_up(data_.size() - 1);
 }
 
 template <typename T>
 template <typename... Args>
 auto MaxHeap<T>::emplace(Args&&... args) -> T& {
-  if (size_ == capacity_) {
-    grow();
-  }
-
-  new (&data_[size_]) T(std::forward<Args>(args)...);
-  size_t final_index{};
-  try {
-    final_index = heapify_up(size_);
-  } catch (...) {
-    data_[size_].~T();
-    throw;
-  }
-  ++size_;
+  data_.emplace_back(std::forward<Args>(args)...);
+  const size_t final_index = heapify_up(data_.size() - 1);
   return data_[final_index];
 }
 
@@ -150,19 +101,16 @@ auto MaxHeap<T>::extract_max() -> T {
 
   T max_value = std::move(data_[0]);
 
-  // Move last element to root.
-  --size_;
-  if (size_ > 0) {
-    data_[0] = std::move(data_[size_]);
+  if (data_.size() == 1) {
+    // Removing directly avoids self-move assignment for move-sensitive types.
+    data_.pop_back();
+    return max_value;
   }
 
-  // Destroy the last element.
-  data_[size_].~T();
+  data_[0] = std::move(data_.back());
+  data_.pop_back();
 
-  // Restore heap property.
-  if (size_ > 0) {
-    heapify_down(0);
-  }
+  heapify_down(0);
 
   return max_value;
 }
@@ -171,33 +119,29 @@ auto MaxHeap<T>::extract_max() -> T {
 
 template <typename T>
 auto MaxHeap<T>::is_empty() const noexcept -> bool {
-  return size_ == 0;
+  return data_.is_empty();
 }
 
 template <typename T>
 auto MaxHeap<T>::size() const noexcept -> size_t {
-  return size_;
+  return data_.size();
 }
 
 template <typename T>
 auto MaxHeap<T>::capacity() const noexcept -> size_t {
-  return capacity_;
+  return data_.capacity();
 }
 
 template <typename T>
 auto MaxHeap<T>::clear() noexcept -> void {
-  // Explicitly destroy all elements.
-  for (size_t i = 0; i < size_; ++i) {
-    data_[i].~T();
-  }
-  size_ = 0;
+  data_.clear();
 }
 
 //===--------------------------- ADVANCED OPERATIONS ---------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::increase_key(size_t index, const T& new_value) -> void {
-  if (index >= size_) {
+  if (index >= data_.size()) {
     throw HeapException("increase_key() called with invalid index");
   }
 
@@ -230,17 +174,19 @@ auto MaxHeap<T>::heapify_up(size_t index) -> size_t {
 
 template <typename T>
 auto MaxHeap<T>::heapify_down(size_t index) -> void {
+  const size_t heap_size = data_.size();
+
   while (true) {
     size_t left    = left_child(index);
     size_t right   = right_child(index);
     size_t largest = index;
 
     // Max heap: find the largest among node and its children.
-    if (left < size_ && data_[left] > data_[largest]) {
+    if (left < heap_size && data_[left] > data_[largest]) {
       largest = left;
     }
 
-    if (right < size_ && data_[right] > data_[largest]) {
+    if (right < heap_size && data_[right] > data_[largest]) {
       largest = right;
     }
 
@@ -255,55 +201,14 @@ auto MaxHeap<T>::heapify_down(size_t index) -> void {
 
 template <typename T>
 auto MaxHeap<T>::build_heap() -> void {
-  // Start from the first non-leaf node and heapify down.
-  // Last non-leaf node is at index (size/2 - 1).
-  if (size_ <= 1) {
+  if (data_.size() <= 1) {
     return;
   }
 
-  for (int i = static_cast<int>(size_ / 2) - 1; i >= 0; --i) {
-    heapify_down(static_cast<size_t>(i));
+  // Counting down with size_t avoids signed overflow on large heaps.
+  for (size_t i = data_.size() / 2; i > 0; --i) {
+    heapify_down(i - 1);
   }
-}
-
-template <typename T>
-auto MaxHeap<T>::grow() -> void {
-  size_t new_capacity = capacity_ * kGrowthFactor;
-
-  // Check for overflow.
-  if (new_capacity < capacity_) {
-    throw HeapException("MaxHeap capacity overflow");
-  }
-
-  // Allocate new array.
-  T* new_data = static_cast<T*>(::operator new(new_capacity * sizeof(T)));
-
-  // Move elements to new array with exception safety.
-  size_t moved_count = 0;
-  try {
-    for (; moved_count < size_; ++moved_count) {
-      new (&new_data[moved_count]) T(std::move(data_[moved_count]));
-    }
-  } catch (...) {
-    // Destroy already-moved elements in new array.
-    for (size_t i = 0; i < moved_count; ++i) {
-      new_data[i].~T();
-    }
-    ::operator delete(new_data);
-    throw;
-  }
-
-  // Destroy old elements.
-  for (size_t i = 0; i < size_; ++i) {
-    data_[i].~T();
-  }
-
-  // Deallocate old array.
-  ::operator delete(data_);
-
-  // Update pointers and capacity.
-  data_     = new_data;
-  capacity_ = new_capacity;
 }
 
 } // namespace ads::heaps

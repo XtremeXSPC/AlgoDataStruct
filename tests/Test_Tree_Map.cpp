@@ -49,7 +49,7 @@ TEST_F(TreeMapTest, PutUpdatesExisting) {
 }
 
 TEST_F(TreeMapTest, AtThrowsOnMissingKey) {
-  EXPECT_THROW(map.at(42), KeyNotFoundException);
+  EXPECT_THROW(map.at(42), ads::associative::KeyNotFoundException);
 }
 
 //===----------------------- INSERTION OPERATIONS TESTS ------------------------===//

@@ -16,55 +16,37 @@
 
 namespace ads::heaps {
 
+// DynamicArray keeps heap storage contiguous while centralizing RAII ownership.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
-MinHeap<T>::MinHeap(size_t initial_capacity) :
-    data_(static_cast<T*>(::operator new(initial_capacity * sizeof(T)))),
-    size_(0),
-    capacity_(initial_capacity) {
+MinHeap<T>::MinHeap(size_t initial_capacity) : data_(initial_capacity) {
 }
 
 template <typename T>
-MinHeap<T>::MinHeap(const std::vector<T>& elements) :
-    data_(static_cast<T*>(::operator new(elements.size() * sizeof(T)))),
-    size_(elements.size()),
-    capacity_(elements.size()) {
-  // Copy elements to the array using placement new.
-  for (size_t i = 0; i < size_; ++i) {
-    new (&data_[i]) T(elements[i]);
-  }
-
-  // Build heap in O(n) time.
+MinHeap<T>::MinHeap(const std::vector<T>& elements) : data_(elements.begin(), elements.end()) {
   build_heap();
 }
 
 template <typename T>
-MinHeap<T>::MinHeap(MinHeap&& other) noexcept : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
-  other.data_     = nullptr;
-  other.size_     = 0;
-  other.capacity_ = 0;
+template <std::input_iterator InputIt>
+MinHeap<T>::MinHeap(InputIt first, InputIt last)
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+    : data_(first, last) {
+  build_heap();
 }
 
 template <typename T>
-MinHeap<T>::~MinHeap() {
-  clear();
-  ::operator delete(data_);
-}
+MinHeap<T>::MinHeap(MinHeap&& other) noexcept = default;
+
+template <typename T>
+MinHeap<T>::~MinHeap() = default;
 
 template <typename T>
 auto MinHeap<T>::operator=(MinHeap&& other) noexcept -> MinHeap& {
   if (this != &other) {
-    clear();
-    ::operator delete(data_);
-
-    data_     = other.data_;
-    size_     = other.size_;
-    capacity_ = other.capacity_;
-
-    other.data_     = nullptr;
-    other.size_     = 0;
-    other.capacity_ = 0;
+    data_ = std::move(other.data_);
   }
   return *this;
 }
@@ -73,52 +55,21 @@ auto MinHeap<T>::operator=(MinHeap&& other) noexcept -> MinHeap& {
 
 template <typename T>
 auto MinHeap<T>::insert(const T& value) -> void {
-  if (size_ == capacity_) {
-    grow();
-  }
-
-  new (&data_[size_]) T(value);
-  try {
-    heapify_up(size_);
-  } catch (...) {
-    data_[size_].~T();
-    throw;
-  }
-  ++size_;
+  data_.push_back(value);
+  heapify_up(data_.size() - 1);
 }
 
 template <typename T>
 auto MinHeap<T>::insert(T&& value) -> void {
-  if (size_ == capacity_) {
-    grow();
-  }
-
-  new (&data_[size_]) T(std::move(value));
-  try {
-    heapify_up(size_);
-  } catch (...) {
-    data_[size_].~T();
-    throw;
-  }
-  ++size_;
+  data_.push_back(std::move(value));
+  heapify_up(data_.size() - 1);
 }
 
 template <typename T>
 template <typename... Args>
 auto MinHeap<T>::emplace(Args&&... args) -> T& {
-  if (size_ == capacity_) {
-    grow();
-  }
-
-  new (&data_[size_]) T(std::forward<Args>(args)...);
-  size_t final_index{};
-  try {
-    final_index = heapify_up(size_);
-  } catch (...) {
-    data_[size_].~T();
-    throw;
-  }
-  ++size_;
+  data_.emplace_back(std::forward<Args>(args)...);
+  const size_t final_index = heapify_up(data_.size() - 1);
   return data_[final_index];
 }
 
@@ -150,19 +101,16 @@ auto MinHeap<T>::extract_min() -> T {
 
   T min_value = std::move(data_[0]);
 
-  // Move last element to root.
-  --size_;
-  if (size_ > 0) {
-    data_[0] = std::move(data_[size_]);
+  if (data_.size() == 1) {
+    // Removing directly avoids self-move assignment for move-sensitive types.
+    data_.pop_back();
+    return min_value;
   }
 
-  // Destroy the last element.
-  data_[size_].~T();
+  data_[0] = std::move(data_.back());
+  data_.pop_back();
 
-  // Restore heap property.
-  if (size_ > 0) {
-    heapify_down(0);
-  }
+  heapify_down(0);
 
   return min_value;
 }
@@ -171,33 +119,29 @@ auto MinHeap<T>::extract_min() -> T {
 
 template <typename T>
 auto MinHeap<T>::is_empty() const noexcept -> bool {
-  return size_ == 0;
+  return data_.is_empty();
 }
 
 template <typename T>
 auto MinHeap<T>::size() const noexcept -> size_t {
-  return size_;
+  return data_.size();
 }
 
 template <typename T>
 auto MinHeap<T>::capacity() const noexcept -> size_t {
-  return capacity_;
+  return data_.capacity();
 }
 
 template <typename T>
 auto MinHeap<T>::clear() noexcept -> void {
-  // Explicitly destroy all elements.
-  for (size_t i = 0; i < size_; ++i) {
-    data_[i].~T();
-  }
-  size_ = 0;
+  data_.clear();
 }
 
 //===--------------------------- ADVANCED OPERATIONS ---------------------------===//
 
 template <typename T>
 auto MinHeap<T>::decrease_key(size_t index, const T& new_value) -> void {
-  if (index >= size_) {
+  if (index >= data_.size()) {
     throw HeapException("decrease_key() called with invalid index");
   }
 
@@ -229,16 +173,18 @@ auto MinHeap<T>::heapify_up(size_t index) -> size_t {
 
 template <typename T>
 auto MinHeap<T>::heapify_down(size_t index) -> void {
+  const size_t heap_size = data_.size();
+
   while (true) {
     size_t left     = left_child(index);
     size_t right    = right_child(index);
     size_t smallest = index;
 
-    if (left < size_ && data_[left] < data_[smallest]) {
+    if (left < heap_size && data_[left] < data_[smallest]) {
       smallest = left;
     }
 
-    if (right < size_ && data_[right] < data_[smallest]) {
+    if (right < heap_size && data_[right] < data_[smallest]) {
       smallest = right;
     }
 
@@ -253,36 +199,14 @@ auto MinHeap<T>::heapify_down(size_t index) -> void {
 
 template <typename T>
 auto MinHeap<T>::build_heap() -> void {
-  // Start from the first non-leaf node and heapify down.
-  // Last non-leaf node is at index (size/2 - 1).
-  if (size_ <= 1) {
+  if (data_.size() <= 1) {
     return;
   }
 
-  for (int i = static_cast<int>(size_ / 2) - 1; i >= 0; --i) {
-    heapify_down(static_cast<size_t>(i));
+  // Counting down with size_t avoids signed overflow on large heaps.
+  for (size_t i = data_.size() / 2; i > 0; --i) {
+    heapify_down(i - 1);
   }
-}
-
-template <typename T>
-auto MinHeap<T>::grow() -> void {
-  size_t new_capacity = capacity_ * kGrowthFactor;
-
-  // Allocate new array.
-  T* new_data = static_cast<T*>(::operator new(new_capacity * sizeof(T)));
-
-  // Move elements to new array.
-  for (size_t i = 0; i < size_; ++i) {
-    new (&new_data[i]) T(std::move(data_[i]));
-    data_[i].~T();
-  }
-
-  // Deallocate old array.
-  ::operator delete(data_);
-
-  // Update pointers and capacity.
-  data_     = new_data;
-  capacity_ = new_capacity;
 }
 
 } // namespace ads::heaps

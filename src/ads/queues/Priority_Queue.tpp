@@ -16,6 +16,8 @@
 
 namespace ads::queues {
 
+// DynamicArray preserves contiguous heap indexing without introducing STL storage.
+
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename T, typename Compare>
@@ -23,7 +25,17 @@ PriorityQueue<T, Compare>::PriorityQueue(Compare comp) : heap_(), comp_(comp) {
 }
 
 template <typename T, typename Compare>
-PriorityQueue<T, Compare>::PriorityQueue(const std::vector<T>& elements, Compare comp) : heap_(elements), comp_(comp) {
+PriorityQueue<T, Compare>::PriorityQueue(const std::vector<T>& elements, Compare comp) :
+    heap_(elements.begin(), elements.end()),
+    comp_(comp) {
+  build_heap();
+}
+
+template <typename T, typename Compare>
+template <std::input_iterator InputIt>
+PriorityQueue<T, Compare>::PriorityQueue(InputIt first, InputIt last, Compare comp)
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+    : heap_(first, last), comp_(comp) {
   build_heap();
 }
 
@@ -76,14 +88,16 @@ auto PriorityQueue<T, Compare>::pop() -> void {
     throw QueueException("Cannot pop from empty priority queue");
   }
 
-  // Move last element to root.
+  if (heap_.size() == 1) {
+    // Removing directly avoids self-move assignment for move-sensitive types.
+    heap_.pop_back();
+    return;
+  }
+
   heap_[0] = std::move(heap_.back());
   heap_.pop_back();
 
-  // Restore heap property if queue not empty.
-  if (!empty()) {
-    heapify_down(0);
-  }
+  heapify_down(0);
 }
 
 template <typename T, typename Compare>
@@ -113,7 +127,7 @@ auto PriorityQueue<T, Compare>::top() const -> const T& {
 
 template <typename T, typename Compare>
 auto PriorityQueue<T, Compare>::empty() const noexcept -> bool {
-  return heap_.empty();
+  return heap_.is_empty();
 }
 
 template <typename T, typename Compare>
