@@ -16,6 +16,8 @@
 
 namespace ads::graphs {
 
+// DynamicArray stores vertices/adjacency without STL storage; CircularArrayQueue backs BFS worklists.
+
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename VertexData, typename EdgeWeight>
@@ -114,22 +116,17 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
   validate_vertex(from);
   validate_vertex(to);
 
-  // Remove edge from -> to.
-  auto& adj = vertices_[from].adjacency;
-  auto  it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
+  const auto edge_index = find_edge_index(from, to);
 
-  if (it != adj.end()) {
-    adj.erase(it);
+  if (edge_index.has_value()) {
+    vertices_[from].adjacency.erase(*edge_index);
     --num_edges_;
 
     // For undirected graphs, remove reverse edge.
     if (!is_directed_ && from != to) {
-      auto& adj_reverse = vertices_[to].adjacency;
-      auto  it_reverse  = std::find_if(adj_reverse.begin(), adj_reverse.end(),
-                                       [from](const Edge& e) -> auto { return e.destination == from; });
-
-      if (it_reverse != adj_reverse.end()) {
-        adj_reverse.erase(it_reverse);
+      const auto reverse_edge_index = find_edge_index(to, from);
+      if (reverse_edge_index.has_value()) {
+        vertices_[to].adjacency.erase(*reverse_edge_index);
       }
     }
   }
@@ -141,8 +138,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to
     return false;
   }
 
-  const auto& adj = vertices_[from].adjacency;
-  return std::any_of(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
+  return find_edge_index(from, to).has_value();
 }
 
 template <typename VertexData, typename EdgeWeight>
@@ -152,11 +148,9 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, si
     return std::nullopt;
   }
 
-  const auto& adj = vertices_[from].adjacency;
-  auto        it  = std::find_if(adj.begin(), adj.end(), [to](const Edge& e) -> auto { return e.destination == to; });
-
-  if (it != adj.end()) {
-    return it->weight;
+  const auto edge_index = find_edge_index(from, to);
+  if (edge_index.has_value()) {
+    return vertices_[from].adjacency[*edge_index].weight;
   }
 
   return std::nullopt;
@@ -213,7 +207,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::is_directed() const noexcept ->
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::is_empty() const noexcept -> bool {
-  return vertices_.empty();
+  return vertices_.is_empty();
 }
 
 //===----------------------------- CLEAR OPERATION -----------------------------===//
@@ -231,23 +225,25 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const 
   validate_vertex(start_vertex);
 
   std::vector<size_t> result;
-  std::vector<bool>   visited(vertices_.size(), false);
-  std::queue<size_t>  queue;
+  result.reserve(vertices_.size());
+
+  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
+  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
 
   // Start BFS from start_vertex.
-  queue.push(start_vertex);
+  queue.enqueue(start_vertex);
   visited[start_vertex] = true;
 
-  while (!queue.empty()) {
-    size_t current = queue.front();
-    queue.pop();
+  while (!queue.is_empty()) {
+    const size_t current = queue.front();
+    queue.dequeue();
     result.push_back(current);
 
     // Visit all neighbors.
     for (const auto& edge : vertices_[current].adjacency) {
       if (!visited[edge.destination]) {
         visited[edge.destination] = true;
-        queue.push(edge.destination);
+        queue.enqueue(edge.destination);
       }
     }
   }
@@ -260,7 +256,9 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const 
   validate_vertex(start_vertex);
 
   std::vector<size_t> result;
-  std::vector<bool>   visited(vertices_.size(), false);
+  result.reserve(vertices_.size());
+
+  ads::arrays::DynamicArray<bool> visited(vertices_.size(), false);
 
   dfs_helper(start_vertex, visited, result);
 
@@ -277,17 +275,17 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
     return std::vector<size_t>{from};
   }
 
-  std::vector<bool>   visited(vertices_.size(), false);
-  std::vector<size_t> parent(vertices_.size(), SIZE_MAX);
-  std::queue<size_t>  queue;
+  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
+  ads::arrays::DynamicArray<size_t>       parent(vertices_.size(), kNoParent);
+  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
 
   // BFS to find path.
-  queue.push(from);
+  queue.enqueue(from);
   visited[from] = true;
 
-  while (!queue.empty()) {
-    size_t current = queue.front();
-    queue.pop();
+  while (!queue.is_empty()) {
+    const size_t current = queue.front();
+    queue.dequeue();
 
     if (current == to) {
       // Reconstruct path.
@@ -309,7 +307,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
       if (!visited[edge.destination]) {
         visited[edge.destination] = true;
         parent[edge.destination]  = current;
-        queue.push(edge.destination);
+        queue.enqueue(edge.destination);
       }
     }
   }
@@ -326,27 +324,27 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::is_connected(size_t v1, size_t 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<size_t>> {
   std::vector<std::vector<size_t>> components;
-  std::vector<bool>                visited(vertices_.size(), false);
+  ads::arrays::DynamicArray<bool>  visited(vertices_.size(), false);
 
   for (size_t i = 0; i < vertices_.size(); ++i) {
     if (!visited[i]) {
       // Start a new component.
-      std::vector<size_t> component;
-      std::queue<size_t>  queue;
+      std::vector<size_t>                     component;
+      ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
 
-      queue.push(i);
+      queue.enqueue(i);
       visited[i] = true;
 
-      while (!queue.empty()) {
-        size_t current = queue.front();
-        queue.pop();
+      while (!queue.is_empty()) {
+        const size_t current = queue.front();
+        queue.dequeue();
         component.push_back(current);
 
         // Visit all neighbors.
         for (const auto& edge : vertices_[current].adjacency) {
           if (!visited[edge.destination]) {
             visited[edge.destination] = true;
-            queue.push(edge.destination);
+            queue.enqueue(edge.destination);
           }
         }
       }
@@ -369,8 +367,22 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_i
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited,
-                                                            std::vector<size_t>& result) const -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(size_t from, size_t to) const
+    -> std::optional<size_t> {
+  const auto& adjacency = vertices_[from].adjacency;
+
+  for (size_t index = 0; index < adjacency.size(); ++index) {
+    if (adjacency[index].destination == to) {
+      return index;
+    }
+  }
+
+  return std::nullopt;
+}
+
+template <typename VertexData, typename EdgeWeight>
+auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(
+    size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const -> void {
   visited[vertex_id] = true;
   result.push_back(vertex_id);
 

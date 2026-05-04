@@ -16,12 +16,17 @@
 #ifndef GRAPH_ADJACENCY_LIST_HPP
 #define GRAPH_ADJACENCY_LIST_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+#include "../queues/Circular_Array_Queue.hpp"
+
 #include <algorithm>
+#include <concepts>
 #include <cstdint>
+#include <limits>
 #include <optional>
-#include <queue>
-#include <stack>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -31,6 +36,7 @@ namespace ads::graphs {
  * @brief Exception class for graph operations.
  */
 class GraphException : public std::runtime_error {
+public:
   using std::runtime_error::runtime_error;
 };
 
@@ -73,8 +79,8 @@ public:
    * @brief Represents a vertex in the graph.
    */
   struct Vertex {
-    VertexData        data;      ///< Vertex data.
-    std::vector<Edge> adjacency; ///< List of adjacent edges.
+    VertexData                      data;      ///< Vertex data.
+    ads::arrays::DynamicArray<Edge> adjacency; ///< List of adjacent edges.
 
     /**
      * @brief Construct a new Vertex object.
@@ -87,6 +93,30 @@ public:
      * @param d The data to store in the vertex.
      */
     explicit Vertex(VertexData&& d) : data(std::move(d)), adjacency() {}
+
+    /**
+     * @brief Copy constructor.
+     * @param other Vertex to copy.
+     */
+    Vertex(const Vertex& other)
+      requires std::copy_constructible<VertexData> && std::copy_constructible<Edge>
+        : data(other.data), adjacency(other.adjacency.begin(), other.adjacency.end()) {}
+
+    /**
+     * @brief Move constructor.
+     * @param other Vertex to move from.
+     */
+    Vertex(Vertex&& other) noexcept(std::is_nothrow_move_constructible_v<VertexData>) = default;
+
+    /**
+     * @brief Move assignment operator.
+     * @param other Vertex to move from.
+     * @return Reference to this.
+     */
+    auto operator=(Vertex&& other) noexcept(std::is_nothrow_move_assignable_v<VertexData>) -> Vertex& = default;
+
+    // Copy assignment is disabled because adjacency storage is move-only.
+    auto operator=(const Vertex&) -> Vertex& = delete;
   };
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -335,9 +365,11 @@ public:
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::vector<Vertex> vertices_;    ///< Vector of all vertices.
-  bool                is_directed_; ///< True if graph is directed.
-  size_t              num_edges_;   ///< Number of edges.
+  ads::arrays::DynamicArray<Vertex> vertices_;    ///< Dynamic array of all vertices.
+  bool                              is_directed_; ///< True if graph is directed.
+  size_t                            num_edges_;   ///< Number of edges.
+
+  static constexpr size_t kNoParent = std::numeric_limits<size_t>::max(); ///< Sentinel for path reconstruction.
 
   //===============================================================================//
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
@@ -350,12 +382,21 @@ private:
   auto validate_vertex(size_t vertex_id) const -> void;
 
   /**
+   * @brief Finds an edge index inside a source adjacency list.
+   * @param from Source vertex ID.
+   * @param to Destination vertex ID.
+   * @return Edge index if found, nullopt otherwise.
+   */
+  [[nodiscard]] auto find_edge_index(size_t from, size_t to) const -> std::optional<size_t>;
+
+  /**
    * @brief Helper for DFS traversal (recursive).
    * @param vertex_id Current vertex ID.
    * @param visited Vector tracking visited vertices.
    * @param result Vector storing DFS order.
    */
-  auto dfs_helper(size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const -> void;
+  auto dfs_helper(size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const
+      -> void;
 };
 
 } // namespace ads::graphs

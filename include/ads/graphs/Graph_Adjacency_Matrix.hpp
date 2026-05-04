@@ -16,12 +16,17 @@
 #ifndef GRAPH_ADJACENCY_MATRIX_HPP
 #define GRAPH_ADJACENCY_MATRIX_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+#include "../queues/Circular_Array_Queue.hpp"
+
 #include <algorithm>
+#include <concepts>
 #include <cstdint>
+#include <limits>
 #include <optional>
-#include <queue>
-#include <stack>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -31,6 +36,7 @@ namespace ads::graphs {
  * @brief Exception class for adjacency matrix graph operations.
  */
 class GraphMatrixException : public std::runtime_error {
+public:
   using std::runtime_error::runtime_error;
 };
 
@@ -316,14 +322,16 @@ public:
 
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//
-  template <typename T>
-  using VVC = std::vector<std::vector<T>>;
+  using MatrixCell = std::optional<EdgeWeight>;
+  using MatrixRow  = ads::arrays::DynamicArray<MatrixCell>;
 
-  std::vector<Vertex>            vertices_; ///< Vector of vertices.
-  VVC<std::optional<EdgeWeight>> matrix_;   ///< Adjacency matrix.
+  ads::arrays::DynamicArray<Vertex>    vertices_; ///< Dynamic array of vertices.
+  ads::arrays::DynamicArray<MatrixRow> matrix_;   ///< Adjacency matrix.
 
   bool   is_directed_; ///< Graph type.
   size_t num_edges_;   ///< Edge count.
+
+  static constexpr size_t kNoParent = std::numeric_limits<size_t>::max(); ///< Sentinel for path reconstruction.
 
   //===============================================================================//
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
@@ -341,7 +349,8 @@ private:
    * @param visited Vector tracking visited vertices.
    * @param result Vector storing DFS order.
    */
-  auto dfs_helper(size_t vertex_id, std::vector<bool>& visited, std::vector<size_t>& result) const -> void;
+  auto dfs_helper(size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const
+      -> void;
 
   /**
    * @brief Resizes the adjacency matrix to new_size x new_size.

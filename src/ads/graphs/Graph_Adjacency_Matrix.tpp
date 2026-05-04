@@ -16,6 +16,8 @@
 
 namespace ads::graphs {
 
+// DynamicArray keeps the dense matrix contiguous by row without STL storage.
+
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename VertexData, typename EdgeWeight>
@@ -29,10 +31,11 @@ GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(bool is_direc
 template <typename VertexData, typename EdgeWeight>
 GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(size_t num_vertices, bool is_directed) :
     vertices_(),
-    matrix_(num_vertices, std::vector<std::optional<EdgeWeight>>(num_vertices)),
+    matrix_(),
     is_directed_(is_directed),
     num_edges_(0) {
   vertices_.reserve(num_vertices);
+  matrix_.reserve(num_vertices);
 }
 
 template <typename VertexData, typename EdgeWeight>
@@ -203,7 +206,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_directed() const noexcept 
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_empty() const noexcept -> bool {
-  return vertices_.empty();
+  return vertices_.is_empty();
 }
 
 //===----------------------------- CLEAR OPERATION -----------------------------===//
@@ -222,21 +225,23 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::bfs(size_t start_vertex) cons
   validate_vertex(start_vertex);
 
   std::vector<size_t> result;
-  std::vector<bool>   visited(vertices_.size(), false);
-  std::queue<size_t>  queue;
+  result.reserve(vertices_.size());
 
-  queue.push(start_vertex);
+  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
+  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+
+  queue.enqueue(start_vertex);
   visited[start_vertex] = true;
 
-  while (!queue.empty()) {
-    size_t current = queue.front();
-    queue.pop();
+  while (!queue.is_empty()) {
+    const size_t current = queue.front();
+    queue.dequeue();
     result.push_back(current);
 
     for (size_t i = 0; i < matrix_[current].size(); ++i) {
       if (matrix_[current][i].has_value() && !visited[i]) {
         visited[i] = true;
-        queue.push(i);
+        queue.enqueue(i);
       }
     }
   }
@@ -249,7 +254,9 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(size_t start_vertex) cons
   validate_vertex(start_vertex);
 
   std::vector<size_t> result;
-  std::vector<bool>   visited(vertices_.size(), false);
+  result.reserve(vertices_.size());
+
+  ads::arrays::DynamicArray<bool> visited(vertices_.size(), false);
 
   dfs_helper(start_vertex, visited, result);
 
@@ -266,16 +273,16 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t
     return std::vector<size_t>{from};
   }
 
-  std::vector<bool>   visited(vertices_.size(), false);
-  std::vector<size_t> parent(vertices_.size(), SIZE_MAX);
-  std::queue<size_t>  queue;
+  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
+  ads::arrays::DynamicArray<size_t>       parent(vertices_.size(), kNoParent);
+  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
 
-  queue.push(from);
+  queue.enqueue(from);
   visited[from] = true;
 
-  while (!queue.empty()) {
-    size_t current = queue.front();
-    queue.pop();
+  while (!queue.is_empty()) {
+    const size_t current = queue.front();
+    queue.dequeue();
 
     if (current == to) {
       std::vector<size_t> path;
@@ -296,7 +303,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t
       if (matrix_[current][i].has_value() && !visited[i]) {
         visited[i] = true;
         parent[i]  = current;
-        queue.push(i);
+        queue.enqueue(i);
       }
     }
   }
@@ -312,25 +319,25 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_connected(size_t v1, size_
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<size_t>> {
   std::vector<std::vector<size_t>> components;
-  std::vector<bool>                visited(vertices_.size(), false);
+  ads::arrays::DynamicArray<bool>  visited(vertices_.size(), false);
 
   for (size_t i = 0; i < vertices_.size(); ++i) {
     if (!visited[i]) {
-      std::vector<size_t> component;
-      std::queue<size_t>  queue;
+      std::vector<size_t>                     component;
+      ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
 
-      queue.push(i);
+      queue.enqueue(i);
       visited[i] = true;
 
-      while (!queue.empty()) {
-        size_t current = queue.front();
-        queue.pop();
+      while (!queue.is_empty()) {
+        const size_t current = queue.front();
+        queue.dequeue();
         component.push_back(current);
 
         for (size_t j = 0; j < matrix_[current].size(); ++j) {
           if (matrix_[current][j].has_value() && !visited[j]) {
             visited[j] = true;
-            queue.push(j);
+            queue.enqueue(j);
           }
         }
       }
@@ -353,8 +360,8 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::validate_vertex(size_t vertex
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, std::vector<bool>& visited,
-                                                              std::vector<size_t>& result) const -> void {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs_helper(
+    size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const -> void {
   visited[vertex_id] = true;
   result.push_back(vertex_id);
 
@@ -367,10 +374,8 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs_helper(size_t vertex_id, 
 
 template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::resize_matrix(size_t new_size) -> void {
-  // Resize rows
   matrix_.resize(new_size);
 
-  // Resize columns
   for (auto& row : matrix_) {
     row.resize(new_size);
   }
