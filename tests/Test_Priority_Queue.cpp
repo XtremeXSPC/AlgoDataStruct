@@ -16,10 +16,33 @@
 #include <array>
 #include <functional>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 using namespace ads::queues;
+
+namespace {
+
+struct ThrowingMoveCompare {
+  ThrowingMoveCompare()                           = default;
+  ThrowingMoveCompare(const ThrowingMoveCompare&) = default;
+
+  ThrowingMoveCompare(ThrowingMoveCompare&&) noexcept(false) {}
+
+  auto operator=(const ThrowingMoveCompare&) -> ThrowingMoveCompare& = default;
+
+  auto operator=(ThrowingMoveCompare&&) noexcept(false) -> ThrowingMoveCompare& { return *this; }
+
+  [[nodiscard]] auto operator()(int lhs, int rhs) const -> bool { return lhs < rhs; }
+};
+
+static_assert(std::is_nothrow_move_constructible_v<PriorityQueue<int>>);
+static_assert(std::is_nothrow_move_assignable_v<PriorityQueue<int>>);
+static_assert(!std::is_nothrow_move_constructible_v<PriorityQueue<int, ThrowingMoveCompare>>);
+static_assert(!std::is_nothrow_move_assignable_v<PriorityQueue<int, ThrowingMoveCompare>>);
+
+} // namespace
 
 class PriorityQueueTest : public ::testing::Test {
 protected:

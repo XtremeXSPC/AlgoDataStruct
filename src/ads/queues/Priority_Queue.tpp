@@ -45,13 +45,15 @@ PriorityQueue<T, Compare>::PriorityQueue(std::initializer_list<T> init, Compare 
 }
 
 template <typename T, typename Compare>
-PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept :
+PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept(
+    std::is_nothrow_move_constructible_v<Compare>) :
     heap_(std::move(other.heap_)),
     comp_(std::move(other.comp_)) {
 }
 
 template <typename T, typename Compare>
-auto PriorityQueue<T, Compare>::operator=(PriorityQueue&& other) noexcept -> PriorityQueue& {
+auto PriorityQueue<T, Compare>::operator=(PriorityQueue&& other) noexcept(std::is_nothrow_move_assignable_v<Compare>)
+    -> PriorityQueue& {
   if (this != &other) {
     heap_ = std::move(other.heap_);
     comp_ = std::move(other.comp_);
@@ -210,9 +212,9 @@ auto PriorityQueue<T, Compare>::build_heap() -> void {
     return;
   }
 
-  // Start from last non-leaf node and heapify down.
-  for (int i = static_cast<int>(heap_.size() / 2) - 1; i >= 0; --i) {
-    heapify_down(static_cast<size_t>(i));
+  // Counting down with size_t keeps large heaps inside the container's index domain.
+  for (size_t i = heap_.size() / 2; i > 0; --i) {
+    heapify_down(i - 1);
   }
 }
 

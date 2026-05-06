@@ -23,6 +23,7 @@
 #include <functional>
 #include <initializer_list>
 #include <iterator>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -97,7 +98,7 @@ public:
    * @param other The queue to move from.
    * @complexity Time O(1), Space O(1)
    */
-  PriorityQueue(PriorityQueue&& other) noexcept;
+  PriorityQueue(PriorityQueue&& other) noexcept(std::is_nothrow_move_constructible_v<Compare>);
 
   /**
    * @brief Move assignment operator.
@@ -105,7 +106,7 @@ public:
    * @return Reference to this.
    * @complexity Time O(1), Space O(1)
    */
-  auto operator=(PriorityQueue&& other) noexcept -> PriorityQueue&;
+  auto operator=(PriorityQueue&& other) noexcept(std::is_nothrow_move_assignable_v<Compare>) -> PriorityQueue&;
 
   /**
    * @brief Destructor.
