@@ -24,7 +24,7 @@ template <OrderedTreeElement T, int MinDegree>
   requires ValidBTreeDegree<MinDegree>
 B_Tree<T, MinDegree>::Node::Node(bool leaf) :
     keys(static_cast<size_t>(MAX_KEYS)),
-    children(leaf ? 0U : static_cast<size_t>(MAX_KEYS + 1)),
+    children(leaf ? 0U : static_cast<size_t>(MAX_KEYS) + 1U),
     is_leaf(leaf) {
 }
 
@@ -246,18 +246,18 @@ void B_Tree<T, MinDegree>::split_child(Node* parent, int index) {
   full_child->n = t - 1;
 
   // Insert new child into parent.
-  parent->children.insert(static_cast<size_t>(index + 1), std::move(new_child));
+  parent->children.insert(static_cast<size_t>(index) + 1U, std::move(new_child));
 
   // Move median key up to parent.
   parent->keys.insert(static_cast<size_t>(index), full_child->keys[t - 1]);
   parent->n++;
 
   // Pop from the right so key shrinking does not require T to be default-initializable.
-  while (static_cast<int>(full_child->keys.size()) > t - 1) {
+  while (full_child->keys.size() > static_cast<size_t>(t) - 1U) {
     full_child->keys.pop_back();
   }
   if (!full_child->is_leaf) {
-    while (static_cast<int>(full_child->children.size()) > t) {
+    while (full_child->children.size() > static_cast<size_t>(t)) {
       full_child->children.pop_back();
     }
   }
@@ -280,7 +280,7 @@ auto B_Tree<T, MinDegree>::insert_non_full(Node* node, const T& key) -> bool {
     }
 
     // Insert key.
-    node->keys.insert(static_cast<size_t>(i + 1), key);
+    node->keys.insert(static_cast<size_t>(i) + 1U, key);
     node->n++;
     return true;
 
@@ -481,7 +481,7 @@ void B_Tree<T, MinDegree>::merge_children(Node* node, int index) {
 
   child->n += sibling->n + 1;
   node->keys.erase(static_cast<size_t>(index));
-  node->children.erase(static_cast<size_t>(index + 1));
+  node->children.erase(static_cast<size_t>(index) + 1U);
   --node->n;
 }
 
