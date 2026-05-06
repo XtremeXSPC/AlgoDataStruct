@@ -85,8 +85,9 @@ TEST(SortingAlgorithmsTest, MergeSortIsStable) {
   std::vector<StableItem> items = {
       {.key = 2, .id = 0}, {.key = 1, .id = 0}, {.key = 2, .id = 1}, {.key = 1, .id = 1}, {.key = 2, .id = 2}};
 
-  merge_sort(items.begin(), items.end(),
-             [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
+  merge_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) {
+    return lhs.key < rhs.key;
+  });
 
   std::vector<int> keys;
   std::vector<int> ids_for_twos;
@@ -185,6 +186,28 @@ TEST(SortingAlgorithmsTest, BucketSortFloatingPoints) {
 
   std::vector<double> expected = {0.12, 0.17, 0.21, 0.23, 0.26, 0.39, 0.68, 0.72, 0.78, 0.94};
   EXPECT_EQ(data, expected);
+}
+
+TEST(SortingAlgorithmsTest, BufferBackedAlgorithmsSupportDynamicArray) {
+  ads::arrays::DynamicArray<int> merge_data{7, 1, 5, 3};
+  merge_sort(merge_data.begin(), merge_data.end());
+  EXPECT_EQ(to_vector(merge_data.begin(), merge_data.end()), (std::vector<int>{1, 3, 5, 7}));
+
+  ads::arrays::DynamicArray<int> tim_data{9, 2, 8, 3, 7, 4};
+  tim_sort(tim_data.begin(), tim_data.end());
+  EXPECT_EQ(to_vector(tim_data.begin(), tim_data.end()), (std::vector<int>{2, 3, 4, 7, 8, 9}));
+
+  ads::arrays::DynamicArray<int> counting_data{4, -1, 0, -1, 2};
+  counting_sort(counting_data.begin(), counting_data.end());
+  EXPECT_EQ(to_vector(counting_data.begin(), counting_data.end()), (std::vector<int>{-1, -1, 0, 2, 4}));
+
+  ads::arrays::DynamicArray<int> radix_data{170, -75, 45, -802, 24};
+  radix_sort(radix_data.begin(), radix_data.end());
+  EXPECT_EQ(to_vector(radix_data.begin(), radix_data.end()), (std::vector<int>{-802, -75, 24, 45, 170}));
+
+  ads::arrays::DynamicArray<double> bucket_data{0.42, 0.12, 0.92, 0.33};
+  bucket_sort(bucket_data.begin(), bucket_data.end());
+  EXPECT_EQ(to_vector(bucket_data.begin(), bucket_data.end()), (std::vector<double>{0.12, 0.33, 0.42, 0.92}));
 }
 
 //===----------------------------- EDGE CASE TESTS -----------------------------===//
@@ -377,8 +400,8 @@ TEST(SortingBucketSortTest, ThrowsOnNaN) {
 }
 
 TEST(SortingBucketSortTest, HandlesInfinity) {
-  std::vector<double> data = {3.0, std::numeric_limits<double>::infinity(), 1.0,
-                              -std::numeric_limits<double>::infinity(), 2.0};
+  std::vector<double> data = {
+      3.0, std::numeric_limits<double>::infinity(), 1.0, -std::numeric_limits<double>::infinity(), 2.0};
   bucket_sort(data.begin(), data.end());
 
   EXPECT_EQ(data[0], -std::numeric_limits<double>::infinity());

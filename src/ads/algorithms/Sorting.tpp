@@ -14,13 +14,13 @@
 #pragma once
 
 #include "../../../include/ads/algorithms/Sorting.hpp"
+#include "../../../include/ads/arrays/Dynamic_Array.hpp"
 
 #include <array>
 #include <cmath>
 #include <cstddef>
 #include <limits>
 #include <stdexcept>
-#include <vector>
 
 //===-------------------- SORTING ALGORITHM IMPLEMENTATIONS --------------------===//
 
@@ -319,6 +319,8 @@ template <std::random_access_iterator Iter>
 struct Run {
   Iter        base;
   std::size_t length;
+
+  Run(Iter run_base, std::size_t run_length) : base(run_base), length(run_length) {}
 };
 
 // Computes the minimum run length for Tim sort.
@@ -356,7 +358,7 @@ auto count_run_and_make_ascending(Iter first, Iter last, Compare& comp) -> std::
 
 // Merges the runs at index and index + 1.
 template <std::random_access_iterator Iter, typename Compare, typename Buffer>
-auto merge_at(std::vector<Run<Iter>>& runs, std::size_t index, Compare& comp, Buffer& buffer) -> void {
+auto merge_at(ads::arrays::DynamicArray<Run<Iter>>& runs, std::size_t index, Compare& comp, Buffer& buffer) -> void {
   Run<Iter> left  = runs[index];
   Run<Iter> right = runs[index + 1];
 
@@ -366,12 +368,12 @@ auto merge_at(std::vector<Run<Iter>>& runs, std::size_t index, Compare& comp, Bu
   merge_ranges(left.base, mid, end, comp, buffer);
 
   runs[index].length = left.length + right.length;
-  runs.erase(runs.begin() + static_cast<std::ptrdiff_t>(index + 1));
+  runs.erase(index + 1);
 }
 
 // Merges runs while maintaining Tim sort invariants.
 template <std::random_access_iterator Iter, typename Compare, typename Buffer>
-auto merge_collapse(std::vector<Run<Iter>>& runs, Compare& comp, Buffer& buffer) -> void {
+auto merge_collapse(ads::arrays::DynamicArray<Run<Iter>>& runs, Compare& comp, Buffer& buffer) -> void {
   while (runs.size() > 1) {
     const std::size_t n = runs.size();
 
@@ -402,7 +404,7 @@ auto merge_collapse(std::vector<Run<Iter>>& runs, Compare& comp, Buffer& buffer)
 
 // Merges all remaining runs.
 template <std::random_access_iterator Iter, typename Compare, typename Buffer>
-auto merge_force_collapse(std::vector<Run<Iter>>& runs, Compare& comp, Buffer& buffer) -> void {
+auto merge_force_collapse(ads::arrays::DynamicArray<Run<Iter>>& runs, Compare& comp, Buffer& buffer) -> void {
   while (runs.size() > 1) {
     const std::size_t n = runs.size();
     if (n >= 3 && runs[n - 3].length < runs[n - 1].length) {
@@ -557,7 +559,7 @@ auto merge_sort(Iter first, Iter last, Compare comp) -> void {
 
   // Allocate auxiliary buffer for merging.
   using value_type = std::iter_value_t<Iter>;
-  std::vector<value_type> buffer;
+  ads::arrays::DynamicArray<value_type> buffer;
   buffer.reserve(static_cast<std::size_t>(count));
 
   // Start the recursive merge sort.
@@ -572,7 +574,7 @@ auto merge_sort(Iter first, Iter last, Compare comp) -> void {
   }
 
   using value_type = std::iter_value_t<Iter>;
-  std::vector<value_type> buffer;
+  ads::arrays::DynamicArray<value_type> buffer;
   buffer.reserve(static_cast<std::size_t>(std::distance(first, last)));
 
   detail::merge_sort_forward_impl(first, last, comp, buffer);
@@ -624,10 +626,10 @@ auto tim_sort(Iter first, Iter last, Compare comp) -> void {
 
   using value_type = std::iter_value_t<Iter>;
 
-  std::vector<value_type> buffer;
+  ads::arrays::DynamicArray<value_type> buffer;
   buffer.reserve(count);
 
-  std::vector<detail::Run<Iter>> runs;
+  ads::arrays::DynamicArray<detail::Run<Iter>> runs;
   runs.reserve(count / detail::kInsertionThreshold + 1);
 
   const std::size_t min_run = detail::min_run_length(count);
@@ -643,7 +645,7 @@ auto tim_sort(Iter first, Iter last, Compare comp) -> void {
       run_len = target;
     }
 
-    runs.push_back({cursor, run_len});
+    runs.emplace_back(cursor, run_len);
     detail::merge_collapse(runs, comp, buffer);
 
     cursor += static_cast<std::iter_difference_t<Iter>>(run_len);
@@ -694,7 +696,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
   const auto        count      = static_cast<std::size_t>(last - first);
   const std::size_t range_size = detail::range_size(min_value, max_value);
 
-  std::vector<std::size_t> counts(range_size, 0);
+  ads::arrays::DynamicArray<std::size_t> counts(range_size, 0);
 
   for (std::size_t i = 0; i < count; ++i) {
     const value_type value = *detail::iter_at(first, i);
@@ -705,7 +707,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
     counts[i] += counts[i - 1];
   }
 
-  std::vector<value_type> buffer(count);
+  ads::arrays::DynamicArray<value_type> buffer(count, value_type{});
   for (std::size_t i = count; i-- > 0;) {
     const value_type  value = *detail::iter_at(first, i);
     const std::size_t index = detail::to_index(value, min_value);
@@ -730,7 +732,7 @@ auto radix_sort(Iter first, Iter last) -> void {
   using value_type = std::iter_value_t<Iter>;
   using Unsigned   = std::make_unsigned_t<value_type>;
 
-  std::vector<value_type>                     buffer(count);
+  ads::arrays::DynamicArray<value_type>       buffer(count, value_type{});
   std::array<std::size_t, detail::kRadixBase> counts{};
 
   for (std::size_t pass = 0; pass < sizeof(value_type); ++pass) {
@@ -807,7 +809,11 @@ auto bucket_sort(Iter first, Iter last, std::size_t bucket_count) -> void {
     return;
   }
 
-  std::vector<std::vector<value_type>> buckets(bucket_count);
+  ads::arrays::DynamicArray<ads::arrays::DynamicArray<value_type>> buckets;
+  buckets.reserve(bucket_count);
+  for (std::size_t i = 0; i < bucket_count; ++i) {
+    buckets.emplace_back();
+  }
   const long double range = static_cast<long double>(max_value) - static_cast<long double>(min_value);
 
   // Distribute elements into buckets.
