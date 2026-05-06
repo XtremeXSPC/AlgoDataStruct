@@ -49,8 +49,8 @@ namespace ads::trees {
  *          Memory management is automated via std::unique_ptr, ensuring no memory leaks.
  *          The tree is move-only to prevent expensive deep copies.
  *
- * @tparam T The type of data to store.
- *         Must be copyable and support "operator<" and "operator==".
+ * @tparam T The type of data to store. Must support "operator<" and "operator==".
+ *         Copy insertion additionally requires copy construction.
  */
 template <OrderedTreeElement T>
 class BinarySearchTree : public BinaryTree<T> {

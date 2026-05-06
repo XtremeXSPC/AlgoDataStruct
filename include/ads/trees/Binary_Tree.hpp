@@ -34,8 +34,8 @@ namespace ads::trees {
  *          will provide specific invariants and performance guarantees while adhering
  *          to this common interface.
  *
- * @tparam T The data type to store in the tree. Must be copyable and support comparison
- *           operations for ordered tree implementations.
+ * @tparam T The data type to store in the tree. Ordered implementations require
+ *           comparison operations; copy insertion additionally requires copy construction.
  */
 template <TreeElement T>
 class BinaryTree {

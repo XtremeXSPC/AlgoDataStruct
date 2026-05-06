@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-// DynamicArray stores node keys, child ownership slots, and rebuild keys without STL containers.
+// DynamicArray stores node keys and child ownership slots without STL containers.
 
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
@@ -85,31 +85,26 @@ auto B_Tree<T, MinDegree>::insert(const T& key) -> bool {
 template <OrderedTreeElement T, int MinDegree>
   requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::remove(const T& key) -> bool {
-  if (is_empty()) {
+  if (!root_) {
     return false;
   }
 
-  ads::arrays::DynamicArray<T> retained_keys(size_ > 0 ? size_ - 1 : 0);
-
-  bool removed = false;
-  in_order_traversal([&](const T& current_key) {
-    if (!removed && current_key == key) {
-      removed = true;
-      return;
-    }
-    retained_keys.push_back(current_key);
-  });
-
+  bool removed = remove_from_node(root_.get(), key);
   if (!removed) {
     return false;
   }
 
-  B_Tree rebuilt_tree;
-  for (const auto& current_key : retained_keys) {
-    rebuilt_tree.insert(current_key);
+  --size_;
+  if (root_->n == 0) {
+    if (root_->is_leaf) {
+      root_.reset();
+    } else {
+      // The root may underflow; promoting its only child preserves equal leaf depth.
+      auto old_root = std::move(root_);
+      root_         = std::move(old_root->children[0]);
+    }
   }
 
-  *this = std::move(rebuilt_tree);
   return true;
 }
 
@@ -213,8 +208,8 @@ auto B_Tree<T, MinDegree>::validate_properties() const -> bool {
     return true;
   }
 
-  // Root can have 1 to 2t-1 keys.
-  return validate_helper(root_.get(), 1, MAX_KEYS, 0);
+  int leaf_level = -1;
+  return validate_helper(root_.get(), 1, MAX_KEYS, 0, nullptr, nullptr, leaf_level);
 }
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
@@ -317,6 +312,179 @@ auto B_Tree<T, MinDegree>::insert_non_full(Node* node, const T& key) -> bool {
   }
 }
 
+//===----------------------------- REMOVAL HELPERS -----------------------------===//
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+auto B_Tree<T, MinDegree>::find_key_index(const Node* node, const T& key) const -> int {
+  int index = 0;
+  while (index < node->n && node->keys[index] < key) {
+    ++index;
+  }
+  return index;
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+auto B_Tree<T, MinDegree>::remove_from_node(Node* node, const T& key) -> bool {
+  int index = find_key_index(node, key);
+
+  if (index < node->n && key == node->keys[index]) {
+    if (node->is_leaf) {
+      remove_from_leaf(node, index);
+    } else {
+      remove_from_internal(node, index);
+    }
+    return true;
+  }
+
+  if (node->is_leaf) {
+    return false;
+  }
+
+  bool descending_past_last_key = index == node->n;
+  if (node->children[index]->n == MIN_KEYS) {
+    // Deletion descends only into children that can spare or absorb one key safely.
+    fill_child(node, index);
+  }
+
+  if (descending_past_last_key && index > node->n) {
+    return remove_from_node(node->children[index - 1].get(), key);
+  }
+  return remove_from_node(node->children[index].get(), key);
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+void B_Tree<T, MinDegree>::remove_from_leaf(Node* node, int index) {
+  node->keys.erase(static_cast<size_t>(index));
+  --node->n;
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+void B_Tree<T, MinDegree>::remove_from_internal(Node* node, int index) {
+  T key = node->keys[index];
+
+  if (node->children[index]->n >= t) {
+    T predecessor     = predecessor_key(node, index);
+    node->keys[index] = predecessor;
+    remove_from_node(node->children[index].get(), predecessor);
+    return;
+  }
+
+  if (node->children[index + 1]->n >= t) {
+    T successor       = successor_key(node, index);
+    node->keys[index] = successor;
+    remove_from_node(node->children[index + 1].get(), successor);
+    return;
+  }
+
+  merge_children(node, index);
+  remove_from_node(node->children[index].get(), key);
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+auto B_Tree<T, MinDegree>::predecessor_key(const Node* node, int index) const -> T {
+  const Node* current = node->children[index].get();
+  while (!current->is_leaf) {
+    current = current->children[current->n].get();
+  }
+  return current->keys[current->n - 1];
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+auto B_Tree<T, MinDegree>::successor_key(const Node* node, int index) const -> T {
+  const Node* current = node->children[index + 1].get();
+  while (!current->is_leaf) {
+    current = current->children[0].get();
+  }
+  return current->keys[0];
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+void B_Tree<T, MinDegree>::fill_child(Node* node, int index) {
+  if (index > 0 && node->children[index - 1]->n >= t) {
+    borrow_from_previous(node, index);
+    return;
+  }
+
+  if (index < node->n && node->children[index + 1]->n >= t) {
+    borrow_from_next(node, index);
+    return;
+  }
+
+  if (index < node->n) {
+    merge_children(node, index);
+  } else {
+    merge_children(node, index - 1);
+  }
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+void B_Tree<T, MinDegree>::borrow_from_previous(Node* node, int index) {
+  Node* child   = node->children[index].get();
+  Node* sibling = node->children[index - 1].get();
+
+  child->keys.insert(0, node->keys[index - 1]);
+  if (!child->is_leaf) {
+    child->children.insert(0, std::move(sibling->children.back()));
+    sibling->children.pop_back();
+  }
+
+  node->keys[index - 1] = sibling->keys[sibling->n - 1];
+  sibling->keys.pop_back();
+
+  ++child->n;
+  --sibling->n;
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+void B_Tree<T, MinDegree>::borrow_from_next(Node* node, int index) {
+  Node* child   = node->children[index].get();
+  Node* sibling = node->children[index + 1].get();
+
+  child->keys.push_back(node->keys[index]);
+  if (!child->is_leaf) {
+    child->children.push_back(std::move(sibling->children.front()));
+    sibling->children.erase(0);
+  }
+
+  node->keys[index] = sibling->keys[0];
+  sibling->keys.erase(0);
+
+  ++child->n;
+  --sibling->n;
+}
+
+template <OrderedTreeElement T, int MinDegree>
+  requires ValidBTreeDegree<MinDegree>
+void B_Tree<T, MinDegree>::merge_children(Node* node, int index) {
+  Node* child   = node->children[index].get();
+  Node* sibling = node->children[index + 1].get();
+
+  child->keys.push_back(node->keys[index]);
+  for (int i = 0; i < sibling->n; ++i) {
+    child->keys.push_back(std::move(sibling->keys[i]));
+  }
+
+  if (!child->is_leaf) {
+    for (int i = 0; i <= sibling->n; ++i) {
+      child->children.push_back(std::move(sibling->children[i]));
+    }
+  }
+
+  child->n += sibling->n + 1;
+  node->keys.erase(static_cast<size_t>(index));
+  node->children.erase(static_cast<size_t>(index + 1));
+  --node->n;
+}
+
 template <OrderedTreeElement T, int MinDegree>
   requires ValidBTreeDegree<MinDegree>
 auto B_Tree<T, MinDegree>::search_helper(const Node* node, const T& key) const -> bool {
@@ -396,7 +564,14 @@ void B_Tree<T, MinDegree>::in_order_helper(const Node* node, std::function<void(
 
 template <OrderedTreeElement T, int MinDegree>
   requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::validate_helper(const Node* node, int min_keys, int max_keys, int level) const -> bool {
+auto B_Tree<T, MinDegree>::validate_helper(
+    const Node* node,
+    int         min_keys,
+    int         max_keys,
+    int         level,
+    const T*    lower_bound,
+    const T*    upper_bound,
+    int&        leaf_level) const -> bool {
   if (!node) {
     return true;
   }
@@ -413,18 +588,35 @@ auto B_Tree<T, MinDegree>::validate_helper(const Node* node, int min_keys, int m
     }
   }
 
-  // If not leaf, check children.
-  if (!node->is_leaf) {
-    // Should have n+1 children.
-    if (static_cast<int>(node->children.size()) != node->n + 1) {
+  for (int i = 0; i < node->n; ++i) {
+    if (lower_bound != nullptr && !(*lower_bound < node->keys[i])) {
       return false;
     }
+    if (upper_bound != nullptr && !(node->keys[i] < *upper_bound)) {
+      return false;
+    }
+  }
 
-    // Recursively validate children.
-    for (int i = 0; i <= node->n; i++) {
-      if (!validate_helper(node->children[i].get(), MIN_KEYS, MAX_KEYS, level + 1)) {
-        return false;
-      }
+  if (node->is_leaf) {
+    if (leaf_level == -1) {
+      leaf_level = level;
+    }
+    return leaf_level == level;
+  }
+
+  // Internal nodes must have exactly one more child than key.
+  if (static_cast<int>(node->children.size()) != node->n + 1) {
+    return false;
+  }
+
+  for (int i = 0; i <= node->n; ++i) {
+    const T* child_lower_bound = (i == 0) ? lower_bound : &node->keys[i - 1];
+    const T* child_upper_bound = (i == node->n) ? upper_bound : &node->keys[i];
+
+    if (node->children[i] == nullptr
+        || !validate_helper(
+            node->children[i].get(), MIN_KEYS, MAX_KEYS, level + 1, child_lower_bound, child_upper_bound, leaf_level)) {
+      return false;
     }
   }
 

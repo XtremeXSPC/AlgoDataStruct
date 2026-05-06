@@ -18,6 +18,25 @@
 
 using namespace ads::associative;
 
+namespace {
+
+struct MoveOnlyOrdered {
+  int value;
+
+  explicit MoveOnlyOrdered(int v) : value(v) {}
+
+  MoveOnlyOrdered(const MoveOnlyOrdered&)                        = delete;
+  auto operator=(const MoveOnlyOrdered&) -> MoveOnlyOrdered&     = delete;
+  MoveOnlyOrdered(MoveOnlyOrdered&&) noexcept                    = default;
+  auto operator=(MoveOnlyOrdered&&) noexcept -> MoveOnlyOrdered& = default;
+
+  auto operator<(const MoveOnlyOrdered& other) const -> bool { return value < other.value; }
+
+  auto operator==(const MoveOnlyOrdered& other) const -> bool { return value == other.value; }
+};
+
+} // namespace
+
 // Test fixture for TreeSet.
 class TreeSetTest : public ::testing::Test {
 protected:
@@ -154,6 +173,28 @@ TEST_F(TreeSetTest, LargeSetMaintainsOrder) {
   for (size_t i = 0; i < vec.size(); ++i) {
     EXPECT_EQ(vec[i], static_cast<int>(i + 1));
   }
+}
+
+TEST(TreeSetMoveOnlyTest, SupportsMoveOnlyValues) {
+  TreeSet<MoveOnlyOrdered> set;
+
+  EXPECT_TRUE(set.insert(MoveOnlyOrdered{20}));
+  EXPECT_TRUE(set.insert(MoveOnlyOrdered{10}));
+  EXPECT_TRUE(set.insert(MoveOnlyOrdered{30}));
+  EXPECT_FALSE(set.insert(MoveOnlyOrdered{20}));
+
+  EXPECT_EQ(set.size(), 3U);
+  EXPECT_TRUE(set.contains(MoveOnlyOrdered{10}));
+  EXPECT_EQ(set.min().value, 10);
+  EXPECT_EQ(set.max().value, 30);
+
+  std::vector<int> values;
+  set.for_each([&values](const MoveOnlyOrdered& value) { values.push_back(value.value); });
+  std::vector<int> expected{10, 20, 30};
+  EXPECT_EQ(values, expected);
+
+  EXPECT_TRUE(set.erase(MoveOnlyOrdered{20}));
+  EXPECT_FALSE(set.contains(MoveOnlyOrdered{20}));
 }
 
 //===---------------------------------------------------------------------------===//

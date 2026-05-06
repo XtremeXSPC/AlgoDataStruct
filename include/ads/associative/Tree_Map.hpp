@@ -35,7 +35,7 @@ namespace ads::associative {
  *          insert, remove, and lookup operations. It is implemented on top of
  *          an AVL Tree to guarantee balanced height.
  *
- * @tparam Key The type of keys (must be comparable with operator<).
+ * @tparam Key The type of keys (must be comparable with operator< and operator==).
  * @tparam Value The type of mapped values.
  */
 template <typename Key, typename Value>
@@ -45,7 +45,13 @@ private:
     Key                  key;
     std::optional<Value> value = std::nullopt;
 
-    Entry(const Key& k, const Value& v) : key(k), value(v) {}
+    Entry(const Key& k, const Value& v)
+      requires std::copy_constructible<Key> && std::copy_constructible<Value>
+        : key(k), value(v) {}
+
+    Entry(const Key& k, Value&& v)
+      requires std::copy_constructible<Key>
+        : key(k), value(std::move(v)) {}
 
     Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
 
@@ -58,7 +64,7 @@ private:
         key(std::move(k)),
         value(std::in_place, std::forward<Args>(args)...) {}
 
-    auto operator<=>(const Entry& other) const { return key <=> other.key; }
+    auto operator<(const Entry& other) const -> bool { return key < other.key; }
 
     auto operator==(const Entry& other) const -> bool { return key == other.key; }
   };
@@ -83,7 +89,8 @@ public:
    * @param init Initializer list of key-value pairs.
    * @complexity Time O(n log n), Space O(n)
    */
-  TreeMap(std::initializer_list<std::pair<Key, Value>> init);
+  TreeMap(std::initializer_list<std::pair<Key, Value>> init)
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>;
 
   /**
    * @brief Move constructor.
@@ -192,7 +199,18 @@ public:
    * @param value The value to associate.
    * @return true if inserted, false if updated.
    */
-  auto insert(const Key& key, const Value& value) -> bool;
+  auto insert(const Key& key, const Value& value) -> bool
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>
+             && std::assignable_from<Value&, const Value&>;
+
+  /**
+   * @brief Inserts a key-value pair with a copied key and moved value.
+   * @param key The key to insert.
+   * @param value The value to move into the map.
+   * @return true if inserted, false if updated.
+   */
+  auto insert(const Key& key, Value&& value) -> bool
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts a key-value pair (move).
@@ -210,7 +228,8 @@ public:
    * @return true if inserted, false if updated.
    */
   template <typename... Args>
-  auto emplace(Key key, Args&&... args) -> bool;
+  auto emplace(Key key, Args&&... args) -> bool
+    requires std::constructible_from<Value, Args...>;
 
   /**
    * @brief Inserts or updates a key-value pair.
@@ -218,6 +237,14 @@ public:
    * @param value The value to associate with the key.
    */
   auto put(const Key& key, const Value& value) -> void override;
+
+  /**
+   * @brief Inserts or updates a key-value pair with a copied key and moved value.
+   * @param key The key to insert or update.
+   * @param value The value to move into the map.
+   */
+  auto put(const Key& key, Value&& value) -> void
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move).
@@ -252,17 +279,20 @@ public:
   /**
    * @brief Returns vector of all keys in sorted order.
    */
-  [[nodiscard]] auto keys() const -> std::vector<Key>;
+  [[nodiscard]] auto keys() const -> std::vector<Key>
+    requires std::copy_constructible<Key>;
 
   /**
    * @brief Returns vector of all values ordered by key.
    */
-  [[nodiscard]] auto values() const -> std::vector<Value>;
+  [[nodiscard]] auto values() const -> std::vector<Value>
+    requires std::copy_constructible<Value>;
 
   /**
    * @brief Returns vector of all key-value pairs ordered by key.
    */
-  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>;
+  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>;
 
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//

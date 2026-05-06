@@ -16,17 +16,14 @@
 
 namespace ads::trees {
 
-// DynamicArray stores rebuild values; LinkedQueue provides BFS storage without STL containers.
+// LinkedQueue provides BFS storage without std::queue.
 
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) :
-    data(val),
-    color(col),
-    left(nullptr),
-    right(nullptr),
-    parent(par) {
+Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par)
+  requires std::copy_constructible<T>
+    : data(val), color(col), left(nullptr), right(nullptr), parent(par) {
 }
 
 template <OrderedTreeElement T>
@@ -62,7 +59,9 @@ auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::insert(const T& value) -> bool {
+auto Red_Black_Tree<T>::insert(const T& value) -> bool
+  requires std::copy_constructible<T>
+{
   auto [new_node, inserted] = insert_helper(root_, value, nullptr);
 
   if (inserted) {
@@ -73,32 +72,95 @@ auto Red_Black_Tree<T>::insert(const T& value) -> bool {
 }
 
 template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::insert(T&& value) -> bool {
+  auto [new_node, inserted] = insert_helper(root_, std::move(value), nullptr);
+
+  if (inserted) {
+    insert_fixup(new_node);
+    return true;
+  }
+  return false;
+}
+
+template <OrderedTreeElement T>
+template <typename... Args>
+auto Red_Black_Tree<T>::emplace(Args&&... args) -> bool
+  requires std::constructible_from<T, Args...>
+{
+  return insert(T(std::forward<Args>(args)...));
+}
+
+template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::remove(const T& value) -> bool {
-  if (is_empty()) {
+  Node* target = find_node(value);
+  if (target == nullptr) {
     return false;
   }
 
-  ads::arrays::DynamicArray<T> retained_values(size_ > 0 ? size_ - 1 : 0);
+  auto& target_link   = owning_link(target);
+  Node* target_parent = target->parent;
+  Color removed_color = target->color;
+  Node* fix_node      = nullptr;
+  Node* fix_parent    = nullptr;
+  // A null replacement cannot reveal whether it occupied the left or right slot.
+  bool fix_node_left = false;
 
-  bool removed = false;
-  in_order_traversal([&](const T& current_value) {
-    if (!removed && current_value == value) {
-      removed = true;
-      return;
+  if (!target->left) {
+    fix_node_left = target_parent != nullptr && target_parent->left.get() == target;
+    auto removed  = std::move(target_link);
+    target_link   = std::move(removed->right);
+    fix_node      = target_link.get();
+    fix_parent    = target_parent;
+    if (target_link) {
+      target_link->parent = target_parent;
     }
-    retained_values.push_back(current_value);
-  });
+  } else if (!target->right) {
+    fix_node_left = target_parent != nullptr && target_parent->left.get() == target;
+    auto removed  = std::move(target_link);
+    target_link   = std::move(removed->left);
+    fix_node      = target_link.get();
+    fix_parent    = target_parent;
+    if (target_link) {
+      target_link->parent = target_parent;
+    }
+  } else {
+    auto  removed             = std::move(target_link);
+    Node* replacement         = nullptr;
+    Node* replacement_parent  = nullptr;
+    auto  successor           = detach_min_node(removed->right, replacement, replacement_parent);
+    bool  successor_was_child = replacement_parent == removed.get();
 
-  if (!removed) {
-    return false;
+    removed_color   = successor->color;
+    successor->left = std::move(removed->left);
+    if (successor->left) {
+      successor->left->parent = successor.get();
+    }
+
+    successor->right = std::move(removed->right);
+    if (successor->right) {
+      successor->right->parent = successor.get();
+    }
+
+    successor->color  = removed->color;
+    successor->parent = target_parent;
+    target_link       = std::move(successor);
+
+    fix_node      = successor_was_child ? target_link->right.get() : replacement;
+    fix_parent    = successor_was_child ? target_link.get() : replacement_parent;
+    fix_node_left = !successor_was_child;
   }
 
-  Red_Black_Tree rebuilt_tree;
-  for (const auto& current_value : retained_values) {
-    rebuilt_tree.insert(current_value);
+  --size_;
+  if (root_) {
+    root_->parent = nullptr;
   }
-
-  *this = std::move(rebuilt_tree);
+  if (removed_color == Color::Black) {
+    delete_fixup(fix_node, fix_parent, fix_node_left);
+  }
+  if (root_) {
+    root_->color  = Color::Black;
+    root_->parent = nullptr;
+  }
   return true;
 }
 
@@ -181,8 +243,8 @@ auto Red_Black_Tree<T>::validate_properties() const -> bool {
     return false;
   }
 
-  // Validate remaining properties recursively
-  return validate_helper(root_.get()) != -1;
+  // Validate ordering and Red-Black invariants together so structural bugs surface.
+  return validate_helper(root_.get(), nullptr, nullptr) != -1;
 }
 
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
@@ -369,22 +431,164 @@ void Red_Black_Tree<T>::insert_fixup(Node* node) {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent)
-    -> std::pair<Node*, bool> {
+template <typename U>
+auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value, Node* parent) -> std::pair<Node*, bool> {
   if (!node) {
-    node = std::make_unique<Node>(value, Color::Red, parent);
+    node = std::make_unique<Node>(std::forward<U>(value), Color::Red, parent);
     size_++;
     return {node.get(), true};
   }
 
   if (value < node->data) {
-    return insert_helper(node->left, value, node.get());
+    return insert_helper(node->left, std::forward<U>(value), node.get());
   } else if (node->data < value) {
-    return insert_helper(node->right, value, node.get());
+    return insert_helper(node->right, std::forward<U>(value), node.get());
   } else {
     // Duplicate - do not insert
     return {nullptr, false};
   }
+}
+
+//===----------------------------- REMOVAL HELPERS -----------------------------===//
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::find_node(const T& value) const -> Node* {
+  Node* current = root_.get();
+  while (current) {
+    if (value < current->data) {
+      current = current->left.get();
+    } else if (current->data < value) {
+      current = current->right.get();
+    } else {
+      return current;
+    }
+  }
+  return nullptr;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::owning_link(Node* node) -> std::unique_ptr<Node>& {
+  if (node->parent == nullptr) {
+    return root_;
+  }
+  if (node->parent->left.get() == node) {
+    return node->parent->left;
+  }
+  return node->parent->right;
+}
+
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::rotate_left_at(Node* node) {
+  Node* parent = node->parent;
+  auto& link   = owning_link(node);
+  link         = rotate_left(std::move(link));
+  link->parent = parent;
+}
+
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::rotate_right_at(Node* node) {
+  Node* parent = node->parent;
+  auto& link   = owning_link(node);
+  link         = rotate_right(std::move(link));
+  link->parent = parent;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::detach_min_node(std::unique_ptr<Node>& subtree, Node*& replacement, Node*& replacement_parent)
+    -> std::unique_ptr<Node> {
+  if (!subtree->left) {
+    Node* parent = subtree->parent;
+    auto  result = std::move(subtree);
+
+    subtree = std::move(result->right);
+    if (subtree) {
+      subtree->parent = parent;
+    }
+
+    replacement        = subtree.get();
+    replacement_parent = parent;
+    result->right      = nullptr;
+    result->parent     = nullptr;
+    return result;
+  }
+
+  return detach_min_node(subtree->left, replacement, replacement_parent);
+}
+
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::delete_fixup(Node* node, Node* parent, bool node_is_left_child) {
+  while (node != root_.get() && get_color(node) == Color::Black) {
+    if (parent == nullptr) {
+      break;
+    }
+
+    bool is_left_child = (node != nullptr) ? node == parent->left.get() : node_is_left_child;
+    if (is_left_child) {
+      Node* sibling = parent->right.get();
+
+      if (get_color(sibling) == Color::Red) {
+        set_color(sibling, Color::Black);
+        set_color(parent, Color::Red);
+        rotate_left_at(parent);
+        sibling = parent->right.get();
+      }
+
+      if (get_color(sibling ? sibling->left.get() : nullptr) == Color::Black
+          && get_color(sibling ? sibling->right.get() : nullptr) == Color::Black) {
+        set_color(sibling, Color::Red);
+        node               = parent;
+        parent             = node->parent;
+        node_is_left_child = parent != nullptr && parent->left.get() == node;
+      } else {
+        if (get_color(sibling ? sibling->right.get() : nullptr) == Color::Black) {
+          set_color(sibling ? sibling->left.get() : nullptr, Color::Black);
+          set_color(sibling, Color::Red);
+          rotate_right_at(sibling);
+          sibling = parent->right.get();
+        }
+
+        set_color(sibling, get_color(parent));
+        set_color(parent, Color::Black);
+        set_color(sibling ? sibling->right.get() : nullptr, Color::Black);
+        rotate_left_at(parent);
+        node   = root_.get();
+        parent = nullptr;
+      }
+    } else {
+      Node* sibling = parent->left.get();
+
+      if (get_color(sibling) == Color::Red) {
+        set_color(sibling, Color::Black);
+        set_color(parent, Color::Red);
+        rotate_right_at(parent);
+        sibling = parent->left.get();
+      }
+
+      if (get_color(sibling ? sibling->right.get() : nullptr) == Color::Black
+          && get_color(sibling ? sibling->left.get() : nullptr) == Color::Black) {
+        set_color(sibling, Color::Red);
+        node               = parent;
+        parent             = node->parent;
+        node_is_left_child = parent != nullptr && parent->left.get() == node;
+      } else {
+        if (get_color(sibling ? sibling->left.get() : nullptr) == Color::Black) {
+          set_color(sibling ? sibling->right.get() : nullptr, Color::Black);
+          set_color(sibling, Color::Red);
+          rotate_left_at(sibling);
+          sibling = parent->left.get();
+        }
+
+        set_color(sibling, get_color(parent));
+        set_color(parent, Color::Black);
+        set_color(sibling ? sibling->left.get() : nullptr, Color::Black);
+        rotate_right_at(parent);
+        node   = root_.get();
+        parent = nullptr;
+      }
+    }
+  }
+
+  set_color(node, Color::Black);
 }
 
 //===----------------------------- SEARCH HELPERS ------------------------------===//
@@ -451,9 +655,16 @@ auto Red_Black_Tree<T>::black_height_helper(const Node* node) const -> int {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::validate_helper(const Node* node) const -> int {
+auto Red_Black_Tree<T>::validate_helper(const Node* node, const T* lower_bound, const T* upper_bound) const -> int {
   if (!node) {
     return 0; // NIL leaves are black.
+  }
+
+  if (lower_bound != nullptr && !(*lower_bound < node->data)) {
+    return -1;
+  }
+  if (upper_bound != nullptr && !(node->data < *upper_bound)) {
+    return -1;
   }
 
   // Property 4: If node is red, children must be black.
@@ -464,8 +675,8 @@ auto Red_Black_Tree<T>::validate_helper(const Node* node) const -> int {
   }
 
   // Property 5: Black heights must be equal for all paths.
-  int left_bh  = validate_helper(node->left.get());
-  int right_bh = validate_helper(node->right.get());
+  int left_bh  = validate_helper(node->left.get(), lower_bound, &node->data);
+  int right_bh = validate_helper(node->right.get(), &node->data, upper_bound);
 
   if (left_bh == -1 || right_bh == -1 || left_bh != right_bh) {
     return -1; // Violation: unequal black heights.

@@ -122,12 +122,17 @@ auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::insert(const T& value) -> bool {
-  bool inserted = false;
-  root_         = insert_helper(std::move(root_), value, inserted);
-  if (inserted) {
-    ++size_;
+  if constexpr (!std::copy_constructible<T>) {
+    // Preserve the BinaryTree<T> interface while allowing move-only tree payloads.
+    throw InvalidOperationException("copy insert requires copy-constructible values");
+  } else {
+    bool inserted = false;
+    root_         = insert_helper(std::move(root_), value, inserted);
+    if (inserted) {
+      ++size_;
+    }
+    return inserted;
   }
-  return inserted;
 }
 
 template <OrderedTreeElement T>

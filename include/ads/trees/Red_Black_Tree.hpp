@@ -117,15 +117,33 @@ public:
    * @return true if inserted, false if duplicate.
    * @complexity O(log n) time, at most 2 rotations
    */
-  auto insert(const T& value) -> bool;
+  auto insert(const T& value) -> bool
+    requires std::copy_constructible<T>;
+
+  /**
+   * @brief Insert a moved value into the tree.
+   * @param value Value to move into the tree.
+   * @return true if inserted, false if duplicate.
+   * @complexity O(log n) time, at most 2 rotations
+   */
+  auto insert(T&& value) -> bool;
+
+  /**
+   * @brief Constructs an element in-place in the tree.
+   * @tparam Args Types of arguments to forward to T's constructor.
+   * @param args Arguments to forward to the constructor of T.
+   * @return true if inserted, false if duplicate.
+   * @complexity O(log n) time, at most 2 rotations
+   */
+  template <typename... Args>
+  auto emplace(Args&&... args) -> bool
+    requires std::constructible_from<T, Args...>;
 
   /**
    * @brief Remove a value from the tree.
    * @param value Value to remove.
    * @return true if removed, false if value was not found.
-   * @complexity O(n log n)
-   * @note This implementation rebuilds the tree after removal to preserve
-   *       Red-Black properties with strong exception safety.
+   * @complexity O(log n)
    */
   auto remove(const T& value) -> bool;
 
@@ -244,7 +262,8 @@ private:
     std::unique_ptr<Node> right;  ///< Right child.
     Node*                 parent; // Non-owning pointer for upward traversal.
 
-    explicit Node(const T& val, Color col = Color::Red, Node* par = nullptr);
+    explicit Node(const T& val, Color col = Color::Red, Node* par = nullptr)
+      requires std::copy_constructible<T>;
     explicit Node(T&& val, Color col = Color::Red, Node* par = nullptr);
   };
 
@@ -314,7 +333,54 @@ private:
    * @param value Value to insert.
    * @return Pair of (pointer to inserted node, true if inserted, false if duplicate).
    */
-  auto insert_helper(std::unique_ptr<Node>& node, const T& value, Node* parent) -> std::pair<Node*, bool>;
+  template <typename U>
+  auto insert_helper(std::unique_ptr<Node>& node, U&& value, Node* parent) -> std::pair<Node*, bool>;
+
+  //===---------------------------- REMOVAL HELPERS ----------------------------===//
+
+  /**
+   * @brief Find a node by value.
+   * @param value Value to search for.
+   * @return Pointer to matching node, or nullptr.
+   */
+  [[nodiscard]] auto find_node(const T& value) const -> Node*;
+
+  /**
+   * @brief Returns the unique_ptr slot owning the given node.
+   * @param node Non-null node owned by this tree.
+   * @return Reference to root_ or the matching parent child slot.
+   */
+  auto owning_link(Node* node) -> std::unique_ptr<Node>&;
+
+  /**
+   * @brief Rotate a subtree left in-place at the owning slot of node.
+   * @param node Root of the subtree to rotate.
+   */
+  void rotate_left_at(Node* node);
+
+  /**
+   * @brief Rotate a subtree right in-place at the owning slot of node.
+   * @param node Root of the subtree to rotate.
+   */
+  void rotate_right_at(Node* node);
+
+  /**
+   * @brief Detaches the minimum node from subtree.
+   * @param subtree Owning subtree slot.
+   * @param replacement Node that replaced the detached minimum, possibly nullptr.
+   * @param replacement_parent Parent of replacement after detaching.
+   * @return Detached minimum node.
+   */
+  auto detach_min_node(std::unique_ptr<Node>& subtree, Node*& replacement, Node*& replacement_parent)
+      -> std::unique_ptr<Node>;
+
+  /**
+   * @brief Restore Red-Black properties after deleting a black node.
+   * @param node Replacement child, possibly nullptr.
+   * @param parent Parent of replacement child when node is nullptr.
+   * @param node_is_left_child Side occupied by a nullptr replacement.
+   */
+  void delete_fixup(Node* node, Node* parent, bool node_is_left_child);
 
   //===---------------------------- SEARCH HELPERS -----------------------------===//
 
@@ -370,7 +436,7 @@ private:
    * @param node Current node.
    * @return Black height of subtree, or -1 if invalid.
    */
-  [[nodiscard]] auto validate_helper(const Node* node) const -> int;
+  [[nodiscard]] auto validate_helper(const Node* node, const T* lower_bound, const T* upper_bound) const -> int;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 

@@ -120,7 +120,12 @@ auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> Binary
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::insert(const T& value) -> bool {
-  return insert_helper(root_, value);
+  if constexpr (!std::copy_constructible<T>) {
+    // Preserve the BinaryTree<T> interface while allowing move-only tree payloads.
+    throw InvalidOperationException("copy insert requires copy-constructible values");
+  } else {
+    return insert_helper(root_, value);
+  }
 }
 
 template <OrderedTreeElement T>

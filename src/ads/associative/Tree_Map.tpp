@@ -20,7 +20,9 @@ namespace ads::associative {
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename Key, typename Value>
-TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init) {
+TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init)
+  requires std::copy_constructible<Key> && std::copy_constructible<Value>
+{
   for (const auto& pair : init) {
     put(pair.first, pair.second);
   }
@@ -113,9 +115,20 @@ auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::insert(const Key& key, const Value& value) -> bool {
+auto TreeMap<Key, Value>::insert(const Key& key, const Value& value) -> bool
+  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+{
   bool inserted = !contains(key);
   put(key, value);
+  return inserted;
+}
+
+template <typename Key, typename Value>
+auto TreeMap<Key, Value>::insert(const Key& key, Value&& value) -> bool
+  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
+  bool inserted = !contains(key);
+  put(key, std::move(value));
   return inserted;
 }
 
@@ -128,7 +141,9 @@ auto TreeMap<Key, Value>::insert(Key&& key, Value&& value) -> bool {
 
 template <typename Key, typename Value>
 template <typename... Args>
-auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool {
+auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool
+  requires std::constructible_from<Value, Args...>
+{
   if (Entry* entry = find_entry(key)) {
     entry->value.emplace(std::forward<Args>(args)...);
     return false;
@@ -140,12 +155,29 @@ auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool {
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void {
+  if constexpr (
+      !std::copy_constructible<Key> || !std::copy_constructible<Value> || !std::assignable_from<Value&, const Value&>) {
+    throw TreeMapException("copy put requires copyable keys and mapped values");
+  } else {
+    if (Entry* entry = find_entry(key)) {
+      entry->value = value;
+      return;
+    }
+
+    tree_.insert(Entry(key, value));
+  }
+}
+
+template <typename Key, typename Value>
+auto TreeMap<Key, Value>::put(const Key& key, Value&& value) -> void
+  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
   if (Entry* entry = find_entry(key)) {
-    entry->value = value;
+    entry->value = std::move(value);
     return;
   }
 
-  tree_.insert(Entry(key, value));
+  tree_.insert(Entry(key, std::move(value)));
 }
 
 template <typename Key, typename Value>
@@ -178,7 +210,9 @@ auto TreeMap<Key, Value>::clear() noexcept -> void {
 //===--------------------------- CONVENIENCE METHODS ---------------------------===//
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::keys() const -> std::vector<Key> {
+auto TreeMap<Key, Value>::keys() const -> std::vector<Key>
+  requires std::copy_constructible<Key>
+{
   std::vector<Key> result;
   result.reserve(tree_.size());
 
@@ -187,7 +221,9 @@ auto TreeMap<Key, Value>::keys() const -> std::vector<Key> {
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::values() const -> std::vector<Value> {
+auto TreeMap<Key, Value>::values() const -> std::vector<Value>
+  requires std::copy_constructible<Value>
+{
   std::vector<Value> result;
   result.reserve(tree_.size());
 
@@ -200,7 +236,9 @@ auto TreeMap<Key, Value>::values() const -> std::vector<Value> {
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>> {
+auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>>
+  requires std::copy_constructible<Key> && std::copy_constructible<Value>
+{
   std::vector<std::pair<Key, Value>> result;
   result.reserve(tree_.size());
 

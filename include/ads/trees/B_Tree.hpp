@@ -123,9 +123,7 @@ public:
    * @brief Remove a key from the tree.
    * @param key Key to remove.
    * @return true if removed, false if key was not found.
-   * @complexity O(n log_t n)
-   * @note This implementation rebuilds the tree after removing the key to preserve
-   *       all B-Tree invariants with strong exception safety.
+   * @complexity O(t log_t n)
    */
   auto remove(const T& key) -> bool;
 
@@ -287,6 +285,80 @@ private:
    */
   auto insert_non_full(Node* node, const T& key) -> bool;
 
+  //===---------------------------- REMOVAL HELPERS ---------------------------===//
+
+  /**
+   * @brief Finds the first key index greater than or equal to key.
+   * @param node Current node.
+   * @param key Key to search.
+   * @return Candidate key or child index.
+   */
+  [[nodiscard]] auto find_key_index(const Node* node, const T& key) const -> int;
+
+  /**
+   * @brief Removes key from subtree rooted at node.
+   * @param node Current subtree root.
+   * @param key Key to remove.
+   * @return true if removed, false if key was not found.
+   */
+  auto remove_from_node(Node* node, const T& key) -> bool;
+
+  /**
+   * @brief Removes a key stored directly in a leaf node.
+   * @param node Leaf node containing the key.
+   * @param index Key index to remove.
+   */
+  void remove_from_leaf(Node* node, int index);
+
+  /**
+   * @brief Removes a key stored in an internal node.
+   * @param node Internal node containing the key.
+   * @param index Key index to remove.
+   */
+  void remove_from_internal(Node* node, int index);
+
+  /**
+   * @brief Returns the predecessor key from the child before index.
+   * @param node Internal node.
+   * @param index Key index whose predecessor is needed.
+   */
+  [[nodiscard]] auto predecessor_key(const Node* node, int index) const -> T;
+
+  /**
+   * @brief Returns the successor key from the child after index.
+   * @param node Internal node.
+   * @param index Key index whose successor is needed.
+   */
+  [[nodiscard]] auto successor_key(const Node* node, int index) const -> T;
+
+  /**
+   * @brief Ensures child index has at least t keys before descent.
+   * @param node Parent node.
+   * @param index Child index to prepare.
+   */
+  void fill_child(Node* node, int index);
+
+  /**
+   * @brief Borrows one key from the left sibling.
+   * @param node Parent node.
+   * @param index Child index receiving a key.
+   */
+  void borrow_from_previous(Node* node, int index);
+
+  /**
+   * @brief Borrows one key from the right sibling.
+   * @param node Parent node.
+   * @param index Child index receiving a key.
+   */
+  void borrow_from_next(Node* node, int index);
+
+  /**
+   * @brief Merges child index with its right sibling.
+   * @param node Parent node.
+   * @param index Left child index.
+   */
+  void merge_children(Node* node, int index);
+
   /**
    * @brief Search for key in subtree.
    * @param node Current node.
@@ -324,7 +396,14 @@ private:
    * @param level Current level in the tree.
    * @return true if subtree is valid.
    */
-  [[nodiscard]] auto validate_helper(const Node* node, int min_keys, int max_keys, int level) const -> bool;
+  [[nodiscard]] auto validate_helper(
+      const Node* node,
+      int         min_keys,
+      int         max_keys,
+      int         level,
+      const T*    lower_bound,
+      const T*    upper_bound,
+      int&        leaf_level) const -> bool;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 

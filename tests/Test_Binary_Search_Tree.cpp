@@ -18,6 +18,25 @@
 
 using namespace ads::trees;
 
+namespace {
+
+struct BstMoveOnlyOrdered {
+  int value;
+
+  explicit BstMoveOnlyOrdered(int v) : value(v) {}
+
+  BstMoveOnlyOrdered(const BstMoveOnlyOrdered&)                        = delete;
+  auto operator=(const BstMoveOnlyOrdered&) -> BstMoveOnlyOrdered&     = delete;
+  BstMoveOnlyOrdered(BstMoveOnlyOrdered&&) noexcept                    = default;
+  auto operator=(BstMoveOnlyOrdered&&) noexcept -> BstMoveOnlyOrdered& = default;
+
+  auto operator<(const BstMoveOnlyOrdered& other) const -> bool { return value < other.value; }
+
+  auto operator==(const BstMoveOnlyOrdered& other) const -> bool { return value == other.value; }
+};
+
+} // namespace
+
 // Test fixture for BinarySearchTree.
 class BinarySearchTreeTest : public ::testing::Test {
 protected:
@@ -312,6 +331,35 @@ TEST(BinarySearchTreeCustomTypeTest, CustomComparison) {
   EXPECT_EQ(people_tree.size(), 3);
   EXPECT_EQ(people_tree.find_min().name, "Bob");
   EXPECT_EQ(people_tree.find_max().name, "Charlie");
+}
+
+TEST(BinarySearchTreeMoveOnlyTest, SupportsMoveOnlyValues) {
+  BinarySearchTree<BstMoveOnlyOrdered> tree;
+
+  EXPECT_TRUE(tree.insert(BstMoveOnlyOrdered{50}));
+  EXPECT_TRUE(tree.emplace(30));
+  EXPECT_TRUE(tree.insert(BstMoveOnlyOrdered{70}));
+  EXPECT_FALSE(tree.insert(BstMoveOnlyOrdered{50}));
+
+  EXPECT_EQ(tree.size(), 3U);
+  EXPECT_TRUE(tree.contains(BstMoveOnlyOrdered{30}));
+  EXPECT_EQ(tree.find_min().value, 30);
+  EXPECT_EQ(tree.find_max().value, 70);
+
+  std::vector<int> values;
+  tree.in_order_traversal([&values](const BstMoveOnlyOrdered& value) { values.push_back(value.value); });
+  std::vector<int> expected{30, 50, 70};
+  EXPECT_EQ(values, expected);
+
+  EXPECT_TRUE(tree.remove(BstMoveOnlyOrdered{50}));
+  EXPECT_FALSE(tree.contains(BstMoveOnlyOrdered{50}));
+}
+
+TEST(BinarySearchTreeMoveOnlyTest, CopyInsertThrowsForMoveOnlyValues) {
+  BinarySearchTree<BstMoveOnlyOrdered> tree;
+  BstMoveOnlyOrdered                   value{10};
+
+  EXPECT_THROW(tree.insert(value), InvalidOperationException);
 }
 
 //===---------------------------------------------------------------------------===//

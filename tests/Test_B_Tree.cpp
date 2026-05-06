@@ -273,6 +273,68 @@ TEST_F(BTreeTest, LargeDatasetInsertAndRemove) {
   }
 }
 
+TEST(BTreeDeletionTest, DegreeTwoMixedDeletionMaintainsInvariants) {
+  BTreeType<int, 2> tree;
+  constexpr int     kElementCount = 90;
+
+  for (int i = 1; i <= kElementCount; ++i) {
+    ASSERT_TRUE(tree.insert(i));
+  }
+
+  std::vector<int> removal_order;
+  for (int i = 1; i <= kElementCount; i += 3) {
+    removal_order.push_back(i);
+  }
+  for (int i = kElementCount; i >= 1; --i) {
+    if (i % 3 == 2) {
+      removal_order.push_back(i);
+    }
+  }
+  for (int i = 1; i <= kElementCount; ++i) {
+    if (i % 3 == 0) {
+      removal_order.push_back(i);
+    }
+  }
+
+  size_t expected_size = kElementCount;
+  for (int value : removal_order) {
+    ASSERT_TRUE(tree.remove(value)) << "value: " << value;
+    --expected_size;
+
+    EXPECT_EQ(tree.size(), expected_size);
+    EXPECT_FALSE(tree.contains(value));
+    EXPECT_TRUE(tree.validate_properties()) << "after removing: " << value;
+  }
+
+  EXPECT_TRUE(tree.is_empty());
+}
+
+TEST(BTreeDeletionTest, LargerDegreeMixedDeletionMaintainsInvariants) {
+  BTreeType<int, 5> tree;
+  constexpr int     kElementCount = 150;
+
+  for (int i = 1; i <= kElementCount; ++i) {
+    ASSERT_TRUE(tree.insert(i));
+  }
+
+  for (int value = 75; value >= 1; value -= 2) {
+    ASSERT_TRUE(tree.remove(value)) << "value: " << value;
+    EXPECT_TRUE(tree.validate_properties()) << "after removing: " << value;
+  }
+  for (int value = 76; value <= kElementCount; value += 2) {
+    ASSERT_TRUE(tree.remove(value)) << "value: " << value;
+    EXPECT_TRUE(tree.validate_properties()) << "after removing: " << value;
+  }
+
+  EXPECT_EQ(tree.size(), 74U);
+  for (int value = 2; value <= 74; value += 2) {
+    EXPECT_TRUE(tree.contains(value));
+  }
+  for (int value = 77; value <= kElementCount; value += 2) {
+    EXPECT_TRUE(tree.contains(value));
+  }
+}
+
 //===------------------------- DEGREE VARIATION TESTS --------------------------===//
 
 TEST(BTreeDegreeTest, MinimumDegree2) {

@@ -22,6 +22,25 @@ using namespace ads::trees;
 template <typename T>
 using RedBlackTreeType = Red_Black_Tree<T>;
 
+namespace {
+
+struct RbtMoveOnlyOrdered {
+  int value;
+
+  explicit RbtMoveOnlyOrdered(int v) : value(v) {}
+
+  RbtMoveOnlyOrdered(const RbtMoveOnlyOrdered&)                        = delete;
+  auto operator=(const RbtMoveOnlyOrdered&) -> RbtMoveOnlyOrdered&     = delete;
+  RbtMoveOnlyOrdered(RbtMoveOnlyOrdered&&) noexcept                    = default;
+  auto operator=(RbtMoveOnlyOrdered&&) noexcept -> RbtMoveOnlyOrdered& = default;
+
+  auto operator<(const RbtMoveOnlyOrdered& other) const -> bool { return value < other.value; }
+
+  auto operator==(const RbtMoveOnlyOrdered& other) const -> bool { return value == other.value; }
+};
+
+} // namespace
+
 // Test fixture for RedBlackTree.
 class RedBlackTreeTest : public ::testing::Test {
 protected:
@@ -289,6 +308,40 @@ TEST_F(RedBlackTreeTest, BalanceAfterMultipleOperations) {
   }
 }
 
+TEST_F(RedBlackTreeTest, MixedDeletionOrderMaintainsProperties) {
+  constexpr int kElementCount = 200;
+  for (int i = 1; i <= kElementCount; ++i) {
+    ASSERT_TRUE(tree.insert(i));
+  }
+
+  std::vector<int> removal_order;
+  for (int i = 1; i <= kElementCount; i += 3) {
+    removal_order.push_back(i);
+  }
+  for (int i = kElementCount; i >= 1; --i) {
+    if (i % 3 == 2) {
+      removal_order.push_back(i);
+    }
+  }
+  for (int i = 1; i <= kElementCount; ++i) {
+    if (i % 3 == 0) {
+      removal_order.push_back(i);
+    }
+  }
+
+  size_t expected_size = kElementCount;
+  for (int value : removal_order) {
+    ASSERT_TRUE(tree.remove(value)) << "value: " << value;
+    --expected_size;
+
+    EXPECT_EQ(tree.size(), expected_size);
+    EXPECT_FALSE(tree.contains(value));
+    EXPECT_TRUE(tree.validate_properties()) << "after removing: " << value;
+  }
+
+  EXPECT_TRUE(tree.is_empty());
+}
+
 //===----------------------------- EDGE CASE TESTS -----------------------------===//
 
 TEST_F(RedBlackTreeTest, SingleElementTree) {
@@ -321,6 +374,33 @@ TEST(RedBlackTreeCustomTypeTest, StringKeys) {
   EXPECT_EQ(str_tree.size(), 3);
   EXPECT_EQ(str_tree.find_min(), "apple");
   EXPECT_EQ(str_tree.find_max(), "cherry");
+}
+
+TEST(RedBlackTreeMoveOnlyTest, SupportsMoveOnlyValuesAndNativeRemoval) {
+  RedBlackTreeType<RbtMoveOnlyOrdered> tree;
+
+  EXPECT_TRUE(tree.insert(RbtMoveOnlyOrdered{40}));
+  EXPECT_TRUE(tree.emplace(20));
+  EXPECT_TRUE(tree.insert(RbtMoveOnlyOrdered{60}));
+  EXPECT_TRUE(tree.emplace(10));
+  EXPECT_TRUE(tree.emplace(30));
+  EXPECT_TRUE(tree.emplace(50));
+  EXPECT_TRUE(tree.emplace(70));
+  EXPECT_FALSE(tree.insert(RbtMoveOnlyOrdered{40}));
+
+  EXPECT_TRUE(tree.validate_properties());
+  EXPECT_EQ(tree.find_min().value, 10);
+  EXPECT_EQ(tree.find_max().value, 70);
+
+  EXPECT_TRUE(tree.remove(RbtMoveOnlyOrdered{40}));
+  EXPECT_TRUE(tree.remove(RbtMoveOnlyOrdered{10}));
+  EXPECT_FALSE(tree.contains(RbtMoveOnlyOrdered{40}));
+  EXPECT_TRUE(tree.validate_properties());
+
+  std::vector<int> values;
+  tree.in_order_traversal([&values](const RbtMoveOnlyOrdered& value) { values.push_back(value.value); });
+  std::vector<int> expected{20, 30, 50, 60, 70};
+  EXPECT_EQ(values, expected);
 }
 
 //===---------------------------------------------------------------------------===//

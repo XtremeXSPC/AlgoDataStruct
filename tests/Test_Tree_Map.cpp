@@ -13,10 +13,23 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 using namespace ads::associative;
+
+namespace {
+
+struct LessOnlyKey {
+  int value;
+
+  auto operator<(const LessOnlyKey& other) const -> bool { return value < other.value; }
+
+  auto operator==(const LessOnlyKey& other) const -> bool { return value == other.value; }
+};
+
+} // namespace
 
 // Test fixture for TreeMap.
 class TreeMapTest : public ::testing::Test {
@@ -102,6 +115,47 @@ TEST_F(TreeMapTest, EmplaceInsertsAndUpdates) {
   const auto& entry = payloads.get(1);
   EXPECT_EQ(entry.label, "B");
   EXPECT_EQ(entry.value, 20);
+}
+
+TEST(TreeMapMoveOnlyTest, SupportsMoveOnlyMappedValues) {
+  TreeMap<int, std::unique_ptr<int>> map;
+  int                                copied_key = 2;
+
+  map.put(1, std::make_unique<int>(10));
+  map.put(copied_key, std::make_unique<int>(20));
+  EXPECT_FALSE(map.insert(copied_key, std::make_unique<int>(25)));
+  EXPECT_TRUE(map.emplace(3, std::make_unique<int>(30)));
+  map[4] = std::make_unique<int>(40);
+
+  ASSERT_NE(map.find(1), nullptr);
+  ASSERT_NE(map.find(2), nullptr);
+  EXPECT_EQ(*map.at(1), 10);
+  EXPECT_EQ(*map.at(2), 25);
+  EXPECT_EQ(*map.at(3), 30);
+  EXPECT_EQ(*map.at(4), 40);
+  EXPECT_EQ(map.size(), 4U);
+
+  EXPECT_TRUE(map.erase(1));
+  EXPECT_FALSE(map.contains(1));
+}
+
+TEST(TreeMapMoveOnlyTest, CopyPutThrowsForMoveOnlyMappedValues) {
+  TreeMap<int, std::unique_ptr<int>> map;
+  auto                               value = std::make_unique<int>(10);
+
+  EXPECT_THROW(map.put(1, value), TreeMapException);
+}
+
+TEST(TreeMapKeyComparisonTest, SupportsKeysWithLessOnlyOrdering) {
+  TreeMap<LessOnlyKey, std::string> map;
+
+  map.put(LessOnlyKey{3}, std::string("three"));
+  map.put(LessOnlyKey{1}, std::string("one"));
+  map.put(LessOnlyKey{2}, std::string("two"));
+
+  std::vector<LessOnlyKey> expected{{1}, {2}, {3}};
+  EXPECT_EQ(map.keys(), expected);
+  EXPECT_EQ(map.at(LessOnlyKey{2}), "two");
 }
 
 //===---------------------------------------------------------------------------===//
