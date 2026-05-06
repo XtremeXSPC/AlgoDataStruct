@@ -212,6 +212,19 @@ TEST_F(TrieTest, MoveConstructor) {
   EXPECT_TRUE(moved_trie.search("hello"));
 }
 
+TEST_F(TrieTest, MovedFromTrieCanBeReusedAfterMoveConstruction) {
+  trie.insert("hello");
+  trie.insert("world");
+
+  TrieType moved_trie = std::move(trie);
+  trie.insert("fresh");
+
+  EXPECT_EQ(trie.size(), 1);
+  EXPECT_TRUE(trie.search("fresh"));
+  EXPECT_TRUE(moved_trie.search("hello"));
+  EXPECT_TRUE(moved_trie.search("world"));
+}
+
 TEST_F(TrieTest, MoveAssignment) {
   trie.insert("hello");
   trie.insert("world");
@@ -221,6 +234,20 @@ TEST_F(TrieTest, MoveAssignment) {
 
   EXPECT_TRUE(trie.is_empty());
   EXPECT_EQ(other_trie.size(), 2);
+}
+
+TEST_F(TrieTest, MovedFromTrieCanBeReusedAfterMoveAssignment) {
+  trie.insert("hello");
+  trie.insert("world");
+
+  TrieType other_trie;
+  other_trie = std::move(trie);
+  trie.insert("again");
+
+  EXPECT_EQ(trie.size(), 1);
+  EXPECT_TRUE(trie.search("again"));
+  EXPECT_TRUE(other_trie.search("hello"));
+  EXPECT_TRUE(other_trie.search("world"));
 }
 
 //===---------------------------- ADDITIONAL TESTS -----------------------------===//
@@ -318,6 +345,41 @@ TEST_F(TrieTest, CountWordsWithPrefix) {
   EXPECT_EQ(trie.count_words_with_prefix("ca"), 5);
   EXPECT_EQ(trie.count_words_with_prefix("cat"), 1);
   EXPECT_EQ(trie.count_words_with_prefix("xyz"), 0);
+}
+
+TEST_F(TrieTest, LongestCommonPrefix) {
+  trie.insert("flower");
+  trie.insert("flow");
+  trie.insert("flight");
+
+  EXPECT_EQ(trie.longest_common_prefix(), "fl");
+
+  trie.insert("anchor");
+  EXPECT_EQ(trie.longest_common_prefix(), "");
+}
+
+//===------------------------- ARRAY-BACKED TRIE TESTS ------------------------===//
+
+TEST(TrieArrayTest, LowercaseOperationsUseArrayStorage) {
+  TrieArray trie;
+
+  trie.insert("app");
+  trie.insert("apple");
+  trie.insert("bat");
+
+  EXPECT_EQ(trie.size(), 3);
+  EXPECT_TRUE(trie.search("app"));
+  EXPECT_TRUE(trie.search("apple"));
+  EXPECT_TRUE(trie.starts_with("ba"));
+  EXPECT_TRUE(trie.remove("app"));
+  EXPECT_FALSE(trie.search("app"));
+  EXPECT_TRUE(trie.search("apple"));
+}
+
+TEST(TrieArrayTest, RejectsUnsupportedCharacters) {
+  TrieArray trie;
+
+  EXPECT_THROW(trie.insert("App"), std::invalid_argument);
 }
 
 //===---------------------------------------------------------------------------===//

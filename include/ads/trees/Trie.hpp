@@ -256,7 +256,15 @@ private:
    * @param c Character key.
    * @return Pointer to child node, or nullptr if not exists.
    */
-  auto get_child(const TrieNode* node, char c) const -> TrieNode*;
+  [[nodiscard]] auto get_child(const TrieNode* node, char c) const -> const TrieNode*;
+
+  /**
+   * @brief Get mutable child node for a character.
+   * @param node Current node.
+   * @param c Character key.
+   * @return Pointer to child node, or nullptr if not exists.
+   */
+  [[nodiscard]] auto get_child(TrieNode* node, char c) -> TrieNode*;
 
   /**
    * @brief Create or get child node for a character.
@@ -271,7 +279,7 @@ private:
    * @param prefix Prefix string to find.
    * @return Pointer to node representing prefix, or nullptr if not found.
    */
-  auto find_prefix_node(const std::string& prefix) const -> TrieNode*;
+  [[nodiscard]] auto find_prefix_node(const std::string& prefix) const -> const TrieNode*;
 
   /**
    * @brief DFS to collect all words from a node.

@@ -43,7 +43,6 @@ Trie<UseMap>::Trie() : root_(std::make_unique<TrieNode>()), word_count_(0) {
 
 template <bool UseMap>
 Trie<UseMap>::Trie(Trie&& other) noexcept : root_(std::move(other.root_)), word_count_(other.word_count_) {
-  other.root_       = std::make_unique<TrieNode>();
   other.word_count_ = 0;
 }
 
@@ -52,7 +51,6 @@ auto Trie<UseMap>::operator=(Trie&& other) noexcept -> Trie& {
   if (this != &other) {
     root_             = std::move(other.root_);
     word_count_       = other.word_count_;
-    other.root_       = std::make_unique<TrieNode>();
     other.word_count_ = 0;
   }
   return *this;
@@ -64,6 +62,11 @@ template <bool UseMap>
 void Trie<UseMap>::insert(const std::string& word) {
   if (word.empty()) {
     throw std::invalid_argument("Cannot insert empty word");
+  }
+
+  if (!root_) {
+    // Moved-from tries avoid allocation in noexcept moves; first mutation rebuilds the sentinel root.
+    root_ = std::make_unique<TrieNode>();
   }
 
   TrieNode* node = root_.get();
@@ -126,7 +129,7 @@ template <bool UseMap>
 auto Trie<UseMap>::get_all_words_with_prefix(const std::string& prefix) const -> std::vector<std::string> {
   std::vector<std::string> results;
 
-  TrieNode* node = find_prefix_node(prefix);
+  const TrieNode* node = find_prefix_node(prefix);
   if (!node) {
     return results; // Prefix not found.
   }
@@ -138,7 +141,7 @@ auto Trie<UseMap>::get_all_words_with_prefix(const std::string& prefix) const ->
 
 template <bool UseMap>
 auto Trie<UseMap>::count_words_with_prefix(const std::string& prefix) const -> size_t {
-  TrieNode* node = find_prefix_node(prefix);
+  const TrieNode* node = find_prefix_node(prefix);
   if (!node) {
     return 0;
   }
@@ -151,15 +154,15 @@ auto Trie<UseMap>::longest_common_prefix() const -> std::string {
     return "";
   }
 
-  std::string prefix;
-  TrieNode*   node = root_.get();
+  std::string     prefix;
+  const TrieNode* node = root_.get();
 
   // Traverse while there's only one child and not end of word.
   while (node) {
     // Count children.
-    int       child_count = 0;
-    char      next_char   = '\0';
-    TrieNode* next_node   = nullptr;
+    int             child_count = 0;
+    char            next_char   = '\0';
+    const TrieNode* next_node   = nullptr;
 
     if constexpr (UseMap) {
       child_count = static_cast<int>(node->children.size());
@@ -198,7 +201,7 @@ auto Trie<UseMap>::search(const std::string& word) const -> bool {
     return false;
   }
 
-  TrieNode* node = find_prefix_node(word);
+  const TrieNode* node = find_prefix_node(word);
   return node != nullptr && node->is_end_of_word;
 }
 
@@ -214,7 +217,11 @@ auto Trie<UseMap>::char_to_index(char c) -> int {
 }
 
 template <bool UseMap>
-auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> TrieNode* {
+auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> const TrieNode* {
+  if (node == nullptr) {
+    return nullptr;
+  }
+
   if constexpr (UseMap) {
     for (const auto& entry : node->children) {
       if (entry.character == c) {
@@ -229,14 +236,30 @@ auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> TrieNode* {
 }
 
 template <bool UseMap>
-auto Trie<UseMap>::get_or_create_child(TrieNode* node, char c) -> TrieNode* {
+auto Trie<UseMap>::get_child(TrieNode* node, char c) -> TrieNode* {
+  if (node == nullptr) {
+    return nullptr;
+  }
+
   if constexpr (UseMap) {
     for (auto& entry : node->children) {
       if (entry.character == c) {
         return entry.child.get();
       }
     }
+    return nullptr;
+  } else {
+    int idx = char_to_index(c);
+    return node->children[idx].get();
+  }
+}
 
+template <bool UseMap>
+auto Trie<UseMap>::get_or_create_child(TrieNode* node, char c) -> TrieNode* {
+  if constexpr (UseMap) {
+    if (TrieNode* child = get_child(node, c); child != nullptr) {
+      return child;
+    }
     auto& entry = node->children.emplace_back(c, std::make_unique<TrieNode>());
     return entry.child.get();
   } else {
@@ -249,8 +272,8 @@ auto Trie<UseMap>::get_or_create_child(TrieNode* node, char c) -> TrieNode* {
 }
 
 template <bool UseMap>
-auto Trie<UseMap>::find_prefix_node(const std::string& prefix) const -> TrieNode* {
-  TrieNode* node = root_.get();
+auto Trie<UseMap>::find_prefix_node(const std::string& prefix) const -> const TrieNode* {
+  const TrieNode* node = root_.get();
   for (char c : prefix) {
     node = get_child(node, c);
     if (!node) {
