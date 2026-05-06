@@ -259,8 +259,26 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const 
   result.reserve(vertices_.size());
 
   ads::arrays::DynamicArray<bool> visited(vertices_.size(), false);
+  ads::stacks::ArrayStack<size_t> stack(vertices_.size());
 
-  dfs_helper(start_vertex, visited, result);
+  // Mark on push so the first discovered parent owns the DFS order, matching recursive traversal.
+  visited[start_vertex] = true;
+  stack.push(start_vertex);
+
+  while (!stack.is_empty()) {
+    const size_t current = stack.top();
+    stack.pop();
+    result.push_back(current);
+
+    const auto& adjacency = vertices_[current].adjacency;
+    for (size_t i = adjacency.size(); i > 0; --i) {
+      const size_t destination = adjacency[i - 1].destination;
+      if (!visited[destination]) {
+        visited[destination] = true;
+        stack.push(destination);
+      }
+    }
+  }
 
   return result;
 }
@@ -378,20 +396,6 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(size_t from, si
   }
 
   return std::nullopt;
-}
-
-template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs_helper(
-    size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const -> void {
-  visited[vertex_id] = true;
-  result.push_back(vertex_id);
-
-  // Visit all unvisited neighbors.
-  for (const auto& edge : vertices_[vertex_id].adjacency) {
-    if (!visited[edge.destination]) {
-      dfs_helper(edge.destination, visited, result);
-    }
-  }
 }
 
 } // namespace ads::graphs

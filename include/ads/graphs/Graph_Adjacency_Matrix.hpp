@@ -18,6 +18,7 @@
 
 #include "../arrays/Dynamic_Array.hpp"
 #include "../queues/Circular_Array_Queue.hpp"
+#include "../stacks/Array_Stack.hpp"
 
 #include <algorithm>
 #include <concepts>
@@ -342,15 +343,6 @@ private:
    * @throws GraphMatrixException if vertex_id is invalid.
    */
   auto validate_vertex(size_t vertex_id) const -> void;
-
-  /**
-   * @brief Helper for DFS traversal (recursive).
-   * @param vertex_id Current vertex ID.
-   * @param visited Vector tracking visited vertices.
-   * @param result Vector storing DFS order.
-   */
-  auto dfs_helper(size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const
-      -> void;
 
   /**
    * @brief Resizes the adjacency matrix to new_size x new_size.

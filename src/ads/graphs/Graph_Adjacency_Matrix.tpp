@@ -257,8 +257,26 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(size_t start_vertex) cons
   result.reserve(vertices_.size());
 
   ads::arrays::DynamicArray<bool> visited(vertices_.size(), false);
+  ads::stacks::ArrayStack<size_t> stack(vertices_.size());
 
-  dfs_helper(start_vertex, visited, result);
+  // Mark on push so the first discovered parent owns the DFS order, matching recursive traversal.
+  visited[start_vertex] = true;
+  stack.push(start_vertex);
+
+  while (!stack.is_empty()) {
+    const size_t current = stack.top();
+    stack.pop();
+    result.push_back(current);
+
+    const auto& row = matrix_[current];
+    for (size_t i = row.size(); i > 0; --i) {
+      const size_t destination = i - 1;
+      if (row[destination].has_value() && !visited[destination]) {
+        visited[destination] = true;
+        stack.push(destination);
+      }
+    }
+  }
 
   return result;
 }
@@ -356,19 +374,6 @@ template <typename VertexData, typename EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
   if (vertex_id >= vertices_.size()) {
     throw GraphMatrixException("Invalid vertex ID: " + std::to_string(vertex_id));
-  }
-}
-
-template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs_helper(
-    size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const -> void {
-  visited[vertex_id] = true;
-  result.push_back(vertex_id);
-
-  for (size_t i = 0; i < matrix_[vertex_id].size(); ++i) {
-    if (matrix_[vertex_id][i].has_value() && !visited[i]) {
-      dfs_helper(i, visited, result);
-    }
   }
 }
 

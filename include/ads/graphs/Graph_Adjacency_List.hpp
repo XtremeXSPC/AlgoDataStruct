@@ -18,6 +18,7 @@
 
 #include "../arrays/Dynamic_Array.hpp"
 #include "../queues/Circular_Array_Queue.hpp"
+#include "../stacks/Array_Stack.hpp"
 
 #include <algorithm>
 #include <concepts>
@@ -388,15 +389,6 @@ private:
    * @return Edge index if found, nullopt otherwise.
    */
   [[nodiscard]] auto find_edge_index(size_t from, size_t to) const -> std::optional<size_t>;
-
-  /**
-   * @brief Helper for DFS traversal (recursive).
-   * @param vertex_id Current vertex ID.
-   * @param visited Vector tracking visited vertices.
-   * @param result Vector storing DFS order.
-   */
-  auto dfs_helper(size_t vertex_id, ads::arrays::DynamicArray<bool>& visited, std::vector<size_t>& result) const
-      -> void;
 };
 
 } // namespace ads::graphs

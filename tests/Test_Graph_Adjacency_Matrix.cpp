@@ -144,6 +144,25 @@ TEST_F(GraphAdjacencyMatrixTest, DfsFollowsVertexOrder) {
   EXPECT_EQ(graph.dfs(0), (std::vector<size_t>{0, 1, 2, 5, 4, 3}));
 }
 
+TEST(GraphAdjacencyMatrixTraversalTest, DfsHandlesDeepChainIteratively) {
+  GraphAdjacencyMatrix<int> graph;
+  constexpr size_t          kVertexCount = 256;
+
+  for (size_t vertex = 0; vertex < kVertexCount; ++vertex) {
+    graph.add_vertex(static_cast<int>(vertex));
+  }
+  for (size_t vertex = 1; vertex < kVertexCount; ++vertex) {
+    graph.add_edge(vertex - 1, vertex);
+  }
+
+  const auto order = graph.dfs(0);
+
+  ASSERT_EQ(order.size(), kVertexCount);
+  for (size_t vertex = 0; vertex < kVertexCount; ++vertex) {
+    EXPECT_EQ(order[vertex], vertex);
+  }
+}
+
 TEST_F(GraphAdjacencyMatrixTest, FindPathUsesBfsParentChain) {
   for (int value = 0; value < 6; ++value) {
     graph.add_vertex(value);
