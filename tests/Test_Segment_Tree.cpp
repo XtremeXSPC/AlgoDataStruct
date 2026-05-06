@@ -484,6 +484,23 @@ TEST_F(LazySegmentTreeTest, ValueAtAfterRangeUpdate) {
   EXPECT_EQ(tree.value_at(4), 5);
 }
 
+TEST_F(LazySegmentTreeTest, SetAfterRangeUpdatePreservesExistingUpdates) {
+  tree.range_update(1, 3, 10); // [1, 12, 13, 14, 5]
+  tree.set(2, 100);            // [1, 12, 100, 14, 5]
+
+  EXPECT_EQ(tree.value_at(0), 1);
+  EXPECT_EQ(tree.value_at(1), 12);
+  EXPECT_EQ(tree.value_at(2), 100);
+  EXPECT_EQ(tree.value_at(3), 14);
+  EXPECT_EQ(tree.value_at(4), 5);
+  EXPECT_EQ(tree.range_query(1, 3), 126);
+  EXPECT_EQ(tree.total(), 132);
+
+  tree.range_update(0, 4, 1); // [2, 13, 101, 15, 6]
+  EXPECT_EQ(tree.value_at(2), 101);
+  EXPECT_EQ(tree.total(), 137);
+}
+
 //===----------------------------- LAZY MOVE TESTS -----------------------------===//
 
 TEST(LazySegmentTreeMoveTest, MoveConstructor) {

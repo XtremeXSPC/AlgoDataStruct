@@ -400,6 +400,11 @@ private:
       -> void;
 
   /**
+   * @brief Recursively assigns a single position.
+   */
+  constexpr auto set_node(size_type v, size_type tl, size_type tr, size_type index, const value_type& value) -> void;
+
+  /**
    * @brief Recursively queries a range.
    */
   [[nodiscard]] constexpr auto query_range(size_type v, size_type tl, size_type tr, size_type l, size_type r) const

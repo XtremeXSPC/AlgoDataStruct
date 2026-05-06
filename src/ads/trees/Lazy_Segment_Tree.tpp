@@ -186,9 +186,8 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::set(size_type index, const Value& value)
     -> void {
   validate_index(index);
-  values_[index] = value;
-  // Rebuild the tree to ensure consistency (simpler than point update with lazy).
-  build_tree();
+  // Preserve pending range updates by materializing only the path to the leaf.
+  set_node(1, 0, size_ - 1, index, value);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -357,6 +356,29 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::u
   const size_type mid = std::midpoint(tl, tr);
   update_range(2 * v, tl, mid, l, r, tag);
   update_range(2 * v + 1, mid + 1, tr, l, r, tag);
+  pull_up(v);
+}
+
+template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
+  requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
+constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::set_node(
+    size_type v, size_type tl, size_type tr, size_type index, const value_type& value) -> void {
+  if (tl == tr) {
+    values_[index] = value;
+    tree_[v].value = value;
+    tree_[v].lazy  = std::nullopt;
+    return;
+  }
+
+  // Pushing first keeps sibling ranges current before this assignment rewrites one leaf.
+  push_down(v, tl, tr);
+
+  const size_type mid = std::midpoint(tl, tr);
+  if (index <= mid) {
+    set_node(2 * v, tl, mid, index, value);
+  } else {
+    set_node(2 * v + 1, mid + 1, tr, index, value);
+  }
   pull_up(v);
 }
 
