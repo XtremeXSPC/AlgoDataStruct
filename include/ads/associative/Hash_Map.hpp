@@ -20,6 +20,7 @@
 #include "../hash/Hash_Table_Chaining.hpp"
 #include "Dictionary.hpp"
 
+#include <concepts>
 #include <functional>
 #include <initializer_list>
 #include <stdexcept>
@@ -51,6 +52,7 @@ public:
   // Type aliases for convenience.
   using key_type    = Key;
   using mapped_type = Value;
+  using Table       = hash::HashTableChaining<Key, Value, Hash>;
   using value_type  = std::pair<const Key, Value>;
 
   //===---------------------------- ITERATOR CLASS -----------------------------===//
@@ -60,7 +62,7 @@ public:
    */
   class iterator {
   public:
-    using Entry             = typename hash::HashTableChaining<Key, Value>::Entry;
+    using Entry             = typename Table::Entry;
     using iterator_category = std::forward_iterator_tag;
     using value_type        = std::pair<const Key, Value>;
     using difference_type   = std::ptrdiff_t;
@@ -78,7 +80,7 @@ public:
   private:
     friend class HashMap;
 
-    using BucketIterator = typename hash::HashTableChaining<Key, Value>::Bucket::iterator;
+    using BucketIterator = typename Table::Bucket::iterator;
 
     HashMap*       map_;        ///< Pointer to the hash map being iterated.
     size_t         bucket_idx_; ///< Current bucket index.
@@ -105,7 +107,7 @@ public:
    */
   class const_iterator {
   public:
-    using Entry             = typename hash::HashTableChaining<Key, Value>::Entry;
+    using Entry             = typename Table::Entry;
     using iterator_category = std::forward_iterator_tag;
     using value_type        = const std::pair<const Key, Value>;
     using difference_type   = std::ptrdiff_t;
@@ -125,7 +127,7 @@ public:
   private:
     friend class HashMap;
 
-    using BucketIterator = typename hash::HashTableChaining<Key, Value>::Bucket::const_iterator;
+    using BucketIterator = typename Table::Bucket::const_iterator;
 
     const HashMap* map_;
     size_t         bucket_idx_;
@@ -151,17 +153,19 @@ public:
    * @brief Constructs an empty hash map.
    * @param initial_capacity Initial number of buckets.
    * @param max_load_factor Load factor threshold for rehashing.
+   * @param hasher Hash functor used by the underlying table.
    * @complexity Time O(n) to allocate buckets, Space O(n)
    * @throws ads::hash::InvalidOperationException if max_load_factor <= 0.
    */
-  explicit HashMap(size_t initial_capacity = 16, float max_load_factor = 0.75f);
+  explicit HashMap(size_t initial_capacity = 16, float max_load_factor = 0.75f, Hash hasher = Hash{});
 
   /**
    * @brief Constructs a hash map from an initializer list.
    * @param init Initializer list of key-value pairs.
    * @complexity Time O(n) average, Space O(n)
    */
-  HashMap(std::initializer_list<value_type> init);
+  HashMap(std::initializer_list<value_type> init)
+    requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Move constructor
@@ -224,6 +228,13 @@ public:
   auto put(const Key& key, const Value& value) -> void override;
 
   /**
+   * @brief Inserts or updates a key-value pair with a copied key and moved value.
+   * @param key The key to insert.
+   * @param value The value to move into the map.
+   */
+  auto put(const Key& key, Value&& value) -> void;
+
+  /**
    * @brief Inserts or updates a key-value pair (move).
    * @param key The key to insert.
    * @param value The value to associate with the key.
@@ -252,7 +263,8 @@ public:
    * @return Pair of iterator to element and bool indicating insertion.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(const value_type& pair) -> std::pair<iterator, bool>;
+  auto insert(const value_type& pair) -> std::pair<iterator, bool>
+    requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Inserts a key-value pair (move).
@@ -376,14 +388,16 @@ public:
    * @return Vector of values.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto values() const -> std::vector<Value>;
+  [[nodiscard]] auto values() const -> std::vector<Value>
+    requires std::copy_constructible<Value>;
 
   /**
    * @brief Returns vector of all key-value pairs.
    * @return Vector of entries.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>;
+  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>
+    requires std::copy_constructible<Value>;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
@@ -431,7 +445,7 @@ public:
 
 private:
   // Internal hash table storing the key-value pairs.
-  hash::HashTableChaining<Key, Value> table_;
+  Table table_;
 
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
@@ -441,8 +455,7 @@ private:
    * @return Bucket index and iterator to entry (or end of bucket if not found).
    * @complexity Time O(1) average, O(n) worst case
    */
-  auto find_in_table(const Key& key)
-      -> std::pair<size_t, typename hash::HashTableChaining<Key, Value>::Bucket::iterator>;
+  auto find_in_table(const Key& key) -> std::pair<size_t, typename Table::Bucket::iterator>;
 
   /**
    * @brief Finds an entry in the underlying table (const).
@@ -450,8 +463,7 @@ private:
    * @return Bucket index and const iterator to entry (or end of bucket if not found).
    * @complexity Time O(1) average, O(n) worst case
    */
-  auto find_in_table(const Key& key) const
-      -> std::pair<size_t, typename hash::HashTableChaining<Key, Value>::Bucket::const_iterator>;
+  auto find_in_table(const Key& key) const -> std::pair<size_t, typename Table::Bucket::const_iterator>;
 
   // Access to internal table structure (for iterators).
   friend class iterator;

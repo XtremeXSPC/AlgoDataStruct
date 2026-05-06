@@ -18,6 +18,37 @@
 
 using namespace ads::associative;
 
+namespace {
+
+struct HashSetCustomKey {
+  int value;
+
+  auto operator==(const HashSetCustomKey& other) const -> bool { return value == other.value; }
+};
+
+struct HashSetCustomHash {
+  auto operator()(const HashSetCustomKey& key) const -> size_t { return static_cast<size_t>(key.value % 4); }
+};
+
+struct HashSetMoveOnlyValue {
+  int value;
+
+  explicit HashSetMoveOnlyValue(int v) : value(v) {}
+
+  HashSetMoveOnlyValue(const HashSetMoveOnlyValue&)                        = delete;
+  auto operator=(const HashSetMoveOnlyValue&) -> HashSetMoveOnlyValue&     = delete;
+  HashSetMoveOnlyValue(HashSetMoveOnlyValue&&) noexcept                    = default;
+  auto operator=(HashSetMoveOnlyValue&&) noexcept -> HashSetMoveOnlyValue& = default;
+
+  auto operator==(const HashSetMoveOnlyValue& other) const -> bool { return value == other.value; }
+};
+
+struct HashSetMoveOnlyHash {
+  auto operator()(const HashSetMoveOnlyValue& value) const -> size_t { return static_cast<size_t>(value.value); }
+};
+
+} // namespace
+
 class HashSetTest : public ::testing::Test {
 protected:
   HashSet<int> set;
@@ -144,6 +175,38 @@ TEST_F(HashSetTest, StringSet) {
   EXPECT_TRUE(strings.contains("banana"));
   EXPECT_TRUE(strings.contains("cherry"));
   EXPECT_FALSE(strings.contains("date"));
+}
+
+TEST_F(HashSetTest, InvalidLoadFactorThrows) {
+  EXPECT_THROW((HashSet<int>(4, 0.0)), ads::hash::InvalidOperationException);
+}
+
+TEST(HashSetCustomHashTest, UsesCustomHashFunctor) {
+  HashSet<HashSetCustomKey, HashSetCustomHash> values(4, 0.75, HashSetCustomHash{});
+
+  EXPECT_TRUE(values.insert(HashSetCustomKey{1}));
+  EXPECT_TRUE(values.insert(HashSetCustomKey{5}));
+  EXPECT_FALSE(values.insert(HashSetCustomKey{1}));
+
+  EXPECT_EQ(values.size(), 2U);
+  EXPECT_TRUE(values.contains(HashSetCustomKey{1}));
+  EXPECT_TRUE(values.contains(HashSetCustomKey{5}));
+}
+
+TEST(HashSetMoveOnlyTest, SupportsMoveOnlyValuesAcrossRehash) {
+  HashSet<HashSetMoveOnlyValue, HashSetMoveOnlyHash> values(2, 0.75, HashSetMoveOnlyHash{});
+
+  for (int i = 0; i < 50; ++i) {
+    EXPECT_TRUE(values.insert(HashSetMoveOnlyValue{i}));
+  }
+  EXPECT_FALSE(values.insert(HashSetMoveOnlyValue{10}));
+
+  EXPECT_EQ(values.size(), 50U);
+  for (int i = 0; i < 50; ++i) {
+    EXPECT_TRUE(values.contains(HashSetMoveOnlyValue{i}));
+  }
+  EXPECT_TRUE(values.erase(HashSetMoveOnlyValue{10}));
+  EXPECT_FALSE(values.contains(HashSetMoveOnlyValue{10}));
 }
 
 //===---------------------------------------------------------------------------===//

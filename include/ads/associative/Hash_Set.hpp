@@ -17,8 +17,10 @@
 #define HASH_SET_HPP
 
 #include "../arrays/Dynamic_Array.hpp"
+#include "../hash/Hash_Table_Exception.hpp"
 #include "../lists/Doubly_Linked_List.hpp"
 
+#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <initializer_list>
@@ -90,16 +92,19 @@ public:
    * @brief Constructs an empty hash set.
    * @param initial_capacity Initial number of buckets (default: 16).
    * @param max_load_factor Load factor threshold for rehashing (default: 0.75).
+   * @param hasher Hash functor used to map values to buckets.
    * @complexity Time O(n), Space O(n)
+   * @throws ads::hash::InvalidOperationException if max_load_factor <= 0.
    */
-  explicit HashSet(size_t initial_capacity = 16, double max_load_factor = 0.75);
+  explicit HashSet(size_t initial_capacity = 16, double max_load_factor = 0.75, Hash hasher = Hash{});
 
   /**
    * @brief Constructs a hash set from an initializer list.
    * @param values Elements to insert.
    * @complexity Time O(n) average, Space O(n)
    */
-  HashSet(std::initializer_list<T> values);
+  HashSet(std::initializer_list<T> values)
+    requires std::copy_constructible<T>;
 
   /**
    * @brief Destructor.
@@ -130,7 +135,8 @@ public:
    * @return true if inserted, false if already exists.
    * @complexity Time O(1) average, Space O(1)
    */
-  auto insert(const T& value) -> bool;
+  auto insert(const T& value) -> bool
+    requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts an element into the set (move).
@@ -243,7 +249,7 @@ private:
   auto rehash(size_t new_bucket_count) -> void;
 
   /**
-   * @brief Checks and maintains the load factor by rehashing if necessary.
+   * @brief Rehashes before a new insertion would exceed the load factor.
    */
   auto check_load_factor() -> void;
 

@@ -14,46 +14,57 @@
 #pragma once
 #include "../../../include/ads/hash/Hash_Table_Open_Addressing.hpp"
 
+#include <algorithm>
+#include <numeric>
+
 namespace ads::hash {
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename Key, typename Value>
-HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(size_t initial_capacity, ProbingStrategy strategy,
-                                                             float max_load_factor) :
-    table_(std::make_unique<Slot[]>(initial_capacity)),
-    capacity_(initial_capacity),
+template <typename Key, typename Value, typename Hash>
+HashTableOpenAddressing<Key, Value, Hash>::HashTableOpenAddressing(
+    size_t initial_capacity, ProbingStrategy strategy, float max_load_factor, Hash hasher) :
+    table_(std::make_unique<Slot[]>(std::max<size_t>(initial_capacity, 2))),
+    capacity_(std::max<size_t>(initial_capacity, 2)),
     size_(0),
+    deleted_count_(0),
     max_load_factor_(max_load_factor),
-    strategy_(strategy) {
+    strategy_(strategy),
+    hasher_(std::move(hasher)) {
   if (max_load_factor <= 0.0f || max_load_factor >= 1.0f) {
     throw InvalidOperationException("Max load factor must be in (0, 1)");
   }
 }
 
-template <typename Key, typename Value>
-HashTableOpenAddressing<Key, Value>::HashTableOpenAddressing(HashTableOpenAddressing&& other) noexcept :
+template <typename Key, typename Value, typename Hash>
+HashTableOpenAddressing<Key, Value, Hash>::HashTableOpenAddressing(HashTableOpenAddressing&& other) noexcept :
     table_(std::move(other.table_)),
     capacity_(other.capacity_),
     size_(other.size_),
+    deleted_count_(other.deleted_count_),
     max_load_factor_(other.max_load_factor_),
-    strategy_(other.strategy_) {
+    strategy_(other.strategy_),
+    hasher_(std::move(other.hasher_)) {
   other.capacity_        = 0;
   other.size_            = 0;
+  other.deleted_count_   = 0;
   other.max_load_factor_ = kDefaultMaxLoadFactor;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::operator=(HashTableOpenAddressing&& other) noexcept
-    -> HashTableOpenAddressing<Key, Value>& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::operator=(HashTableOpenAddressing&& other) noexcept
+    -> HashTableOpenAddressing<Key, Value, Hash>& {
   if (this != &other) {
     table_                 = std::move(other.table_);
     capacity_              = other.capacity_;
     size_                  = other.size_;
+    deleted_count_         = other.deleted_count_;
     max_load_factor_       = other.max_load_factor_;
     strategy_              = other.strategy_;
+    hasher_                = std::move(other.hasher_);
     other.capacity_        = 0;
     other.size_            = 0;
+    other.deleted_count_   = 0;
     other.max_load_factor_ = kDefaultMaxLoadFactor;
   }
   return *this;
@@ -61,71 +72,127 @@ auto HashTableOpenAddressing<Key, Value>::operator=(HashTableOpenAddressing&& ot
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::insert(const Key& key, const Value& value) -> bool {
-  check_and_rehash();
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::insert(const Key& key, const Value& value) -> bool
+  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+{
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
 
   Slot* slot = find_insert_slot(key);
 
   if (slot->state == SlotState::OCCUPIED) {
-    // Update existing key.
+    // Existing keys update in place, avoiding resize churn for duplicates.
     slot->entry->value = value;
     return false;
   }
 
-  // Insert new entry.
-  slot->entry = Entry(key, value);
+  ensure_capacity_for_insert();
+  slot                        = find_insert_slot(key);
+  const bool reused_tombstone = slot->state == SlotState::DELETED;
+  slot->entry.emplace(key, value);
   slot->state = SlotState::OCCUPIED;
   ++size_;
-  return true;
-}
-
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::insert(Key&& key, Value&& value) -> bool {
-  check_and_rehash();
-
-  // Need to search with const key reference.
-  const Key& key_ref = key;
-  Slot*      slot    = find_insert_slot(key_ref);
-
-  if (slot->state == SlotState::OCCUPIED) {
-    // Update existing key.
-    slot->entry->value = std::move(value);
-    return false;
+  if (reused_tombstone) {
+    --deleted_count_;
   }
-
-  // Insert new entry.
-  slot->entry = Entry(std::move(key), std::move(value));
-  slot->state = SlotState::OCCUPIED;
-  ++size_;
   return true;
 }
 
-template <typename Key, typename Value>
-template <typename... Args>
-auto HashTableOpenAddressing<Key, Value>::emplace(const Key& key, Args&&... args) -> Value& {
-  check_and_rehash();
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::insert(const Key& key, Value&& value) -> bool
+  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
 
   Slot* slot = find_insert_slot(key);
 
   if (slot->state == SlotState::OCCUPIED) {
-    // Update existing key.
+    // Preserve the stored key and replace only the mapped resource.
+    slot->entry->value = std::move(value);
+    return false;
+  }
+
+  ensure_capacity_for_insert();
+  slot                        = find_insert_slot(key);
+  const bool reused_tombstone = slot->state == SlotState::DELETED;
+  slot->entry.emplace(key, std::move(value));
+  slot->state = SlotState::OCCUPIED;
+  ++size_;
+  if (reused_tombstone) {
+    --deleted_count_;
+  }
+  return true;
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::insert(Key&& key, Value&& value) -> bool
+  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
+
+  // Keep a reference for hashing and equality checks until the key is stored.
+  const Key& key_ref = key;
+  Slot*      slot    = find_insert_slot(key_ref);
+
+  if (slot->state == SlotState::OCCUPIED) {
+    // Keep the stored key stable on duplicate insert.
+    slot->entry->value = std::move(value);
+    return false;
+  }
+
+  ensure_capacity_for_insert();
+  slot                        = find_insert_slot(key_ref);
+  const bool reused_tombstone = slot->state == SlotState::DELETED;
+  slot->entry.emplace(std::move(key), std::move(value));
+  slot->state = SlotState::OCCUPIED;
+  ++size_;
+  if (reused_tombstone) {
+    --deleted_count_;
+  }
+  return true;
+}
+
+template <typename Key, typename Value, typename Hash>
+template <typename... Args>
+auto HashTableOpenAddressing<Key, Value, Hash>::emplace(const Key& key, Args&&... args) -> Value&
+  requires std::copy_constructible<Key> && std::constructible_from<Value, Args...>
+           && std::assignable_from<Value&, Value>
+{
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
+
+  Slot* slot = find_insert_slot(key);
+
+  if (slot->state == SlotState::OCCUPIED) {
+    // Construct before assignment so a failed construction keeps the old value.
     slot->entry->value = Value(std::forward<Args>(args)...);
     return slot->entry->value;
   }
 
-  // Insert new entry.
-  slot->entry = Entry(key, std::forward<Args>(args)...);
+  ensure_capacity_for_insert();
+  slot                        = find_insert_slot(key);
+  const bool reused_tombstone = slot->state == SlotState::DELETED;
+  slot->entry.emplace(key, std::forward<Args>(args)...);
   slot->state = SlotState::OCCUPIED;
   ++size_;
+  if (reused_tombstone) {
+    --deleted_count_;
+  }
 
   return slot->entry->value;
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::at(const Key& key) -> Value& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::at(const Key& key) -> Value& {
   Slot* slot = find_slot(key);
 
   if (!slot) {
@@ -135,8 +202,8 @@ auto HashTableOpenAddressing<Key, Value>::at(const Key& key) -> Value& {
   return slot->entry->value;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::at(const Key& key) const -> const Value& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::at(const Key& key) const -> const Value& {
   const Slot* slot = find_slot(key);
 
   if (!slot) {
@@ -146,8 +213,8 @@ auto HashTableOpenAddressing<Key, Value>::at(const Key& key) const -> const Valu
   return slot->entry->value;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::operator[](const Key& key) -> Value& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::operator[](const Key& key) -> Value& {
   Slot* slot = find_slot(key);
 
   if (slot) {
@@ -164,93 +231,95 @@ auto HashTableOpenAddressing<Key, Value>::operator[](const Key& key) -> Value& {
 
 //===---------------------------- SEARCH OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::contains(const Key& key) const -> bool {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::contains(const Key& key) const -> bool {
   return find_slot(key) != nullptr;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::find(const Key& key) -> Value* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::find(const Key& key) -> Value* {
   Slot* slot = find_slot(key);
   return slot ? &(slot->entry->value) : nullptr;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::find(const Key& key) const -> const Value* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::find(const Key& key) const -> const Value* {
   const Slot* slot = find_slot(key);
   return slot ? &(slot->entry->value) : nullptr;
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::erase(const Key& key) -> bool {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::erase(const Key& key) -> bool {
   Slot* slot = find_slot(key);
 
   if (!slot) {
     return false;
   }
 
-  // Mark as deleted (tombstone).
+  // Tombstones preserve probe chains until a later rehash compacts them.
   slot->entry.reset();
   slot->state = SlotState::DELETED;
   --size_;
+  ++deleted_count_;
 
   return true;
 }
 
-template <typename Key, typename Value>
-void HashTableOpenAddressing<Key, Value>::clear() noexcept {
+template <typename Key, typename Value, typename Hash>
+void HashTableOpenAddressing<Key, Value, Hash>::clear() noexcept {
   for (size_t i = 0; i < capacity_; ++i) {
     table_[i].entry.reset();
     table_[i].state = SlotState::EMPTY;
   }
-  size_ = 0;
+  size_          = 0;
+  deleted_count_ = 0;
 }
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::size() const noexcept -> size_t {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::capacity() const noexcept -> size_t {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::is_empty() const noexcept -> bool {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::load_factor() const noexcept -> float {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::load_factor() const noexcept -> float {
   return capacity_ > 0 ? static_cast<float>(size_) / static_cast<float>(capacity_) : 0.0f;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::max_load_factor() const noexcept -> float {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::max_load_factor() const noexcept -> float {
   return max_load_factor_;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::probing_strategy() const noexcept -> ProbingStrategy {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::probing_strategy() const noexcept -> ProbingStrategy {
   return strategy_;
 }
 
 //===------------------------ CONFIGURATION OPERATIONS -------------------------===//
 
-template <typename Key, typename Value>
-void HashTableOpenAddressing<Key, Value>::reserve(size_t new_capacity) {
+template <typename Key, typename Value, typename Hash>
+void HashTableOpenAddressing<Key, Value, Hash>::reserve(size_t new_capacity) {
   if (new_capacity > capacity_) {
     rehash(new_capacity);
   }
 }
 
-template <typename Key, typename Value>
-void HashTableOpenAddressing<Key, Value>::set_max_load_factor(float mlf) {
+template <typename Key, typename Value, typename Hash>
+void HashTableOpenAddressing<Key, Value, Hash>::set_max_load_factor(float mlf) {
   if (mlf <= 0.0f || mlf >= 1.0f) {
     throw InvalidOperationException("Max load factor must be in (0, 1)");
   }
@@ -261,48 +330,69 @@ void HashTableOpenAddressing<Key, Value>::set_max_load_factor(float mlf) {
 //=================================================================================//
 //===------------------------- PRIVATE HASHING METHODS -------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::hash1(const Key& key) const -> size_t {
-  return std::hash<Key>{}(key) % capacity_;
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::hash1(const Key& key) const -> size_t {
+  return hash1(key, capacity_);
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::hash2(const Key& key) const -> size_t {
-  // Secondary hash for double hashing.
-  // Use a different hash and ensure it's never 0 and coprime with capacity.
-  size_t h = std::hash<Key>{}(key);
-  // Make it odd to be coprime with power-of-2 capacity.
-  size_t result = (h % (capacity_ - 1)) + 1;
-  // Ensure it's odd.
-  if (result % 2 == 0) {
-    result++;
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::hash1(const Key& key, size_t capacity) const -> size_t {
+  return hasher_(key) % capacity;
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::hash2(const Key& key) const -> size_t {
+  return hash2(key, capacity_);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::hash2(const Key& key, size_t capacity) const -> size_t {
+  if (capacity <= 2) {
+    return 1;
+  }
+
+  size_t result = (hasher_(key) % (capacity - 1)) + 1;
+  while (std::gcd(result, capacity) != 1) {
+    ++result;
+    if (result >= capacity) {
+      result = 1;
+    }
   }
   return result;
 }
 
 //===----------------------------- PROBING METHODS -----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::probe(const Key& key, size_t i) const -> size_t {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::probe(const Key& key, size_t i) const -> size_t {
+  return probe(key, i, capacity_);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::probe(const Key& key, size_t i, size_t capacity) const -> size_t {
   switch (strategy_) {
   case ProbingStrategy::LINEAR:
-    return (hash1(key) + i) % capacity_;
+    return (hash1(key, capacity) + i) % capacity;
 
   case ProbingStrategy::QUADRATIC:
-    return (hash1(key) + i * i) % capacity_;
+    return (hash1(key, capacity) + i * i) % capacity;
 
   case ProbingStrategy::DOUBLE_HASH:
-    return (hash1(key) + i * hash2(key)) % capacity_;
+    return (hash1(key, capacity) + i * hash2(key, capacity)) % capacity;
 
   default:
-    return (hash1(key) + i) % capacity_;
+    return (hash1(key, capacity) + i) % capacity;
   }
 }
 
 //===-------------------------- SLOT FINDING METHODS ---------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::find_slot(const Key& key) -> Slot* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::find_slot(const Key& key) -> Slot* {
+  if (capacity_ == 0) {
+    return nullptr;
+  }
+
   for (size_t i = 0; i < capacity_; ++i) {
     size_t idx = probe(key, i);
 
@@ -323,8 +413,12 @@ auto HashTableOpenAddressing<Key, Value>::find_slot(const Key& key) -> Slot* {
   return nullptr;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::find_slot(const Key& key) const -> const Slot* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::find_slot(const Key& key) const -> const Slot* {
+  if (capacity_ == 0) {
+    return nullptr;
+  }
+
   for (size_t i = 0; i < capacity_; ++i) {
     size_t idx = probe(key, i);
 
@@ -340,26 +434,32 @@ auto HashTableOpenAddressing<Key, Value>::find_slot(const Key& key) const -> con
   return nullptr;
 }
 
-template <typename Key, typename Value>
-auto HashTableOpenAddressing<Key, Value>::find_insert_slot(const Key& key) -> Slot* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::find_insert_slot(const Key& key) -> Slot* {
+  return find_insert_slot(table_.get(), capacity_, key);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::find_insert_slot(Slot* slots, size_t slot_count, const Key& key) const
+    -> Slot* {
   Slot* first_deleted = nullptr;
 
-  for (size_t i = 0; i < capacity_; ++i) {
-    size_t idx = probe(key, i);
+  for (size_t i = 0; i < slot_count; ++i) {
+    size_t idx = probe(key, i, slot_count);
 
-    if (table_[idx].state == SlotState::EMPTY) {
+    if (slots[idx].state == SlotState::EMPTY) {
       // Found empty slot, use it (or use first deleted if we found one earlier).
-      return first_deleted ? first_deleted : &table_[idx];
+      return first_deleted ? first_deleted : &slots[idx];
     }
 
-    if (table_[idx].state == SlotState::DELETED && !first_deleted) {
+    if (slots[idx].state == SlotState::DELETED && !first_deleted) {
       // Remember first deleted slot.
-      first_deleted = &table_[idx];
+      first_deleted = &slots[idx];
     }
 
-    if (table_[idx].state == SlotState::OCCUPIED && table_[idx].entry->key == key) {
+    if (slots[idx].state == SlotState::OCCUPIED && slots[idx].entry->key == key) {
       // Key already exists, return its slot for update.
-      return &table_[idx];
+      return &slots[idx];
     }
   }
 
@@ -373,33 +473,71 @@ auto HashTableOpenAddressing<Key, Value>::find_insert_slot(const Key& key) -> Sl
 
 //===-------------------------- REHASHING OPERATIONS ---------------------------===//
 
-template <typename Key, typename Value>
-void HashTableOpenAddressing<Key, Value>::rehash(size_t new_capacity) {
-  auto   old_table    = std::move(table_);
-  size_t old_capacity = capacity_;
+template <typename Key, typename Value, typename Hash>
+void HashTableOpenAddressing<Key, Value, Hash>::rehash(size_t new_capacity) {
+  const size_t            slot_count = std::max<size_t>(new_capacity, 2);
+  std::unique_ptr<Slot[]> new_table  = std::make_unique<Slot[]>(slot_count);
+  size_t                  new_size   = 0;
 
-  // Switch to new table so find_insert_slot probes the correct array.
-  table_    = std::make_unique<Slot[]>(new_capacity);
-  capacity_ = new_capacity;
-  size_     = 0;
-
-  // Reinsert occupied entries directly — no insert() call, so no spurious
-  // check_and_rehash and no --size_ / restoration-loop dance.
-  for (size_t i = 0; i < old_capacity; ++i) {
-    if (old_table[i].state == SlotState::OCCUPIED) {
-      Slot* slot = find_insert_slot(old_table[i].entry->key);
-      slot->entry = std::move(old_table[i].entry);
+  for (size_t i = 0; i < capacity_; ++i) {
+    if (table_[i].state == SlotState::OCCUPIED) {
+      auto& entry = *table_[i].entry;
+      Slot* slot  = find_insert_slot(new_table.get(), slot_count, entry.key);
+      if constexpr (std::copy_constructible<Key> && std::copy_constructible<Value>) {
+        slot->entry.emplace(entry.key, entry.value);
+      } else {
+        slot->entry.emplace(std::move(entry.key), std::move(entry.value));
+      }
       slot->state = SlotState::OCCUPIED;
-      ++size_;
+      ++new_size;
     }
   }
+
+  table_         = std::move(new_table);
+  capacity_      = slot_count;
+  size_          = new_size;
+  deleted_count_ = 0;
 }
 
-template <typename Key, typename Value>
-void HashTableOpenAddressing<Key, Value>::check_and_rehash() {
-  if (load_factor() >= max_load_factor_) {
-    rehash(capacity_ * kGrowthFactor);
+template <typename Key, typename Value, typename Hash>
+void HashTableOpenAddressing<Key, Value, Hash>::check_and_rehash() {
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+    return;
   }
+
+  const float active_load   = static_cast<float>(size_) / static_cast<float>(capacity_);
+  const float occupied_load = static_cast<float>(size_ + deleted_count_) / static_cast<float>(capacity_);
+  if (active_load < max_load_factor_ && occupied_load < max_load_factor_) {
+    return;
+  }
+
+  size_t target_capacity = capacity_;
+  while (static_cast<float>(size_) / static_cast<float>(target_capacity) >= max_load_factor_) {
+    target_capacity *= kGrowthFactor;
+  }
+  rehash(target_capacity);
+}
+
+template <typename Key, typename Value, typename Hash>
+void HashTableOpenAddressing<Key, Value, Hash>::ensure_capacity_for_insert() {
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+    return;
+  }
+
+  const float active_load_after_insert = static_cast<float>(size_ + 1) / static_cast<float>(capacity_);
+  const float occupied_load_after_insert =
+      static_cast<float>(size_ + deleted_count_ + 1) / static_cast<float>(capacity_);
+  if (active_load_after_insert < max_load_factor_ && occupied_load_after_insert < max_load_factor_) {
+    return;
+  }
+
+  size_t target_capacity = capacity_;
+  while (static_cast<float>(size_ + 1) / static_cast<float>(target_capacity) >= max_load_factor_) {
+    target_capacity *= kGrowthFactor;
+  }
+  rehash(target_capacity);
 }
 
 } // namespace ads::hash

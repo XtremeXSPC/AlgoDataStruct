@@ -158,7 +158,12 @@ auto DoublyLinkedList<T>::emplace_front(Args&&... args) -> T& {
 
 template <typename T>
 void DoublyLinkedList<T>::push_front(const T& value) {
-  emplace_front(value);
+  if constexpr (std::copy_constructible<T>) {
+    emplace_front(value);
+  } else {
+    // Keep the polymorphic List<T> interface instantiable for move-only payloads.
+    throw ListException("push_front copy requires copy-constructible values");
+  }
 }
 
 template <typename T>
@@ -182,7 +187,12 @@ auto DoublyLinkedList<T>::emplace_back(Args&&... args) -> T& {
 
 template <typename T>
 void DoublyLinkedList<T>::push_back(const T& value) {
-  emplace_back(value);
+  if constexpr (std::copy_constructible<T>) {
+    emplace_back(value);
+  } else {
+    // Keep the polymorphic List<T> interface instantiable for move-only payloads.
+    throw ListException("push_back copy requires copy-constructible values");
+  }
 }
 
 template <typename T>

@@ -23,36 +23,40 @@ namespace ads::hash {
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename Key, typename Value>
-HashTableChaining<Key, Value>::HashTableChaining(size_t initial_capacity, float max_load_factor) :
+template <typename Key, typename Value, typename Hash>
+HashTableChaining<Key, Value, Hash>::HashTableChaining(size_t initial_capacity, float max_load_factor, Hash hasher) :
     buckets_(),
     capacity_(std::max<size_t>(initial_capacity, 1)),
     size_(0),
-    max_load_factor_(max_load_factor) {
+    max_load_factor_(max_load_factor),
+    hasher_(std::move(hasher)) {
   if (max_load_factor <= 0.0f) {
     throw InvalidOperationException("Max load factor must be positive");
   }
   buckets_.resize(capacity_);
 }
 
-template <typename Key, typename Value>
-HashTableChaining<Key, Value>::HashTableChaining(HashTableChaining&& other) noexcept :
+template <typename Key, typename Value, typename Hash>
+HashTableChaining<Key, Value, Hash>::HashTableChaining(HashTableChaining&& other) noexcept :
     buckets_(std::move(other.buckets_)),
     capacity_(other.capacity_),
     size_(other.size_),
-    max_load_factor_(other.max_load_factor_) {
+    max_load_factor_(other.max_load_factor_),
+    hasher_(std::move(other.hasher_)) {
   other.capacity_        = 0;
   other.size_            = 0;
   other.max_load_factor_ = kDefaultMaxLoadFactor;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::operator=(HashTableChaining&& other) noexcept -> HashTableChaining<Key, Value>& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::operator=(HashTableChaining&& other) noexcept
+    -> HashTableChaining<Key, Value, Hash>& {
   if (this != &other) {
     buckets_               = std::move(other.buckets_);
     capacity_              = other.capacity_;
     size_                  = other.size_;
     max_load_factor_       = other.max_load_factor_;
+    hasher_                = std::move(other.hasher_);
     other.capacity_        = 0;
     other.size_            = 0;
     other.max_load_factor_ = kDefaultMaxLoadFactor;
@@ -62,65 +66,88 @@ auto HashTableChaining<Key, Value>::operator=(HashTableChaining&& other) noexcep
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::insert(const Key& key, const Value& value) {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::insert(const Key& key, const Value& value)
+  requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+{
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
   if (it != buckets_[bucket_idx].end()) {
-    // Key exists, update value.
+    // Existing keys are updated before any resize so references stay valid.
     it->second = value;
-  } else {
-    // Key doesn't exist, insert new entry.
-    buckets_[bucket_idx].emplace_back(key, value);
-    ++size_;
-    check_and_rehash();
+    return;
   }
+
+  ensure_capacity_for_insert();
+  bucket_idx = hash(key);
+  buckets_[bucket_idx].emplace_back(key, value);
+  ++size_;
 }
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::insert(Key&& key, Value&& value) {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::insert(const Key& key, Value&& value)
+  requires std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
   if (it != buckets_[bucket_idx].end()) {
-    // Key exists, update value.
+    // The key is preserved while the mapped value adopts the caller's resource.
     it->second = std::move(value);
-  } else {
-    // Key doesn't exist, insert new entry.
-    buckets_[bucket_idx].emplace_back(std::move(key), std::move(value));
-    ++size_;
-    check_and_rehash();
+    return;
   }
+
+  ensure_capacity_for_insert();
+  bucket_idx = hash(key);
+  buckets_[bucket_idx].emplace_back(key, std::move(value));
+  ++size_;
 }
 
-template <typename Key, typename Value>
-template <typename... Args>
-auto HashTableChaining<Key, Value>::emplace(const Key& key, Args&&... args) -> Value& {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::insert(Key&& key, Value&& value)
+  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
   if (it != buckets_[bucket_idx].end()) {
-    // Key exists, update value.
+    // Keep the stored key stable; only the mapped value changes on duplicate insert.
+    it->second = std::move(value);
+    return;
+  }
+
+  ensure_capacity_for_insert();
+  bucket_idx = hash(key);
+  buckets_[bucket_idx].emplace_back(std::move(key), std::move(value));
+  ++size_;
+}
+
+template <typename Key, typename Value, typename Hash>
+template <typename... Args>
+auto HashTableChaining<Key, Value, Hash>::emplace(const Key& key, Args&&... args) -> Value&
+  requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>
+{
+  size_t bucket_idx = hash(key);
+  auto   it         = find_in_bucket(buckets_[bucket_idx], key);
+
+  if (it != buckets_[bucket_idx].end()) {
+    // Construct first, then assign, so failed construction leaves the old value intact.
     it->second = Value(std::forward<Args>(args)...);
     return it->second;
-  } else {
-    // Key doesn't exist, insert new entry.
-    buckets_[bucket_idx].emplace_back(key, std::forward<Args>(args)...);
-    ++size_;
-    check_and_rehash();
-    // Re-locate the entry after potential rehash — .back() is not safe here
-    // because other keys may land in the same bucket during rehash.
-    size_t new_bucket_idx = hash(key);
-    auto   it2            = find_in_bucket(buckets_[new_bucket_idx], key);
-    return it2->second;
   }
+
+  ensure_capacity_for_insert();
+  bucket_idx  = hash(key);
+  auto& entry = buckets_[bucket_idx].emplace_back(key, std::forward<Args>(args)...);
+  ++size_;
+  return entry.second;
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::at(const Key& key) -> Value& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::at(const Key& key) -> Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -131,8 +158,8 @@ auto HashTableChaining<Key, Value>::at(const Key& key) -> Value& {
   return it->second;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::at(const Key& key) const -> const Value& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::at(const Key& key) const -> const Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -143,8 +170,8 @@ auto HashTableChaining<Key, Value>::at(const Key& key) const -> const Value& {
   return it->second;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::operator[](const Key& key) -> Value& {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::operator[](const Key& key) -> Value& {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -152,28 +179,25 @@ auto HashTableChaining<Key, Value>::operator[](const Key& key) -> Value& {
     return it->second;
   }
 
-  // Key doesn't exist, insert with default value.
+  // Grow before insertion so the returned reference is never invalidated.
+  ensure_capacity_for_insert();
+  bucket_idx = hash(key);
   buckets_[bucket_idx].emplace_back(key, Value{});
   ++size_;
-  check_and_rehash();
-
-  // Return reference to newly inserted value.
-  // Need to rehash the key since capacity might have changed.
-  bucket_idx = hash(key);
-  it         = find_in_bucket(buckets_[bucket_idx], key);
+  it = find_in_bucket(buckets_[bucket_idx], key);
   return it->second;
 }
 
 //===---------------------------- SEARCH OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::contains(const Key& key) const -> bool {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::contains(const Key& key) const -> bool {
   size_t bucket_idx = hash(key);
   return find_in_bucket(buckets_[bucket_idx], key) != buckets_[bucket_idx].end();
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find(const Key& key) -> Value* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::find(const Key& key) -> Value* {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -183,8 +207,8 @@ auto HashTableChaining<Key, Value>::find(const Key& key) -> Value* {
   return nullptr;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find(const Key& key) const -> const Value* {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::find(const Key& key) const -> const Value* {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -196,8 +220,8 @@ auto HashTableChaining<Key, Value>::find(const Key& key) const -> const Value* {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::erase(const Key& key) -> bool {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::erase(const Key& key) -> bool {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -209,8 +233,8 @@ auto HashTableChaining<Key, Value>::erase(const Key& key) -> bool {
   return false;
 }
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::clear() noexcept {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::clear() noexcept {
   for (size_t i = 0; i < capacity_; ++i) {
     buckets_[i].clear();
   }
@@ -219,35 +243,35 @@ void HashTableChaining<Key, Value>::clear() noexcept {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::size() const noexcept -> size_t {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::capacity() const noexcept -> size_t {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::is_empty() const noexcept -> bool {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::load_factor() const noexcept -> float {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::load_factor() const noexcept -> float {
   return capacity_ > 0 ? static_cast<float>(size_) / static_cast<float>(capacity_) : 0.0f;
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::max_load_factor() const noexcept -> float {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::max_load_factor() const noexcept -> float {
   return max_load_factor_;
 }
 
 //===------------------------ CONFIGURATION OPERATIONS -------------------------===//
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::set_max_load_factor(float mlf) {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::set_max_load_factor(float mlf) {
   if (mlf <= 0.0f) {
     throw InvalidOperationException("Max load factor must be positive");
   }
@@ -255,8 +279,8 @@ void HashTableChaining<Key, Value>::set_max_load_factor(float mlf) {
   check_and_rehash();
 }
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::reserve(size_t new_capacity) {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::reserve(size_t new_capacity) {
   if (new_capacity > capacity_) {
     rehash(new_capacity);
   }
@@ -265,15 +289,15 @@ void HashTableChaining<Key, Value>::reserve(size_t new_capacity) {
 //=================================================================================//
 //===------------------------- PRIVATE HASHING METHODS -------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::hash(const Key& key) const -> size_t {
-  return std::hash<Key>{}(key) % capacity_;
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::hash(const Key& key) const -> size_t {
+  return hasher_(key) % capacity_;
 }
 
 //===-------------------------- BUCKET SEARCH METHODS --------------------------===//
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& key) -> typename Bucket::iterator {
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::find_in_bucket(Bucket& bucket, const Key& key) -> typename Bucket::iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
     if (it->first == key) {
       return it;
@@ -282,8 +306,8 @@ auto HashTableChaining<Key, Value>::find_in_bucket(Bucket& bucket, const Key& ke
   return bucket.end();
 }
 
-template <typename Key, typename Value>
-auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const Key& key) const ->
+template <typename Key, typename Value, typename Hash>
+auto HashTableChaining<Key, Value, Hash>::find_in_bucket(const Bucket& bucket, const Key& key) const ->
     typename Bucket::const_iterator {
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
     if (it->first == key) {
@@ -295,31 +319,39 @@ auto HashTableChaining<Key, Value>::find_in_bucket(const Bucket& bucket, const K
 
 //===-------------------------- REHASHING OPERATIONS ---------------------------===//
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::rehash(size_t new_capacity) {
-  // Build the new table entirely before touching *this — strong exception guarantee:
-  // if any allocation throws, the original buckets_ remain intact.
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::rehash(size_t new_capacity) {
+  // Copy when possible for rollback-friendly rehashing; move-only values keep the table usable.
   const size_t                      bucket_count = std::max<size_t>(new_capacity, 1);
   ads::arrays::DynamicArray<Bucket> new_buckets;
   new_buckets.resize(bucket_count);
 
   for (size_t i = 0; i < capacity_; ++i) {
     for (auto& entry : buckets_[i]) {
-      size_t new_idx = std::hash<Key>{}(entry.first) % bucket_count;
-      new_buckets[new_idx].emplace_back(entry.first, std::move(entry.second));
+      size_t new_idx = hasher_(entry.first) % bucket_count;
+      if constexpr (std::copy_constructible<Value>) {
+        new_buckets[new_idx].emplace_back(entry.first, entry.second);
+      } else {
+        new_buckets[new_idx].emplace_back(entry.first, std::move(entry.second));
+      }
     }
   }
 
-  // All reinserts succeeded — commit atomically.
   buckets_  = std::move(new_buckets);
   capacity_ = bucket_count;
-  // size_ is unchanged: we moved all existing entries, no elements added or removed.
 }
 
-template <typename Key, typename Value>
-void HashTableChaining<Key, Value>::check_and_rehash() {
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::check_and_rehash() {
   if (load_factor() > max_load_factor_) {
-    rehash(capacity_ * kGrowthFactor);
+    rehash(std::max<size_t>(capacity_ * kGrowthFactor, 1));
+  }
+}
+
+template <typename Key, typename Value, typename Hash>
+void HashTableChaining<Key, Value, Hash>::ensure_capacity_for_insert() {
+  if (capacity_ == 0 || static_cast<float>(size_ + 1) / static_cast<float>(capacity_) > max_load_factor_) {
+    rehash(std::max<size_t>(capacity_ * kGrowthFactor, 1));
   }
 }
 

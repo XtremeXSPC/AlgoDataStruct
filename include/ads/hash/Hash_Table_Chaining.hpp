@@ -20,6 +20,7 @@
 #include "../lists/Doubly_Linked_List.hpp"
 #include "Hash_Table_Exception.hpp"
 
+#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <utility>
@@ -42,17 +43,18 @@ namespace ads::hash {
  *          Features:
  *          - O(1) average time for insert, find, and erase
  *          - Dynamic resizing with configurable load factor
- *          - Uses std::hash for key hashing
+ *          - Uses a configurable hash functor for key hashing
  *          - Move semantics support
  *
  *          The load factor (size/capacity) determines when to rehash.
  *          When it exceeds max_load_factor, the table doubles in size
  *          and all entries are rehashed.
  *
- * @tparam Key The type of keys. Must be hashable with std::hash.
+ * @tparam Key The type of keys.
  * @tparam Value The type of values to store.
+ * @tparam Hash Hash functor for Key.
  */
-template <typename Key, typename Value>
+template <typename Key, typename Value, typename Hash = std::hash<Key>>
 class HashTableChaining {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -61,10 +63,12 @@ public:
    * @brief Constructs a hash table with specified capacity and load factor.
    * @param initial_capacity Initial number of buckets (default: 16).
    * @param max_load_factor Maximum load factor before rehashing (default: 0.75).
+   * @param hasher Hash functor used to map keys to buckets.
    * @complexity Time O(n) to allocate buckets, Space O(n)
    * @throws InvalidOperationException if max_load_factor <= 0.
    */
-  explicit HashTableChaining(size_t initial_capacity = kInitialCapacity, float max_load_factor = kDefaultMaxLoadFactor);
+  explicit HashTableChaining(
+      size_t initial_capacity = kInitialCapacity, float max_load_factor = kDefaultMaxLoadFactor, Hash hasher = Hash{});
 
   /**
    * @brief Move constructor.
@@ -100,7 +104,17 @@ public:
    * @details If the key already exists, its value is updated.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(const Key& key, const Value& value);
+  void insert(const Key& key, const Value& value)
+    requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
+
+  /**
+   * @brief Inserts or updates a key-value pair with a copied key and moved value.
+   * @param key The key to insert.
+   * @param value The value to move into the table.
+   * @complexity Time O(1) average, O(n) worst case.
+   */
+  void insert(const Key& key, Value&& value)
+    requires std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move version).
@@ -108,7 +122,8 @@ public:
    * @param value The value to move into the table.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(Key&& key, Value&& value);
+  void insert(Key&& key, Value&& value)
+    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -119,7 +134,8 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   template <typename... Args>
-  Value& emplace(const Key& key, Args&&... args);
+  Value& emplace(const Key& key, Args&&... args)
+    requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -310,12 +326,19 @@ private:
    */
   void check_and_rehash();
 
+  /**
+   * @brief Rehashes before a new insertion would exceed the load factor.
+   * @complexity Time O(n) if rehashing occurs.
+   */
+  void ensure_capacity_for_insert();
+
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
   ads::arrays::DynamicArray<Bucket> buckets_;         ///< Array of buckets.
   size_t                            capacity_;        ///< Number of buckets.
   size_t                            size_;            ///< Number of entries.
   float                             max_load_factor_; ///< Threshold for rehashing.
+  Hash                              hasher_;          ///< Hash functor.
 
   static constexpr size_t kInitialCapacity      = 16;
   static constexpr float  kDefaultMaxLoadFactor = 0.75f;

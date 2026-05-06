@@ -18,6 +18,7 @@
 
 #include "Hash_Table_Exception.hpp"
 
+#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -50,10 +51,11 @@ enum class ProbingStrategy : std::uint8_t { LINEAR, QUADRATIC, DOUBLE_HASH };
  *          The load factor must be kept below 1.0 for proper operation.
  *          Recommended max load factor: 0.5-0.7 for good performance.
  *
- * @tparam Key The type of keys. Must be hashable with std::hash.
+ * @tparam Key The type of keys.
  * @tparam Value The type of values to store.
+ * @tparam Hash Hash functor for Key.
  */
-template <typename Key, typename Value>
+template <typename Key, typename Value, typename Hash = std::hash<Key>>
 class HashTableOpenAddressing {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -64,12 +66,15 @@ public:
    * @param initial_capacity Initial number of slots (default: 16).
    * @param max_load_factor Maximum load factor before rehashing (default: 0.5).
    * @param strategy Probing strategy to use (default: LINEAR).
+   * @param hasher Hash functor used to map keys to slots.
    * @complexity Time O(n) to allocate slots, Space O(n)
    * @throws InvalidOperationException if max_load_factor is not in (0, 1).
    */
-  explicit HashTableOpenAddressing(size_t          initial_capacity = kInitialCapacity,
-                                   ProbingStrategy strategy         = ProbingStrategy::LINEAR,
-                                   float           max_load_factor  = kDefaultMaxLoadFactor);
+  explicit HashTableOpenAddressing(
+      size_t          initial_capacity = kInitialCapacity,
+      ProbingStrategy strategy         = ProbingStrategy::LINEAR,
+      float           max_load_factor  = kDefaultMaxLoadFactor,
+      Hash            hasher           = Hash{});
 
   /**
    * @brief Move constructor.
@@ -106,7 +111,19 @@ public:
    * @details If the key already exists, its value is updated.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(const Key& key, const Value& value) -> bool;
+  auto insert(const Key& key, const Value& value) -> bool
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>
+             && std::assignable_from<Value&, const Value&>;
+
+  /**
+   * @brief Inserts or updates a key-value pair with a copied key and moved value.
+   * @param key The key to insert.
+   * @param value The value to move into the table.
+   * @return true if inserted, false if updated existing key.
+   * @complexity Time O(1) average, O(n) worst case.
+   */
+  auto insert(const Key& key, Value&& value) -> bool
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move version).
@@ -115,7 +132,8 @@ public:
    * @return true if inserted, false if updated existing key.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(Key&& key, Value&& value) -> bool;
+  auto insert(Key&& key, Value&& value) -> bool
+    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -126,7 +144,9 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   template <typename... Args>
-  auto emplace(const Key& key, Args&&... args) -> Value&;
+  auto emplace(const Key& key, Args&&... args) -> Value&
+    requires std::copy_constructible<Key> && std::constructible_from<Value, Args...>
+             && std::assignable_from<Value&, Value>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -279,7 +299,11 @@ private:
 
     Entry() = default;
 
-    Entry(const Key& k, const Value& v) : key(k), value(v) {}
+    Entry(const Key& k, const Value& v)
+      requires std::copy_constructible<Value>
+        : key(k), value(v) {}
+
+    Entry(const Key& k, Value&& v) : key(k), value(std::move(v)) {}
 
     Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
 
@@ -309,12 +333,30 @@ private:
   [[nodiscard]] auto hash1(const Key& key) const -> size_t;
 
   /**
+   * @brief Primary hash function for an explicit table size.
+   * @param key The key to hash.
+   * @param capacity Table size used for modulo reduction.
+   * @return Hash value modulo capacity.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto hash1(const Key& key, size_t capacity) const -> size_t;
+
+  /**
    * @brief Secondary hash function for double hashing.
    * @param key The key to hash.
    * @return Secondary hash value (must be coprime with capacity).
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto hash2(const Key& key) const -> size_t;
+
+  /**
+   * @brief Secondary hash function for an explicit table size.
+   * @param key The key to hash.
+   * @param capacity Table size used for the probe step.
+   * @return Secondary hash value coprime with capacity.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto hash2(const Key& key, size_t capacity) const -> size_t;
 
   //===---------------------------- PROBING METHODS ----------------------------===//
   /**
@@ -325,6 +367,16 @@ private:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto probe(const Key& key, size_t i) const -> size_t;
+
+  /**
+   * @brief Computes probe sequence index for an explicit table size.
+   * @param key The key being probed.
+   * @param i Probe attempt number.
+   * @param capacity Table size used for modulo reduction.
+   * @return Slot index for this probe.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto probe(const Key& key, size_t i, size_t capacity) const -> size_t;
 
   //===------------------------- SLOT FINDING METHODS --------------------------===//
   /**
@@ -351,6 +403,16 @@ private:
    */
   auto find_insert_slot(const Key& key) -> Slot*;
 
+  /**
+   * @brief Finds first empty or deleted slot in an explicit slot array.
+   * @param slots Slot array to probe.
+   * @param slot_count Number of slots in the array.
+   * @param key The key to insert.
+   * @return Pointer to available slot.
+   * @complexity Time O(1) average, O(n) worst case.
+   */
+  auto find_insert_slot(Slot* slots, size_t slot_count, const Key& key) const -> Slot*;
+
   //===------------------------- REHASHING OPERATIONS --------------------------===//
 
   /**
@@ -367,13 +429,21 @@ private:
    */
   void check_and_rehash();
 
+  /**
+   * @brief Rehashes before a new insertion would exceed the occupied load factor.
+   * @complexity Time O(n) if rehashing occurs.
+   */
+  void ensure_capacity_for_insert();
+
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
   std::unique_ptr<Slot[]> table_;           ///< Array of slots.
   size_t                  capacity_;        ///< Number of slots.
   size_t                  size_;            ///< Number of occupied slots.
+  size_t                  deleted_count_;   ///< Number of tombstone slots.
   float                   max_load_factor_; ///< Threshold for rehashing.
   ProbingStrategy         strategy_;        ///< Probing strategy.
+  Hash                    hasher_;          ///< Hash functor.
 
   static constexpr size_t kInitialCapacity      = 16;
   static constexpr float  kDefaultMaxLoadFactor = 0.5f;

@@ -9,15 +9,31 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/associative/Hash_Map.hpp"
 #include "../include/ads/hash/Hash_Table_Chaining.hpp"
 #include "../include/ads/hash/Hash_Table_Open_Addressing.hpp"
 
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 using namespace ads::hash;
+
+namespace {
+
+struct CustomHashKey {
+  int value;
+
+  auto operator==(const CustomHashKey& other) const -> bool { return value == other.value; }
+};
+
+struct CustomHash {
+  auto operator()(const CustomHashKey& key) const -> size_t { return static_cast<size_t>(key.value % 4); }
+};
+
+} // namespace
 
 // Test fixture for HashTableChaining.
 class HashTableChainingTest : public ::testing::Test {
@@ -133,6 +149,82 @@ TEST_F(HashTableChainingTest, LoadFactorAndRehash) {
   }
 }
 
+TEST(HashTableChainingMoveOnlyTest, SupportsMoveOnlyValues) {
+  HashTableChaining<int, std::unique_ptr<int>> table;
+  int                                          copied_key = 2;
+
+  table.insert(1, std::make_unique<int>(10));
+  table.insert(copied_key, std::make_unique<int>(20));
+  table.insert(1, std::make_unique<int>(30));
+
+  ASSERT_NE(table.find(1), nullptr);
+  ASSERT_NE(table.find(2), nullptr);
+  EXPECT_EQ(*table.at(1), 30);
+  EXPECT_EQ(*table.at(2), 20);
+  EXPECT_EQ(table.size(), 2);
+
+  EXPECT_TRUE(table.erase(2));
+  EXPECT_FALSE(table.contains(2));
+}
+
+TEST(HashTableChainingMoveOnlyTest, RehashPreservesMoveOnlyValues) {
+  HashTableChaining<int, std::unique_ptr<int>> table(2, 0.5f);
+
+  for (int i = 0; i < 50; ++i) {
+    table.insert(i, std::make_unique<int>(i * 10));
+  }
+
+  EXPECT_EQ(table.size(), 50);
+  EXPECT_LE(table.load_factor(), table.max_load_factor());
+
+  for (int i = 0; i < 50; ++i) {
+    ASSERT_NE(table.find(i), nullptr);
+    EXPECT_EQ(*table.at(i), i * 10);
+  }
+}
+
+TEST(HashTableChainingCustomHashTest, UsesCustomHashFunctor) {
+  HashTableChaining<CustomHashKey, std::string, CustomHash> table(4);
+
+  table.insert(CustomHashKey{1}, std::string("one"));
+  table.insert(CustomHashKey{5}, std::string("five"));
+
+  EXPECT_EQ(table.size(), 2);
+  EXPECT_EQ(table.at(CustomHashKey{1}), "one");
+  EXPECT_EQ(table.at(CustomHashKey{5}), "five");
+}
+
+TEST(HashMapMoveOnlyTest, SupportsMoveOnlyValues) {
+  ads::associative::HashMap<int, std::unique_ptr<int>> map;
+  int                                                  copied_key = 4;
+
+  map.put(1, std::make_unique<int>(10));
+  map.put(copied_key, std::make_unique<int>(40));
+  auto [it, inserted] = map.emplace(2, std::make_unique<int>(20));
+  map[3]              = std::make_unique<int>(30);
+
+  EXPECT_TRUE(inserted);
+  EXPECT_EQ(it->first, 2);
+  EXPECT_EQ(*it->second, 20);
+  EXPECT_EQ(*map.at(1), 10);
+  EXPECT_EQ(*map.at(3), 30);
+  EXPECT_EQ(*map.at(4), 40);
+  EXPECT_TRUE(map.contains(2));
+  EXPECT_EQ(map.erase(1), 1U);
+  EXPECT_FALSE(map.contains(1));
+}
+
+TEST(HashMapCustomHashTest, UsesCustomHashFunctor) {
+  ads::associative::HashMap<CustomHashKey, std::string, CustomHash> map;
+
+  map.put(CustomHashKey{1}, std::string("one"));
+  map.put(CustomHashKey{5}, std::string("five"));
+
+  EXPECT_EQ(map.size(), 2);
+  EXPECT_TRUE(map.contains(CustomHashKey{1}));
+  EXPECT_EQ(map.at(CustomHashKey{5}), "five");
+}
+
 //===-------------------------- OPEN ADDRESSING TESTS --------------------------===//
 
 class HashTableOpenAddressingTest : public ::testing::Test {
@@ -245,6 +337,59 @@ TEST_F(HashTableOpenAddressingTest, LoadFactorAndRehash) {
 
   for (int i = 0; i < 500; ++i) {
     EXPECT_EQ(table.at(i), std::to_string(i));
+  }
+}
+
+TEST(HashTableOpenAddressingConstructionTest, ZeroCapacityStillAcceptsInsertions) {
+  HashTableOpenAddressing<int, std::string> table(0);
+
+  EXPECT_GE(table.capacity(), 2U);
+  EXPECT_TRUE(table.insert(1, "one"));
+  EXPECT_EQ(table.at(1), "one");
+}
+
+TEST(HashTableOpenAddressingMoveOnlyTest, SupportsMoveOnlyValues) {
+  HashTableOpenAddressing<int, std::unique_ptr<int>> table(4, ProbingStrategy::LINEAR, 0.75f);
+  int                                                copied_key = 2;
+
+  table.insert(1, std::make_unique<int>(10));
+  table.insert(copied_key, std::make_unique<int>(20));
+  table.insert(1, std::make_unique<int>(30));
+
+  ASSERT_NE(table.find(1), nullptr);
+  ASSERT_NE(table.find(2), nullptr);
+  EXPECT_EQ(*table.at(1), 30);
+  EXPECT_EQ(*table.at(2), 20);
+  EXPECT_EQ(table.size(), 2);
+}
+
+TEST(HashTableOpenAddressingCustomHashTest, UsesCustomHashFunctor) {
+  HashTableOpenAddressing<CustomHashKey, std::string, CustomHash> table(8, ProbingStrategy::LINEAR, 0.75f);
+
+  table.insert(CustomHashKey{1}, std::string("one"));
+  table.insert(CustomHashKey{5}, std::string("five"));
+
+  EXPECT_EQ(table.size(), 2);
+  EXPECT_EQ(table.at(CustomHashKey{1}), "one");
+  EXPECT_EQ(table.at(CustomHashKey{5}), "five");
+}
+
+TEST(HashTableOpenAddressingTombstoneTest, RehashesWhenTombstonesDominateProbeSpace) {
+  HashTableOpenAddressing<int, int> table(8, ProbingStrategy::LINEAR, 0.75f);
+
+  for (int i = 0; i < 6; ++i) {
+    table.insert(i, i);
+  }
+  for (int i = 0; i < 6; ++i) {
+    EXPECT_TRUE(table.erase(i));
+  }
+  for (int i = 10; i < 30; ++i) {
+    EXPECT_TRUE(table.insert(i, i * 10));
+  }
+
+  EXPECT_EQ(table.size(), 20U);
+  for (int i = 10; i < 30; ++i) {
+    EXPECT_EQ(table.at(i), i * 10);
   }
 }
 

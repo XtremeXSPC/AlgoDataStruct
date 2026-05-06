@@ -25,19 +25,21 @@ namespace ads::associative {
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T, typename Hash>
-HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor) :
+HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor, Hash hasher) :
     buckets_(),
     size_(0),
     max_load_factor_(max_load_factor),
-    hasher_() {
-  buckets_.resize(std::max<size_t>(initial_capacity, 1));
+    hasher_(std::move(hasher)) {
   if (max_load_factor_ <= 0) {
-    max_load_factor_ = 0.75;
+    throw ads::hash::InvalidOperationException("Max load factor must be positive");
   }
+  buckets_.resize(std::max<size_t>(initial_capacity, 1));
 }
 
 template <typename T, typename Hash>
-HashSet<T, Hash>::HashSet(std::initializer_list<T> values) : HashSet(values.size() * 2) {
+HashSet<T, Hash>::HashSet(std::initializer_list<T> values)
+  requires std::copy_constructible<T>
+    : HashSet(values.size() * 2) {
   for (const auto& value : values) {
     insert(value);
   }
@@ -67,7 +69,13 @@ auto HashSet<T, Hash>::operator=(HashSet&& other) noexcept -> HashSet& {
 //===------------------------- MODIFICATION OPERATIONS -------------------------===//
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::insert(const T& value) -> bool {
+auto HashSet<T, Hash>::insert(const T& value) -> bool
+  requires std::copy_constructible<T>
+{
+  if (buckets_.is_empty()) {
+    rehash(1);
+  }
+
   // Duplicate check first — avoids a needless rehash when the element already exists.
   size_t idx   = bucket_index(value);
   auto&  chain = buckets_[idx];
@@ -90,6 +98,10 @@ auto HashSet<T, Hash>::insert(const T& value) -> bool {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::insert(T&& value) -> bool {
+  if (buckets_.is_empty()) {
+    rehash(1);
+  }
+
   size_t idx   = bucket_index(value);
   auto&  chain = buckets_[idx];
 
@@ -117,6 +129,10 @@ auto HashSet<T, Hash>::emplace(Args&&... args) -> bool {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::erase(const T& value) -> bool {
+  if (buckets_.is_empty()) {
+    return false;
+  }
+
   size_t idx   = bucket_index(value);
   auto&  chain = buckets_[idx];
 
@@ -143,6 +159,10 @@ auto HashSet<T, Hash>::clear() noexcept -> void {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::contains(const T& value) const -> bool {
+  if (buckets_.is_empty()) {
+    return false;
+  }
+
   size_t      idx   = bucket_index(value);
   const auto& chain = buckets_[idx];
 
@@ -221,7 +241,11 @@ auto HashSet<T, Hash>::rehash(size_t new_bucket_count) -> void {
   for (auto& bucket : buckets_) {
     for (auto& elem : bucket) {
       size_t idx = hasher_(elem) % bucket_count;
-      new_buckets[idx].push_back(std::move(elem));
+      if constexpr (std::copy_constructible<T>) {
+        new_buckets[idx].push_back(elem);
+      } else {
+        new_buckets[idx].push_back(std::move(elem));
+      }
     }
   }
 
@@ -230,9 +254,20 @@ auto HashSet<T, Hash>::rehash(size_t new_bucket_count) -> void {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::check_load_factor() -> void {
-  if (load_factor() >= max_load_factor_) {
-    rehash(buckets_.size() * 2);
+  if (buckets_.is_empty()) {
+    rehash(1);
+    return;
   }
+
+  if (static_cast<double>(size_ + 1) / static_cast<double>(buckets_.size()) <= max_load_factor_) {
+    return;
+  }
+
+  size_t bucket_count = buckets_.size() * 2;
+  while (static_cast<double>(size_ + 1) / static_cast<double>(bucket_count) > max_load_factor_) {
+    bucket_count *= 2;
+  }
+  rehash(bucket_count);
 }
 
 //===---------------------------- ITERATOR METHODS -----------------------------===//
@@ -265,6 +300,12 @@ auto HashSet<T, Hash>::iterator::operator++(int) -> iterator {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::iterator::operator==(const iterator& other) const -> bool {
+  if (set_ != other.set_) {
+    return false;
+  }
+  if (set_ == nullptr) {
+    return true;
+  }
   if (bucket_idx_ == set_->buckets_.size() && other.bucket_idx_ == other.set_->buckets_.size()) {
     return true;
   }
