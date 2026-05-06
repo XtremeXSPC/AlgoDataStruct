@@ -16,6 +16,7 @@
 #ifndef B_TREE_HPP
 #define B_TREE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
 #include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
 
@@ -23,7 +24,6 @@
 #include <functional>
 #include <memory>
 #include <stdexcept>
-#include <vector>
 
 namespace ads::trees {
 
@@ -255,8 +255,8 @@ private:
    * @brief Internal node structure.
    */
   struct Node {
-    std::vector<T>                     keys;     // Sorted keys.
-    std::vector<std::unique_ptr<Node>> children; // Child pointers.
+    ads::arrays::DynamicArray<T>                     keys;     // Sorted keys.
+    ads::arrays::DynamicArray<std::unique_ptr<Node>> children; // Child pointers.
 
     bool is_leaf; // True if leaf node.
     int  n = 0;   // Current number of keys.

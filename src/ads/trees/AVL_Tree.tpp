@@ -16,7 +16,25 @@
 
 namespace ads::trees {
 
+// DynamicArray keeps iterator state copyable; LinkedQueue provides BFS storage without std::queue.
+
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+
+template <OrderedTreeElement T>
+AVLTree<T>::iterator::iterator(const iterator& other) :
+    stack_(other.stack_.begin(), other.stack_.end()),
+    current_(other.current_) {
+}
+
+template <OrderedTreeElement T>
+auto AVLTree<T>::iterator::operator=(const iterator& other) -> iterator& {
+  if (this != &other) {
+    // Assign after building replacement storage so a failed copy keeps this iterator usable.
+    stack_.assign(other.stack_.begin(), other.stack_.end());
+    current_ = other.current_;
+  }
+  return *this;
+}
 
 template <OrderedTreeElement T>
 AVLTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
@@ -26,11 +44,11 @@ AVLTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
 template <OrderedTreeElement T>
 void AVLTree<T>::iterator::push_left(Node* node) {
   while (node) {
-    stack_.push(node);
+    stack_.push_back(node);
     node = node->left.get();
   }
-  if (!stack_.empty()) {
-    current_ = stack_.top();
+  if (!stack_.is_empty()) {
+    current_ = stack_.back();
   }
 }
 
@@ -46,20 +64,20 @@ auto AVLTree<T>::iterator::operator->() const -> pointer {
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::iterator::operator++() -> iterator& {
-  if (stack_.empty()) {
+  if (stack_.is_empty()) {
     current_ = nullptr;
     return *this;
   }
 
-  Node* node = stack_.top();
-  stack_.pop();
+  Node* node = stack_.back();
+  stack_.pop_back();
 
   if (node->right) {
     push_left(node->right.get());
   }
 
-  if (!stack_.empty()) {
-    current_ = stack_.top();
+  if (!stack_.is_empty()) {
+    current_ = stack_.back();
   } else {
     current_ = nullptr;
   }
@@ -219,20 +237,20 @@ void AVLTree<T>::level_order_traversal(const std::function<void(const T&)>& visi
     return;
   }
 
-  std::queue<Node*> q;
-  q.push(root_.get());
+  ads::queues::LinkedQueue<const Node*> queue;
+  queue.enqueue(root_.get());
 
-  while (!q.empty()) {
-    Node* current = q.front();
-    q.pop();
+  while (!queue.is_empty()) {
+    const Node* current = queue.front();
+    queue.dequeue();
 
     visit(current->data);
 
     if (current->left) {
-      q.push(current->left.get());
+      queue.enqueue(current->left.get());
     }
     if (current->right) {
-      q.push(current->right.get());
+      queue.enqueue(current->right.get());
     }
   }
 }

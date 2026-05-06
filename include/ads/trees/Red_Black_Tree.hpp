@@ -16,6 +16,8 @@
 #ifndef RED_BLACK_TREE_HPP
 #define RED_BLACK_TREE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+#include "../queues/Linked_Queue.hpp"
 #include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
 
@@ -23,10 +25,8 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <queue>
 #include <stdexcept>
 #include <utility>
-#include <vector>
 
 namespace ads::trees {
 

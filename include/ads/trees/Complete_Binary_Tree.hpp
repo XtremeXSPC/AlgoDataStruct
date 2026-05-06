@@ -16,6 +16,7 @@
 #ifndef COMPLETE_BINARY_TREE_HPP
 #define COMPLETE_BINARY_TREE_HPP
 
+#include "../queues/Linked_Queue.hpp"
 #include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
 
@@ -24,7 +25,6 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
-#include <queue>
 #include <type_traits>
 #include <utility>
 #include <vector>

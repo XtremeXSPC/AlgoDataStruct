@@ -17,6 +17,8 @@
 
 namespace ads::trees {
 
+// LinkedQueue provides breadth-first traversal storage without std::queue.
+
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <EqualityComparableTreeElement T>
@@ -72,26 +74,26 @@ auto CompleteBinaryTree<T>::emplace(Args&&... args) -> T& {
   }
 
   // Use BFS to find the first node with an empty child slot.
-  std::queue<Node*> queue;
-  queue.push(root_.get());
+  ads::queues::LinkedQueue<Node*> queue;
+  queue.enqueue(root_.get());
 
-  while (!queue.empty()) {
+  while (!queue.is_empty()) {
     Node* current = queue.front();
-    queue.pop();
+    queue.dequeue();
 
     if (!current->left) {
       current->left = std::move(new_node);
       ++size_;
       return ref;
     }
-    queue.push(current->left.get());
+    queue.enqueue(current->left.get());
 
     if (!current->right) {
       current->right = std::move(new_node);
       ++size_;
       return ref;
     }
-    queue.push(current->right.get());
+    queue.enqueue(current->right.get());
   }
 
   ++size_;
@@ -157,22 +159,22 @@ auto CompleteBinaryTree<T>::contains(const T& value) const -> bool {
     return false;
   }
 
-  std::queue<const Node*> queue;
-  queue.push(root_.get());
+  ads::queues::LinkedQueue<const Node*> queue;
+  queue.enqueue(root_.get());
 
-  while (!queue.empty()) {
+  while (!queue.is_empty()) {
     const Node* current = queue.front();
-    queue.pop();
+    queue.dequeue();
 
     if (current->data == value) {
       return true;
     }
 
     if (current->left) {
-      queue.push(current->left.get());
+      queue.enqueue(current->left.get());
     }
     if (current->right) {
-      queue.push(current->right.get());
+      queue.enqueue(current->right.get());
     }
   }
 
@@ -202,20 +204,20 @@ auto CompleteBinaryTree<T>::level_order_traversal(const std::function<void(const
     return;
   }
 
-  std::queue<const Node*> queue;
-  queue.push(root_.get());
+  ads::queues::LinkedQueue<const Node*> queue;
+  queue.enqueue(root_.get());
 
-  while (!queue.empty()) {
+  while (!queue.is_empty()) {
     const Node* current = queue.front();
-    queue.pop();
+    queue.dequeue();
 
     visit(current->data);
 
     if (current->left) {
-      queue.push(current->left.get());
+      queue.enqueue(current->left.get());
     }
     if (current->right) {
-      queue.push(current->right.get());
+      queue.enqueue(current->right.get());
     }
   }
 }

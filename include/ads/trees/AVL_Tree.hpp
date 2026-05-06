@@ -16,6 +16,8 @@
 #ifndef AVL_TREE_HPP
 #define AVL_TREE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+#include "../queues/Linked_Queue.hpp"
 #include "Binary_Tree.hpp"
 #include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
@@ -24,8 +26,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <queue>
-#include <stack>
 #include <utility>
 
 namespace ads::trees {
@@ -79,6 +79,10 @@ public:
     using reference         = const T&;
 
     iterator() = default;
+    iterator(const iterator& other);
+    iterator(iterator&& other) noexcept = default;
+    auto operator=(const iterator& other) -> iterator&;
+    auto operator=(iterator&& other) noexcept -> iterator& = default;
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -92,9 +96,9 @@ public:
     // Private constructor used by begin() to initialize the iterator.
     explicit iterator(Node* root);
 
-    // Stack to maintain the path during in-order traversal.
-    std::stack<Node*> stack_;
-    Node*             current_;
+    // DynamicArray keeps forward-iterator copies independent for postfix traversal.
+    ads::arrays::DynamicArray<Node*> stack_;
+    Node*                            current_ = nullptr;
 
     // Helper to push all left children onto the stack.
     void push_left(Node* node);

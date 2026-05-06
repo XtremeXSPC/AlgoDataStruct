@@ -16,21 +16,39 @@
 
 namespace ads::trees {
 
+// DynamicArray keeps iterator state copyable; LinkedQueue provides BFS storage without std::queue.
+
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+
+template <OrderedTreeElement T>
+BinarySearchTree<T>::iterator::iterator(const iterator& other) :
+    stack_(other.stack_.begin(), other.stack_.end()),
+    current_(other.current_) {
+}
+
+template <OrderedTreeElement T>
+auto BinarySearchTree<T>::iterator::operator=(const iterator& other) -> iterator& {
+  if (this != &other) {
+    // Assign after building replacement storage so a failed copy keeps this iterator usable.
+    stack_.assign(other.stack_.begin(), other.stack_.end());
+    current_ = other.current_;
+  }
+  return *this;
+}
 
 template <OrderedTreeElement T>
 BinarySearchTree<T>::iterator::iterator(Node* root) : current_(nullptr) {
   push_left(root);
-  if (!stack_.empty()) {
-    current_ = stack_.top();
-    stack_.pop();
+  if (!stack_.is_empty()) {
+    current_ = stack_.back();
+    stack_.pop_back();
   }
 }
 
 template <OrderedTreeElement T>
 void BinarySearchTree<T>::iterator::push_left(Node* node) {
   while (node) {
-    stack_.push(node);
+    stack_.push_back(node);
     node = node->left.get();
   }
 }
@@ -53,9 +71,9 @@ auto BinarySearchTree<T>::iterator::operator++() -> iterator& {
   }
 
   // Get the next node from the stack.
-  if (!stack_.empty()) {
-    current_ = stack_.top();
-    stack_.pop();
+  if (!stack_.is_empty()) {
+    current_ = stack_.back();
+    stack_.pop_back();
   } else {
     current_ = nullptr; // We've reached the end.
   }
@@ -194,21 +212,20 @@ void BinarySearchTree<T>::level_order_traversal(const std::function<void(const T
     return;
   }
 
-  // Use a queue for breadth-first traversal
-  std::queue<const Node*> queue;
-  queue.push(root_.get());
+  ads::queues::LinkedQueue<const Node*> queue;
+  queue.enqueue(root_.get());
 
-  while (!queue.empty()) {
+  while (!queue.is_empty()) {
     const Node* current = queue.front();
-    queue.pop();
+    queue.dequeue();
 
     visit(current->data);
 
     if (current->left) {
-      queue.push(current->left.get());
+      queue.enqueue(current->left.get());
     }
     if (current->right) {
-      queue.push(current->right.get());
+      queue.enqueue(current->right.get());
     }
   }
 }

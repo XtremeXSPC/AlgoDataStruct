@@ -16,15 +16,16 @@
 
 namespace ads::trees {
 
+// DynamicArray stores node keys, child ownership slots, and rebuild keys without STL containers.
+
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
   requires ValidBTreeDegree<MinDegree>
-B_Tree<T, MinDegree>::Node::Node(bool leaf) : is_leaf(leaf) {
-  keys.reserve(MAX_KEYS);
-  if (!leaf) {
-    children.reserve(MAX_KEYS + 1);
-  }
+B_Tree<T, MinDegree>::Node::Node(bool leaf) :
+    keys(static_cast<size_t>(MAX_KEYS)),
+    children(leaf ? 0U : static_cast<size_t>(MAX_KEYS + 1)),
+    is_leaf(leaf) {
 }
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
@@ -88,8 +89,7 @@ auto B_Tree<T, MinDegree>::remove(const T& key) -> bool {
     return false;
   }
 
-  std::vector<T> retained_keys;
-  retained_keys.reserve(size_ > 0 ? size_ - 1 : 0);
+  ads::arrays::DynamicArray<T> retained_keys(size_ > 0 ? size_ - 1 : 0);
 
   bool removed = false;
   in_order_traversal([&](const T& current_key) {
@@ -251,16 +251,20 @@ void B_Tree<T, MinDegree>::split_child(Node* parent, int index) {
   full_child->n = t - 1;
 
   // Insert new child into parent.
-  parent->children.insert(parent->children.begin() + index + 1, std::move(new_child));
+  parent->children.insert(static_cast<size_t>(index + 1), std::move(new_child));
 
   // Move median key up to parent.
-  parent->keys.insert(parent->keys.begin() + index, full_child->keys[t - 1]);
+  parent->keys.insert(static_cast<size_t>(index), full_child->keys[t - 1]);
   parent->n++;
 
-  // Trim vectors of full_child.
-  full_child->keys.resize(t - 1);
+  // Pop from the right so key shrinking does not require T to be default-initializable.
+  while (static_cast<int>(full_child->keys.size()) > t - 1) {
+    full_child->keys.pop_back();
+  }
   if (!full_child->is_leaf) {
-    full_child->children.resize(t);
+    while (static_cast<int>(full_child->children.size()) > t) {
+      full_child->children.pop_back();
+    }
   }
 }
 
@@ -281,7 +285,7 @@ auto B_Tree<T, MinDegree>::insert_non_full(Node* node, const T& key) -> bool {
     }
 
     // Insert key.
-    node->keys.insert(node->keys.begin() + i + 1, key);
+    node->keys.insert(static_cast<size_t>(i + 1), key);
     node->n++;
     return true;
 

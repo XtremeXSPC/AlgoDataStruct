@@ -235,6 +235,16 @@ TEST_F(BinarySearchTreeTest, ExplicitIterator) {
   EXPECT_EQ(*it, 30);
 }
 
+TEST_F(BinarySearchTreeTest, PostfixIteratorReturnsPreviousValue) {
+  buildBalancedTree();
+
+  auto it       = tree.begin();
+  auto previous = it++;
+
+  EXPECT_EQ(*previous, 20);
+  EXPECT_EQ(*it, 30);
+}
+
 //===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(BinarySearchTreeTest, MoveConstructor) {

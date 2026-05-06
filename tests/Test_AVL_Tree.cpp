@@ -232,6 +232,22 @@ TEST_F(AVLTreeTest, IteratorTraversal) {
   EXPECT_EQ(actual, expected);
 }
 
+TEST_F(AVLTreeTest, PostfixIteratorReturnsPreviousValue) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+
+  auto it       = tree.begin();
+  auto previous = it++;
+
+  EXPECT_EQ(*previous, 30);
+  EXPECT_EQ(*it, 50);
+}
+
+TEST_F(AVLTreeTest, EmptyIteratorsCompareEqual) {
+  EXPECT_EQ(tree.begin(), tree.end());
+}
+
 //===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
 
 TEST_F(AVLTreeTest, MoveConstructor) {

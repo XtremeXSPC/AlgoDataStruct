@@ -16,6 +16,8 @@
 
 namespace ads::trees {
 
+// DynamicArray stores rebuild values; LinkedQueue provides BFS storage without STL containers.
+
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <OrderedTreeElement T>
@@ -76,8 +78,7 @@ auto Red_Black_Tree<T>::remove(const T& value) -> bool {
     return false;
   }
 
-  std::vector<T> retained_values;
-  retained_values.reserve(size_ > 0 ? size_ - 1 : 0);
+  ads::arrays::DynamicArray<T> retained_values(size_ > 0 ? size_ - 1 : 0);
 
   bool removed = false;
   in_order_traversal([&](const T& current_value) {
@@ -202,20 +203,20 @@ void Red_Black_Tree<T>::level_order_traversal(std::function<void(const T&)> visi
     return;
   }
 
-  std::queue<const Node*> node_queue;
-  node_queue.push(root_.get());
+  ads::queues::LinkedQueue<const Node*> node_queue;
+  node_queue.enqueue(root_.get());
 
-  while (!node_queue.empty()) {
+  while (!node_queue.is_empty()) {
     const Node* current = node_queue.front();
-    node_queue.pop();
+    node_queue.dequeue();
 
     visit(current->data);
 
     if (current->left) {
-      node_queue.push(current->left.get());
+      node_queue.enqueue(current->left.get());
     }
     if (current->right) {
-      node_queue.push(current->right.get());
+      node_queue.enqueue(current->right.get());
     }
   }
 }

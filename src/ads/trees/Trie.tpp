@@ -16,6 +16,8 @@
 
 namespace ads::trees {
 
+// DynamicArray stores flexible children without std::unordered_map; vector results remain public API.
+
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <bool UseMap>
@@ -27,7 +29,7 @@ Trie<UseMap>::TrieNode::TrieNode() : is_end_of_word(false) {
 template <bool UseMap>
 auto Trie<UseMap>::TrieNode::has_children() const -> bool {
   if constexpr (UseMap) {
-    return !children.empty();
+    return !children.is_empty();
   } else {
     return std::ranges::any_of(children, [](const auto& child) { return child != nullptr; });
   }
@@ -160,11 +162,11 @@ auto Trie<UseMap>::longest_common_prefix() const -> std::string {
     TrieNode* next_node   = nullptr;
 
     if constexpr (UseMap) {
-      child_count = node->children.size();
+      child_count = static_cast<int>(node->children.size());
       if (child_count == 1) {
-        auto it   = node->children.begin();
-        next_char = it->first;
-        next_node = it->second.get();
+        const auto& only_child = node->children[0];
+        next_char              = only_child.character;
+        next_node              = only_child.child.get();
       }
     } else {
       for (int i = 0; i < 26; ++i) {
@@ -214,8 +216,12 @@ auto Trie<UseMap>::char_to_index(char c) -> int {
 template <bool UseMap>
 auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> TrieNode* {
   if constexpr (UseMap) {
-    auto it = node->children.find(c);
-    return (it != node->children.end()) ? it->second.get() : nullptr;
+    for (const auto& entry : node->children) {
+      if (entry.character == c) {
+        return entry.child.get();
+      }
+    }
+    return nullptr;
   } else {
     int idx = char_to_index(c);
     return node->children[idx].get();
@@ -225,11 +231,14 @@ auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> TrieNode* {
 template <bool UseMap>
 auto Trie<UseMap>::get_or_create_child(TrieNode* node, char c) -> TrieNode* {
   if constexpr (UseMap) {
-    auto& child_ptr = node->children[c];
-    if (!child_ptr) {
-      child_ptr = std::make_unique<TrieNode>();
+    for (auto& entry : node->children) {
+      if (entry.character == c) {
+        return entry.child.get();
+      }
     }
-    return child_ptr.get();
+
+    auto& entry = node->children.emplace_back(c, std::make_unique<TrieNode>());
+    return entry.child.get();
   } else {
     int idx = char_to_index(c);
     if (!node->children[idx]) {
@@ -252,8 +261,8 @@ auto Trie<UseMap>::find_prefix_node(const std::string& prefix) const -> TrieNode
 }
 
 template <bool UseMap>
-void Trie<UseMap>::dfs_collect_words(
-    const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const {
+auto Trie<UseMap>::dfs_collect_words(
+    const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const -> void {
   if (!node) {
     return;
   }
@@ -265,8 +274,8 @@ void Trie<UseMap>::dfs_collect_words(
 
   // Recurse to all children.
   if constexpr (UseMap) {
-    for (const auto& [ch, child] : node->children) {
-      dfs_collect_words(child.get(), current_word + ch, results);
+    for (const auto& entry : node->children) {
+      dfs_collect_words(entry.child.get(), current_word + entry.character, results);
     }
   } else {
     for (int i = 0; i < 26; ++i) {
@@ -287,8 +296,8 @@ auto Trie<UseMap>::count_words_helper(const TrieNode* node) const -> size_t {
   size_t count = node->is_end_of_word ? 1 : 0;
 
   if constexpr (UseMap) {
-    for (const auto& [ch, child] : node->children) {
-      count += count_words_helper(child.get());
+    for (const auto& entry : node->children) {
+      count += count_words_helper(entry.child.get());
     }
   } else {
     for (const auto& child : node->children) {
@@ -330,7 +339,13 @@ auto Trie<UseMap>::remove_helper(TrieNode* node, const std::string& word, size_t
   if (remove_helper(child, word, depth + 1, found)) {
     // Child should be deleted.
     if constexpr (UseMap) {
-      node->children.erase(c);
+      for (size_t i = 0; i < node->children.size(); ++i) {
+        if (node->children[i].character == c) {
+          // Erase by index so the move-only child entry is removed without copying.
+          node->children.erase(i);
+          break;
+        }
+      }
     } else {
       node->children[char_to_index(c)].reset();
     }

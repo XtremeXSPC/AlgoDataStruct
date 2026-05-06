@@ -16,12 +16,15 @@
 #ifndef TRIE_HPP
 #define TRIE_HPP
 
+#include "../arrays/Dynamic_Array.hpp"
+
 #include <algorithm>
 #include <array>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace ads::trees {
@@ -35,7 +38,7 @@ namespace ads::trees {
  *          like autocomplete and spell checking.
  *
  *          Key Properties:
- *            - Search time: O(m) where m = string length (independent of # words)
+ *            - Search time: O(m*b), where b is local branching in dynamic mode.
  *            - Prefix sharing: Common prefixes stored once.
  *            - Space-efficient for large dictionaries with common prefixes.
  *
@@ -45,7 +48,7 @@ namespace ads::trees {
  *            - IP routing (longest prefix matching).
  *            - Text editors (word completion).
  *
- * @tparam UseMap If true, uses unordered_map for children (supports any char).
+ * @tparam UseMap If true, uses a dynamic ADS child list (supports any char).
  *                If false, uses array for a-z lowercase only (faster but limited).
  *
  * @complexity
@@ -205,9 +208,22 @@ private:
    * node forms a prefix. Nodes with is_end_of_word=true mark complete words.
    */
   struct TrieNode {
-    // Children storage: map for flexibility, array for speed.
-    std::conditional_t<UseMap, std::unordered_map<char, std::unique_ptr<TrieNode>>,
-                       std::array<std::unique_ptr<TrieNode>, 26>>
+    struct ChildEntry {
+      char                      character = '\0';
+      std::unique_ptr<TrieNode> child     = nullptr;
+
+      ChildEntry() = default;
+
+      ChildEntry(char key, std::unique_ptr<TrieNode> node) : character(key), child(std::move(node)) {}
+
+      ChildEntry(const ChildEntry&)                        = delete;
+      auto operator=(const ChildEntry&) -> ChildEntry&     = delete;
+      ChildEntry(ChildEntry&&) noexcept                    = default;
+      auto operator=(ChildEntry&&) noexcept -> ChildEntry& = default;
+    };
+
+    // DynamicArray supports arbitrary characters while keeping ownership move-only.
+    std::conditional_t<UseMap, ads::arrays::DynamicArray<ChildEntry>, std::array<std::unique_ptr<TrieNode>, 26>>
         children;
 
     bool is_end_of_word; ///< True if this node marks end of a word.
@@ -218,7 +234,7 @@ private:
     /**
      * @brief Check if node has any children.
      * @return true if node has at least one child.
-     * @complexity Time O(1) average for map version, O(AlphabetSize) for array version.
+     * @complexity Time O(children) for dynamic storage, O(AlphabetSize) for array storage.
      */
     [[nodiscard]] auto has_children() const -> bool;
   };
@@ -263,8 +279,8 @@ private:
    * @param current_word Prefix accumulated so far.
    * @param results Vector to store results.
    */
-  void dfs_collect_words(const TrieNode* node, const std::string& current_word,
-                         std::vector<std::string>& results) const;
+  auto dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const
+      -> void;
 
   /**
    * @brief Recursive helper to count words with prefix.
