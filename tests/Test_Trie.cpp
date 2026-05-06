@@ -144,7 +144,7 @@ TEST_F(TrieTest, GetAllWords) {
   trie.insert("cherry");
 
   auto words = trie.get_all_words();
-  EXPECT_EQ(words.size(), 3);
+  EXPECT_EQ(words, (std::vector<std::string>{"apple", "banana", "cherry"}));
 }
 
 //===------------------------------ REMOVAL TESTS ------------------------------===//
@@ -272,6 +272,19 @@ TEST_F(TrieTest, LongWord) {
   EXPECT_TRUE(trie.starts_with("supercal"));
 }
 
+TEST_F(TrieTest, DeepWordOperationsUseExplicitTraversalStorage) {
+  const std::string long_word(4'096, 'a');
+  const std::string prefix(2'048, 'a');
+
+  trie.insert(long_word);
+
+  EXPECT_TRUE(trie.search(long_word));
+  EXPECT_EQ(trie.count_words_with_prefix(prefix), 1);
+  EXPECT_EQ(trie.get_all_words_with_prefix(prefix), (std::vector<std::string>{long_word}));
+  EXPECT_TRUE(trie.remove(long_word));
+  EXPECT_TRUE(trie.is_empty());
+}
+
 TEST_F(TrieTest, CaseSensitivity) {
   trie.insert("Hello");
   trie.insert("hello");
@@ -374,6 +387,16 @@ TEST(TrieArrayTest, LowercaseOperationsUseArrayStorage) {
   EXPECT_TRUE(trie.remove("app"));
   EXPECT_FALSE(trie.search("app"));
   EXPECT_TRUE(trie.search("apple"));
+}
+
+TEST(TrieArrayTest, GetAllWordsRemainsLexicographic) {
+  TrieArray trie;
+
+  trie.insert("bat");
+  trie.insert("app");
+  trie.insert("apple");
+
+  EXPECT_EQ(trie.get_all_words(), (std::vector<std::string>{"app", "apple", "bat"}));
 }
 
 TEST(TrieArrayTest, RejectsUnsupportedCharacters) {

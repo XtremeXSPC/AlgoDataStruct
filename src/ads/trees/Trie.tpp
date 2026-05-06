@@ -95,9 +95,58 @@ auto Trie<UseMap>::remove(const std::string& word) -> bool {
     return false;
   }
 
-  bool found = false;
-  remove_helper(root_.get(), word, 0, found);
-  return found;
+  struct RemoveFrame {
+    TrieNode* parent    = nullptr;
+    char      character = '\0';
+    TrieNode* child     = nullptr;
+
+    RemoveFrame(TrieNode* frame_parent, char frame_character, TrieNode* frame_child) :
+        parent(frame_parent),
+        character(frame_character),
+        child(frame_child) {}
+  };
+
+  ads::stacks::ArrayStack<RemoveFrame> path(word.size());
+  TrieNode*                            node = root_.get();
+
+  // Keep the search path explicitly so very long words do not consume call stack.
+  for (char c : word) {
+    TrieNode* child = get_child(node, c);
+    if (!child) {
+      return false;
+    }
+    path.emplace(node, c, child);
+    node = child;
+  }
+
+  if (!node->is_end_of_word) {
+    return false;
+  }
+
+  node->is_end_of_word = false;
+  --word_count_;
+
+  while (!path.is_empty() && !node->is_end_of_word && !node->has_children()) {
+    const RemoveFrame frame  = path.top();
+    TrieNode*         parent = frame.parent;
+
+    if constexpr (UseMap) {
+      for (size_t i = 0; i < parent->children.size(); ++i) {
+        if (parent->children[i].character == frame.character) {
+          // Erase by index so the move-only child entry is removed without copying.
+          parent->children.erase(i);
+          break;
+        }
+      }
+    } else {
+      parent->children[char_to_index(frame.character)].reset();
+    }
+
+    path.pop();
+    node = parent;
+  }
+
+  return true;
 }
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
@@ -145,7 +194,33 @@ auto Trie<UseMap>::count_words_with_prefix(const std::string& prefix) const -> s
   if (!node) {
     return 0;
   }
-  return count_words_helper(node);
+
+  size_t                                   count = 0;
+  ads::stacks::ArrayStack<const TrieNode*> stack(std::max<size_t>(word_count_, 1));
+  stack.push(node);
+
+  while (!stack.is_empty()) {
+    const TrieNode* current = stack.top();
+    stack.pop();
+
+    if (current->is_end_of_word) {
+      ++count;
+    }
+
+    if constexpr (UseMap) {
+      for (const auto& entry : current->children) {
+        stack.push(entry.child.get());
+      }
+    } else {
+      for (const auto& child : current->children) {
+        if (child) {
+          stack.push(child.get());
+        }
+      }
+    }
+  }
+
+  return count;
 }
 
 template <bool UseMap>
@@ -290,96 +365,44 @@ auto Trie<UseMap>::dfs_collect_words(
     return;
   }
 
-  // If this node marks end of word, add to results.
-  if (node->is_end_of_word) {
-    results.push_back(current_word);
-  }
+  struct TraversalFrame {
+    const TrieNode* node = nullptr;
+    std::string     word;
 
-  // Recurse to all children.
-  if constexpr (UseMap) {
-    for (const auto& entry : node->children) {
-      dfs_collect_words(entry.child.get(), current_word + entry.character, results);
+    TraversalFrame(const TrieNode* frame_node, std::string frame_word) :
+        node(frame_node),
+        word(std::move(frame_word)) {}
+  };
+
+  ads::stacks::ArrayStack<TraversalFrame> stack(std::max<size_t>(word_count_, 1));
+  stack.emplace(node, current_word);
+
+  while (!stack.is_empty()) {
+    TraversalFrame frame = std::move(stack.top());
+    stack.pop();
+
+    if (frame.node->is_end_of_word) {
+      results.push_back(frame.word);
     }
-  } else {
-    for (int i = 0; i < 26; ++i) {
-      if (node->children[i]) {
-        char ch = static_cast<char>('a' + i);
-        dfs_collect_words(node->children[i].get(), current_word + ch, results);
-      }
-    }
-  }
-}
 
-template <bool UseMap>
-auto Trie<UseMap>::count_words_helper(const TrieNode* node) const -> size_t {
-  if (!node) {
-    return 0;
-  }
-
-  size_t count = node->is_end_of_word ? 1 : 0;
-
-  if constexpr (UseMap) {
-    for (const auto& entry : node->children) {
-      count += count_words_helper(entry.child.get());
-    }
-  } else {
-    for (const auto& child : node->children) {
-      count += count_words_helper(child.get());
-    }
-  }
-
-  return count;
-}
-
-template <bool UseMap>
-auto Trie<UseMap>::remove_helper(TrieNode* node, const std::string& word, size_t depth, bool& found) -> bool {
-  if (!node) {
-    return false;
-  }
-
-  // Reached end of word.
-  if (depth == word.length()) {
-    // Word found - unmark it.
-    if (node->is_end_of_word) {
-      node->is_end_of_word = false;
-      word_count_--;
-      found = true;
-      // Delete node if it has no children (not prefix of other words).
-      return !node->has_children();
-    }
-    return false;
-  }
-
-  // Recurse to child.
-  char      c     = word[depth];
-  TrieNode* child = get_child(node, c);
-
-  // If character path doesn't exist, word not in trie.
-  if (!child) {
-    return false;
-  }
-
-  if (remove_helper(child, word, depth + 1, found)) {
-    // Child should be deleted.
     if constexpr (UseMap) {
-      for (size_t i = 0; i < node->children.size(); ++i) {
-        if (node->children[i].character == c) {
-          // Erase by index so the move-only child entry is removed without copying.
-          node->children.erase(i);
-          break;
-        }
+      const auto& children = frame.node->children;
+      for (size_t i = children.size(); i > 0; --i) {
+        const auto& entry = children[i - 1];
+        // Reverse push order preserves the old recursive traversal order on a LIFO stack.
+        stack.emplace(entry.child.get(), frame.word + entry.character);
       }
     } else {
-      node->children[char_to_index(c)].reset();
+      for (size_t i = 26; i > 0; --i) {
+        const size_t index = i - 1;
+        if (frame.node->children[index]) {
+          const char ch = static_cast<char>('a' + index);
+          // Reverse push order preserves lexicographic traversal for array-backed tries.
+          stack.emplace(frame.node->children[index].get(), frame.word + ch);
+        }
+      }
     }
-
-    // Delete current node if:
-    // - Not end of another word.
-    // - Has no other children.
-    return !node->is_end_of_word && !node->has_children();
   }
-
-  return false;
 }
 
 } // namespace ads::trees

@@ -17,6 +17,7 @@
 #define TRIE_HPP
 
 #include "../arrays/Dynamic_Array.hpp"
+#include "../stacks/Array_Stack.hpp"
 
 #include <algorithm>
 #include <array>
@@ -282,30 +283,13 @@ private:
   [[nodiscard]] auto find_prefix_node(const std::string& prefix) const -> const TrieNode*;
 
   /**
-   * @brief DFS to collect all words from a node.
+   * @brief Collect all words from a node.
    * @param node Starting node.
    * @param current_word Prefix accumulated so far.
    * @param results Vector to store results.
    */
   auto dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const
       -> void;
-
-  /**
-   * @brief Recursive helper to count words with prefix.
-   * @param node Current node.
-   * @return Number of words in subtree.
-   */
-  [[nodiscard]] auto count_words_helper(const TrieNode* node) const -> size_t;
-
-  /**
-   * @brief Recursive helper to remove a word.
-   * @param node Current node.
-   * @param word Word to remove.
-   * @param depth Current depth (character index in word).
-   * @param found Output parameter: set to true if word was found and removed.
-   * @return true if current node should be deleted.
-   */
-  auto remove_helper(TrieNode* node, const std::string& word, size_t depth, bool& found) -> bool;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
