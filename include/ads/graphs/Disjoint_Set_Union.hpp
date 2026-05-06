@@ -202,6 +202,9 @@ inline auto DisjointSetUnion::reset(size_t num_elements) -> void {
 
 inline auto DisjointSetUnion::add_element() -> size_t {
   const size_t index = parent_.size();
+  // Reserve both tables before changing sizes so allocation failure cannot desynchronize them.
+  parent_.reserve(index + 1);
+  rank_.reserve(index + 1);
   parent_.push_back(index);
   rank_.push_back(0);
   ++set_count_;

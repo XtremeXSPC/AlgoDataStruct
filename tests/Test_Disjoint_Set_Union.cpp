@@ -56,6 +56,29 @@ TEST_F(DisjointSetUnionTest, AddElementCreatesNewSet) {
   EXPECT_EQ(dsu.find(index), index);
 }
 
+TEST_F(DisjointSetUnionTest, MoveSemanticsTransferState) {
+  ASSERT_TRUE(dsu.union_sets(0, 1));
+  ASSERT_TRUE(dsu.union_sets(2, 3));
+
+  DisjointSetUnion moved(std::move(dsu));
+
+  EXPECT_EQ(dsu.size(), 0);
+  EXPECT_EQ(dsu.set_count(), 0);
+  EXPECT_EQ(moved.size(), 5);
+  EXPECT_EQ(moved.set_count(), 3);
+  EXPECT_TRUE(moved.connected(0, 1));
+  EXPECT_FALSE(moved.connected(1, 2));
+
+  DisjointSetUnion assigned;
+  assigned = std::move(moved);
+
+  EXPECT_EQ(moved.size(), 0);
+  EXPECT_EQ(moved.set_count(), 0);
+  EXPECT_EQ(assigned.size(), 5);
+  EXPECT_EQ(assigned.set_count(), 3);
+  EXPECT_TRUE(assigned.connected(2, 3));
+}
+
 //===-------------------------- ERROR HANDLING TESTS ---------------------------===//
 
 TEST_F(DisjointSetUnionTest, OutOfRangeThrows) {
