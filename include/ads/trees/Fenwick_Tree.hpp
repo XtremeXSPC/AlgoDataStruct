@@ -21,8 +21,10 @@
 #include "Tree_Concepts.hpp"
 
 #include <bit>
+#include <concepts>
 #include <cstddef>
 #include <initializer_list>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -81,6 +83,17 @@ public:
   explicit FenwickTree(const std::vector<T>& values);
 
   /**
+   * @brief Constructs a Fenwick tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  FenwickTree(InputIt first, InputIt last)
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+
+  /**
    * @brief Constructs a Fenwick tree from an initializer list.
    * @param values Input values.
    * @complexity Time O(n), Space O(n)
@@ -119,6 +132,17 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   auto build(const std::vector<T>& values) -> void;
+
+  /**
+   * @brief Rebuilds the tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  auto build(InputIt first, InputIt last) -> void
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Rebuilds the tree from an initializer list of values.
@@ -210,6 +234,13 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto is_empty() const noexcept -> bool;
+
+  /**
+   * @brief Alias for is_empty() for STL-style compatibility.
+   * @return true if empty, false otherwise.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto empty() const noexcept -> bool;
 
   /**
    * @brief Finds the smallest index where prefix_sum(index) >= target_sum.

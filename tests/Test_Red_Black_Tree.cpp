@@ -342,6 +342,38 @@ TEST_F(RedBlackTreeTest, MixedDeletionOrderMaintainsProperties) {
   EXPECT_TRUE(tree.is_empty());
 }
 
+TEST_F(RedBlackTreeTest, ReinsertAfterDeletionsMaintainsSortedOrder) {
+  for (int value = 1; value <= 80; ++value) {
+    ASSERT_TRUE(tree.insert(value));
+  }
+
+  for (int value = 10; value <= 70; value += 10) {
+    ASSERT_TRUE(tree.remove(value)) << "removed value: " << value;
+    ASSERT_TRUE(tree.validate_properties());
+  }
+
+  for (int value = 100; value <= 140; value += 10) {
+    ASSERT_TRUE(tree.insert(value)) << "inserted value: " << value;
+    ASSERT_TRUE(tree.validate_properties());
+  }
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const int& value) { actual.push_back(value); });
+
+  std::vector<int> expected;
+  for (int value = 1; value <= 80; ++value) {
+    if (value % 10 != 0 || value > 70) {
+      expected.push_back(value);
+    }
+  }
+  for (int value = 100; value <= 140; value += 10) {
+    expected.push_back(value);
+  }
+
+  EXPECT_EQ(actual, expected);
+  EXPECT_TRUE(tree.validate_properties());
+}
+
 //===----------------------------- EDGE CASE TESTS -----------------------------===//
 
 TEST_F(RedBlackTreeTest, SingleElementTree) {

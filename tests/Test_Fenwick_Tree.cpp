@@ -9,6 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/Fenwick_Tree.hpp"
 
 #include <gtest/gtest.h>
@@ -28,6 +29,7 @@ TEST(FenwickTreeBasicTest, DefaultConstruction) {
   FenwickTree<int> fenwick;
   EXPECT_EQ(fenwick.size(), 0);
   EXPECT_TRUE(fenwick.is_empty());
+  EXPECT_TRUE(fenwick.empty());
   EXPECT_EQ(fenwick.total_sum(), 0);
 }
 
@@ -52,6 +54,15 @@ TEST(FenwickTreeBasicTest, ConstructionFromInitializerList) {
   EXPECT_EQ(fenwick.size(), 3);
   EXPECT_EQ(fenwick.total_sum(), 60);
   EXPECT_EQ(fenwick.prefix_sum(1), 30);
+}
+
+TEST(FenwickTreeBasicTest, ConstructionFromDynamicArrayRange) {
+  ads::arrays::DynamicArray<int> values{3, 1, 4, 1, 5};
+  FenwickTree<int>               fenwick(values.begin(), values.end());
+
+  EXPECT_EQ(fenwick.size(), 5);
+  EXPECT_EQ(fenwick.total_sum(), 14);
+  EXPECT_EQ(fenwick.range_sum(1, 3), 6);
 }
 
 TEST_F(FenwickTreeTest, PrefixSumQueries) {
@@ -92,6 +103,16 @@ TEST_F(FenwickTreeTest, BuildOnNonEmptyTree) {
   EXPECT_EQ(tree.total_sum(), 600);
   EXPECT_EQ(tree.value_at(0), 100);
   EXPECT_EQ(tree.value_at(2), 300);
+}
+
+TEST_F(FenwickTreeTest, BuildFromDynamicArrayRange) {
+  ads::arrays::DynamicArray<int> values{-2, 7, 0, 6};
+
+  tree.build(values.begin(), values.end());
+
+  EXPECT_EQ(tree.size(), 4);
+  EXPECT_EQ(tree.prefix_sum(1), 5);
+  EXPECT_EQ(tree.range_sum(1, 3), 13);
 }
 
 //===--------------------------- RESET & CLEAR TESTS ---------------------------===//

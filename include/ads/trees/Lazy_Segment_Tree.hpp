@@ -260,6 +260,17 @@ public:
   constexpr auto build(std::initializer_list<Value> values) -> void;
 
   /**
+   * @brief Rebuilds the tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  constexpr auto build(InputIt first, InputIt last) -> void
+    requires std::constructible_from<Value, std::iter_reference_t<InputIt>>;
+
+  /**
    * @brief Sets the element at the given index to a new value.
    * @param index Zero-based index.
    * @param value New value.

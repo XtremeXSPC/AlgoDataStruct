@@ -41,6 +41,14 @@ FenwickTree<T>::FenwickTree(const std::vector<T>& values) : values_(), tree_(), 
 }
 
 template <FenwickElement T>
+template <std::input_iterator InputIt>
+FenwickTree<T>::FenwickTree(InputIt first, InputIt last)
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+    : values_(), tree_(), size_(0) {
+  build(first, last);
+}
+
+template <FenwickElement T>
 FenwickTree<T>::FenwickTree(std::initializer_list<T> values) : values_(), tree_(), size_(0) {
   build(values);
 }
@@ -76,6 +84,16 @@ auto FenwickTree<T>::reset(size_t size) -> void {
 template <FenwickElement T>
 auto FenwickTree<T>::build(const std::vector<T>& values) -> void {
   values_.assign(values.begin(), values.end());
+  size_ = values_.size();
+  build_tree();
+}
+
+template <FenwickElement T>
+template <std::input_iterator InputIt>
+auto FenwickTree<T>::build(InputIt first, InputIt last) -> void
+  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+{
+  values_.assign(first, last);
   size_ = values_.size();
   build_tree();
 }
@@ -159,6 +177,11 @@ auto FenwickTree<T>::size() const noexcept -> size_t {
 template <FenwickElement T>
 auto FenwickTree<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
+}
+
+template <FenwickElement T>
+auto FenwickTree<T>::empty() const noexcept -> bool {
+  return is_empty();
 }
 
 template <FenwickElement T>

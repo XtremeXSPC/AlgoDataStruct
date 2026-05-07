@@ -335,6 +335,40 @@ TEST(BTreeDeletionTest, LargerDegreeMixedDeletionMaintainsInvariants) {
   }
 }
 
+TEST(BTreeDeletionTest, ReinsertAfterMixedDeletionMaintainsTraversalOrder) {
+  BTreeType<int, 3> tree;
+
+  for (int value = 1; value <= 120; ++value) {
+    ASSERT_TRUE(tree.insert(value));
+  }
+
+  for (int value = 15; value <= 90; value += 15) {
+    ASSERT_TRUE(tree.remove(value)) << "removed value: " << value;
+    ASSERT_TRUE(tree.validate_properties());
+  }
+
+  for (int value = 200; value <= 240; value += 10) {
+    ASSERT_TRUE(tree.insert(value)) << "inserted value: " << value;
+    ASSERT_TRUE(tree.validate_properties());
+  }
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const int& value) { actual.push_back(value); });
+
+  std::vector<int> expected;
+  for (int value = 1; value <= 120; ++value) {
+    if (value % 15 != 0 || value > 90) {
+      expected.push_back(value);
+    }
+  }
+  for (int value = 200; value <= 240; value += 10) {
+    expected.push_back(value);
+  }
+
+  EXPECT_EQ(actual, expected);
+  EXPECT_TRUE(tree.validate_properties());
+}
+
 //===------------------------- DEGREE VARIATION TESTS --------------------------===//
 
 TEST(BTreeDegreeTest, MinimumDegree2) {

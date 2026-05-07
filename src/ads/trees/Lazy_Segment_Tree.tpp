@@ -183,6 +183,18 @@ LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(std::initi
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
+template <std::input_iterator InputIt>
+constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(InputIt first, InputIt last)
+    -> void
+  requires std::constructible_from<Value, std::iter_reference_t<InputIt>>
+{
+  values_.assign(first, last);
+  size_ = values_.size();
+  build_tree();
+}
+
+template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
+  requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::set(size_type index, const Value& value)
     -> void {
   validate_index(index);

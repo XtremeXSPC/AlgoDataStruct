@@ -9,6 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/Lazy_Segment_Tree.hpp"
 #include "../include/ads/trees/Segment_Tree.hpp"
 
@@ -420,6 +421,15 @@ TEST(LazySegmentTreeBasicTest, ConstructionFromVector) {
   EXPECT_EQ(segment.range_query(0, 4), 15);
 }
 
+TEST(LazySegmentTreeBasicTest, ConstructionFromDynamicArrayRange) {
+  ads::arrays::DynamicArray<int> values{2, 4, 6, 8};
+  LazySegmentTree<int>           segment(values.begin(), values.end());
+
+  EXPECT_EQ(segment.size(), 4);
+  EXPECT_EQ(segment.total(), 20);
+  EXPECT_EQ(segment.range_query(1, 3), 18);
+}
+
 TEST_F(LazySegmentTreeTest, RangeQueries) {
   EXPECT_EQ(tree.range_query(0, 4), 15);
   EXPECT_EQ(tree.range_query(1, 3), 9);
@@ -562,6 +572,19 @@ TEST(LazySegmentTreeEdgeCaseTest, ClearAndRebuild) {
   segment.build({4, 5, 6});
   EXPECT_EQ(segment.size(), 3);
   EXPECT_EQ(segment.total(), 15);
+}
+
+TEST(LazySegmentTreeEdgeCaseTest, BuildFromDynamicArrayRangeClearsLazyState) {
+  LazySegmentTree<int> segment({1, 1, 1});
+  segment.range_update(0, 2, 5);
+
+  ads::arrays::DynamicArray<int> values{10, 20, 30, 40};
+  segment.build(values.begin(), values.end());
+
+  EXPECT_EQ(segment.size(), 4);
+  EXPECT_EQ(segment.total(), 100);
+  EXPECT_EQ(segment.value_at(0), 10);
+  EXPECT_EQ(segment.range_query(1, 2), 50);
 }
 
 //===---------------------------------------------------------------------------===//
