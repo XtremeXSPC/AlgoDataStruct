@@ -654,7 +654,7 @@ auto tim_sort(Iter first, Iter last, Compare comp) -> void {
   detail::merge_force_collapse(runs, comp, buffer);
 }
 
-//===------------------------------ COUNTING SORT -------------------------------===//
+//===------------------------------ COUNTING SORT ------------------------------===//
 
 template <std::random_access_iterator Iter>
   requires std::integral<std::iter_value_t<Iter>>

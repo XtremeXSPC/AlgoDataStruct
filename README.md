@@ -52,7 +52,9 @@ Key characteristics:
 - B-Tree
 - Trie (Prefix Tree)
 - Fenwick Tree (Binary Indexed Tree)
+- Fenwick Tree with Range Update
 - Segment Tree
+- Lazy Segment Tree
 
 </details>
 
