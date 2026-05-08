@@ -13,6 +13,9 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+#include <random>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -20,6 +23,39 @@ using namespace ads::trees;
 
 template <typename T, int Degree = 3>
 using BTreeType = B_Tree<T, Degree>;
+
+namespace {
+
+struct BTreeMoveOnlyKey {
+  int                  key;
+  std::unique_ptr<int> payload;
+
+  explicit BTreeMoveOnlyKey(int value) : key(value), payload(std::make_unique<int>(value)) {}
+
+  BTreeMoveOnlyKey(int value, int payload_value) : key(value), payload(std::make_unique<int>(payload_value)) {}
+
+  BTreeMoveOnlyKey(const BTreeMoveOnlyKey&)                        = delete;
+  auto operator=(const BTreeMoveOnlyKey&) -> BTreeMoveOnlyKey&     = delete;
+  BTreeMoveOnlyKey(BTreeMoveOnlyKey&&) noexcept                    = default;
+  auto operator=(BTreeMoveOnlyKey&&) noexcept -> BTreeMoveOnlyKey& = default;
+
+  auto operator<(const BTreeMoveOnlyKey& other) const -> bool { return key < other.key; }
+
+  auto operator==(const BTreeMoveOnlyKey& other) const -> bool { return key == other.key; }
+};
+
+auto expect_matches_set(const BTreeType<int>& tree, const std::set<int>& oracle) -> void {
+  EXPECT_EQ(tree.size(), oracle.size());
+  EXPECT_EQ(tree.is_empty(), oracle.empty());
+  EXPECT_TRUE(tree.validate_properties());
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const int& value) { actual.push_back(value); });
+  const std::vector<int> expected(oracle.begin(), oracle.end());
+  EXPECT_EQ(actual, expected);
+}
+
+} // namespace
 
 // Test fixture for BTree.
 class BTreeTest : public ::testing::Test {
@@ -369,6 +405,31 @@ TEST(BTreeDeletionTest, ReinsertAfterMixedDeletionMaintainsTraversalOrder) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
+TEST(BTreeDeletionTest, RandomizedOperationsMatchStdSet) {
+  BTreeType<int>                  tree;
+  std::mt19937                    rng(0xB733);
+  std::uniform_int_distribution<> value_dist(0, 99);
+  std::uniform_int_distribution<> op_dist(0, 2);
+  std::set<int>                   oracle;
+
+  for (int step = 0; step < 500; ++step) {
+    const int value = value_dist(rng);
+    switch (op_dist(rng)) {
+    case 0:
+      EXPECT_EQ(tree.insert(value), oracle.insert(value).second) << "insert " << value;
+      break;
+    case 1:
+      EXPECT_EQ(tree.remove(value), oracle.erase(value) == 1U) << "remove " << value;
+      break;
+    default:
+      EXPECT_EQ(tree.contains(value), oracle.contains(value)) << "contains " << value;
+      break;
+    }
+
+    expect_matches_set(tree, oracle);
+  }
+}
+
 //===------------------------- DEGREE VARIATION TESTS --------------------------===//
 
 TEST(BTreeDegreeTest, MinimumDegree2) {
@@ -410,6 +471,42 @@ TEST(BTreeStringTest, StringKeys) {
   EXPECT_EQ(tree.size(), 5);
   EXPECT_EQ(tree.find_min(), "apple");
   EXPECT_EQ(tree.find_max(), "elderberry");
+}
+
+TEST(BTreeMoveOnlyTest, SupportsMoveOnlyInsertEmplaceAndRemove) {
+  BTreeType<BTreeMoveOnlyKey> tree;
+
+  for (int value = 1; value <= 30; ++value) {
+    ASSERT_TRUE(tree.emplace(value, value * 10));
+    ASSERT_TRUE(tree.validate_properties()) << "after inserting " << value;
+  }
+  EXPECT_FALSE(tree.emplace(10, 1'000));
+  EXPECT_EQ(tree.size(), 30U);
+
+  const std::vector<int> removal_order = {15, 6, 20, 1, 30, 12, 25, 10};
+  for (int value : removal_order) {
+    ASSERT_TRUE(tree.remove(BTreeMoveOnlyKey{value})) << "value: " << value;
+    ASSERT_FALSE(tree.contains(BTreeMoveOnlyKey{value}));
+    ASSERT_TRUE(tree.validate_properties()) << "after removing " << value;
+  }
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const BTreeMoveOnlyKey& entry) { actual.push_back(entry.key); });
+
+  std::vector<int> expected;
+  for (int value = 1; value <= 30; ++value) {
+    bool removed = false;
+    for (int removed_value : removal_order) {
+      removed = removed || value == removed_value;
+    }
+    if (!removed) {
+      expected.push_back(value);
+    }
+  }
+
+  EXPECT_EQ(actual, expected);
+  EXPECT_EQ(tree.find_min().key, 2);
+  EXPECT_EQ(tree.find_max().key, 29);
 }
 
 //===---------------------------------------------------------------------------===//

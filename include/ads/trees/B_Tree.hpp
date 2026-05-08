@@ -21,9 +21,11 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 namespace ads::trees {
 
@@ -115,7 +117,28 @@ public:
    * @return true if inserted, false if duplicate.
    * @complexity O(t log_t n)
    */
-  auto insert(const T& key) -> bool;
+  auto insert(const T& key) -> bool
+    requires std::copy_constructible<T>;
+
+  /**
+   * @brief Insert a key into the tree by move.
+   * @param key Key to insert.
+   * @return true if inserted, false if duplicate.
+   * @complexity O(t log_t n)
+   */
+  auto insert(T&& key) -> bool
+    requires std::move_constructible<T>;
+
+  /**
+   * @brief Constructs a key in-place and inserts it into the tree.
+   * @tparam Args Types of arguments to forward to T's constructor.
+   * @param args Arguments to forward to T's constructor.
+   * @return true if inserted, false if duplicate.
+   * @complexity O(t log_t n)
+   */
+  template <typename... Args>
+  auto emplace(Args&&... args) -> bool
+    requires std::constructible_from<T, Args...>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -277,13 +300,22 @@ private:
   void split_child(Node* parent, int index);
 
   /**
+   * @brief Shared implementation for copy and move insertion.
+   * @param key Key to insert.
+   * @return true if inserted, false if duplicate.
+   */
+  template <typename U>
+  auto insert_impl(U&& key) -> bool;
+
+  /**
    * @brief Insert key into non-full node.
    *
    * @param node Node to insert into (guaranteed not full).
    * @param key Key to insert.
    * @return true if inserted, false if duplicate.
    */
-  auto insert_non_full(Node* node, const T& key) -> bool;
+  template <typename U>
+  auto insert_non_full(Node* node, U&& key) -> bool;
 
   //===---------------------------- REMOVAL HELPERS ---------------------------===//
 
@@ -311,6 +343,13 @@ private:
   void remove_from_leaf(Node* node, int index);
 
   /**
+   * @brief Removes a key already identified by its node and index.
+   * @param node Node containing the key.
+   * @param index Key index to remove.
+   */
+  void remove_key_at(Node* node, int index);
+
+  /**
    * @brief Removes a key stored in an internal node.
    * @param node Internal node containing the key.
    * @param index Key index to remove.
@@ -318,18 +357,16 @@ private:
   void remove_from_internal(Node* node, int index);
 
   /**
-   * @brief Returns the predecessor key from the child before index.
-   * @param node Internal node.
-   * @param index Key index whose predecessor is needed.
+   * @brief Extracts and returns the largest key from a subtree.
+   * @param node Subtree root that can safely lose one key.
    */
-  [[nodiscard]] auto predecessor_key(const Node* node, int index) const -> T;
+  [[nodiscard]] auto extract_predecessor(Node* node) -> T;
 
   /**
-   * @brief Returns the successor key from the child after index.
-   * @param node Internal node.
-   * @param index Key index whose successor is needed.
+   * @brief Extracts and returns the smallest key from a subtree.
+   * @param node Subtree root that can safely lose one key.
    */
-  [[nodiscard]] auto successor_key(const Node* node, int index) const -> T;
+  [[nodiscard]] auto extract_successor(Node* node) -> T;
 
   /**
    * @brief Ensures child index has at least t keys before descent.
