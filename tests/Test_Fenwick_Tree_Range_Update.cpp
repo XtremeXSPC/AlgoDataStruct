@@ -13,6 +13,8 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
 using namespace ads::trees;
 
 //===---------------------------- BASIC STATE TESTS ----------------------------===//
@@ -27,9 +29,60 @@ TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromSize) {
   FenwickTreeRangeUpdate<int> tree(5);
   EXPECT_EQ(tree.size(), 5);
   EXPECT_FALSE(tree.is_empty());
+  EXPECT_FALSE(tree.empty());
 
   for (size_t i = 0; i < 5; ++i) {
     EXPECT_EQ(tree.point_query(i), 0);
+  }
+}
+
+TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromFillValue) {
+  FenwickTreeRangeUpdate<int> tree(4, 7);
+
+  EXPECT_EQ(tree.size(), 4);
+  for (size_t i = 0; i < tree.size(); ++i) {
+    EXPECT_EQ(tree.point_query(i), 7);
+  }
+}
+
+TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromVector) {
+  const std::vector<int>      values{3, 1, 4, 1, 5};
+  FenwickTreeRangeUpdate<int> tree(values);
+
+  EXPECT_EQ(tree.size(), values.size());
+  for (size_t i = 0; i < values.size(); ++i) {
+    EXPECT_EQ(tree.point_query(i), values[i]);
+  }
+}
+
+TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromIteratorRange) {
+  const std::vector<int>      values{2, 7, 1, 8};
+  FenwickTreeRangeUpdate<int> tree(values.begin(), values.end());
+
+  EXPECT_EQ(tree.size(), values.size());
+  for (size_t i = 0; i < values.size(); ++i) {
+    EXPECT_EQ(tree.point_query(i), values[i]);
+  }
+}
+
+TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromInitializerList) {
+  FenwickTreeRangeUpdate<int> tree{9, 2, 6};
+
+  EXPECT_EQ(tree.size(), 3);
+  EXPECT_EQ(tree.point_query(0), 9);
+  EXPECT_EQ(tree.point_query(1), 2);
+  EXPECT_EQ(tree.point_query(2), 6);
+}
+
+TEST(FenwickTreeRangeUpdateBasicTest, BuildReplacesExistingValues) {
+  FenwickTreeRangeUpdate<int> tree(3, 10);
+  tree.range_add(0, 2, 5);
+
+  tree.build({4, 5, 6, 7});
+
+  EXPECT_EQ(tree.size(), 4);
+  for (size_t i = 0; i < tree.size(); ++i) {
+    EXPECT_EQ(tree.point_query(i), static_cast<int>(i + 4));
   }
 }
 

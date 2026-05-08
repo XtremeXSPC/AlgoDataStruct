@@ -19,7 +19,11 @@
 #include "Fenwick_Tree.hpp"
 #include "Fenwick_Tree_Exception.hpp"
 
+#include <concepts>
 #include <cstddef>
+#include <initializer_list>
+#include <iterator>
+#include <vector>
 
 namespace ads::trees {
 
@@ -58,6 +62,39 @@ public:
   explicit FenwickTreeRangeUpdate(size_t size);
 
   /**
+   * @brief Constructs a range-update Fenwick tree with all elements set to a value.
+   * @param size Number of elements.
+   * @param value Initial value for each element.
+   * @complexity Time O(n), Space O(n)
+   */
+  FenwickTreeRangeUpdate(size_t size, const T& value);
+
+  /**
+   * @brief Constructs a range-update Fenwick tree from a vector of values.
+   * @param values Input values (0-based indexing).
+   * @complexity Time O(n), Space O(n)
+   */
+  explicit FenwickTreeRangeUpdate(const std::vector<T>& values);
+
+  /**
+   * @brief Constructs a range-update Fenwick tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  FenwickTreeRangeUpdate(InputIt first, InputIt last)
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+
+  /**
+   * @brief Constructs a range-update Fenwick tree from an initializer list.
+   * @param values Input values.
+   * @complexity Time O(n), Space O(n)
+   */
+  FenwickTreeRangeUpdate(std::initializer_list<T> values);
+
+  /**
    * @brief Move constructor.
    * @param other The tree to move from.
    * @complexity Time O(1), Space O(1)
@@ -82,6 +119,31 @@ public:
   auto operator=(const FenwickTreeRangeUpdate&) -> FenwickTreeRangeUpdate& = delete;
 
   //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+
+  /**
+   * @brief Rebuilds the tree from a vector of values.
+   * @param values Input values (0-based indexing).
+   * @complexity Time O(n), Space O(n)
+   */
+  auto build(const std::vector<T>& values) -> void;
+
+  /**
+   * @brief Rebuilds the tree from an iterator range.
+   * @tparam InputIt Input iterator type.
+   * @param first Iterator to the first element.
+   * @param last Iterator past the last element.
+   * @complexity Time O(n), Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  auto build(InputIt first, InputIt last) -> void
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+
+  /**
+   * @brief Rebuilds the tree from an initializer list of values.
+   * @param values Input values.
+   * @complexity Time O(n), Space O(n)
+   */
+  auto build(std::initializer_list<T> values) -> void;
 
   /**
    * @brief Adds a delta to all elements in the range [left, right].
@@ -131,6 +193,13 @@ public:
    */
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
+  /**
+   * @brief Alias for is_empty() for STL-style compatibility.
+   * @return true if empty, false otherwise.
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto empty() const noexcept -> bool;
+
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
@@ -147,6 +216,12 @@ private:
    * @param delta Value to add.
    */
   auto add_internal(size_t index, const T& delta) -> void;
+
+  /**
+   * @brief Builds the internal BIT from a zero-based difference array.
+   * @param differences Difference array derived from source values.
+   */
+  auto build_from_differences(const ads::arrays::DynamicArray<T>& differences) -> void;
 
   /**
    * @brief Computes prefix sum up to index in the internal BIT.
