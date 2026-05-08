@@ -13,6 +13,8 @@
 
 #include <gtest/gtest.h>
 
+#include <random>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -34,6 +36,13 @@ struct MoveOnlyOrdered {
 
   auto operator==(const MoveOnlyOrdered& other) const -> bool { return value == other.value; }
 };
+
+auto expect_matches_set(const TreeSet<int>& set, const std::set<int>& oracle) -> void {
+  EXPECT_EQ(set.size(), oracle.size());
+  EXPECT_EQ(set.is_empty(), oracle.empty());
+  const std::vector<int> expected(oracle.begin(), oracle.end());
+  EXPECT_EQ(set.to_vector(), expected);
+}
 
 } // namespace
 
@@ -172,6 +181,30 @@ TEST_F(TreeSetTest, LargeSetMaintainsOrder) {
   auto vec = set.to_vector();
   for (size_t i = 0; i < vec.size(); ++i) {
     EXPECT_EQ(vec[i], static_cast<int>(i + 1));
+  }
+}
+
+TEST_F(TreeSetTest, RandomizedOperationsMatchStdSet) {
+  std::mt19937                    rng(0x5E7);
+  std::uniform_int_distribution<> value_dist(0, 99);
+  std::uniform_int_distribution<> op_dist(0, 2);
+  std::set<int>                   oracle;
+
+  for (int step = 0; step < 500; ++step) {
+    const int value = value_dist(rng);
+    switch (op_dist(rng)) {
+    case 0:
+      EXPECT_EQ(set.insert(value), oracle.insert(value).second) << "insert " << value;
+      break;
+    case 1:
+      EXPECT_EQ(set.erase(value), oracle.erase(value) == 1U) << "erase " << value;
+      break;
+    default:
+      EXPECT_EQ(set.contains(value), oracle.contains(value)) << "contains " << value;
+      break;
+    }
+
+    expect_matches_set(set, oracle);
   }
 }
 

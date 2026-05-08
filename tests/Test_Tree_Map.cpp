@@ -13,7 +13,9 @@
 
 #include <gtest/gtest.h>
 
+#include <map>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -28,6 +30,31 @@ struct LessOnlyKey {
 
   auto operator==(const LessOnlyKey& other) const -> bool { return value == other.value; }
 };
+
+auto expect_matches_map(const TreeMap<int, int>& map, const std::map<int, int>& oracle) -> void {
+  EXPECT_EQ(map.size(), oracle.size());
+  EXPECT_EQ(map.empty(), oracle.empty());
+
+  std::vector<int>                 keys;
+  std::vector<int>                 values;
+  std::vector<std::pair<int, int>> entries;
+  keys.reserve(oracle.size());
+  values.reserve(oracle.size());
+  entries.reserve(oracle.size());
+
+  for (const auto& [key, value] : oracle) {
+    keys.push_back(key);
+    values.push_back(value);
+    entries.emplace_back(key, value);
+
+    ASSERT_NE(map.find(key), nullptr);
+    EXPECT_EQ(map.at(key), value);
+  }
+
+  EXPECT_EQ(map.keys(), keys);
+  EXPECT_EQ(map.values(), values);
+  EXPECT_EQ(map.entries(), entries);
+}
 
 } // namespace
 
@@ -115,6 +142,45 @@ TEST_F(TreeMapTest, EmplaceInsertsAndUpdates) {
   const auto& entry = payloads.get(1);
   EXPECT_EQ(entry.label, "B");
   EXPECT_EQ(entry.value, 20);
+}
+
+TEST(TreeMapModelTest, RandomizedOperationsMatchStdMap) {
+  TreeMap<int, int>               map;
+  std::map<int, int>              oracle;
+  std::mt19937                    rng(0xA11);
+  std::uniform_int_distribution<> key_dist(0, 49);
+  std::uniform_int_distribution<> value_dist(-100, 100);
+  std::uniform_int_distribution<> op_dist(0, 4);
+
+  for (int step = 0; step < 500; ++step) {
+    const int key   = key_dist(rng);
+    const int value = value_dist(rng);
+
+    switch (op_dist(rng)) {
+    case 0:
+      map.put(key, value);
+      oracle[key] = value;
+      break;
+    case 1: {
+      const bool inserted = !oracle.contains(key);
+      EXPECT_EQ(map.insert(key, value), inserted) << "insert " << key;
+      oracle[key] = value;
+      break;
+    }
+    case 2:
+      EXPECT_EQ(map.remove(key), oracle.erase(key) == 1U) << "remove " << key;
+      break;
+    case 3:
+      map[key] += value;
+      oracle[key] += value;
+      break;
+    default:
+      EXPECT_EQ(map.contains(key), oracle.contains(key)) << "contains " << key;
+      break;
+    }
+
+    expect_matches_map(map, oracle);
+  }
 }
 
 TEST(TreeMapMoveOnlyTest, SupportsMoveOnlyMappedValues) {

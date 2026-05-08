@@ -42,8 +42,8 @@ template <typename Key, typename Value>
 class TreeMap : public Dictionary<Key, Value> {
 private:
   struct Entry {
-    Key                  key;
-    std::optional<Value> value = std::nullopt;
+    Key                          key;
+    mutable std::optional<Value> value = std::nullopt;
 
     Entry(const Key& k, const Value& v)
       requires std::copy_constructible<Key> && std::copy_constructible<Value>
@@ -302,7 +302,7 @@ private:
    * @param key The key to search for.
    * @return Pointer to Entry or nullptr if not found.
    */
-  auto find_entry(const Key& key) -> Entry*;
+  auto find_entry(const Key& key) -> const Entry*;
 
   /**
    * @brief Finds the Entry pointer for a given key (const).
