@@ -19,8 +19,7 @@
 
 namespace ads::trees {
 
-// Storage choice: DynamicArray keeps the value table and lazy tree nodes
-// contiguous for recursive lazy propagation.
+// Storage choice: DynamicArray keeps lazy tree nodes contiguous for recursive propagation.
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
@@ -32,7 +31,6 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(std::move(apply)),
     compose_(std::move(compose)),
     identity_(std::move(identity)),
-    values_(),
     tree_(),
     size_(0) {
 }
@@ -41,7 +39,7 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySegmentTree(size_type size)
   requires std::default_initializable<Value>
-    : combine_(), apply_(), compose_(), identity_(), values_(), tree_(), size_(0) {
+    : combine_(), apply_(), compose_(), identity_(), tree_(), size_(0) {
   reset(size);
 }
 
@@ -53,10 +51,10 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(size, value),
     tree_(),
     size_(size) {
-  build_tree();
+  const ads::arrays::DynamicArray<Value> values(size, value);
+  build_tree(values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -67,10 +65,10 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(values.begin(), values.end()),
     tree_(),
     size_(values.size()) {
-  build_tree();
+  const ads::arrays::DynamicArray<Value> local_values(values.begin(), values.end());
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -80,13 +78,14 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())),
     tree_(),
     size_(0) {
+  const ads::arrays::DynamicArray<Value> local_values(
+      std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
   // Preserve the previous vector-backed move behavior that callers may observe.
   values.clear();
-  size_ = values_.size();
-  build_tree();
+  size_ = local_values.size();
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -97,10 +96,10 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(values),
     tree_(),
     size_(values.size()) {
-  build_tree();
+  const ads::arrays::DynamicArray<Value> local_values(values);
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -111,11 +110,11 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(),
     compose_(),
     identity_(),
-    values_(first, last),
     tree_(),
     size_(0) {
-  size_ = values_.size();
-  build_tree();
+  const ads::arrays::DynamicArray<Value> local_values(first, last);
+  size_ = local_values.size();
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -126,7 +125,6 @@ constexpr LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::LazySe
     apply_(std::move(other.apply_)),
     compose_(std::move(other.compose_)),
     identity_(std::move(other.identity_)),
-    values_(std::move(other.values_)),
     tree_(std::move(other.tree_)),
     size_(other.size_) {
   other.size_ = 0;
@@ -142,7 +140,6 @@ LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::operator=(LazySe
     apply_      = std::move(other.apply_);
     compose_    = std::move(other.compose_);
     identity_   = std::move(other.identity_);
-    values_     = std::move(other.values_);
     tree_       = std::move(other.tree_);
     size_       = other.size_;
     other.size_ = 0;
@@ -156,29 +153,30 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(const std::vector<Value>& values)
     -> void {
-  values_.assign(values.begin(), values.end());
-  size_ = values_.size();
-  build_tree();
+  const ads::arrays::DynamicArray<Value> local_values(values.begin(), values.end());
+  size_ = local_values.size();
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(std::vector<Value>&& values)
     -> void {
-  values_.assign(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
+  const ads::arrays::DynamicArray<Value> local_values(
+      std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
   // Preserve the previous vector-backed move behavior that callers may observe.
   values.clear();
-  size_ = values_.size();
-  build_tree();
+  size_ = local_values.size();
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto
 LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build(std::initializer_list<Value> values) -> void {
-  values_.assign(values);
-  size_ = values_.size();
-  build_tree();
+  const ads::arrays::DynamicArray<Value> local_values(values);
+  size_ = local_values.size();
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -188,9 +186,9 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::b
     -> void
   requires std::constructible_from<Value, std::iter_reference_t<InputIt>>
 {
-  values_.assign(first, last);
-  size_ = values_.size();
-  build_tree();
+  const ads::arrays::DynamicArray<Value> local_values(first, last);
+  size_ = local_values.size();
+  build_tree(local_values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
@@ -223,15 +221,14 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::reset(size_type size) -> void
   requires std::default_initializable<Value>
 {
-  values_.assign(size, Value{});
   size_ = size;
-  build_tree();
+  const ads::arrays::DynamicArray<Value> values(size, Value{});
+  build_tree(values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::clear() noexcept -> void {
-  values_.clear();
   tree_.clear();
   size_ = 0;
 }
@@ -287,31 +284,31 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::e
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
-constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build_tree() -> void {
+constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build_tree(
+    const ads::arrays::DynamicArray<Value>& values) -> void {
   if (size_ == 0) {
     tree_.clear();
     return;
   }
 
   tree_.assign(4 * size_, TreeNode{identity_()});
-  build_node(1, 0, size_ - 1);
+  build_node(1, 0, size_ - 1, values);
 }
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
   requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
-constexpr auto
-LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build_node(size_type v, size_type tl, size_type tr)
-    -> void {
+constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::build_node(
+    size_type v, size_type tl, size_type tr, const ads::arrays::DynamicArray<Value>& values) -> void {
   tree_[v].lazy = std::nullopt;
 
   if (tl == tr) {
-    tree_[v].value = values_[tl];
+    tree_[v].value = values[tl];
     return;
   }
 
   const size_type mid = std::midpoint(tl, tr);
-  build_node(2 * v, tl, mid);
-  build_node(2 * v + 1, mid + 1, tr);
+  build_node(2 * v, tl, mid, values);
+  build_node(2 * v + 1, mid + 1, tr, values);
   pull_up(v);
 }
 
@@ -376,7 +373,6 @@ template <typename Value, typename Tag, typename Combine, typename Apply, typena
 constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::set_node(
     size_type v, size_type tl, size_type tr, size_type index, const value_type& value) -> void {
   if (tl == tr) {
-    values_[index] = value;
     tree_[v].value = value;
     tree_[v].lazy  = std::nullopt;
     return;

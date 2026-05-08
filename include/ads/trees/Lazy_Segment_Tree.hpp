@@ -380,14 +380,16 @@ private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
   /**
-   * @brief Builds the tree from values_.
+   * @brief Builds the tree from input values.
+   * @param values Values used only during construction/rebuild.
    */
-  constexpr auto build_tree() -> void;
+  constexpr auto build_tree(const ads::arrays::DynamicArray<Value>& values) -> void;
 
   /**
    * @brief Recursively builds tree nodes.
    */
-  constexpr auto build_node(size_type v, size_type tl, size_type tr) -> void;
+  constexpr auto build_node(size_type v, size_type tl, size_type tr, const ads::arrays::DynamicArray<Value>& values)
+      -> void;
 
   /**
    * @brief Pushes lazy tag down to children.
@@ -437,7 +439,6 @@ private:
   Apply                                       apply_{};    ///< Functor to apply a tag to a node.
   Compose                                     compose_{};  ///< Functor to compose two tags.
   Identity                                    identity_{}; ///< Functor to get the identity node.
-  ads::arrays::DynamicArray<Value>            values_{};   ///< Original values for point access.
   mutable ads::arrays::DynamicArray<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
   size_type                                   size_ = 0;   ///< Number of elements in the tree.
 };
