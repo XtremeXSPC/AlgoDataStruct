@@ -14,6 +14,11 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <numeric>
+#include <random>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -38,6 +43,16 @@ struct RbtMoveOnlyOrdered {
 
   auto operator==(const RbtMoveOnlyOrdered& other) const -> bool { return value == other.value; }
 };
+
+auto expect_matches_set(const RedBlackTreeType<int>& tree, const std::set<int>& oracle) -> void {
+  EXPECT_EQ(tree.size(), oracle.size());
+  EXPECT_EQ(tree.is_empty(), oracle.empty());
+  EXPECT_TRUE(tree.validate_properties());
+
+  const std::vector<int> actual(tree.begin(), tree.end());
+  const std::vector<int> expected(oracle.begin(), oracle.end());
+  EXPECT_EQ(actual, expected);
+}
 
 } // namespace
 
@@ -208,6 +223,23 @@ TEST_F(RedBlackTreeTest, PreOrderTraversal) {
   EXPECT_EQ(result.size(), expected.size());
 }
 
+TEST_F(RedBlackTreeTest, PostOrderTraversal) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+  tree.insert(20);
+  tree.insert(40);
+
+  std::vector<int> result;
+  tree.post_order_traversal([&result](const int& val) { result.push_back(val); });
+
+  std::vector<int> sorted = result;
+  std::sort(sorted.begin(), sorted.end());
+  std::vector<int> expected = {20, 30, 40, 50, 70};
+  EXPECT_EQ(sorted, expected);
+  EXPECT_EQ(result.size(), expected.size());
+}
+
 TEST_F(RedBlackTreeTest, LevelOrderTraversal) {
   tree.insert(50);
   tree.insert(30);
@@ -233,10 +265,81 @@ TEST_F(RedBlackTreeTest, IteratorTraversal) {
   tree.insert(70);
 
   std::vector<int> actual;
-  tree.in_order_traversal([&actual](const int& val) { actual.push_back(val); });
+  for (const auto& value : tree) {
+    actual.push_back(value);
+  }
 
   std::vector<int> expected = {30, 50, 70};
   EXPECT_EQ(actual, expected);
+}
+
+TEST_F(RedBlackTreeTest, ConstIteratorTraversal) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+
+  const auto&      tree_ref = tree;
+  std::vector<int> actual(tree_ref.cbegin(), tree_ref.cend());
+
+  std::vector<int> expected = {30, 50, 70};
+  EXPECT_EQ(actual, expected);
+}
+
+TEST_F(RedBlackTreeTest, ExplicitIterator) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+
+  auto it = tree.begin();
+  EXPECT_EQ(*it, 30);
+  ++it;
+  EXPECT_EQ(*it, 50);
+}
+
+TEST_F(RedBlackTreeTest, PostfixIteratorReturnsPreviousValue) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+
+  auto it       = tree.begin();
+  auto previous = it++;
+
+  EXPECT_EQ(*previous, 30);
+  EXPECT_EQ(*it, 50);
+}
+
+TEST_F(RedBlackTreeTest, IteratorCopiesAreIndependent) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(70);
+
+  auto first = tree.begin();
+  auto copy  = first;
+
+  ++first;
+
+  EXPECT_EQ(*copy, 30);
+  EXPECT_EQ(*first, 50);
+}
+
+TEST_F(RedBlackTreeTest, EmptyIteratorsCompareEqual) {
+  EXPECT_EQ(tree.begin(), tree.end());
+  EXPECT_EQ(tree.cbegin(), tree.cend());
+}
+
+TEST_F(RedBlackTreeTest, STLAlgorithms) {
+  for (int value : {40, 20, 60, 10, 30, 50, 70}) {
+    tree.insert(value);
+  }
+
+  std::vector<int> actual;
+  std::copy(tree.begin(), tree.end(), std::back_inserter(actual));
+
+  std::vector<int> expected = {10, 20, 30, 40, 50, 60, 70};
+  EXPECT_EQ(actual, expected);
+  EXPECT_EQ(std::accumulate(tree.begin(), tree.end(), 0), 280);
+  EXPECT_EQ(std::distance(tree.begin(), tree.end()), static_cast<std::ptrdiff_t>(7));
+  EXPECT_NE(std::find(tree.begin(), tree.end(), 50), tree.end());
 }
 
 //===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
@@ -357,8 +460,7 @@ TEST_F(RedBlackTreeTest, ReinsertAfterDeletionsMaintainsSortedOrder) {
     ASSERT_TRUE(tree.validate_properties());
   }
 
-  std::vector<int> actual;
-  tree.in_order_traversal([&actual](const int& value) { actual.push_back(value); });
+  std::vector<int> actual(tree.begin(), tree.end());
 
   std::vector<int> expected;
   for (int value = 1; value <= 80; ++value) {
@@ -372,6 +474,30 @@ TEST_F(RedBlackTreeTest, ReinsertAfterDeletionsMaintainsSortedOrder) {
 
   EXPECT_EQ(actual, expected);
   EXPECT_TRUE(tree.validate_properties());
+}
+
+TEST_F(RedBlackTreeTest, RandomizedOperationsMatchStdSet) {
+  std::mt19937                    rng(0xB1AC);
+  std::uniform_int_distribution<> value_dist(0, 99);
+  std::uniform_int_distribution<> op_dist(0, 2);
+  std::set<int>                   oracle;
+
+  for (int step = 0; step < 500; ++step) {
+    const int value = value_dist(rng);
+    switch (op_dist(rng)) {
+    case 0:
+      EXPECT_EQ(tree.insert(value), oracle.insert(value).second) << "insert " << value;
+      break;
+    case 1:
+      EXPECT_EQ(tree.remove(value), oracle.erase(value) == 1U) << "remove " << value;
+      break;
+    default:
+      EXPECT_EQ(tree.contains(value), oracle.contains(value)) << "contains " << value;
+      break;
+    }
+
+    expect_matches_set(tree, oracle);
+  }
 }
 
 //===----------------------------- EDGE CASE TESTS -----------------------------===//
@@ -430,7 +556,9 @@ TEST(RedBlackTreeMoveOnlyTest, SupportsMoveOnlyValuesAndNativeRemoval) {
   EXPECT_TRUE(tree.validate_properties());
 
   std::vector<int> values;
-  tree.in_order_traversal([&values](const RbtMoveOnlyOrdered& value) { values.push_back(value.value); });
+  for (const RbtMoveOnlyOrdered& value : tree) {
+    values.push_back(value.value);
+  }
   std::vector<int> expected{20, 30, 50, 60, 70};
   EXPECT_EQ(values, expected);
 }

@@ -18,7 +18,6 @@
 
 #include "../arrays/Dynamic_Array.hpp"
 #include "../queues/Linked_Queue.hpp"
-#include "Binary_Tree.hpp"
 #include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
 
@@ -33,8 +32,8 @@ namespace ads::trees {
 /**
  * @brief An implementation of a Binary Search Tree.
  *
- * @details This class implements the BinaryTree interface using a binary search tree
- *          structure. A BST maintains the invariant that for every node, all values
+ * @details This class implements an ordered search-tree structure. A BST maintains
+ *          the invariant that for every node, all values
  *          in its left subtree are less than the node's value, and all values in
  *          its right subtree are greater than the node's value.
  *
@@ -53,11 +52,14 @@ namespace ads::trees {
  *         Copy insertion additionally requires copy construction.
  */
 template <OrderedTreeElement T>
-class BinarySearchTree : public BinaryTree<T> {
+class BinarySearchTree {
 private:
   struct Node;
 
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
   //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
    * @brief Forward iterator for in-order traversal of the BST.
@@ -119,7 +121,7 @@ public:
    * @brief Destructor. Empties the tree and deallocates all nodes.
    * @complexity Time O(n), Space O(1)
    */
-  ~BinarySearchTree() override = default;
+  ~BinarySearchTree();
 
   /**
    * @brief Move assignment operator.
@@ -139,26 +141,27 @@ public:
    * @brief Inserts a value into the tree (copy).
    * @param value The value to insert.
    * @return true if the value was inserted, false if it already exists.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
-  auto insert(const T& value) -> bool override;
+  auto insert(const T& value) -> bool
+    requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts a value into the tree (move).
    * @param value The r-value to move.
    * @return true if the value was inserted, false if it already exists.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
-  auto insert(T&& value) -> bool override;
+  auto insert(T&& value) -> bool;
 
   /**
    * @brief Constructs an element in-place in the tree.
    * @tparam Args Types of arguments to forward to the constructor of T.
    * @param args Arguments to forward to the constructor of T.
    * @return true if the element was inserted, false if it already exists.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
   template <typename... Args>
@@ -170,16 +173,16 @@ public:
    * @brief Removes a value from the tree.
    * @param value The value to remove.
    * @return true if the value was found and removed, false otherwise.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
-  auto remove(const T& value) -> bool override;
+  auto remove(const T& value) -> bool;
 
   /**
    * @brief Removes all elements from the tree.
    * @complexity Time O(n), Space O(1)
    */
-  void clear() noexcept override;
+  void clear() noexcept;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
@@ -188,30 +191,30 @@ public:
    * @return true if the tree contains no elements.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Returns the number of elements in the tree.
    * @return The number of nodes in the tree.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Returns the height of the tree.
    * @return Height of the tree (empty tree = -1).
    * @complexity Time O(n), Space O(h)
    */
-  [[nodiscard]] auto height() const noexcept -> int override;
+  [[nodiscard]] auto height() const noexcept -> int;
 
   /**
    * @brief Checks if a value exists in the tree.
    * @param value The value to search for.
    * @return true if the value exists, false otherwise.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
-  [[nodiscard]] auto contains(const T& value) const -> bool override;
+  [[nodiscard]] auto contains(const T& value) const -> bool;
 
   /**
    * @brief Finds and returns the minimum value in the tree.
@@ -219,7 +222,7 @@ public:
    * @throws EmptyTreeException if the tree is empty.
    * @complexity Time O(h), Space O(1)
    */
-  [[nodiscard]] auto find_min() const -> const T& override;
+  [[nodiscard]] auto find_min() const -> const T&;
 
   /**
    * @brief Finds and returns the maximum value in the tree.
@@ -227,7 +230,7 @@ public:
    * @throws EmptyTreeException if the tree is empty.
    * @complexity Time O(h), Space O(1)
    */
-  [[nodiscard]] auto find_max() const -> const T& override;
+  [[nodiscard]] auto find_max() const -> const T&;
 
   //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
 
@@ -236,28 +239,28 @@ public:
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void in_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void in_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Performs a pre-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void pre_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void pre_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Performs a post-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void post_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void post_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Performs a level-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(n)
    */
-  void level_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void level_order_traversal(const std::function<void(const T&)>& visit) const;
 
   //===----------------- ADDITIONAL BST-SPECIFIC FUNCTIONALITY -----------------===//
 
@@ -266,7 +269,7 @@ public:
    * @details The successor is the smallest value greater than the given value.
    * @param value The value whose successor to find.
    * @return const T* Pointer to the successor, or nullptr if no successor exists.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
   [[nodiscard]] auto successor(const T& value) const -> const T*;
@@ -276,10 +279,18 @@ public:
    * @details The predecessor is the largest value smaller than the given value.
    * @param value The value whose predecessor to find.
    * @return const T* Pointer to the predecessor, or nullptr if no predecessor exists.
-   * @complexity Time O(h), Space O(h) due to recursion.
+   * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
   [[nodiscard]] auto predecessor(const T& value) const -> const T*;
+
+  /**
+   * @brief Checks the BST ordering and stored-size invariants.
+   * @details This is primarily for testing/debugging purposes.
+   * @return true if the BST invariants hold, false otherwise.
+   * @complexity Time O(n), Space O(h)
+   */
+  [[nodiscard]] auto validate_properties() const -> bool;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
@@ -347,7 +358,7 @@ private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
   /**
-   * @brief Recursive helper for inserting a value.
+   * @brief Iterative helper for inserting a value.
    * @param node Reference to the node pointer (can be modified to point to new node).
    * @param value The value to insert.
    * @return true if inserted, false if duplicate.
@@ -356,7 +367,7 @@ private:
   auto insert_helper(std::unique_ptr<Node>& node, U&& value) -> bool;
 
   /**
-   * @brief Recursive helper for removing a value.
+   * @brief Iterative helper for removing a value.
    * @param node Reference to the node pointer.
    * @param value The value to remove.
    * @return true if removed, false if not found.
@@ -374,7 +385,7 @@ private:
   //===---------------------------- SEARCH HELPERS -----------------------------===//
 
   /**
-   * @brief Recursive helper for searching.
+   * @brief Iterative helper for searching.
    * @param node Current node to examine.
    * @param value Value to search for.
    * @return Pointer to the node containing the value, or nullptr if not found.
@@ -396,7 +407,7 @@ private:
   auto find_max_node(Node* node) const -> Node*;
 
   /**
-   * @brief Recursive helper to compute the height of a subtree.
+   * @brief Iterative helper to compute the height of a subtree.
    * @param node Root of the subtree.
    * @return Height of the subtree (-1 if node is nullptr).
    */
@@ -405,21 +416,21 @@ private:
   //===--------------------------- TRAVERSAL HELPERS ---------------------------===//
 
   /**
-   * @brief Recursive helper for in-order traversal.
+   * @brief Iterative helper for in-order traversal.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
   void in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
   /**
-   * @brief Recursive helper for pre-order traversal.
+   * @brief Iterative helper for pre-order traversal.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
   void pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
   /**
-   * @brief Recursive helper for post-order traversal.
+   * @brief Iterative helper for post-order traversal.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */

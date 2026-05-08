@@ -107,8 +107,14 @@ BinarySearchTree<T>::BinarySearchTree(BinarySearchTree&& other) noexcept :
 }
 
 template <OrderedTreeElement T>
+BinarySearchTree<T>::~BinarySearchTree() {
+  clear();
+}
+
+template <OrderedTreeElement T>
 auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> BinarySearchTree<T>& {
   if (this != &other) {
+    clear();
     root_       = std::move(other.root_);
     size_       = other.size_;
     other.size_ = 0;
@@ -119,13 +125,10 @@ auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> Binary
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto BinarySearchTree<T>::insert(const T& value) -> bool {
-  if constexpr (!std::copy_constructible<T>) {
-    // Preserve the BinaryTree<T> interface while allowing move-only tree payloads.
-    throw InvalidOperationException("copy insert requires copy-constructible values");
-  } else {
-    return insert_helper(root_, value);
-  }
+auto BinarySearchTree<T>::insert(const T& value) -> bool
+  requires std::copy_constructible<T>
+{
+  return insert_helper(root_, value);
 }
 
 template <OrderedTreeElement T>
@@ -149,10 +152,18 @@ auto BinarySearchTree<T>::remove(const T& value) -> bool {
 
 template <OrderedTreeElement T>
 void BinarySearchTree<T>::clear() noexcept {
-  // Simply reset the root - the chain of unique_ptr will handle deallocation.
-  // For very deep trees, we might want an iterative approach to avoid stack overflow
-  // but for typical use cases, the automatic cleanup is sufficient.
-  root_.reset();
+  while (root_) {
+    if (root_->left) {
+      auto old_root  = std::move(root_);
+      root_          = std::move(old_root->left);
+      old_root->left = std::move(root_->right);
+      root_->right   = std::move(old_root);
+    } else {
+      auto next = std::move(root_->right);
+      root_.reset();
+      root_ = std::move(next);
+    }
+  }
   size_ = 0;
 }
 
@@ -275,6 +286,46 @@ auto BinarySearchTree<T>::predecessor(const T& value) const -> const T* {
   return predecessor ? &predecessor->data : nullptr;
 }
 
+template <OrderedTreeElement T>
+auto BinarySearchTree<T>::validate_properties() const -> bool {
+  if (!root_) {
+    return size_ == 0;
+  }
+
+  struct ValidationFrame {
+    const Node* node;
+    const T*    lower_bound;
+    const T*    upper_bound;
+  };
+
+  size_t                                     counted = 0;
+  ads::arrays::DynamicArray<ValidationFrame> stack;
+  stack.push_back(ValidationFrame{root_.get(), nullptr, nullptr});
+
+  while (!stack.is_empty()) {
+    const ValidationFrame frame = stack.back();
+    stack.pop_back();
+
+    if (frame.lower_bound != nullptr && !(*frame.lower_bound < frame.node->data)) {
+      return false;
+    }
+    if (frame.upper_bound != nullptr && !(frame.node->data < *frame.upper_bound)) {
+      return false;
+    }
+
+    ++counted;
+
+    if (frame.node->right) {
+      stack.push_back(ValidationFrame{frame.node->right.get(), &frame.node->data, frame.upper_bound});
+    }
+    if (frame.node->left) {
+      stack.push_back(ValidationFrame{frame.node->left.get(), frame.lower_bound, &frame.node->data});
+    }
+  }
+
+  return counted == size_;
+}
+
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
@@ -313,103 +364,92 @@ auto BinarySearchTree<T>::cend() const -> iterator {
 template <OrderedTreeElement T>
 template <typename U>
 auto BinarySearchTree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value) -> bool {
-  // Base case: found the insertion point.
-  if (!node) {
-    node = std::make_unique<Node>(std::forward<U>(value));
-    size_++;
-    return true;
+  auto* current = &node;
+  while (*current) {
+    if (value < (*current)->data) {
+      current = &((*current)->left);
+    } else if ((*current)->data < value) {
+      current = &((*current)->right);
+    } else {
+      return false;
+    }
   }
 
-  // Navigate left or right based on comparison.
-  if (value < node->data) {
-    return insert_helper(node->left, std::forward<U>(value));
-  } else if (node->data < value) {
-    return insert_helper(node->right, std::forward<U>(value));
-  } else {
-    // Duplicate found - do not insert.
-    return false;
-  }
+  *current = std::make_unique<Node>(std::forward<U>(value));
+  ++size_;
+  return true;
 }
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::remove_helper(std::unique_ptr<Node>& node, const T& value) -> bool {
-  // Base case: value not found.
-  if (!node) {
+  auto* current = &node;
+  while (*current) {
+    if (value < (*current)->data) {
+      current = &((*current)->left);
+    } else if ((*current)->data < value) {
+      current = &((*current)->right);
+    } else {
+      break;
+    }
+  }
+
+  if (!*current) {
     return false;
   }
 
-  // Navigate to the node to delete.
-  if (value < node->data) {
-    return remove_helper(node->left, value);
-  } else if (node->data < value) {
-    return remove_helper(node->right, value);
-  }
-
-  // Found the node to delete.
-  // Case 1: Node with no children (leaf).
-  if (!node->left && !node->right) {
-    node.reset(); // Simply delete the node.
-    size_--;
+  if (!(*current)->left) {
+    auto replacement = std::move((*current)->right);
+    current->reset();
+    *current = std::move(replacement);
+    --size_;
     return true;
   }
 
-  // Case 2: Node with only right child.
-  if (!node->left) {
-    node = std::move(node->right); // Replace node with its right child.
-    size_--;
+  if (!(*current)->right) {
+    auto replacement = std::move((*current)->left);
+    current->reset();
+    *current = std::move(replacement);
+    --size_;
     return true;
   }
 
-  // Case 3: Node with only left child.
-  if (!node->right) {
-    node = std::move(node->left); // Replace node with its left child
-    size_--;
-    return true;
-  }
+  auto old_node   = std::move(*current);
+  auto min_node   = detach_min(old_node->right);
+  min_node->left  = std::move(old_node->left);
+  min_node->right = std::move(old_node->right);
+  *current        = std::move(min_node);
 
-  // Case 4: Node with two children.
-  // Strategy: Replace with the minimum value from the right subtree (in-order successor),
-  // then delete that minimum node from the right subtree.
-  auto min_node   = detach_min(node->right);
-  min_node->left  = std::move(node->left);
-  min_node->right = std::move(node->right);
-  node            = std::move(min_node);
-
-  size_--;
+  --size_;
   return true;
 }
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node> {
-  // If no left child, this node is the minimum.
-  if (!node->left) {
-    // Detach this node and replace it with its right child (if any).
-    auto min_node   = std::move(node);
-    node            = std::move(min_node->right);
-    min_node->right = nullptr; // Important: clear the right pointer before returning.
-    return min_node;
+  auto* current = &node;
+  while ((*current)->left) {
+    current = &((*current)->left);
   }
 
-  // Recursively find the minimum in the left subtree.
-  return detach_min(node->left);
+  auto min_node   = std::move(*current);
+  *current        = std::move(min_node->right);
+  min_node->right = nullptr;
+  return min_node;
 }
 
 //===----------------------------- SEARCH HELPERS ------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_helper(Node* node, const T& value) const -> Node* {
-  if (!node) {
-    return nullptr;
+  while (node) {
+    if (value < node->data) {
+      node = node->left.get();
+    } else if (node->data < value) {
+      node = node->right.get();
+    } else {
+      return node;
+    }
   }
-
-  // Navigate left or right based on comparison.
-  if (value < node->data) {
-    return find_helper(node->left.get(), value);
-  } else if (node->data < value) {
-    return find_helper(node->right.get(), value);
-  } else {
-    return node; // Found it.
-  }
+  return nullptr;
 }
 
 template <OrderedTreeElement T>
@@ -433,26 +473,52 @@ auto BinarySearchTree<T>::find_max_node(Node* node) const -> Node* {
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int {
   if (!node) {
-    return -1; // Height of empty tree is -1
+    return -1;
   }
 
-  int left_height  = height_helper(node->left.get());
-  int right_height = height_helper(node->right.get());
+  struct HeightFrame {
+    const Node* node;
+    int         depth;
+  };
 
-  return 1 + std::max(left_height, right_height);
+  int                                    max_depth = -1;
+  ads::arrays::DynamicArray<HeightFrame> stack;
+  stack.push_back(HeightFrame{node, 0});
+
+  while (!stack.is_empty()) {
+    HeightFrame frame = stack.back();
+    stack.pop_back();
+
+    max_depth = std::max(max_depth, frame.depth);
+    if (frame.node->left) {
+      stack.push_back(HeightFrame{frame.node->left.get(), frame.depth + 1});
+    }
+    if (frame.node->right) {
+      stack.push_back(HeightFrame{frame.node->right.get(), frame.depth + 1});
+    }
+  }
+
+  return max_depth;
 }
 
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
 template <OrderedTreeElement T>
 void BinarySearchTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
-  if (!node) {
-    return;
-  }
+  ads::arrays::DynamicArray<const Node*> stack;
+  const Node*                            current = node;
 
-  in_order_helper(node->left.get(), visit);
-  visit(node->data);
-  in_order_helper(node->right.get(), visit);
+  while (current || !stack.is_empty()) {
+    while (current) {
+      stack.push_back(current);
+      current = current->left.get();
+    }
+
+    current = stack.back();
+    stack.pop_back();
+    visit(current->data);
+    current = current->right.get();
+  }
 }
 
 template <OrderedTreeElement T>
@@ -461,9 +527,22 @@ void BinarySearchTree<T>::pre_order_helper(const Node* node, const std::function
     return;
   }
 
-  visit(node->data);
-  pre_order_helper(node->left.get(), visit);
-  pre_order_helper(node->right.get(), visit);
+  ads::arrays::DynamicArray<const Node*> stack;
+  stack.push_back(node);
+
+  while (!stack.is_empty()) {
+    const Node* current = stack.back();
+    stack.pop_back();
+
+    visit(current->data);
+
+    if (current->right) {
+      stack.push_back(current->right.get());
+    }
+    if (current->left) {
+      stack.push_back(current->left.get());
+    }
+  }
 }
 
 template <OrderedTreeElement T>
@@ -472,9 +551,31 @@ void BinarySearchTree<T>::post_order_helper(const Node* node, const std::functio
     return;
   }
 
-  post_order_helper(node->left.get(), visit);
-  post_order_helper(node->right.get(), visit);
-  visit(node->data);
+  struct PostOrderFrame {
+    const Node* node;
+    bool        visited;
+  };
+
+  ads::arrays::DynamicArray<PostOrderFrame> stack;
+  stack.push_back(PostOrderFrame{node, false});
+
+  while (!stack.is_empty()) {
+    PostOrderFrame frame = stack.back();
+    stack.pop_back();
+
+    if (frame.visited) {
+      visit(frame.node->data);
+      continue;
+    }
+
+    stack.push_back(PostOrderFrame{frame.node, true});
+    if (frame.node->right) {
+      stack.push_back(PostOrderFrame{frame.node->right.get(), false});
+    }
+    if (frame.node->left) {
+      stack.push_back(PostOrderFrame{frame.node->left.get(), false});
+    }
+  }
 }
 
 } // namespace ads::trees

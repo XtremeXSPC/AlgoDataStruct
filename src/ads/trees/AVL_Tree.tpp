@@ -121,18 +121,15 @@ auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto AVLTree<T>::insert(const T& value) -> bool {
-  if constexpr (!std::copy_constructible<T>) {
-    // Preserve the BinaryTree<T> interface while allowing move-only tree payloads.
-    throw InvalidOperationException("copy insert requires copy-constructible values");
-  } else {
-    bool inserted = false;
-    root_         = insert_helper(std::move(root_), value, inserted);
-    if (inserted) {
-      ++size_;
-    }
-    return inserted;
+auto AVLTree<T>::insert(const T& value) -> bool
+  requires std::copy_constructible<T>
+{
+  bool inserted = false;
+  root_         = insert_helper(std::move(root_), value, inserted);
+  if (inserted) {
+    ++size_;
   }
+  return inserted;
 }
 
 template <OrderedTreeElement T>
@@ -192,7 +189,7 @@ auto AVLTree<T>::contains(const T& value) const -> bool {
 }
 
 template <OrderedTreeElement T>
-auto AVLTree<T>::find(const T& value) -> T* {
+auto AVLTree<T>::find(const T& value) -> const T* {
   Node* node = find_helper(root_.get(), value);
   return node ? &node->data : nullptr;
 }
@@ -269,7 +266,14 @@ auto AVLTree<T>::get_balance() const noexcept -> int {
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::is_balanced() const noexcept -> bool {
-  return is_balanced_helper(root_.get());
+  int height = 0;
+  return is_balanced_helper(root_.get(), height);
+}
+
+template <OrderedTreeElement T>
+auto AVLTree<T>::validate_properties() const -> bool {
+  int height = 0;
+  return validate_helper(root_.get(), nullptr, nullptr, height);
 }
 
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
@@ -417,18 +421,48 @@ auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
 }
 
 template <OrderedTreeElement T>
-auto AVLTree<T>::is_balanced_helper(const Node* node) const noexcept -> bool {
+auto AVLTree<T>::is_balanced_helper(const Node* node, int& height) const noexcept -> bool {
   if (!node) {
+    height = 0;
     return true;
   }
 
-  // Check if current node is balanced.
-  if (int balance = get_balance_factor(node); balance < -1 || balance > 1) {
+  int left_height  = 0;
+  int right_height = 0;
+  if (!is_balanced_helper(node->left.get(), left_height) || !is_balanced_helper(node->right.get(), right_height)) {
     return false;
   }
 
-  // Recursively check left and right subtrees.
-  return is_balanced_helper(node->left.get()) && is_balanced_helper(node->right.get());
+  const int balance = left_height - right_height;
+  height            = 1 + std::max(left_height, right_height);
+  return balance >= -1 && balance <= 1 && node->height == height;
+}
+
+template <OrderedTreeElement T>
+auto AVLTree<T>::validate_helper(const Node* node, const T* lower_bound, const T* upper_bound, int& height) const
+    -> bool {
+  if (!node) {
+    height = 0;
+    return true;
+  }
+
+  if (lower_bound != nullptr && !(*lower_bound < node->data)) {
+    return false;
+  }
+  if (upper_bound != nullptr && !(node->data < *upper_bound)) {
+    return false;
+  }
+
+  int left_height  = 0;
+  int right_height = 0;
+  if (!validate_helper(node->left.get(), lower_bound, &node->data, left_height)
+      || !validate_helper(node->right.get(), &node->data, upper_bound, right_height)) {
+    return false;
+  }
+
+  const int balance = left_height - right_height;
+  height            = 1 + std::max(left_height, right_height);
+  return balance >= -1 && balance <= 1 && node->height == height;
 }
 
 //===----------------------- MODIFICATION HELPER METHODS -----------------------===//

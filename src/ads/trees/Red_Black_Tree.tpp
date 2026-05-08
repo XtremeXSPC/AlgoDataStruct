@@ -18,6 +18,65 @@ namespace ads::trees {
 
 // LinkedQueue provides BFS storage without std::queue.
 
+//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+
+template <OrderedTreeElement T>
+Red_Black_Tree<T>::iterator::iterator(Node* root) : current_(leftmost(root)) {
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::leftmost(Node* node) noexcept -> Node* {
+  while (node && node->left) {
+    node = node->left.get();
+  }
+  return node;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::successor(Node* node) noexcept -> Node* {
+  if (!node) {
+    return nullptr;
+  }
+  if (node->right) {
+    return leftmost(node->right.get());
+  }
+
+  Node* parent = node->parent;
+  while (parent && node == parent->right.get()) {
+    node   = parent;
+    parent = parent->parent;
+  }
+  return parent;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::operator*() const -> reference {
+  return current_->data;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::operator->() const -> pointer {
+  return &current_->data;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::operator++() -> iterator& {
+  current_ = successor(current_);
+  return *this;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::operator++(int) -> iterator {
+  iterator previous = *this;
+  ++(*this);
+  return previous;
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::iterator::operator==(const iterator& other) const -> bool {
+  return current_ == other.current_;
+}
+
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <OrderedTreeElement T>
@@ -44,6 +103,9 @@ Red_Black_Tree<T>::Red_Black_Tree() : root_(nullptr), size_(0) {
 template <OrderedTreeElement T>
 Red_Black_Tree<T>::Red_Black_Tree(Red_Black_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
+  if (root_) {
+    root_->parent = nullptr;
+  }
 }
 
 template <OrderedTreeElement T>
@@ -52,6 +114,9 @@ auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_
     root_       = std::move(other.root_);
     size_       = other.size_;
     other.size_ = 0;
+    if (root_) {
+      root_->parent = nullptr;
+    }
   }
   return *this;
 }
@@ -167,7 +232,7 @@ auto Red_Black_Tree<T>::remove(const T& value) -> bool {
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::clear() {
+void Red_Black_Tree<T>::clear() noexcept {
   root_.reset();
   size_ = 0;
 }
@@ -175,23 +240,23 @@ void Red_Black_Tree<T>::clear() {
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::is_empty() const -> bool {
+auto Red_Black_Tree<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::size() const -> size_t {
+auto Red_Black_Tree<T>::size() const noexcept -> size_t {
   return size_;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::height() const -> int {
+auto Red_Black_Tree<T>::height() const noexcept -> int {
   return height_helper(root_.get());
 }
 
 template <OrderedTreeElement T>
 auto Red_Black_Tree<T>::contains(const T& value) const -> bool {
-  return search(value);
+  return find_node(value) != nullptr;
 }
 
 template <OrderedTreeElement T>
@@ -220,11 +285,6 @@ auto Red_Black_Tree<T>::find_max() const -> const T& {
   return node->data;
 }
 
-template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::search(const T& value) const -> bool {
-  return search_helper(root_.get(), value);
-}
-
 //===------------------- RED-BLACK TREE SPECIFIC OPERATIONS -------------------===//
 
 template <OrderedTreeElement T>
@@ -250,17 +310,24 @@ auto Red_Black_Tree<T>::validate_properties() const -> bool {
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::in_order_traversal(std::function<void(const T&)> visit) const {
-  in_order_helper(root_.get(), visit);
+void Red_Black_Tree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
+  for (auto it = cbegin(); it != cend(); ++it) {
+    visit(*it);
+  }
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::pre_order_traversal(std::function<void(const T&)> visit) const {
+void Red_Black_Tree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const {
   pre_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::level_order_traversal(std::function<void(const T&)> visit) const {
+void Red_Black_Tree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const {
+  post_order_helper(root_.get(), visit);
+}
+
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const {
   if (!root_) {
     return;
   }
@@ -281,6 +348,38 @@ void Red_Black_Tree<T>::level_order_traversal(std::function<void(const T&)> visi
       node_queue.enqueue(current->right.get());
     }
   }
+}
+
+//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::begin() -> iterator {
+  return iterator(root_.get());
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::begin() const -> iterator {
+  return iterator(root_.get());
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::end() -> iterator {
+  return iterator();
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::end() const -> iterator {
+  return iterator();
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::cbegin() const -> iterator {
+  return begin();
+}
+
+template <OrderedTreeElement T>
+auto Red_Black_Tree<T>::cend() const -> iterator {
+  return end();
 }
 
 //=================================================================================//
@@ -601,33 +700,10 @@ auto Red_Black_Tree<T>::find_min_node(Node* node) -> Node* {
   return node;
 }
 
-template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::search_helper(const Node* node, const T& value) const -> bool {
-  if (!node) {
-    return false;
-  }
-  if (value == node->data) {
-    return true;
-  } else if (value < node->data) {
-    return search_helper(node->left.get(), value);
-  } else {
-    return search_helper(node->right.get(), value);
-  }
-}
-
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::in_order_helper(const Node* node, std::function<void(const T&)> visit) const {
-  if (node) {
-    in_order_helper(node->left.get(), visit);
-    visit(node->data);
-    in_order_helper(node->right.get(), visit);
-  }
-}
-
-template <OrderedTreeElement T>
-void Red_Black_Tree<T>::pre_order_helper(const Node* node, std::function<void(const T&)> visit) const {
+void Red_Black_Tree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
   if (node) {
     visit(node->data);
     pre_order_helper(node->left.get(), visit);
@@ -635,10 +711,19 @@ void Red_Black_Tree<T>::pre_order_helper(const Node* node, std::function<void(co
   }
 }
 
+template <OrderedTreeElement T>
+void Red_Black_Tree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+  if (node) {
+    post_order_helper(node->left.get(), visit);
+    post_order_helper(node->right.get(), visit);
+    visit(node->data);
+  }
+}
+
 //===--------------------------- HEIGHT/VALIDATION -----------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::height_helper(const Node* node) const -> int {
+auto Red_Black_Tree<T>::height_helper(const Node* node) const noexcept -> int {
   if (!node) {
     return -1;
   }

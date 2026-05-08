@@ -13,6 +13,9 @@
 
 #include <gtest/gtest.h>
 
+#include <cstddef>
+#include <random>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -34,6 +37,18 @@ struct BstMoveOnlyOrdered {
 
   auto operator==(const BstMoveOnlyOrdered& other) const -> bool { return value == other.value; }
 };
+
+template <typename Tree>
+auto expect_matches_set(const Tree& tree, const std::set<int>& oracle) -> void {
+  EXPECT_EQ(tree.size(), oracle.size());
+  EXPECT_EQ(tree.is_empty(), oracle.empty());
+  EXPECT_TRUE(tree.validate_properties());
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const int& value) { actual.push_back(value); });
+  const std::vector<int> expected(oracle.begin(), oracle.end());
+  EXPECT_EQ(actual, expected);
+}
 
 } // namespace
 
@@ -311,6 +326,52 @@ TEST_F(BinarySearchTreeTest, DegenerateTree) {
   EXPECT_EQ(tree.height(), 4); // Height equals size - 1.
 }
 
+TEST_F(BinarySearchTreeTest, LargeDegenerateTreeUsesIterativeOperations) {
+  constexpr int kElementCount = 10'000;
+  for (int value = 0; value < kElementCount; ++value) {
+    ASSERT_TRUE(tree.insert(value));
+  }
+
+  EXPECT_EQ(tree.size(), static_cast<size_t>(kElementCount));
+  EXPECT_EQ(tree.height(), kElementCount - 1);
+
+  int    expected = 0;
+  size_t visited  = 0;
+  tree.in_order_traversal([&](const int& value) {
+    EXPECT_EQ(value, expected);
+    ++expected;
+    ++visited;
+  });
+
+  EXPECT_EQ(visited, static_cast<size_t>(kElementCount));
+  tree.clear();
+  EXPECT_TRUE(tree.is_empty());
+}
+
+TEST_F(BinarySearchTreeTest, RandomizedOperationsMatchStdSet) {
+  std::mt19937                    rng(0xB57);
+  std::uniform_int_distribution<> value_dist(0, 99);
+  std::uniform_int_distribution<> op_dist(0, 2);
+  std::set<int>                   oracle;
+
+  for (int step = 0; step < 500; ++step) {
+    const int value = value_dist(rng);
+    switch (op_dist(rng)) {
+    case 0:
+      EXPECT_EQ(tree.insert(value), oracle.insert(value).second) << "insert " << value;
+      break;
+    case 1:
+      EXPECT_EQ(tree.remove(value), oracle.erase(value) == 1U) << "remove " << value;
+      break;
+    default:
+      EXPECT_EQ(tree.contains(value), oracle.contains(value)) << "contains " << value;
+      break;
+    }
+
+    expect_matches_set(tree, oracle);
+  }
+}
+
 //===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
 
 TEST(BinarySearchTreeCustomTypeTest, CustomComparison) {
@@ -353,13 +414,6 @@ TEST(BinarySearchTreeMoveOnlyTest, SupportsMoveOnlyValues) {
 
   EXPECT_TRUE(tree.remove(BstMoveOnlyOrdered{50}));
   EXPECT_FALSE(tree.contains(BstMoveOnlyOrdered{50}));
-}
-
-TEST(BinarySearchTreeMoveOnlyTest, CopyInsertThrowsForMoveOnlyValues) {
-  BinarySearchTree<BstMoveOnlyOrdered> tree;
-  BstMoveOnlyOrdered                   value{10};
-
-  EXPECT_THROW(tree.insert(value), InvalidOperationException);
 }
 
 //===---------------------------------------------------------------------------===//

@@ -124,12 +124,12 @@ void demo_search_operations() {
 
   print_rbt(rbt, "rbt");
 
-  // Test contains/search.
+  // Test membership queries.
   cout << "\nSearch operations:\n";
   cout << "  contains(40): " << (rbt.contains(40) ? "found" : "not found") << '\n';
   cout << "  contains(55): " << (rbt.contains(55) ? "found" : "not found") << '\n';
-  cout << "  search(70): " << (rbt.search(70) ? "found" : "not found") << '\n';
-  cout << "  search(100): " << (rbt.search(100) ? "found" : "not found") << '\n';
+  cout << "  contains(70): " << (rbt.contains(70) ? "found" : "not found") << '\n';
+  cout << "  contains(100): " << (rbt.contains(100) ? "found" : "not found") << '\n';
 }
 
 //===------------------------ PROPERTY VALIDATION DEMO -------------------------===//
@@ -188,7 +188,7 @@ void demo_random_insertions() {
   // Verify all elements present.
   int found_count = 0;
   for (int i = 1; i <= 100; ++i) {
-    if (rbt.search(i)) {
+    if (rbt.contains(i)) {
       ++found_count;
     }
   }
@@ -259,7 +259,7 @@ void demo_performance() {
   cout << "\nSearching for all " << N << " elements...\n";
   start = std::chrono::high_resolution_clock::now();
   for (int i = 1; i <= N; ++i) {
-    [[maybe_unused]] bool found = rbt.search(i);
+    [[maybe_unused]] bool found = rbt.contains(i);
   }
   end                  = std::chrono::high_resolution_clock::now();
   auto search_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

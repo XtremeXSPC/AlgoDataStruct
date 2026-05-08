@@ -13,10 +13,29 @@
 
 #include <gtest/gtest.h>
 
+#include <random>
+#include <set>
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 using namespace ads::trees;
+
+namespace {
+
+auto expect_matches_set(const AVLTree<int>& tree, const std::set<int>& oracle) -> void {
+  EXPECT_EQ(tree.size(), oracle.size());
+  EXPECT_EQ(tree.is_empty(), oracle.empty());
+  EXPECT_TRUE(tree.validate_properties());
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const int& value) { actual.push_back(value); });
+  const std::vector<int> expected(oracle.begin(), oracle.end());
+  EXPECT_EQ(actual, expected);
+}
+
+} // namespace
 
 // Test fixture for AVLTree.
 class AVLTreeTest : public ::testing::Test {
@@ -80,6 +99,8 @@ TEST_F(AVLTreeTest, LeftLeftRotation) {
   // Tree should be balanced
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2); // Height measured in node levels (leaf = 1).
+  EXPECT_TRUE(tree.is_balanced());
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(AVLTreeTest, RightRightRotation) {
@@ -90,6 +111,8 @@ TEST_F(AVLTreeTest, RightRightRotation) {
 
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2);
+  EXPECT_TRUE(tree.is_balanced());
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(AVLTreeTest, LeftRightRotation) {
@@ -100,6 +123,8 @@ TEST_F(AVLTreeTest, LeftRightRotation) {
 
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2);
+  EXPECT_TRUE(tree.is_balanced());
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 TEST_F(AVLTreeTest, RightLeftRotation) {
@@ -110,6 +135,8 @@ TEST_F(AVLTreeTest, RightLeftRotation) {
 
   EXPECT_EQ(tree.size(), 3);
   EXPECT_LE(tree.height(), 2);
+  EXPECT_TRUE(tree.is_balanced());
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 //===------------------------------ SEARCH TESTS -------------------------------===//
@@ -198,6 +225,8 @@ TEST_F(AVLTreeTest, RemoveWithRebalancing) {
   // Tree should still be balanced.
 
   EXPECT_LE(tree.height(), 3);
+  EXPECT_TRUE(tree.is_balanced());
+  EXPECT_TRUE(tree.validate_properties());
 }
 
 //===----------------------------- TRAVERSAL TESTS -----------------------------===//
@@ -280,22 +309,66 @@ TEST_F(AVLTreeTest, BalanceAfterMultipleInsertions) {
   // Insert many elements.
   for (int i = 1; i <= 100; ++i) {
     tree.insert(i);
+    ASSERT_TRUE(tree.validate_properties()) << "after inserting " << i;
   }
 
   EXPECT_EQ(tree.size(), 100);
   // For a balanced AVL tree with 100 nodes, height should be around log2(100) ~ 7.
   EXPECT_LE(tree.height(), 10);
+  EXPECT_TRUE(tree.is_balanced());
 }
 
 TEST_F(AVLTreeTest, BalanceAfterRandomInsertions) {
   std::vector<int> values = {50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 85, 95};
   for (int val : values) {
     tree.insert(val);
+    ASSERT_TRUE(tree.validate_properties()) << "after inserting " << val;
   }
 
   EXPECT_EQ(tree.size(), 15);
   // Height should be reasonable for balanced tree.
   EXPECT_LE(tree.height(), 5);
+  EXPECT_TRUE(tree.is_balanced());
+}
+
+TEST_F(AVLTreeTest, ValidatePropertiesAfterEveryRemoval) {
+  for (int value = 1; value <= 50; ++value) {
+    ASSERT_TRUE(tree.insert(value));
+  }
+
+  for (int value = 1; value <= 50; value += 2) {
+    ASSERT_TRUE(tree.remove(value));
+    ASSERT_TRUE(tree.validate_properties()) << "after removing " << value;
+  }
+}
+
+TEST_F(AVLTreeTest, RandomizedOperationsMatchStdSet) {
+  std::mt19937                    rng(0xA71);
+  std::uniform_int_distribution<> value_dist(0, 99);
+  std::uniform_int_distribution<> op_dist(0, 2);
+  std::set<int>                   oracle;
+
+  for (int step = 0; step < 500; ++step) {
+    const int value = value_dist(rng);
+    switch (op_dist(rng)) {
+    case 0:
+      EXPECT_EQ(tree.insert(value), oracle.insert(value).second) << "insert " << value;
+      break;
+    case 1:
+      EXPECT_EQ(tree.remove(value), oracle.erase(value) == 1U) << "remove " << value;
+      break;
+    default:
+      EXPECT_EQ(tree.contains(value), oracle.contains(value)) << "contains " << value;
+      break;
+    }
+
+    expect_matches_set(tree, oracle);
+  }
+}
+
+TEST(AVLTreeApiTest, FindReturnsConstPointer) {
+  static_assert(std::is_same_v<decltype(std::declval<AVLTree<int>&>().find(std::declval<const int&>())), const int*>);
+  SUCCEED();
 }
 
 //===---------------------------------------------------------------------------===//

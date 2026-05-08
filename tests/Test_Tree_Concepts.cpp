@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 
+#include <iterator>
+
 using namespace ads::trees;
 
 namespace {
@@ -49,6 +51,21 @@ struct NonDestructibleType {
 
 struct FenwickMissingOps {
   int value = 0;
+};
+
+struct MoveOnlyOrdered {
+  int value = 0;
+
+  explicit MoveOnlyOrdered(int v) : value(v) {}
+
+  MoveOnlyOrdered(const MoveOnlyOrdered&)                        = delete;
+  auto operator=(const MoveOnlyOrdered&) -> MoveOnlyOrdered&     = delete;
+  MoveOnlyOrdered(MoveOnlyOrdered&&) noexcept                    = default;
+  auto operator=(MoveOnlyOrdered&&) noexcept -> MoveOnlyOrdered& = default;
+
+  auto operator<(const MoveOnlyOrdered& other) const -> bool { return value < other.value; }
+
+  auto operator==(const MoveOnlyOrdered& other) const -> bool { return value == other.value; }
 };
 
 template <typename T>
@@ -111,6 +128,30 @@ static_assert(requires(FenwickTree<int>& tree) {
   tree.add(0, 1);
   tree.lower_bound(1);
 });
+
+static_assert(OrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(OrderedSearchTree<AVLTree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(OrderedSearchTree<Red_Black_Tree<LessAndEqualComparable>, LessAndEqualComparable>);
+
+static_assert(std::forward_iterator<BinarySearchTree<LessAndEqualComparable>::iterator>);
+static_assert(std::forward_iterator<AVLTree<LessAndEqualComparable>::iterator>);
+static_assert(std::forward_iterator<Red_Black_Tree<LessAndEqualComparable>::iterator>);
+
+static_assert(ValidatableOrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(ValidatableOrderedSearchTree<AVLTree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(ValidatableOrderedSearchTree<Red_Black_Tree<LessAndEqualComparable>, LessAndEqualComparable>);
+
+static_assert(CopyInsertableOrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(CopyInsertableOrderedSearchTree<AVLTree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(CopyInsertableOrderedSearchTree<Red_Black_Tree<LessAndEqualComparable>, LessAndEqualComparable>);
+
+static_assert(OrderedSearchTree<BinarySearchTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+static_assert(OrderedSearchTree<AVLTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+static_assert(OrderedSearchTree<Red_Black_Tree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+
+static_assert(!CopyInsertableOrderedSearchTree<BinarySearchTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+static_assert(!CopyInsertableOrderedSearchTree<AVLTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+static_assert(!CopyInsertableOrderedSearchTree<Red_Black_Tree<MoveOnlyOrdered>, MoveOnlyOrdered>);
 
 static_assert(!CanInstantiateBinarySearchTree<OnlyEqualityComparable>);
 static_assert(!CanInstantiateAVLTree<OnlyEqualityComparable>);

@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <functional>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -71,7 +72,47 @@ enum class Color : std::uint8_t { Red, Black };
  */
 template <OrderedTreeElement T>
 class Red_Black_Tree {
+private:
+  struct Node;
+
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
+  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  /**
+   * @brief Forward iterator for in-order traversal of the Red-Black Tree.
+   *
+   * @details The iterator walks values in ascending order. It stores only the
+   *          current node and uses parent links to find each in-order successor.
+   */
+  class iterator {
+  public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type        = T;
+    using difference_type   = std::ptrdiff_t;
+    using pointer           = const T*;
+    using reference         = const T&;
+
+    iterator() = default;
+
+    auto operator*() const -> reference;
+    auto operator->() const -> pointer;
+    auto operator++() -> iterator&;
+    auto operator++(int) -> iterator;
+    auto operator==(const iterator& other) const -> bool;
+
+  private:
+    friend class Red_Black_Tree<T>;
+
+    Node* current_ = nullptr;
+
+    explicit iterator(Node* root);
+
+    static auto leftmost(Node* node) noexcept -> Node*;
+    static auto successor(Node* node) noexcept -> Node*;
+  };
+
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
   /**
@@ -154,30 +195,30 @@ public:
    * @return true if the tree contains no elements.
    * @complexity O(1)
    */
-  [[nodiscard]] auto is_empty() const -> bool;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Get number of elements.
    * @return Number of nodes in the tree.
    * @complexity O(1)
    */
-  [[nodiscard]] auto size() const -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Clear all elements.
    * @complexity O(n), Space O(1)
    */
-  void clear();
+  void clear() noexcept;
 
   /**
    * @brief Get height of tree.
    * @return Height (empty tree = -1, single node = 0).
    * @complexity O(n), Space O(h)
    */
-  [[nodiscard]] auto height() const -> int;
+  [[nodiscard]] auto height() const noexcept -> int;
 
   /**
-   * @brief Alias for search.
+   * @brief Checks whether a value exists in the tree.
    * @complexity O(log n)
    */
   [[nodiscard]] auto contains(const T& value) const -> bool;
@@ -195,14 +236,6 @@ public:
    * @complexity O(log n)
    */
   [[nodiscard]] auto find_max() const -> const T&;
-
-  /**
-   * @brief Search for a value.
-   * @param value Value to search.
-   * @return true if found.
-   * @complexity O(log n)
-   */
-  [[nodiscard]] auto search(const T& value) const -> bool;
 
   //===------------------ RED-BLACK TREE SPECIFIC OPERATIONS -------------------===//
 
@@ -233,21 +266,72 @@ public:
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(h)
    */
-  void in_order_traversal(std::function<void(const T&)> visit) const;
+  void in_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Pre-order traversal.
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(h)
    */
-  void pre_order_traversal(std::function<void(const T&)> visit) const;
+  void pre_order_traversal(const std::function<void(const T&)>& visit) const;
+
+  /**
+   * @brief Post-order traversal.
+   * @param visit Function to call for each element.
+   * @complexity O(n), Space O(h)
+   */
+  void post_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Level-order traversal.
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(n)
    */
-  void level_order_traversal(std::function<void(const T&)> visit) const;
+  void level_order_traversal(const std::function<void(const T&)>& visit) const;
+
+  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+
+  /**
+   * @brief Returns an iterator to the smallest element.
+   * @return Iterator pointing to the first in-order element.
+   * @complexity O(log n), Space O(1)
+   */
+  auto begin() -> iterator;
+
+  /**
+   * @brief Returns a const iterator to the smallest element.
+   * @return Iterator pointing to the first in-order element.
+   * @complexity O(log n), Space O(1)
+   */
+  auto begin() const -> iterator;
+
+  /**
+   * @brief Returns a past-the-end iterator.
+   * @return Iterator representing the end of in-order traversal.
+   * @complexity O(1), Space O(1)
+   */
+  auto end() -> iterator;
+
+  /**
+   * @brief Returns a const past-the-end iterator.
+   * @return Iterator representing the end of in-order traversal.
+   * @complexity O(1), Space O(1)
+   */
+  auto end() const -> iterator;
+
+  /**
+   * @brief Returns a const iterator to the smallest element.
+   * @return Iterator pointing to the first in-order element.
+   * @complexity O(log n), Space O(1)
+   */
+  auto cbegin() const -> iterator;
+
+  /**
+   * @brief Returns a const past-the-end iterator.
+   * @return Iterator representing the end of in-order traversal.
+   * @complexity O(1), Space O(1)
+   */
+  auto cend() const -> iterator;
 
 private:
   //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
@@ -391,29 +475,21 @@ private:
    */
   static auto find_min_node(Node* node) -> Node*;
 
-  /**
-   * @brief Recursive search helper.
-   * @param node Current node.
-   * @param value Value to search for.
-   * @return true if found.
-   */
-  [[nodiscard]] auto search_helper(const Node* node, const T& value) const -> bool;
-
   //===--------------------------- TRAVERSAL HELPERS ---------------------------===//
-
-  /**
-   * @brief In-order traversal helper.
-   * @param node Current node being visited.
-   * @param visit Function to call for each node's value.
-   */
-  void in_order_helper(const Node* node, std::function<void(const T&)> visit) const;
 
   /**
    * @brief Pre-order traversal helper.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
-  void pre_order_helper(const Node* node, std::function<void(const T&)> visit) const;
+  void pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
+
+  /**
+   * @brief Post-order traversal helper.
+   * @param node Current node being visited.
+   * @param visit Function to call for each node's value.
+   */
+  void post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
   //===-------------------------- HEIGHT/VALIDATION ----------------------------===//
 
@@ -422,7 +498,7 @@ private:
    * @param node Root of subtree.
    * @return Height of subtree (-1 if node is nullptr).
    */
-  [[nodiscard]] auto height_helper(const Node* node) const -> int;
+  [[nodiscard]] auto height_helper(const Node* node) const noexcept -> int;
 
   /**
    * @brief Calculate black height (number of black nodes from node to leaf),

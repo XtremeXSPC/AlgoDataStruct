@@ -18,7 +18,6 @@
 
 #include "../arrays/Dynamic_Array.hpp"
 #include "../queues/Linked_Queue.hpp"
-#include "Binary_Tree.hpp"
 #include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
 
@@ -57,11 +56,14 @@ namespace ads::trees {
  *         Copy insertion additionally requires copy construction.
  */
 template <OrderedTreeElement T>
-class AVLTree : public BinaryTree<T> {
+class AVLTree {
 private:
   struct Node;
 
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
   //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
    * @brief Forward iterator for in-order traversal of the AVL Tree.
@@ -123,7 +125,7 @@ public:
    * @brief Destructor. Empties the tree and deallocates all nodes.
    * @complexity Time O(n), Space O(1)
    */
-  ~AVLTree() override = default;
+  ~AVLTree() = default;
 
   /**
    * @brief Move assignment operator.
@@ -145,7 +147,8 @@ public:
    * @return true if the value was inserted, false if it already exists.
    * @complexity Time O(log n), Space O(log n) due to recursion.
    */
-  auto insert(const T& value) -> bool override;
+  auto insert(const T& value) -> bool
+    requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts a value into the tree (move).
@@ -153,7 +156,7 @@ public:
    * @return true if the value was inserted, false if it already exists.
    * @complexity Time O(log n), Space O(log n) due to recursion.
    */
-  auto insert(T&& value) -> bool override;
+  auto insert(T&& value) -> bool;
 
   /**
    * @brief Constructs an element in-place in the tree.
@@ -173,13 +176,13 @@ public:
    * @return true if the value was found and removed, false otherwise.
    * @complexity Time O(log n), Space O(log n) due to recursion.
    */
-  auto remove(const T& value) -> bool override;
+  auto remove(const T& value) -> bool;
 
   /**
    * @brief Removes all elements from the tree.
    * @complexity Time O(n), Space O(1)
    */
-  void clear() noexcept override;
+  void clear() noexcept;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
@@ -188,21 +191,21 @@ public:
    * @return true if the tree contains no elements.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto is_empty() const noexcept -> bool override;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Returns the number of elements in the tree.
    * @return The number of nodes in the tree.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Returns the height of the tree.
    * @return Height of the tree (empty tree = 0, leaf = 1).
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto height() const noexcept -> int override;
+  [[nodiscard]] auto height() const noexcept -> int;
 
   /**
    * @brief Checks if a value exists in the tree.
@@ -210,7 +213,7 @@ public:
    * @return true if the value exists, false otherwise.
    * @complexity Time O(log n), Space O(log n) due to recursion.
    */
-  [[nodiscard]] auto contains(const T& value) const -> bool override;
+  [[nodiscard]] auto contains(const T& value) const -> bool;
 
   /**
    * @brief Finds and returns a pointer to a value in the tree.
@@ -218,7 +221,7 @@ public:
    * @return Pointer to the value if found, nullptr otherwise.
    * @complexity Time O(log n), Space O(log n) due to recursion.
    */
-  [[nodiscard]] auto find(const T& value) -> T*;
+  [[nodiscard]] auto find(const T& value) -> const T*;
 
   /**
    * @brief Finds and returns a pointer to a value in the tree (const version).
@@ -234,7 +237,7 @@ public:
    * @throws EmptyTreeException if the tree is empty.
    * @complexity Time O(log n), Space O(1)
    */
-  [[nodiscard]] auto find_min() const -> const T& override;
+  [[nodiscard]] auto find_min() const -> const T&;
 
   /**
    * @brief Finds and returns the maximum value in the tree.
@@ -242,7 +245,7 @@ public:
    * @throws EmptyTreeException if the tree is empty.
    * @complexity Time O(log n), Space O(1)
    */
-  [[nodiscard]] auto find_max() const -> const T& override;
+  [[nodiscard]] auto find_max() const -> const T&;
 
   //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
 
@@ -251,28 +254,28 @@ public:
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void in_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void in_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Performs a pre-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void pre_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void pre_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Performs a post-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void post_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void post_order_traversal(const std::function<void(const T&)>& visit) const;
 
   /**
    * @brief Performs a level-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(n)
    */
-  void level_order_traversal(const std::function<void(const T&)>& visit) const override;
+  void level_order_traversal(const std::function<void(const T&)>& visit) const;
 
   //===----------------- ADDITIONAL AVL-SPECIFIC FUNCTIONALITY -----------------===//
 
@@ -286,11 +289,20 @@ public:
 
   /**
    * @brief Checks if the tree is properly balanced (all balance factors in [-1, 1]).
-   * @details This is primarily for testing/debugging purposes.
+   * @details Recomputes subtree heights from leaves and compares them with the stored
+   *          height fields, so rotation bookkeeping errors are detected.
    * @return true if balanced, false otherwise.
    * @complexity Time O(n), Space O(h)
    */
   [[nodiscard]] auto is_balanced() const noexcept -> bool;
+
+  /**
+   * @brief Checks the AVL ordering, balance, and stored-height invariants.
+   * @details This is primarily for testing/debugging purposes.
+   * @return true if the AVL invariants hold, false otherwise.
+   * @complexity Time O(n), Space O(h)
+   */
+  [[nodiscard]] auto validate_properties() const -> bool;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
@@ -438,11 +450,22 @@ private:
   auto balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node>;
 
   /**
-   * @brief Recursive helper to check if tree is balanced.
+   * @brief Recursive helper to recompute and validate subtree heights.
    * @param node Current node to check.
+   * @param height Output parameter receiving the real subtree height.
    * @return true if subtree rooted at node is balanced.
    */
-  auto is_balanced_helper(const Node* node) const noexcept -> bool;
+  auto is_balanced_helper(const Node* node, int& height) const noexcept -> bool;
+
+  /**
+   * @brief Recursive helper to validate ordering, balance, and stored heights.
+   * @param node Current node to check.
+   * @param lower_bound Exclusive lower ordering bound, if any.
+   * @param upper_bound Exclusive upper ordering bound, if any.
+   * @param height Output parameter receiving the real subtree height.
+   * @return true if subtree rooted at node satisfies AVL properties.
+   */
+  auto validate_helper(const Node* node, const T* lower_bound, const T* upper_bound, int& height) const -> bool;
 
   //===---------------------- MODIFICATION HELPER METHODS ----------------------===//
 
