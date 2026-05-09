@@ -22,7 +22,6 @@
 
 #include <concepts>
 #include <initializer_list>
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -39,34 +38,40 @@ namespace ads::associative {
  * @tparam Value The type of mapped values.
  */
 template <typename Key, typename Value>
-class TreeMap : public Dictionary<Key, Value> {
+class TreeMap {
 private:
   struct Entry {
-    Key                          key;
-    mutable std::optional<Value> value = std::nullopt;
+    Key           key;
+    mutable Value value;
 
     Entry(const Key& k, const Value& v)
       requires std::copy_constructible<Key> && std::copy_constructible<Value>
         : key(k), value(v) {}
 
     Entry(const Key& k, Value&& v)
-      requires std::copy_constructible<Key>
+      requires std::copy_constructible<Key> && std::move_constructible<Value>
         : key(k), value(std::move(v)) {}
 
-    Entry(Key&& k, Value&& v) : key(std::move(k)), value(std::move(v)) {}
-
-    explicit Entry(const Key& k) : key(k) {}
-
-    explicit Entry(Key&& k) : key(std::move(k)) {}
+    Entry(Key&& k, Value&& v)
+      requires std::move_constructible<Key> && std::move_constructible<Value>
+        : key(std::move(k)), value(std::move(v)) {}
 
     template <typename... Args>
     Entry(std::piecewise_construct_t, Key&& k, Args&&... args) :
         key(std::move(k)),
-        value(std::in_place, std::forward<Args>(args)...) {}
+        value(std::forward<Args>(args)...) {}
 
     auto operator<(const Entry& other) const -> bool { return key < other.key; }
 
     auto operator==(const Entry& other) const -> bool { return key == other.key; }
+  };
+
+  struct EntryKeyLess {
+    auto operator()(const Entry& lhs, const Entry& rhs) const -> bool { return lhs.key < rhs.key; }
+
+    auto operator()(const Key& lhs, const Entry& rhs) const -> bool { return lhs < rhs.key; }
+
+    auto operator()(const Entry& lhs, const Key& rhs) const -> bool { return lhs.key < rhs; }
   };
 
   using TreeType = ads::trees::AVLTree<Entry>;
@@ -101,7 +106,7 @@ public:
   /**
    * @brief Destructor.
    */
-  ~TreeMap() override = default;
+  ~TreeMap() = default;
 
   /**
    * @brief Move assignment operator.
@@ -127,7 +132,7 @@ public:
    * @return Reference to the associated value.
    * @throws KeyNotFoundException if the key does not exist.
    */
-  auto get(const Key& key) -> Value& override;
+  auto get(const Key& key) -> Value&;
 
   /**
    * @brief Retrieves the value associated with a key (const version).
@@ -135,20 +140,20 @@ public:
    * @return Const reference to the associated value.
    * @throws KeyNotFoundException if the key does not exist.
    */
-  auto get(const Key& key) const -> const Value& override;
+  auto get(const Key& key) const -> const Value&;
 
   /**
    * @brief Returns the number of elements in the map.
    * @return The current size.
    */
-  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Checks if a key exists in the map.
    * @param key The key to search for.
    * @return true if found, false otherwise.
    */
-  [[nodiscard]] auto contains(const Key& key) const -> bool override;
+  [[nodiscard]] auto contains(const Key& key) const -> bool;
 
   //===---------------------------- ELEMENT ACCESS -----------------------------===//
 
@@ -218,7 +223,8 @@ public:
    * @param value The value to associate.
    * @return true if inserted, false if updated.
    */
-  auto insert(Key&& key, Value&& value) -> bool;
+  auto insert(Key&& key, Value&& value) -> bool
+    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -229,14 +235,16 @@ public:
    */
   template <typename... Args>
   auto emplace(Key key, Args&&... args) -> bool
-    requires std::constructible_from<Value, Args...>;
+    requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair.
    * @param key The key to insert or update.
    * @param value The value to associate with the key.
    */
-  auto put(const Key& key, const Value& value) -> void override;
+  auto put(const Key& key, const Value& value) -> void
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>
+             && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
@@ -251,7 +259,8 @@ public:
    * @param key The key to insert or update.
    * @param value The value to associate with the key.
    */
-  auto put(Key&& key, Value&& value) -> void override;
+  auto put(Key&& key, Value&& value) -> void
+    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -260,7 +269,7 @@ public:
    * @param key The key to remove.
    * @return true if an element was removed, false otherwise.
    */
-  auto remove(const Key& key) -> bool override;
+  auto remove(const Key& key) -> bool;
 
   /**
    * @brief Removes an element with the given key.

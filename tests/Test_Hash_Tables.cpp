@@ -15,6 +15,7 @@
 
 #include <gtest/gtest.h>
 
+#include <concepts>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,6 +33,16 @@ struct CustomHashKey {
 struct CustomHash {
   auto operator()(const CustomHashKey& key) const -> size_t { return static_cast<size_t>(key.value % 4); }
 };
+
+template <typename Map, typename Key, typename Value>
+concept HasHashMapCopyPut = requires(Map& map, const Key& key, const Value& value) {
+  { map.put(key, value) } -> std::same_as<void>;
+};
+
+static_assert(
+    ads::associative::Dictionary<ads::associative::HashMap<int, std::unique_ptr<int>>, int, std::unique_ptr<int>>);
+static_assert(ads::associative::CopyPutDictionary<ads::associative::HashMap<int, std::string>, int, std::string>);
+static_assert(!HasHashMapCopyPut<ads::associative::HashMap<int, std::unique_ptr<int>>, int, std::unique_ptr<int>>);
 
 } // namespace
 

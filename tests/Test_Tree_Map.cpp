@@ -13,6 +13,7 @@
 
 #include <gtest/gtest.h>
 
+#include <concepts>
 #include <map>
 #include <memory>
 #include <random>
@@ -55,6 +56,15 @@ auto expect_matches_map(const TreeMap<int, int>& map, const std::map<int, int>& 
   EXPECT_EQ(map.values(), values);
   EXPECT_EQ(map.entries(), entries);
 }
+
+template <typename Map, typename Key, typename Value>
+concept HasTreeMapCopyPut = requires(Map& map, const Key& key, const Value& value) {
+  { map.put(key, value) } -> std::same_as<void>;
+};
+
+static_assert(Dictionary<TreeMap<int, std::unique_ptr<int>>, int, std::unique_ptr<int>>);
+static_assert(CopyPutDictionary<TreeMap<int, std::string>, int, std::string>);
+static_assert(!HasTreeMapCopyPut<TreeMap<int, std::unique_ptr<int>>, int, std::unique_ptr<int>>);
 
 } // namespace
 
@@ -203,13 +213,6 @@ TEST(TreeMapMoveOnlyTest, SupportsMoveOnlyMappedValues) {
 
   EXPECT_TRUE(map.erase(1));
   EXPECT_FALSE(map.contains(1));
-}
-
-TEST(TreeMapMoveOnlyTest, CopyPutThrowsForMoveOnlyMappedValues) {
-  TreeMap<int, std::unique_ptr<int>> map;
-  auto                               value = std::make_unique<int>(10);
-
-  EXPECT_THROW(map.put(1, value), TreeMapException);
 }
 
 TEST(TreeMapKeyComparisonTest, SupportsKeysWithLessOnlyOrdering) {

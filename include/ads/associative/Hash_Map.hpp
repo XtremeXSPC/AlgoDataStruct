@@ -47,7 +47,7 @@ namespace ads::associative {
  * @tparam Hash The hash function object (default: std::hash<Key>)
  */
 template <typename Key, typename Value, typename Hash = std::hash<Key>>
-class HashMap : public Dictionary<Key, Value> {
+class HashMap {
 public:
   // Type aliases for convenience.
   using key_type    = Key;
@@ -165,7 +165,8 @@ public:
    * @complexity Time O(n) average, Space O(n)
    */
   HashMap(std::initializer_list<value_type> init)
-    requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>
+             && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Move constructor
@@ -225,35 +226,39 @@ public:
    * @param key The key to insert.
    * @param value The value to associate with the key.
    */
-  auto put(const Key& key, const Value& value) -> void override;
+  auto put(const Key& key, const Value& value) -> void
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>
+             && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
    * @param key The key to insert.
    * @param value The value to move into the map.
    */
-  auto put(const Key& key, Value&& value) -> void;
+  auto put(const Key& key, Value&& value) -> void
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move).
    * @param key The key to insert.
    * @param value The value to associate with the key.
    */
-  auto put(Key&& key, Value&& value) -> void override;
+  auto put(Key&& key, Value&& value) -> void
+    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Retrieves the value associated with a key.
    * @param key The key to access.
    * @return Reference to the associated value.
    */
-  auto get(const Key& key) -> Value& override;
+  auto get(const Key& key) -> Value&;
 
   /**
    * @brief Retrieves the value associated with a key (const).
    * @param key The key to access.
    * @return Const reference to the associated value.
    */
-  auto get(const Key& key) const -> const Value& override;
+  auto get(const Key& key) const -> const Value&;
 
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
@@ -264,7 +269,8 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   auto insert(const value_type& pair) -> std::pair<iterator, bool>
-    requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>
+             && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Inserts a key-value pair (move).
@@ -272,7 +278,8 @@ public:
    * @return Pair of iterator to element and bool indicating insertion.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(value_type&& pair) -> std::pair<iterator, bool>;
+  auto insert(value_type&& pair) -> std::pair<iterator, bool>
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Constructs element in-place.
@@ -322,7 +329,7 @@ public:
    * @return Number of key-value pairs.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Returns the current load factor.
@@ -356,14 +363,14 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
-  auto contains(const Key& key) const -> bool override;
+  auto contains(const Key& key) const -> bool;
 
   /**
    * @brief Removes the element with the given key.
    * @param key The key to remove.
    * @return true if an element was removed, false otherwise.
    */
-  auto remove(const Key& key) -> bool override;
+  auto remove(const Key& key) -> bool;
 
   /**
    * @brief Counts elements with given key.

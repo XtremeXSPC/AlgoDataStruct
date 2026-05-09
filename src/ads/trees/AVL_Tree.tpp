@@ -201,6 +201,20 @@ auto AVLTree<T>::find(const T& value) const -> const T* {
 }
 
 template <OrderedTreeElement T>
+template <typename Probe, typename Compare>
+auto AVLTree<T>::find_equivalent(const Probe& probe, Compare compare) -> const T* {
+  Node* node = find_equivalent_helper(root_.get(), probe, std::move(compare));
+  return node ? &node->data : nullptr;
+}
+
+template <OrderedTreeElement T>
+template <typename Probe, typename Compare>
+auto AVLTree<T>::find_equivalent(const Probe& probe, Compare compare) const -> const T* {
+  Node* node = find_equivalent_helper(root_.get(), probe, std::move(compare));
+  return node ? &node->data : nullptr;
+}
+
+template <OrderedTreeElement T>
 auto AVLTree<T>::find_min() const -> const T& {
   if (!root_) {
     throw EmptyTreeException("Cannot find minimum in empty tree");
@@ -568,6 +582,22 @@ auto AVLTree<T>::find_helper(Node* node, const T& value) const -> Node* {
   }
 
   return node;
+}
+
+template <OrderedTreeElement T>
+template <typename Probe, typename Compare>
+auto AVLTree<T>::find_equivalent_helper(Node* node, const Probe& probe, Compare compare) const -> Node* {
+  while (node) {
+    if (std::invoke(compare, probe, node->data)) {
+      node = node->left.get();
+    } else if (std::invoke(compare, node->data, probe)) {
+      node = node->right.get();
+    } else {
+      return node;
+    }
+  }
+
+  return nullptr;
 }
 
 template <OrderedTreeElement T>

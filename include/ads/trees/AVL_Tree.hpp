@@ -232,6 +232,30 @@ public:
   [[nodiscard]] auto find(const T& value) const -> const T*;
 
   /**
+   * @brief Finds a value equivalent to a probe using a custom ordering relation.
+   * @tparam Probe The lookup key type.
+   * @tparam Compare Strict weak ordering invocable with Probe/T and T/Probe.
+   * @param probe Lookup key.
+   * @param compare Comparator used for heterogeneous tree navigation.
+   * @return Pointer to the value if found, nullptr otherwise.
+   * @complexity Time O(log n), Space O(1)
+   */
+  template <typename Probe, typename Compare>
+  [[nodiscard]] auto find_equivalent(const Probe& probe, Compare compare) -> const T*;
+
+  /**
+   * @brief Finds a value equivalent to a probe using a custom ordering relation.
+   * @tparam Probe The lookup key type.
+   * @tparam Compare Strict weak ordering invocable with Probe/T and T/Probe.
+   * @param probe Lookup key.
+   * @param compare Comparator used for heterogeneous tree navigation.
+   * @return Pointer to the value if found, nullptr otherwise.
+   * @complexity Time O(log n), Space O(1)
+   */
+  template <typename Probe, typename Compare>
+  [[nodiscard]] auto find_equivalent(const Probe& probe, Compare compare) const -> const T*;
+
+  /**
    * @brief Finds and returns the minimum value in the tree.
    * @return Const reference to the minimum value.
    * @throws EmptyTreeException if the tree is empty.
@@ -504,6 +528,16 @@ private:
    * @return Pointer to the node containing the value, or nullptr if not found.
    */
   auto find_helper(Node* node, const T& value) const -> Node*;
+
+  /**
+   * @brief Iterative helper for heterogeneous lookup.
+   * @param node Current node to examine.
+   * @param probe Lookup key.
+   * @param compare Comparator used for tree navigation.
+   * @return Pointer to the node containing an equivalent value, or nullptr.
+   */
+  template <typename Probe, typename Compare>
+  auto find_equivalent_helper(Node* node, const Probe& probe, Compare compare) const -> Node*;
 
   /**
    * @brief Finds the node with the minimum value in a subtree.

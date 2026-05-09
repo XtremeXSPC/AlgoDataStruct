@@ -38,19 +38,19 @@ auto TreeMap<Key, Value>::empty() const noexcept -> bool {
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::get(const Key& key) -> Value& {
   const Entry* entry = find_entry(key);
-  if (!entry || !entry->value.has_value()) {
+  if (!entry) {
     throw KeyNotFoundException();
   }
-  return entry->value.value();
+  return entry->value;
 }
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::get(const Key& key) const -> const Value& {
   const Entry* entry = find_entry(key);
-  if (!entry || !entry->value.has_value()) {
+  if (!entry) {
     throw KeyNotFoundException();
   }
-  return entry->value.value();
+  return entry->value;
 }
 
 template <typename Key, typename Value>
@@ -70,10 +70,7 @@ auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
   requires std::default_initializable<Value>
 {
   if (const Entry* entry = find_entry(key)) {
-    if (!entry->value.has_value()) {
-      entry->value.emplace();
-    }
-    return entry->value.value();
+    return entry->value;
   }
 
   tree_.insert(Entry(key, Value{}));
@@ -81,7 +78,7 @@ auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
   if (!inserted) {
     throw TreeMapException("TreeMap::operator[]: failed to locate entry after insertion");
   }
-  return inserted->value.value();
+  return inserted->value;
 }
 
 template <typename Key, typename Value>
@@ -97,19 +94,19 @@ auto TreeMap<Key, Value>::at(const Key& key) const -> const Value& {
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::find(const Key& key) -> Value* {
   const Entry* entry = find_entry(key);
-  if (!entry || !entry->value.has_value()) {
+  if (!entry) {
     return nullptr;
   }
-  return &entry->value.value();
+  return &entry->value;
 }
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
   const Entry* entry = find_entry(key);
-  if (!entry || !entry->value.has_value()) {
+  if (!entry) {
     return nullptr;
   }
-  return &entry->value.value();
+  return &entry->value;
 }
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
@@ -133,7 +130,9 @@ auto TreeMap<Key, Value>::insert(const Key& key, Value&& value) -> bool
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::insert(Key&& key, Value&& value) -> bool {
+auto TreeMap<Key, Value>::insert(Key&& key, Value&& value) -> bool
+  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
   bool inserted = !contains(key);
   put(std::move(key), std::move(value));
   return inserted;
@@ -142,10 +141,10 @@ auto TreeMap<Key, Value>::insert(Key&& key, Value&& value) -> bool {
 template <typename Key, typename Value>
 template <typename... Args>
 auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool
-  requires std::constructible_from<Value, Args...>
+  requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>
 {
   if (const Entry* entry = find_entry(key)) {
-    entry->value.emplace(std::forward<Args>(args)...);
+    entry->value = Value(std::forward<Args>(args)...);
     return false;
   }
 
@@ -154,18 +153,15 @@ auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void {
-  if constexpr (
-      !std::copy_constructible<Key> || !std::copy_constructible<Value> || !std::assignable_from<Value&, const Value&>) {
-    throw TreeMapException("copy put requires copyable keys and mapped values");
-  } else {
-    if (const Entry* entry = find_entry(key)) {
-      entry->value = value;
-      return;
-    }
-
-    tree_.insert(Entry(key, value));
+auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void
+  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+{
+  if (const Entry* entry = find_entry(key)) {
+    entry->value = value;
+    return;
   }
+
+  tree_.insert(Entry(key, value));
 }
 
 template <typename Key, typename Value>
@@ -181,7 +177,9 @@ auto TreeMap<Key, Value>::put(const Key& key, Value&& value) -> void
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void {
+auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void
+  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+{
   if (const Entry* entry = find_entry(key)) {
     entry->value = std::move(value);
     return;
@@ -194,7 +192,8 @@ auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void {
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::remove(const Key& key) -> bool {
-  return tree_.remove(Entry(key));
+  const Entry* entry = find_entry(key);
+  return entry != nullptr && tree_.remove(*entry);
 }
 
 template <typename Key, typename Value>
@@ -227,11 +226,7 @@ auto TreeMap<Key, Value>::values() const -> std::vector<Value>
   std::vector<Value> result;
   result.reserve(tree_.size());
 
-  tree_.in_order_traversal([&result](const Entry& entry) {
-    if (entry.value.has_value()) {
-      result.push_back(entry.value.value());
-    }
-  });
+  tree_.in_order_traversal([&result](const Entry& entry) { result.push_back(entry.value); });
   return result;
 }
 
@@ -242,11 +237,7 @@ auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>>
   std::vector<std::pair<Key, Value>> result;
   result.reserve(tree_.size());
 
-  tree_.in_order_traversal([&result](const Entry& entry) {
-    if (entry.value.has_value()) {
-      result.emplace_back(entry.key, entry.value.value());
-    }
-  });
+  tree_.in_order_traversal([&result](const Entry& entry) { result.emplace_back(entry.key, entry.value); });
   return result;
 }
 
@@ -255,12 +246,12 @@ auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>>
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::find_entry(const Key& key) -> const Entry* {
-  return tree_.find(Entry(key));
+  return tree_.find_equivalent(key, EntryKeyLess{});
 }
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::find_entry(const Key& key) const -> const Entry* {
-  return tree_.find(Entry(key));
+  return tree_.find_equivalent(key, EntryKeyLess{});
 }
 
 } // namespace ads::associative

@@ -2,7 +2,7 @@
 /**
  * @file Dictionary.hpp
  * @author Costantino Lombardi
- * @brief Abstract interface for a Dictionary (Map) data structure.
+ * @brief Compile-time contract for dictionary (map) data structures.
  * @version 0.1
  * @date 2026-01-23
  *
@@ -16,71 +16,51 @@
 #ifndef DICTIONARY_HPP
 #define DICTIONARY_HPP
 
+#include <concepts>
 #include <cstddef>
+#include <utility>
 
 namespace ads::associative {
 
 /**
- * @brief Interface (abstract base class) that defines common operations
- *        for a dictionary (associative map).
+ * @brief Concept for move-capable dictionary (associative map) types.
  *
+ * @details The contract is intentionally compile-time based: containers expose
+ *          only operations their key and mapped types can actually support.
+ *
+ * @tparam Map The dictionary implementation type.
  * @tparam Key The key type.
  * @tparam Value The mapped value type.
  */
-template <typename Key, typename Value>
-class Dictionary {
-public:
-  // A virtual destructor is mandatory in polymorphic base classes.
-  virtual ~Dictionary() = default;
+template <typename Map, typename Key, typename Value>
+concept Dictionary =
+    requires {
+      typename Map::key_type;
+      typename Map::mapped_type;
+    } && std::same_as<typename Map::key_type, Key> && std::same_as<typename Map::mapped_type, Value>
+    && requires(
+        Map& dictionary, const Map& const_dictionary, const Key& key, Key&& movable_key, Value&& movable_value) {
+         { dictionary.put(std::move(movable_key), std::move(movable_value)) } -> std::same_as<void>;
+         { dictionary.get(key) } -> std::same_as<Value&>;
+         { const_dictionary.get(key) } -> std::same_as<const Value&>;
+         { const_dictionary.contains(key) } -> std::same_as<bool>;
+         { dictionary.remove(key) } -> std::same_as<bool>;
+         { const_dictionary.size() } noexcept -> std::same_as<size_t>;
+       };
 
-  /**
-   * @brief Inserts or updates a key-value pair (copy).
-   * @param key The key to insert.
-   * @param value The value to associate with the key.
-   */
-  virtual auto put(const Key& key, const Value& value) -> void = 0;
-
-  /**
-   * @brief Inserts or updates a key-value pair (move).
-   * @param key The key to insert.
-   * @param value The value to associate with the key.
-   */
-  virtual auto put(Key&& key, Value&& value) -> void = 0;
-
-  /**
-   * @brief Retrieves the value associated with a key.
-   * @param key The key to access.
-   * @return Reference to the associated value.
-   */
-  virtual auto get(const Key& key) -> Value& = 0;
-
-  /**
-   * @brief Retrieves the value associated with a key (const).
-   * @param key The key to access.
-   * @return Const reference to the associated value.
-   */
-  virtual auto get(const Key& key) const -> const Value& = 0;
-
-  /**
-   * @brief Checks if a key exists in the dictionary.
-   * @param key The key to check.
-   * @return true if key exists, false otherwise.
-   */
-  [[nodiscard]] virtual auto contains(const Key& key) const -> bool = 0;
-
-  /**
-   * @brief Removes the element with the given key.
-   * @param key The key to remove.
-   * @return true if an element was removed, false otherwise.
-   */
-  virtual auto remove(const Key& key) -> bool = 0;
-
-  /**
-   * @brief Returns the number of key-value pairs stored.
-   * @return The number of elements.
-   */
-  [[nodiscard]] virtual auto size() const noexcept -> size_t = 0;
-};
+/**
+ * @brief Concept for dictionaries that also support copy-based put.
+ *
+ * @tparam Map The dictionary implementation type.
+ * @tparam Key The key type.
+ * @tparam Value The mapped value type.
+ */
+template <typename Map, typename Key, typename Value>
+concept CopyPutDictionary =
+    Dictionary<Map, Key, Value> && std::copy_constructible<Key> && std::copy_constructible<Value>
+    && std::assignable_from<Value&, const Value&> && requires(Map& dictionary, const Key& key, const Value& value) {
+         { dictionary.put(key, value) } -> std::same_as<void>;
+       };
 
 } // namespace ads::associative
 
