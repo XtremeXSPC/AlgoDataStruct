@@ -21,6 +21,7 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
+#include <bit>
 #include <concepts>
 #include <cstddef>
 #include <functional>
@@ -77,7 +78,7 @@ public:
   /**
    * @brief Constructs a binary tree from an initializer list (level-order).
    * @param values Elements to insert in level-order.
-   * @complexity Time O(n), Space O(n)
+   * @complexity Time O(n log n), Space O(1) extra
    */
   CompleteBinaryTree(std::initializer_list<T> values);
 
@@ -111,14 +112,14 @@ public:
   /**
    * @brief Inserts a value into the tree in level-order position.
    * @param value The value to insert.
-   * @complexity Time O(n), Space O(n) for queue
+   * @complexity Time O(log n), Space O(1)
    */
   auto insert(const T& value) -> void;
 
   /**
    * @brief Inserts a value into the tree in level-order position (move).
    * @param value The r-value to move.
-   * @complexity Time O(n), Space O(n) for queue
+   * @complexity Time O(log n), Space O(1)
    */
   auto insert(T&& value) -> void;
 
@@ -127,7 +128,7 @@ public:
    * @tparam Args Types of arguments to forward to T's constructor.
    * @param args Arguments to forward to T's constructor.
    * @return Reference to the newly constructed element.
-   * @complexity Time O(n), Space O(n)
+   * @complexity Time O(log n), Space O(1)
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
@@ -248,6 +249,15 @@ private:
    */
   [[nodiscard]]
   auto compute_height(const Node* node) const noexcept -> int;
+
+  /**
+   * @brief Finds the node stored at a 1-based heap index.
+   * @param index Index to navigate to; 1 is the root.
+   * @return Pointer to the node, or nullptr for index 0 or an invalid path.
+   * @complexity Time O(log n), Space O(1)
+   */
+  [[nodiscard]]
+  auto node_at_heap_index(size_t index) noexcept -> Node*;
 
   /**
    * @brief In-order traversal implementation.

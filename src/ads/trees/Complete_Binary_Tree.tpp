@@ -67,35 +67,23 @@ auto CompleteBinaryTree<T>::emplace(Args&&... args) -> T& {
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
   T&   ref      = new_node->data;
 
-  if (is_empty()) {
+  const size_t new_index = size_ + 1;
+  if (new_index == 1) {
     root_ = std::move(new_node);
     ++size_;
     return ref;
   }
 
-  // Use BFS to find the first node with an empty child slot.
-  ads::queues::LinkedQueue<Node*> queue;
-  queue.enqueue(root_.get());
-
-  while (!queue.is_empty()) {
-    Node* current = queue.front();
-    queue.dequeue();
-
-    if (!current->left) {
-      current->left = std::move(new_node);
-      ++size_;
-      return ref;
-    }
-    queue.enqueue(current->left.get());
-
-    if (!current->right) {
-      current->right = std::move(new_node);
-      ++size_;
-      return ref;
-    }
-    queue.enqueue(current->right.get());
+  Node* parent = node_at_heap_index(new_index / 2);
+  if (parent == nullptr) {
+    throw InvalidOperationException("CompleteBinaryTree insertion path is invalid");
   }
 
+  if (new_index % 2 == 0) {
+    parent->left = std::move(new_node);
+  } else {
+    parent->right = std::move(new_node);
+  }
   ++size_;
   return ref;
 }
@@ -241,6 +229,23 @@ auto CompleteBinaryTree<T>::compute_height(const Node* node) const noexcept -> i
   int left_height  = compute_height(node->left.get());
   int right_height = compute_height(node->right.get());
   return 1 + std::max(left_height, right_height);
+}
+
+template <EqualityComparableTreeElement T>
+auto CompleteBinaryTree<T>::node_at_heap_index(size_t index) noexcept -> Node* {
+  if (index == 0) {
+    return nullptr;
+  }
+
+  Node*  current = root_.get();
+  size_t mask    = std::bit_floor(index) >> 1U;
+
+  while (current != nullptr && mask != 0) {
+    current = (index & mask) == 0 ? current->left.get() : current->right.get();
+    mask >>= 1U;
+  }
+
+  return current;
 }
 
 template <EqualityComparableTreeElement T>

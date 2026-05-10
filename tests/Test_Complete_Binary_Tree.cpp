@@ -51,6 +51,39 @@ TEST_F(CompleteBinaryTreeTest, InsertMultiple) {
   EXPECT_EQ(tree.height(), 2);
 }
 
+TEST_F(CompleteBinaryTreeTest, InsertMaintainsLevelOrderShapeAcrossPartialLevels) {
+  for (int value = 1; value <= 10; ++value) {
+    tree.insert(value);
+  }
+
+  std::vector<int> expected{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  EXPECT_EQ(tree.to_vector(), expected);
+
+  auto* root = tree.root_node();
+  ASSERT_NE(root, nullptr);
+  ASSERT_NE(root->left, nullptr);
+  ASSERT_NE(root->left->left, nullptr);
+  ASSERT_NE(root->left->right, nullptr);
+  EXPECT_EQ(root->left->left->left->data, 8);
+  EXPECT_EQ(root->left->left->right->data, 9);
+  EXPECT_EQ(root->left->right->left->data, 10);
+  EXPECT_EQ(root->left->right->right, nullptr);
+}
+
+TEST_F(CompleteBinaryTreeTest, LargeInsertionMaintainsLevelOrder) {
+  std::vector<int> expected;
+  expected.reserve(1'000);
+
+  for (int value = 1; value <= 1'000; ++value) {
+    tree.insert(value);
+    expected.push_back(value);
+  }
+
+  EXPECT_EQ(tree.size(), expected.size());
+  EXPECT_EQ(tree.height(), 9);
+  EXPECT_EQ(tree.to_vector(), expected);
+}
+
 TEST_F(CompleteBinaryTreeTest, InitializerListConstruction) {
   CompleteBinaryTree<int> t{1, 2, 3, 4, 5, 6, 7};
 
@@ -144,6 +177,16 @@ TEST_F(CompleteBinaryTreeTest, MoveSemantics) {
   tree = std::move(moved);
   EXPECT_TRUE(moved.is_empty());
   EXPECT_EQ(tree.size(), 2u);
+}
+
+TEST_F(CompleteBinaryTreeTest, MovedFromTreeCanBeReused) {
+  CompleteBinaryTree<int> source{1, 2, 3};
+  CompleteBinaryTree<int> target = std::move(source);
+
+  source.insert(10);
+
+  EXPECT_EQ(target.to_vector(), (std::vector<int>{1, 2, 3}));
+  EXPECT_EQ(source.to_vector(), (std::vector<int>{10}));
 }
 
 TEST_F(CompleteBinaryTreeTest, ClearOperation) {
