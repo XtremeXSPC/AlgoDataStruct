@@ -57,7 +57,8 @@ namespace ads::trees {
  *   - Search: O(m) time, O(1) space
  *   - StartsWith: O(m) time, O(1) space (m = prefix length)
  *   - Remove: O(m) time, O(1) space
- *   - GetAllWithPrefix: O(p + n*k) where p = prefix length, n = # results, k = avg word length
+ *   - GetAllWithPrefix: O(p + m) plus output copies, where p = prefix length
+ *     and m = total characters in the matching subtree
  */
 template <bool UseMap = true>
 class Trie {
@@ -156,9 +157,12 @@ public:
   [[nodiscard]] auto starts_with(const std::string& prefix) const -> bool;
 
   /**
-   * @brief Get all words in trie (in lexicographic order for array version).
+   * @brief Get all words in trie.
+   * @details Results are lexicographic for TrieArray. TrieMap preserves child
+   *          insertion order because it supports arbitrary characters without
+   *          sorting the dynamic child storage.
    * @return Vector of all words.
-   * @complexity O(n*k) where n=word count, k=avg word length
+   * @complexity O(m) plus output copies, where m = total stored characters.
    */
   [[nodiscard]] auto get_all_words() const -> std::vector<std::string>;
 
@@ -167,7 +171,10 @@ public:
    *
    * @param prefix Prefix to match (empty prefix returns all words).
    * @return Vector of all words with the given prefix.
-   * @complexity O(p + n*k) where p=prefix length, n=results, k=avg word length
+   * @details Results are lexicographic for TrieArray. TrieMap preserves child
+   *          insertion order.
+   * @complexity O(p + m) plus output copies, where p=prefix length and
+   *             m=total characters in the matching subtree.
    *
    */
   [[nodiscard]] auto get_all_words_with_prefix(const std::string& prefix) const -> std::vector<std::string>;

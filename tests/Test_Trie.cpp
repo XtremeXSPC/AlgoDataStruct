@@ -147,6 +147,15 @@ TEST_F(TrieTest, GetAllWords) {
   EXPECT_EQ(words, (std::vector<std::string>{"apple", "banana", "cherry"}));
 }
 
+TEST_F(TrieTest, MapBackedWordCollectionPreservesChildInsertionOrder) {
+  trie.insert("bat");
+  trie.insert("app");
+  trie.insert("apple");
+
+  EXPECT_EQ(trie.get_all_words(), (std::vector<std::string>{"bat", "app", "apple"}));
+  EXPECT_EQ(trie.get_all_words_with_prefix("app"), (std::vector<std::string>{"app", "apple"}));
+}
+
 //===------------------------------ REMOVAL TESTS ------------------------------===//
 
 TEST_F(TrieTest, RemoveWord) {

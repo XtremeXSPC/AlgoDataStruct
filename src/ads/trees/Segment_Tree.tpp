@@ -105,8 +105,6 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
     values_(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())),
     tree_(),
     size_(0) {
-  // Preserve the previous vector-backed move behavior that callers may observe.
-  values.clear();
   size_ = values_.size();
   build_tree();
 }
@@ -134,8 +132,6 @@ constexpr SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::SegmentTree(
     values_(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())),
     tree_(),
     size_(0) {
-  // Preserve the previous vector-backed move behavior that callers may observe.
-  values.clear();
   size_ = values_.size();
   build_tree();
 }
@@ -237,8 +233,6 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build(std::vector<Value>&& values) -> void {
   values_.assign(std::make_move_iterator(values.begin()), std::make_move_iterator(values.end()));
-  // Preserve the previous vector-backed move behavior that callers may observe.
-  values.clear();
   size_ = values_.size();
   build_tree();
 }
@@ -506,7 +500,7 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::build_t
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
   requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::propagate_up(size_type leaf_index) noexcept(
-    detail::is_combine_nothrow_v<Combine, node_type>) -> void {
+    detail::is_propagate_up_nothrow_v<Combine, node_type>) -> void {
   // Move up from the leaf to the root, updating each parent.
   for (size_type i = leaf_index >> 1; i >= 1; i >>= 1) {
     tree_[i] = combine_(tree_[2 * i], tree_[2 * i + 1]);

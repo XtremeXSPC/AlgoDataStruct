@@ -19,6 +19,7 @@
 #include <array>
 #include <limits>
 #include <numeric>
+#include <type_traits>
 #include <vector>
 
 using namespace ads::trees;
@@ -68,6 +69,30 @@ struct SumCountIdentity {
 struct SumCountLeaf {
   auto operator()(int value) const -> SumCount { return SumCount{value, 1}; }
 };
+
+struct ThrowingAssignNode {
+  int value = 0;
+
+  ThrowingAssignNode() = default;
+
+  explicit ThrowingAssignNode(int v) : value(v) {}
+
+  ThrowingAssignNode(const ThrowingAssignNode&) = default;
+
+  auto operator=(const ThrowingAssignNode& other) -> ThrowingAssignNode& {
+    value = other.value;
+    return *this;
+  }
+};
+
+struct ThrowingAssignCombine {
+  auto operator()(const ThrowingAssignNode& left, const ThrowingAssignNode& right) const noexcept
+      -> ThrowingAssignNode {
+    return ThrowingAssignNode(left.value + right.value);
+  }
+};
+
+static_assert(!detail::is_propagate_up_nothrow_v<ThrowingAssignCombine, ThrowingAssignNode>);
 
 //===---------------------------- BASIC STATE TESTS ----------------------------===//
 
@@ -205,7 +230,8 @@ TEST(SegmentTreeMoveTest, MoveConstructorFromVector) {
   SegmentTree<int> tree(std::move(values));
   EXPECT_EQ(tree.size(), 5);
   EXPECT_EQ(tree.total(), 15);
-  EXPECT_TRUE(values.empty()); // Values should be moved
+  EXPECT_EQ(tree.value_at(0), 1);
+  EXPECT_EQ(tree.value_at(4), 5);
 }
 
 TEST(SegmentTreeMoveTest, BuildFromMovedVector) {

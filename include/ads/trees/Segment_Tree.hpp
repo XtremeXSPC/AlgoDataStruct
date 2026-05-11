@@ -90,6 +90,14 @@ inline constexpr bool is_combine_nothrow_v =
     noexcept(std::declval<Combine>()(std::declval<Node>(), std::declval<Node>()));
 
 /**
+ * @brief Helper to detect noexcept for parent recomputation.
+ */
+template <typename Combine, typename Node>
+inline constexpr bool is_propagate_up_nothrow_v =
+    noexcept(std::declval<Combine&>()(std::declval<Node&>(), std::declval<Node&>()))
+    && std::is_nothrow_assignable_v<Node&, std::invoke_result_t<Combine&, Node&, Node&>>;
+
+/**
  * @brief Helper to detect noexcept for identity operation.
  */
 template <typename Identity>
@@ -230,7 +238,7 @@ public:
 
   /**
    * @brief Constructs a Segment Tree from a vector of values (move).
-   * @param values Input values (0-based indexing), moved from.
+   * @param values Input values (0-based indexing), moved from and left valid but unspecified.
    * @complexity Time O(n), Space O(n)
    */
   constexpr explicit SegmentTree(std::vector<Value>&& values);
@@ -248,7 +256,7 @@ public:
 
   /**
    * @brief Constructs a Segment Tree from a vector with custom functors (move).
-   * @param values Input values (0-based indexing), moved from.
+   * @param values Input values (0-based indexing), moved from and left valid but unspecified.
    * @param combine Functor used to merge nodes.
    * @param identity Functor that returns the identity node.
    * @param leaf_builder Functor that converts a value into a node.
@@ -334,7 +342,7 @@ public:
 
   /**
    * @brief Rebuilds the tree from a vector of values (move).
-   * @param values Input values (0-based indexing), moved from.
+   * @param values Input values (0-based indexing), moved from and left valid but unspecified.
    * @complexity Time O(n), Space O(n)
    */
   constexpr auto build(std::vector<Value>&& values) -> void;
@@ -573,7 +581,8 @@ private:
    * @param leaf_index Internal index of the leaf node (in [n, 2n-1]).
    * @complexity Time O(log n), Space O(1)
    */
-  constexpr auto propagate_up(size_type leaf_index) noexcept(detail::is_combine_nothrow_v<Combine, node_type>) -> void;
+  constexpr auto propagate_up(size_type leaf_index) noexcept(detail::is_propagate_up_nothrow_v<Combine, node_type>)
+      -> void;
 
   /**
    * @brief Validates that the index is within range.

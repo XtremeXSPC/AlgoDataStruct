@@ -366,31 +366,49 @@ auto Trie<UseMap>::dfs_collect_words(
   }
 
   struct TraversalFrame {
-    const TrieNode* node = nullptr;
-    std::string     word;
+    const TrieNode* node          = nullptr;
+    char            character     = '\0';
+    bool            exit          = false;
+    bool            has_character = false;
 
-    TraversalFrame(const TrieNode* frame_node, std::string frame_word) :
+    TraversalFrame(const TrieNode* frame_node, char frame_character, bool is_exit, bool frame_has_character) :
         node(frame_node),
-        word(std::move(frame_word)) {}
+        character(frame_character),
+        exit(is_exit),
+        has_character(frame_has_character) {}
   };
 
   ads::stacks::ArrayStack<TraversalFrame> stack(std::max<size_t>(word_count_, 1));
-  stack.emplace(node, current_word);
+  std::string                             path = current_word;
+  stack.emplace(node, '\0', false, false);
 
   while (!stack.is_empty()) {
-    TraversalFrame frame = std::move(stack.top());
+    const TraversalFrame frame = stack.top();
     stack.pop();
 
-    if (frame.node->is_end_of_word) {
-      results.push_back(frame.word);
+    if (frame.exit) {
+      if (frame.has_character) {
+        path.pop_back();
+      }
+      continue;
     }
+
+    if (frame.has_character) {
+      path.push_back(frame.character);
+    }
+
+    if (frame.node->is_end_of_word) {
+      results.push_back(path);
+    }
+
+    stack.emplace(frame.node, frame.character, true, frame.has_character);
 
     if constexpr (UseMap) {
       const auto& children = frame.node->children;
       for (size_t i = children.size(); i > 0; --i) {
         const auto& entry = children[i - 1];
         // Reverse push order preserves the old recursive traversal order on a LIFO stack.
-        stack.emplace(entry.child.get(), frame.word + entry.character);
+        stack.emplace(entry.child.get(), entry.character, false, true);
       }
     } else {
       for (size_t i = 26; i > 0; --i) {
@@ -398,7 +416,7 @@ auto Trie<UseMap>::dfs_collect_words(
         if (frame.node->children[index]) {
           const char ch = static_cast<char>('a' + index);
           // Reverse push order preserves lexicographic traversal for array-backed tries.
-          stack.emplace(frame.node->children[index].get(), frame.word + ch);
+          stack.emplace(frame.node->children[index].get(), ch, false, true);
         }
       }
     }
