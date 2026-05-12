@@ -15,21 +15,19 @@
 #   - Modular CMake configuration using separate files in cmake/ directory:
 #       * CompilerSetup.cmake       - Compiler flags and helper functions
 #       * LibraryDefinition.cmake   - ads_lib header-only library definition
-#       * MainExecutables.cmake     - Test executables for data structures
+#       * MainExecutables.cmake     - Demo executables from src/main_*.cc
 #       * GoogleTest.cmake          - GoogleTest integration (optional)
 #
 # Usage:
-#   With Clang (recommended):
-#     cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build
+#   With presets (recommended):
+#     cmake --preset debug
+#     cmake --build --preset build-debug
 #
-#   With GCC:
-#     cmake -DCMAKE_TOOLCHAIN_FILE=gcc-toolchain.cmake -B build
+#   Or manually with Clang:
+#     cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -S . -B build/clang/debug
 #
 #   Enable testing:
-#     cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DENABLE_TESTING=ON -B build
-#
-#   Then build:
-#     cmake --build build
+#     cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -DENABLE_TESTING=ON -S . -B build/clang/debug-tests
 #
 # ================================================================================= #
 
@@ -71,7 +69,7 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE OR CMAKE_TOOLCHAIN_FILE STREQUAL "")
         "compiler selection and proper clangd support.\n"
         "\n"
         "Recommended configuration:\n"
-        "  cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build\n"
+        "  cmake --preset debug\n"
         "\n"
         "Available toolchains:\n"
         "  - clang-toolchain.cmake (recommended, best IDE support)\n"
@@ -107,6 +105,16 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 # This is essential for IDE support and code navigation.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# ------------------------------ Project Options --------------------------------- #
+# Keep option definitions close to the core project settings so later modules can
+# branch on them consistently.
+
+option(ENABLE_DEMOS "Build demo executables from src/main_*.cc" ON)
+option(ENABLE_APPS "Build showcase applications and games" ON)
+option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
+option(DISABLE_PCH "Disable precompiled headers (for debugging)" OFF)
+option(DISABLE_UNITY_BUILD "Disable Unity Build for tests (for faster incremental builds)" OFF)
+
 # Output directories for built executables and libraries.
 # Putting them in the source tree makes them easier to find and run.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -129,22 +137,16 @@ detect_compiler_system_includes(COMPILER_SYSTEM_INCLUDE_PATHS)
 # Library definition: Header-only ads_lib target.
 include(cmake/LibraryDefinition.cmake)
 
-# Main test executables for data structures.
-include(cmake/MainExecutables.cmake)
+# Demo executables built from src/main_*.cc.
+if(ENABLE_DEMOS)
+    include(cmake/MainExecutables.cmake)
+else()
+    unset(ADS_DEFAULT_RUN_TARGET)
+endif()
 
 # ---------------------------- GoogleTest Integration ----------------------------- #
 # GoogleTest support is optional and disabled by default.
 # Enable it with: cmake -DENABLE_TESTING=ON ...
-
-option(ENABLE_APPS "Build showcase applications and games" ON)
-option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
-
-# -------------------------- Build Optimization Options --------------------------- #
-# Precompiled headers (PCH) and Unity Build can significantly reduce compilation
-# times, especially for incremental builds and test suites.
-
-option(DISABLE_PCH "Disable precompiled headers (for debugging)" OFF)
-option(DISABLE_UNITY_BUILD "Disable Unity Build for tests (for faster incremental builds)" OFF)
 
 include(cmake/GoogleTest.cmake)
 
@@ -174,12 +176,12 @@ add_custom_target(symlink_compile_commands
     VERBATIM
 )
 
-# Convenience 'run' target that builds and runs the BST test.
-if(TARGET test_BST)
+# Convenience 'run' target that builds and runs the default demo.
+if(DEFINED ADS_DEFAULT_RUN_TARGET AND TARGET ${ADS_DEFAULT_RUN_TARGET})
     add_custom_target(run
-        COMMAND $<TARGET_FILE:test_BST>
-        DEPENDS test_BST
-        COMMENT "${ANSI_CYAN}Running Binary Search Tree tests${ANSI_RESET}"
+        COMMAND $<TARGET_FILE:${ADS_DEFAULT_RUN_TARGET}>
+        DEPENDS ${ADS_DEFAULT_RUN_TARGET}
+        COMMENT "${ANSI_CYAN}Running ${ADS_DEFAULT_RUN_TARGET}${ANSI_RESET}"
         USES_TERMINAL
     )
 endif()
@@ -219,6 +221,16 @@ if(ENABLE_TESTING)
     message(STATUS "  ${ANSI_CYAN}Testing${ANSI_RESET}        : ${ANSI_GREEN}Enabled (GoogleTest)${ANSI_RESET}")
 else()
     message(STATUS "  ${ANSI_CYAN}Testing${ANSI_RESET}        : Disabled (use -DENABLE_TESTING=ON)")
+endif()
+
+if(ENABLE_DEMOS)
+    if(DEFINED ADS_DEFAULT_RUN_TARGET)
+        message(STATUS "  ${ANSI_CYAN}Demos${ANSI_RESET}          : ${ANSI_GREEN}Enabled${ANSI_RESET} (default: ${ADS_DEFAULT_RUN_TARGET})")
+    else()
+        message(STATUS "  ${ANSI_CYAN}Demos${ANSI_RESET}          : ${ANSI_YELLOW}Enabled${ANSI_RESET} (no demo sources found)")
+    endif()
+else()
+    message(STATUS "  ${ANSI_CYAN}Demos${ANSI_RESET}          : Disabled (use -DENABLE_DEMOS=ON)")
 endif()
 
 if(ENABLE_APPS AND APPS_CONFIGURED)

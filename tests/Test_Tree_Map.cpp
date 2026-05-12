@@ -86,8 +86,8 @@ TEST_F(TreeMapTest, PutAndGet) {
   map.put(5, "five");
 
   EXPECT_EQ(map.size(), 2);
-  EXPECT_EQ(map.get(10), "ten");
-  EXPECT_EQ(map.get(5), "five");
+  EXPECT_EQ(map.at(10), "ten");
+  EXPECT_EQ(map.at(5), "five");
 }
 
 TEST_F(TreeMapTest, PutUpdatesExisting) {
@@ -95,7 +95,7 @@ TEST_F(TreeMapTest, PutUpdatesExisting) {
   map.put(1, "ONE");
 
   EXPECT_EQ(map.size(), 1);
-  EXPECT_EQ(map.get(1), "ONE");
+  EXPECT_EQ(map.at(1), "ONE");
 }
 
 TEST_F(TreeMapTest, AtThrowsOnMissingKey) {
@@ -107,7 +107,7 @@ TEST_F(TreeMapTest, AtThrowsOnMissingKey) {
 TEST_F(TreeMapTest, InsertReturnsInsertionState) {
   EXPECT_TRUE(map.insert(3, "three"));
   EXPECT_FALSE(map.insert(3, "THREE"));
-  EXPECT_EQ(map.get(3), "THREE");
+  EXPECT_EQ(map.at(3), "THREE");
 }
 
 //===------------------------ CONTAINS AND REMOVE TESTS ------------------------===//
@@ -117,15 +117,15 @@ TEST_F(TreeMapTest, ContainsAndRemove) {
   map.put(4, "four");
 
   EXPECT_TRUE(map.contains(2));
-  EXPECT_TRUE(map.remove(2));
+  EXPECT_TRUE(map.erase(2));
   EXPECT_FALSE(map.contains(2));
-  EXPECT_FALSE(map.remove(2));
+  EXPECT_FALSE(map.erase(2));
 }
 
 TEST_F(TreeMapTest, OperatorBracketInsertsDefault) {
   map[7] = "seven";
   EXPECT_EQ(map.size(), 1);
-  EXPECT_EQ(map.get(7), "seven");
+  EXPECT_EQ(map.at(7), "seven");
 }
 
 TEST_F(TreeMapTest, KeysAreOrdered) {
@@ -149,7 +149,7 @@ TEST_F(TreeMapTest, EmplaceInsertsAndUpdates) {
   EXPECT_TRUE(payloads.emplace(1, "A", 10));
   EXPECT_FALSE(payloads.emplace(1, "B", 20));
 
-  const auto& entry = payloads.get(1);
+  const auto& entry = payloads.at(1);
   EXPECT_EQ(entry.label, "B");
   EXPECT_EQ(entry.value, 20);
 }
@@ -178,7 +178,7 @@ TEST(TreeMapModelTest, RandomizedOperationsMatchStdMap) {
       break;
     }
     case 2:
-      EXPECT_EQ(map.remove(key), oracle.erase(key) == 1U) << "remove " << key;
+      EXPECT_EQ(map.erase(key), oracle.erase(key) == 1U) << "erase " << key;
       break;
     case 3:
       map[key] += value;

@@ -221,7 +221,7 @@ TEST(HashMapMoveOnlyTest, SupportsMoveOnlyValues) {
   EXPECT_EQ(*map.at(3), 30);
   EXPECT_EQ(*map.at(4), 40);
   EXPECT_TRUE(map.contains(2));
-  EXPECT_EQ(map.erase(1), 1U);
+  EXPECT_TRUE(map.erase(1));
   EXPECT_FALSE(map.contains(1));
 }
 
@@ -234,6 +234,21 @@ TEST(HashMapCustomHashTest, UsesCustomHashFunctor) {
   EXPECT_EQ(map.size(), 2);
   EXPECT_TRUE(map.contains(CustomHashKey{1}));
   EXPECT_EQ(map.at(CustomHashKey{5}), "five");
+}
+
+TEST(HashMapEraseTest, EndIteratorThrowsInsteadOfTriggeringUndefinedBehavior) {
+  ads::associative::HashMap<int, int> map = {{1, 10}, {2, 20}};
+
+  EXPECT_THROW(map.erase(map.end()), InvalidOperationException);
+  EXPECT_THROW(map.erase(map.cend()), InvalidOperationException);
+}
+
+TEST(HashMapEraseTest, ConstIteratorEraseReturnsNextIterator) {
+  ads::associative::HashMap<int, int> map = {{1, 10}, {2, 20}};
+
+  auto next = map.erase(map.cbegin());
+  EXPECT_EQ(map.size(), 1U);
+  EXPECT_EQ(next, map.begin());
 }
 
 //===-------------------------- OPEN ADDRESSING TESTS --------------------------===//
@@ -401,6 +416,32 @@ TEST(HashTableOpenAddressingTombstoneTest, RehashesWhenTombstonesDominateProbeSp
   EXPECT_EQ(table.size(), 20U);
   for (int i = 10; i < 30; ++i) {
     EXPECT_EQ(table.at(i), i * 10);
+  }
+}
+
+TEST(HashTableOpenAddressingQuadraticTest, TriangularProbeCoversFullPowerOfTwoTable) {
+  HashTableOpenAddressing<int, int> table(16, ProbingStrategy::QUADRATIC, 0.99f);
+
+  for (int key : {0, 16, 32, 48, 64}) {
+    EXPECT_TRUE(table.insert(key, key));
+  }
+
+  EXPECT_EQ(table.size(), 5U);
+  for (int key : {0, 16, 32, 48, 64}) {
+    EXPECT_EQ(table.at(key), key);
+  }
+}
+
+TEST(HashTableOpenAddressingQuadraticTest, OperatorBracketSurvivesDenseCollisionCluster) {
+  HashTableOpenAddressing<int, int> table(16, ProbingStrategy::QUADRATIC, 0.99f);
+
+  for (int key : {0, 16, 32, 48, 64}) {
+    table[key] = key + 1;
+  }
+
+  EXPECT_EQ(table.size(), 5U);
+  for (int key : {0, 16, 32, 48, 64}) {
+    EXPECT_EQ(table.at(key), key + 1);
   }
 }
 

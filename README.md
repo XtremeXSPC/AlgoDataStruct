@@ -96,8 +96,6 @@ Key characteristics:
 
 ## Roadmap (Advanced)
 
-Planned, not implemented yet:
-
 - Skip List (advanced)
 - B+ Tree, 2-3 Tree, 2-3-4 Tree
 - String structures (Suffix Tree/Array, Suffix Automaton, Rope)
@@ -134,7 +132,7 @@ AlgoDataStruct/
 
 ## Code Conventions
 
-- **C++**: Google C++ Style Guide conventions
+- **C++**: LLVM-based formatting and repository-specific conventions
 - Header-only templates: public headers in `include/ads`, implementations in `src/ads`
 - Many structures include iterators or traversal callbacks where they make sense
 - Documentation is written in Doxygen style; complexity notes are included when available
@@ -146,11 +144,14 @@ The library is header-only; you can include the headers directly. To build the d
 executables in `src/main_*.cc`:
 
 ```sh
-cmake -DCMAKE_TOOLCHAIN_FILE=clang-toolchain.cmake -B build
-cmake --build build
+cmake --preset debug
+cmake --build --preset build-debug
 ```
 
-Executables are placed in `build/bin/`. Use `gcc-toolchain.cmake` if you prefer GCC.
+You can also configure manually with `-B build/clang/debug`. Demo executables are
+placed in `build/<toolchain>/<profile>/bin/`, for example
+`build/clang/debug/bin/test_Binary_Search_Tree`. Use `gcc-toolchain.cmake` if you
+prefer GCC.
 
 ## Usage
 
@@ -198,7 +199,7 @@ int main() {
     scores.put("Charlie", 92);
 
     // Retrieving values
-    std::cout << "Bob's score: " << scores.get("Bob") << "\n"; // 89
+    std::cout << "Bob's score: " << scores.at("Bob") << "\n"; // 89
 
     // Checking if a key exists
     std::cout << "Does David have a score? " << std::boolalpha
@@ -206,7 +207,7 @@ int main() {
 
     // Updating a value
     scores.put("Bob", 91);
-    std::cout << "Bob's updated score: " << scores.get("Bob") << "\n"; // 91
+    std::cout << "Bob's updated score: " << scores.at("Bob") << "\n"; // 91
 
     // Removing a key-value pair
     scores.erase("Charlie");

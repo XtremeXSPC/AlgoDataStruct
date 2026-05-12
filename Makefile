@@ -8,7 +8,7 @@
 # Main commands:
 #   make                  - Configure with Clang and build (default)
 #   make build            - Build the project (requires configure first)
-#   make run              - Build and run test_BST
+#   make run              - Build and run test_Binary_Search_Tree
 #   make clean            - Remove all build directories
 #   make reconfigure      - Clean and reconfigure
 #   make test             - Configure with testing enabled and run tests
@@ -96,8 +96,8 @@ LEGACY_BUILD_DIRS := build-release build-tests build-sanitize build-sanitize-tes
 	build-tests-gcc build-sanitize-gcc build-sanitize-tests-gcc \
 	build-thread-sanitize-gcc build-thread-sanitize-tests-gcc
 
-# Main test executable.
-TARGET := test_BST
+# Default demo executable.
+TARGET := test_Binary_Search_Tree
 
 # -------------------------------- Default Target --------------------------------- #
 # The default target configures with Clang and builds.
@@ -139,7 +139,7 @@ run: build
 	echo ""; \
 	if [ ! -f "$$TEST_EXECUTABLE" ]; then \
 		echo "Error: $$TEST_EXECUTABLE not found."; \
-		echo "Available executables include: test_BST, test_Singly_Linked_List, test_Stacks_Queues"; \
+		echo "Available executables include: test_Binary_Search_Tree, test_Singly_Linked_List, test_Stacks_Queues"; \
 		exit 1; \
 	fi; \
 	"$$TEST_EXECUTABLE"
@@ -372,7 +372,7 @@ help:
 	@echo "Main Commands:"
 	@echo "  make                   - Configure with Clang and build (default)"
 	@echo "  make build             - Build using the last configured build directory"
-	@echo "  make run               - Build and run test_BST from last configured dir"
+	@echo "  make run               - Build and run test_Binary_Search_Tree from last configured dir"
 	@echo "  make clean             - Remove all build directories"
 	@echo "  make reconfigure       - Clean and reconfigure"
 	@echo "  make test              - Configure with testing and run tests"

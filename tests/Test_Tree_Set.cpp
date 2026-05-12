@@ -22,19 +22,19 @@ using namespace ads::associative;
 
 namespace {
 
-struct MoveOnlyOrdered {
+struct TreeSetMoveOnlyOrdered {
   int value;
 
-  explicit MoveOnlyOrdered(int v) : value(v) {}
+  explicit TreeSetMoveOnlyOrdered(int v) : value(v) {}
 
-  MoveOnlyOrdered(const MoveOnlyOrdered&)                        = delete;
-  auto operator=(const MoveOnlyOrdered&) -> MoveOnlyOrdered&     = delete;
-  MoveOnlyOrdered(MoveOnlyOrdered&&) noexcept                    = default;
-  auto operator=(MoveOnlyOrdered&&) noexcept -> MoveOnlyOrdered& = default;
+  TreeSetMoveOnlyOrdered(const TreeSetMoveOnlyOrdered&)                                = delete;
+  auto operator=(const TreeSetMoveOnlyOrdered&) -> TreeSetMoveOnlyOrdered&             = delete;
+  TreeSetMoveOnlyOrdered(TreeSetMoveOnlyOrdered&&) noexcept                            = default;
+  auto operator=(TreeSetMoveOnlyOrdered&&) noexcept -> TreeSetMoveOnlyOrdered&         = default;
 
-  auto operator<(const MoveOnlyOrdered& other) const -> bool { return value < other.value; }
+  auto operator<(const TreeSetMoveOnlyOrdered& other) const -> bool { return value < other.value; }
 
-  auto operator==(const MoveOnlyOrdered& other) const -> bool { return value == other.value; }
+  auto operator==(const TreeSetMoveOnlyOrdered& other) const -> bool { return value == other.value; }
 };
 
 auto expect_matches_set(const TreeSet<int>& set, const std::set<int>& oracle) -> void {
@@ -209,25 +209,25 @@ TEST_F(TreeSetTest, RandomizedOperationsMatchStdSet) {
 }
 
 TEST(TreeSetMoveOnlyTest, SupportsMoveOnlyValues) {
-  TreeSet<MoveOnlyOrdered> set;
+  TreeSet<TreeSetMoveOnlyOrdered> set;
 
-  EXPECT_TRUE(set.insert(MoveOnlyOrdered{20}));
-  EXPECT_TRUE(set.insert(MoveOnlyOrdered{10}));
-  EXPECT_TRUE(set.insert(MoveOnlyOrdered{30}));
-  EXPECT_FALSE(set.insert(MoveOnlyOrdered{20}));
+  EXPECT_TRUE(set.insert(TreeSetMoveOnlyOrdered{20}));
+  EXPECT_TRUE(set.insert(TreeSetMoveOnlyOrdered{10}));
+  EXPECT_TRUE(set.insert(TreeSetMoveOnlyOrdered{30}));
+  EXPECT_FALSE(set.insert(TreeSetMoveOnlyOrdered{20}));
 
   EXPECT_EQ(set.size(), 3U);
-  EXPECT_TRUE(set.contains(MoveOnlyOrdered{10}));
+  EXPECT_TRUE(set.contains(TreeSetMoveOnlyOrdered{10}));
   EXPECT_EQ(set.min().value, 10);
   EXPECT_EQ(set.max().value, 30);
 
   std::vector<int> values;
-  set.for_each([&values](const MoveOnlyOrdered& value) { values.push_back(value.value); });
+  set.for_each([&values](const TreeSetMoveOnlyOrdered& value) { values.push_back(value.value); });
   std::vector<int> expected{10, 20, 30};
   EXPECT_EQ(values, expected);
 
-  EXPECT_TRUE(set.erase(MoveOnlyOrdered{20}));
-  EXPECT_FALSE(set.contains(MoveOnlyOrdered{20}));
+  EXPECT_TRUE(set.erase(TreeSetMoveOnlyOrdered{20}));
+  EXPECT_FALSE(set.contains(TreeSetMoveOnlyOrdered{20}));
 }
 
 //===---------------------------------------------------------------------------===//

@@ -12,6 +12,7 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/clang-toolchain.cmake",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_DEMOS": "ON",
         "ENABLE_APPS": "ON",
         "ENABLE_TESTING": "OFF"
       }
@@ -22,6 +23,7 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/gcc-toolchain.cmake",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_DEMOS": "ON",
         "ENABLE_APPS": "ON",
         "ENABLE_TESTING": "OFF"
       }
