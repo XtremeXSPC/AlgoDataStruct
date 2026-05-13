@@ -105,8 +105,8 @@ void demo_hashmap_erase() {
 
   cout << "Initial size: " << prices.size() << '\n';
 
-  size_t erased = prices.erase("banana");
-  cout << "Erased 'banana': " << erased << " elements removed\n";
+  bool erased = prices.erase("banana");
+  cout << "Erased 'banana': " << (erased ? "yes" : "no") << '\n';
   cout << "Size after erase: " << prices.size() << '\n';
 
   auto it = prices.find("apple");

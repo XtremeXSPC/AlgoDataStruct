@@ -246,20 +246,6 @@ public:
   auto put(Key&& key, Value&& value) -> void
     requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
-  /**
-   * @brief Retrieves the value associated with a key.
-   * @param key The key to access.
-   * @return Reference to the associated value.
-   */
-  auto get(const Key& key) -> Value&;
-
-  /**
-   * @brief Retrieves the value associated with a key (const).
-   * @param key The key to access.
-   * @return Const reference to the associated value.
-   */
-  auto get(const Key& key) const -> const Value&;
-
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
@@ -295,19 +281,28 @@ public:
   /**
    * @brief Erases element with given key.
    * @param key The key to erase.
-   * @return Number of elements erased (0 or 1).
+   * @return true if an element was erased, false otherwise.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto erase(const Key& key) -> size_t;
+  auto erase(const Key& key) -> bool;
 
   /**
    * @brief Erases element at iterator position.
    * @param pos Iterator to element to erase.
    * @return Iterator to next element.
    * @complexity Time O(1), Space O(1)
-   * @note Undefined behavior if pos does not belong to this map.
+   * @throws ads::hash::InvalidOperationException if pos is invalid for this map.
    */
   auto erase(iterator pos) -> iterator;
+
+  /**
+   * @brief Erases element at const iterator position.
+   * @param pos Const iterator to element to erase.
+   * @return Iterator to next element.
+   * @complexity Time O(1), Space O(1)
+   * @throws ads::hash::InvalidOperationException if pos is invalid for this map.
+   */
+  auto erase(const_iterator pos) -> iterator;
 
   /**
    * @brief Removes all elements.
@@ -366,13 +361,6 @@ public:
   auto contains(const Key& key) const -> bool;
 
   /**
-   * @brief Removes the element with the given key.
-   * @param key The key to remove.
-   * @return true if an element was removed, false otherwise.
-   */
-  auto remove(const Key& key) -> bool;
-
-  /**
    * @brief Counts elements with given key.
    * @param key The key to count.
    * @return 0 or 1 (no duplicates allowed).
@@ -388,7 +376,8 @@ public:
    * @return Vector of keys.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto keys() const -> std::vector<Key>;
+  [[nodiscard]] auto keys() const -> std::vector<Key>
+    requires std::copy_constructible<Key>;
 
   /**
    * @brief Returns vector of all values.
@@ -404,7 +393,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>
-    requires std::copy_constructible<Value>;
+    requires std::copy_constructible<Key> && std::copy_constructible<Value>;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 

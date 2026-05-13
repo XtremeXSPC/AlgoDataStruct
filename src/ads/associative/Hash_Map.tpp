@@ -226,16 +226,6 @@ auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void
   table_.insert(std::move(key), std::move(value));
 }
 
-template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::get(const Key& key) -> Value& {
-  return table_.at(key);
-}
-
-template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::get(const Key& key) const -> const Value& {
-  return table_.at(key);
-}
-
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename Key, typename Value, typename Hash>
@@ -271,21 +261,35 @@ auto HashMap<Key, Value, Hash>::emplace(Args&&... args) -> std::pair<iterator, b
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::erase(const Key& key) -> size_t {
-  return table_.erase(key) ? 1 : 0;
+auto HashMap<Key, Value, Hash>::erase(const Key& key) -> bool {
+  return table_.erase(key);
 }
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::erase(iterator pos) -> iterator {
-  iterator next = pos;
-  ++next;
-
-  if (pos.map_ == this && pos.bucket_idx_ < table_.capacity_) {
-    table_.buckets_[pos.bucket_idx_].erase(pos.list_it_);
-    --table_.size_;
+  if (pos.map_ != this || pos.bucket_idx_ >= table_.capacity_) {
+    throw hash::InvalidOperationException("HashMap::erase: iterator does not refer to an element in this map");
   }
 
+  iterator next = pos;
+  ++next;
+  table_.buckets_[pos.bucket_idx_].erase(pos.list_it_);
+  --table_.size_;
   return next;
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashMap<Key, Value, Hash>::erase(const_iterator pos) -> iterator {
+  if (pos.map_ != this || pos.bucket_idx_ >= table_.capacity_) {
+    throw hash::InvalidOperationException("HashMap::erase: iterator does not refer to an element in this map");
+  }
+
+  auto [bucket_idx, bucket_it] = find_in_table(pos->first);
+  if (bucket_it == table_.buckets_[bucket_idx].end()) {
+    throw hash::InvalidOperationException("HashMap::erase: iterator points to a stale element");
+  }
+
+  return erase(iterator(this, bucket_idx, bucket_it));
 }
 
 template <typename Key, typename Value, typename Hash>
@@ -344,11 +348,6 @@ auto HashMap<Key, Value, Hash>::contains(const Key& key) const -> bool {
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::remove(const Key& key) -> bool {
-  return table_.erase(key);
-}
-
-template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::count(const Key& key) const -> size_t {
   return table_.contains(key) ? 1 : 0;
 }
@@ -356,7 +355,9 @@ auto HashMap<Key, Value, Hash>::count(const Key& key) const -> size_t {
 //===--------------------------- CONVENIENCE METHODS ---------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key> {
+auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key>
+  requires std::copy_constructible<Key>
+{
   std::vector<Key> result;
   result.reserve(size());
 
@@ -387,7 +388,7 @@ auto HashMap<Key, Value, Hash>::values() const -> std::vector<Value>
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::entries() const -> std::vector<std::pair<Key, Value>>
-  requires std::copy_constructible<Value>
+  requires std::copy_constructible<Key> && std::copy_constructible<Value>
 {
   std::vector<std::pair<Key, Value>> result;
   result.reserve(size());

@@ -41,10 +41,10 @@ concept Dictionary =
     && requires(
         Map& dictionary, const Map& const_dictionary, const Key& key, Key&& movable_key, Value&& movable_value) {
          { dictionary.put(std::move(movable_key), std::move(movable_value)) } -> std::same_as<void>;
-         { dictionary.get(key) } -> std::same_as<Value&>;
-         { const_dictionary.get(key) } -> std::same_as<const Value&>;
+         { dictionary.at(key) } -> std::same_as<Value&>;
+         { const_dictionary.at(key) } -> std::same_as<const Value&>;
          { const_dictionary.contains(key) } -> std::same_as<bool>;
-         { dictionary.remove(key) } -> std::same_as<bool>;
+         { dictionary.erase(key) } -> std::same_as<bool>;
          { const_dictionary.size() } noexcept -> std::same_as<size_t>;
        };
 

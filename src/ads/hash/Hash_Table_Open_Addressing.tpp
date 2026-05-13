@@ -24,8 +24,8 @@ namespace ads::hash {
 template <typename Key, typename Value, typename Hash>
 HashTableOpenAddressing<Key, Value, Hash>::HashTableOpenAddressing(
     size_t initial_capacity, ProbingStrategy strategy, float max_load_factor, Hash hasher) :
-    table_(std::make_unique<Slot[]>(std::max<size_t>(initial_capacity, 2))),
-    capacity_(std::max<size_t>(initial_capacity, 2)),
+    table_(std::make_unique<Slot[]>(normalize_capacity(initial_capacity, strategy))),
+    capacity_(normalize_capacity(initial_capacity, strategy)),
     size_(0),
     deleted_count_(0),
     max_load_factor_(max_load_factor),
@@ -215,17 +215,29 @@ auto HashTableOpenAddressing<Key, Value, Hash>::at(const Key& key) const -> cons
 
 template <typename Key, typename Value, typename Hash>
 auto HashTableOpenAddressing<Key, Value, Hash>::operator[](const Key& key) -> Value& {
-  Slot* slot = find_slot(key);
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
 
-  if (slot) {
+  Slot* slot = find_insert_slot(key);
+
+  if (slot->state == SlotState::OCCUPIED) {
     return slot->entry->value;
   }
 
-  // Key doesn't exist, insert with default value.
-  insert(key, Value{});
-
-  // Find it again (might be at different location after potential rehash).
+  ensure_capacity_for_insert();
   slot = find_slot(key);
+  if (!slot) {
+    slot                        = find_insert_slot(key);
+    const bool reused_tombstone = slot->state == SlotState::DELETED;
+    slot->entry.emplace(key, Value{});
+    slot->state = SlotState::OCCUPIED;
+    ++size_;
+    if (reused_tombstone) {
+      --deleted_count_;
+    }
+  }
+
   return slot->entry->value;
 }
 
@@ -375,7 +387,8 @@ auto HashTableOpenAddressing<Key, Value, Hash>::probe(const Key& key, size_t i, 
     return (hash1(key, capacity) + i) % capacity;
 
   case ProbingStrategy::QUADRATIC:
-    return (hash1(key, capacity) + i * i) % capacity;
+    // Triangular probing preserves full coverage for power-of-two tables.
+    return (hash1(key, capacity) + (i * (i + 1)) / 2) % capacity;
 
   case ProbingStrategy::DOUBLE_HASH:
     return (hash1(key, capacity) + i * hash2(key, capacity)) % capacity;
@@ -383,6 +396,26 @@ auto HashTableOpenAddressing<Key, Value, Hash>::probe(const Key& key, size_t i, 
   default:
     return (hash1(key, capacity) + i) % capacity;
   }
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::normalize_capacity(size_t requested, ProbingStrategy strategy) noexcept
+    -> size_t {
+  const size_t minimum_capacity = std::max<size_t>(requested, 2);
+  if (strategy != ProbingStrategy::QUADRATIC) {
+    return minimum_capacity;
+  }
+
+  return next_power_of_two(minimum_capacity);
+}
+
+template <typename Key, typename Value, typename Hash>
+auto HashTableOpenAddressing<Key, Value, Hash>::next_power_of_two(size_t value) noexcept -> size_t {
+  size_t result = 1;
+  while (result < value) {
+    result <<= 1;
+  }
+  return result;
 }
 
 //===-------------------------- SLOT FINDING METHODS ---------------------------===//
@@ -475,7 +508,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::find_insert_slot(Slot* slots, si
 
 template <typename Key, typename Value, typename Hash>
 void HashTableOpenAddressing<Key, Value, Hash>::rehash(size_t new_capacity) {
-  const size_t            slot_count = std::max<size_t>(new_capacity, 2);
+  const size_t            slot_count = normalize_capacity(new_capacity, strategy_);
   std::unique_ptr<Slot[]> new_table  = std::make_unique<Slot[]>(slot_count);
   size_t                  new_size   = 0;
 

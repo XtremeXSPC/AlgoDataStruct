@@ -39,7 +39,7 @@ enum class ProbingStrategy : std::uint8_t { LINEAR, QUADRATIC, DOUBLE_HASH };
  *          in an array. When a collision occurs, it probes for the next available
  *          slot using one of three strategies:
  *          - Linear probing: h(k) + i
- *          - Quadratic probing: h(k) + i^2
+ *          - Quadratic probing: h(k) + i(i + 1) / 2
  *          - Double hashing: h1(k) + i * h2(k)
  *
  *          Features:
@@ -269,7 +269,9 @@ public:
   /**
    * @brief Reserves space for at least new_capacity slots.
    * @param new_capacity Minimum capacity to reserve.
-   * @details Forces a rehash if new_capacity > current capacity.
+   * @details Forces a rehash if new_capacity > current capacity. Quadratic
+   *          probing may round the requested capacity up to the next power of two
+   *          to preserve full probe coverage.
    * @complexity Time O(n) if rehashing occurs, Space O(n)
    */
   void reserve(size_t new_capacity);
@@ -377,6 +379,23 @@ private:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto probe(const Key& key, size_t i, size_t capacity) const -> size_t;
+
+  /**
+   * @brief Normalizes capacity for the active probing strategy.
+   * @param requested Requested slot count.
+   * @param strategy Probing strategy in use.
+   * @return Supported slot count, always at least 2.
+   * @complexity Time O(log n), Space O(1)
+   */
+  [[nodiscard]] static auto normalize_capacity(size_t requested, ProbingStrategy strategy) noexcept -> size_t;
+
+  /**
+   * @brief Rounds a value up to the next power of two.
+   * @param value Requested minimum capacity.
+   * @return Smallest power of two greater than or equal to value.
+   * @complexity Time O(log n), Space O(1)
+   */
+  [[nodiscard]] static auto next_power_of_two(size_t value) noexcept -> size_t;
 
   //===------------------------- SLOT FINDING METHODS --------------------------===//
   /**
