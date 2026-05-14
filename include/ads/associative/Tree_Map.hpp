@@ -127,22 +127,6 @@ public:
   [[nodiscard]] auto empty() const noexcept -> bool;
 
   /**
-   * @brief Retrieves the value associated with a key.
-   * @param key The key to look up.
-   * @return Reference to the associated value.
-   * @throws KeyNotFoundException if the key does not exist.
-   */
-  auto get(const Key& key) -> Value&;
-
-  /**
-   * @brief Retrieves the value associated with a key (const version).
-   * @param key The key to look up.
-   * @return Const reference to the associated value.
-   * @throws KeyNotFoundException if the key does not exist.
-   */
-  auto get(const Key& key) const -> const Value&;
-
-  /**
    * @brief Returns the number of elements in the map.
    * @return The current size.
    */
@@ -263,13 +247,6 @@ public:
     requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
-
-  /**
-   * @brief Removes an element with the given key.
-   * @param key The key to remove.
-   * @return true if an element was removed, false otherwise.
-   */
-  auto remove(const Key& key) -> bool;
 
   /**
    * @brief Removes an element with the given key.

@@ -74,7 +74,7 @@ void demo_access_operations() {
   scores.put("Elena", 88);
   scores.put("Frank", 75);
 
-  cout << "Elena's score (get): " << scores.get("Elena") << "\n";
+  cout << "Elena's score (at): " << scores.at("Elena") << "\n";
 
   cout << "\nUsing operator[] for Diana (default insert)\n";
   scores["Diana"] = 95;
@@ -126,7 +126,7 @@ void demo_removal_operations() {
   print_entries(items, "Before removal");
 
   cout << "\nRemoving key 2\n";
-  items.remove(2);
+  items.erase(2);
   print_entries(items, "After removal");
 }
 

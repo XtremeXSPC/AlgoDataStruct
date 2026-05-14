@@ -36,24 +36,6 @@ auto TreeMap<Key, Value>::empty() const noexcept -> bool {
 }
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::get(const Key& key) -> Value& {
-  const Entry* entry = find_entry(key);
-  if (!entry) {
-    throw KeyNotFoundException();
-  }
-  return entry->value;
-}
-
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::get(const Key& key) const -> const Value& {
-  const Entry* entry = find_entry(key);
-  if (!entry) {
-    throw KeyNotFoundException();
-  }
-  return entry->value;
-}
-
-template <typename Key, typename Value>
 auto TreeMap<Key, Value>::size() const noexcept -> size_t {
   return tree_.size();
 }
@@ -83,12 +65,20 @@ auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::at(const Key& key) -> Value& {
-  return get(key);
+  const Entry* entry = find_entry(key);
+  if (!entry) {
+    throw KeyNotFoundException();
+  }
+  return entry->value;
 }
 
 template <typename Key, typename Value>
 auto TreeMap<Key, Value>::at(const Key& key) const -> const Value& {
-  return get(key);
+  const Entry* entry = find_entry(key);
+  if (!entry) {
+    throw KeyNotFoundException();
+  }
+  return entry->value;
 }
 
 template <typename Key, typename Value>
@@ -191,14 +181,9 @@ auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <typename Key, typename Value>
-auto TreeMap<Key, Value>::remove(const Key& key) -> bool {
+auto TreeMap<Key, Value>::erase(const Key& key) -> bool {
   const Entry* entry = find_entry(key);
   return entry != nullptr && tree_.remove(*entry);
-}
-
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::erase(const Key& key) -> bool {
-  return remove(key);
 }
 
 template <typename Key, typename Value>
