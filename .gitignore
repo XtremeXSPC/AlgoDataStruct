@@ -22,9 +22,11 @@ Documentation/Audits/
 /build
 /build-*
 /bin
+compile_commands.json
 
 # Exclude generated documentation
 /docs
+ROADMAP.md
 
 # Exclude Google Drive temporary files
 .Google\ Drive
@@ -65,5 +67,5 @@ logs/
 # Temporary files
 .fake
 .tmp.driveupload
-compile_commands.json
 .last_build_dir
+.sisyphus

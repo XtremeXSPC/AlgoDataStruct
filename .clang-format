@@ -5,7 +5,7 @@ BasedOnStyle: LLVM
 PointerAlignment: Left
 
 # Limit for the length of each line.
-ColumnLimit: 120
+ColumnLimit: 140
 
 # Indentation size (2 spaces for consistency with C/C++).
 IndentWidth: 2
@@ -64,10 +64,10 @@ PenaltyExcessCharacter: 1200000
 
 # Modern C++20/23: requires, concepts, constraints.
 Standard: c++20
-IndentRequiresClause: true
-RequiresClausePosition: OwnLine
+IndentRequiresClause: false
+RequiresClausePosition: WithPreceding
 RequiresExpressionIndentation: OuterScope
-BreakBeforeConceptDeclarations: Always
+BreakBeforeConceptDeclarations: Never
 
 # Handling constructor initializer lists.
 PackConstructorInitializers: CurrentLine
