@@ -48,8 +48,7 @@ GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(GraphAdjacenc
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatrix&& other) noexcept
-    -> GraphAdjacencyMatrix& {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatrix&& other) noexcept -> GraphAdjacencyMatrix& {
   if (this != &other) {
     vertices_        = std::move(other.vertices_);
     matrix_          = std::move(other.matrix_);
@@ -142,8 +141,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_edge(size_t from, size_t 
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const
-    -> std::optional<EdgeWeight> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
   }
@@ -182,6 +180,18 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors_with_weights(si
     }
   }
   return neighbors;
+}
+
+template <typename VertexData, typename EdgeWeight>
+template <typename Visitor>
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void {
+  validate_vertex(vertex_id);
+
+  for (size_t i = 0; i < matrix_[vertex_id].size(); ++i) {
+    if (matrix_[vertex_id][i].has_value()) {
+      std::forward<Visitor>(visitor)(i, *matrix_[vertex_id][i]);
+    }
+  }
 }
 
 template <typename VertexData, typename EdgeWeight>
@@ -282,8 +292,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(size_t start_vertex) cons
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const
-    -> std::optional<std::vector<size_t>> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
   validate_vertex(from);
   validate_vertex(to);
 

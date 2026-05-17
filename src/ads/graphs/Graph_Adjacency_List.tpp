@@ -21,10 +21,7 @@ namespace ads::graphs {
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <typename VertexData, typename EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) :
-    vertices_(),
-    is_directed_(is_directed),
-    num_edges_(0) {
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) : vertices_(), is_directed_(is_directed), num_edges_(0) {
 }
 
 template <typename VertexData, typename EdgeWeight>
@@ -142,8 +139,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const
-    -> std::optional<EdgeWeight> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
   }
@@ -190,6 +186,16 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors_with_weights(size
   }
 
   return neighbors;
+}
+
+template <typename VertexData, typename EdgeWeight>
+template <typename Visitor>
+auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void {
+  validate_vertex(vertex_id);
+
+  for (const auto& edge : vertices_[vertex_id].adjacency) {
+    std::forward<Visitor>(visitor)(edge.destination, edge.weight);
+  }
 }
 
 template <typename VertexData, typename EdgeWeight>
@@ -284,8 +290,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const 
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const
-    -> std::optional<std::vector<size_t>> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
   validate_vertex(from);
   validate_vertex(to);
 
@@ -385,8 +390,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_i
 }
 
 template <typename VertexData, typename EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(size_t from, size_t to) const
-    -> std::optional<size_t> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(size_t from, size_t to) const -> std::optional<size_t> {
   const auto& adjacency = vertices_[from].adjacency;
 
   for (size_t index = 0; index < adjacency.size(); ++index) {

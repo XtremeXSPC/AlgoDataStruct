@@ -13,27 +13,21 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/graphs/Graph_Adjacency_List.hpp"
-#include "../include/ads/queues/Priority_Queue.hpp"
+#include "../include/ads/graphs/Graph_Algorithms.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <chrono>
 #include <iostream>
-#include <limits>
 #include <string>
 #include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
-using std::numeric_limits;
-using std::pair;
 using std::string;
-using std::to_string;
 using std::vector;
 
 using namespace ads::graphs;
-using namespace ads::queues;
 
 //===---------------------------- HELPER FUNCTIONS -----------------------------===//
 
@@ -46,70 +40,23 @@ struct City {
   explicit City(string n) : name(std::move(n)) {}
 };
 
-// Compare nodes by distance for priority queue (min-heap).
-struct DistanceComparator {
-  auto operator()(const pair<size_t, double>& a, const pair<size_t, double>& b) const -> bool {
-    return a.second > b.second; // Min-heap: smaller distance has higher priority
-  }
-};
-
-/**
- * @brief Dijkstra's shortest path algorithm.
- * @param graph The graph to search.
- * @param start Starting vertex index.
- * @return Vector of shortest distances from start to all vertices.
- */
-auto dijkstra(const GraphAdjacencyList<City, double>& graph, size_t start) -> vector<double> {
-  size_t         n = graph.num_vertices();
-  vector<double> dist(n, numeric_limits<double>::infinity());
-  vector<bool>   visited(n, false);
-
-  dist[start] = 0.0;
-
-  // Priority queue: pair<vertex_index, distance>.
-  PriorityQueue<pair<size_t, double>, DistanceComparator> pq;
-  pq.push({start, 0.0});
-
-  while (!pq.empty()) {
-    auto [u, d] = pq.top();
-    pq.pop();
-
-    if (visited[u]) {
-      continue; // Already processed this vertex.
-    }
-    visited[u] = true;
-
-    // Relax edges from 'u'.
-    for (const auto& [neighbor, weight] : graph.get_neighbors_with_weights(u)) {
-      double new_dist = dist[u] + weight;
-
-      if (new_dist < dist[neighbor]) {
-        dist[neighbor] = new_dist;
-        pq.push({neighbor, new_dist});
-      }
-    }
-  }
-
-  return dist;
-}
-
 /**
  * @brief Print shortest paths from source to all cities.
  * @param graph The graph.
  * @param source The source vertex index.
- * @param distances Vector of distances.
+ * @param shortest_paths Dijkstra result object.
  */
-auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const vector<double>& distances)
-    -> void {
+auto print_shortest_paths(
+    const GraphAdjacencyList<City, double>& graph, size_t source, const ShortestPathsResult<double>& shortest_paths) -> void {
   cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
   cout << "=====--------------------------------------=====\n";
 
-  for (size_t i = 0; i < distances.size(); ++i) {
+  for (size_t i = 0; i < shortest_paths.vertex_count(); ++i) {
     cout << "  To " << graph.get_vertex_data(i).name << ": ";
-    if (distances[i] == numeric_limits<double>::infinity()) {
+    if (!shortest_paths.has_path_to(i)) {
       cout << "unreachable\n";
     } else {
-      cout << distances[i] << " km\n";
+      cout << shortest_paths.distance_to(i) << " km\n";
     }
   }
 }
@@ -154,8 +101,8 @@ auto main() -> int {
     cout << "\n" << string(55, '=') << "\n";
     cout << "Computing shortest paths from " << test_cities[i] << "...\n";
 
-    auto distances = dijkstra(cities, test_indices[i]);
-    print_shortest_paths(cities, test_indices[i], distances);
+    auto shortest_paths = dijkstra_shortest_paths(cities, test_indices[i]);
+    print_shortest_paths(cities, test_indices[i], shortest_paths);
   }
 
   // Performance test with larger graph.
@@ -183,16 +130,16 @@ auto main() -> int {
 
   cout << "Running Dijkstra from vertex 0...\n";
   auto start_time = std::chrono::high_resolution_clock::now();
-  auto distances  = dijkstra(large_graph, 0);
+  auto shortest_paths = dijkstra_shortest_paths(large_graph, 0);
   auto end_time   = std::chrono::high_resolution_clock::now();
 
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
   cout << "Completed in " << static_cast<double>(duration.count()) / 1000.0 << " ms\n";
   cout << "Sample distances:\n";
-  cout << "  To vertex 10: " << distances[10] << "\n";
-  cout << "  To vertex 100: " << distances[100] << "\n";
-  cout << "  To vertex 500: " << distances[500] << "\n";
-  cout << "  To vertex 999: " << distances[999] << "\n";
+  cout << "  To vertex 10: " << shortest_paths.distance_to(10) << "\n";
+  cout << "  To vertex 100: " << shortest_paths.distance_to(100) << "\n";
+  cout << "  To vertex 500: " << shortest_paths.distance_to(500) << "\n";
+  cout << "  To vertex 999: " << shortest_paths.distance_to(999) << "\n";
 
   ads::demo::print_footer("DIJKSTRA'S ALGORITHM TESTS COMPLETED!");
 

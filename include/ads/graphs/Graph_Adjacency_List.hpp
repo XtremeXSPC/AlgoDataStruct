@@ -66,6 +66,10 @@ public:
 template <typename VertexData = int, typename EdgeWeight = double>
 class GraphAdjacencyList {
 public:
+  using vertex_data_type = VertexData;
+  using edge_weight_type = EdgeWeight;
+  using vertex_id_type   = size_t;
+
   /**
    * @brief Represents an edge in the graph.
    */
@@ -281,6 +285,17 @@ public:
    * @complexity Time O(degree(vertex_id)), Space O(degree(vertex_id))
    */
   [[nodiscard]] auto get_neighbors_with_weights(size_t vertex_id) const -> std::vector<std::pair<size_t, EdgeWeight>>;
+
+  /**
+   * @brief Visits all outgoing weighted neighbors without building a temporary container.
+   * @tparam Visitor Callable invocable as visitor(size_t neighbor_id, const EdgeWeight& weight).
+   * @param vertex_id Source vertex ID.
+   * @param visitor Callback invoked once for each outgoing edge.
+   * @throws GraphException if vertex_id is invalid.
+   * @complexity Time O(degree(vertex_id)), Space O(1) excluding visitor state.
+   */
+  template <typename Visitor>
+  auto for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void;
 
   /**
    * @brief Gets the degree of a vertex (number of outgoing edges).
