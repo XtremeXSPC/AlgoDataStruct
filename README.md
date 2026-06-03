@@ -49,6 +49,7 @@ Key characteristics:
 - Binary Search Tree (BST)
 - AVL Tree
 - Red-Black Tree
+- Treap
 - B-Tree
 - Trie (Prefix Tree)
 - Fenwick Tree (Binary Indexed Tree)
@@ -63,6 +64,14 @@ Key characteristics:
 
 - Min Heap
 - Max Heap
+- D-ary Heap (configurable arity, min/max semantics)
+
+</details>
+
+<details>
+<summary><strong>Matrix Structures</strong></summary>
+
+- Sparse Matrix (CSR)
 
 </details>
 
@@ -114,6 +123,7 @@ AlgoDataStruct/
 │       ├── queues/
 │       ├── trees/
 │       ├── heaps/
+│       ├── matrices/
 │       ├── hash/
 │       ├── associative/
 │       └── graphs/
