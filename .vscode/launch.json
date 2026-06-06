@@ -4,45 +4,23 @@
   //
   // Architecture:
   //   - Platform-specific configurations (macOS LLDB, Linux LLDB/GDB)
-  //   - Separate test and app configurations for optimal settings
-  //   - Dedicated sanitizer builds with enhanced error detection
+  //   - Separate test and app configurations (console vs integrated terminal)
+  //   - Dedicated sanitizer/thread-sanitizer runtime environments
   //   - Cross-platform fallback configurations
   //
-  // Key Features:
-  //   - AddressSanitizer & UndefinedBehaviorSanitizer support
-  //   - Custom LLDB formatters for ADS containers
-  //   - Enhanced memory debugging (macOS malloc guards)
-  //   - Incremental build before debug (like running make twice)
+  // Target selection:
+  //   "program" resolves to ${command:cmake.launchTargetPath}, i.e. the target
+  //   chosen in the CMake Tools status bar ("Set Launch/Debug Target"). CMake
+  //   Tools builds it on demand, so there are no hardcoded target lists or build
+  //   paths to maintain. The build VARIANT (Debug / Sanitize / ThreadSanitize)
+  //   follows the active CMake preset; the sanitizer configs below only add the
+  //   matching runtime environment, so select the corresponding preset first.
   //
   // Common Environment Variables:
-  //   ASAN_OPTIONS   - AddressSanitizer runtime configuration
-  //   UBSAN_OPTIONS  - UndefinedBehaviorSanitizer configuration
-  //   TERM           - Terminal type for TUI applications
-  //
-  // Directory Structure:
-  //   build/current/debug/          - Standard Debug builds
-  //   build/current/sanitize/       - Sanitizer-instrumented builds
-  //   build/current/debug-tests/    - GoogleTest builds (optional)
+  //   ASAN_OPTIONS / UBSAN_OPTIONS  - Sanitizer runtime configuration
+  //   TERM                          - Terminal type for TUI applications
   //===-------------------------------------------------------------------------===//
   "version": "0.2.0",
-
-  //===--------------------- SHARED CONFIGURATION SNIPPETS ---------------------===//
-  // These are reference snippets for common patterns used below.
-  // VS Code doesn't support true snippet reuse, but these document common patterns.
-  //
-  // LLDB_INIT_COMMANDS (used in all LLDB configurations):
-  //   "command script import ~/.lldb/LLDB_Formatters",
-  //   "settings set target.process.follow-fork-mode child",
-  //   "settings set target.inline-breakpoint-strategy always",
-  //   "settings set target.prefer-dynamic-value run-target",
-  //   "settings set target.process.thread.step-avoid-regexp ^std::",
-  //   "settings set stop-disassembly-display never"
-  //
-  // Environment variable files:
-  // STANDARD_ENV (used in standard debug builds).
-  // SANITIZER_ENV (used in sanitizer builds).
-  // THREAD_SANITIZER_ENV (used in thread sanitizer builds).
-  //===-------------------------------------------------------------------------===//
 
   "configurations": [
     //===------------------------ MACOS: LLDB (Primary) ------------------------===//
@@ -53,10 +31,9 @@
       "name": "[macOS] Debug Test",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:testExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
       "stopOnEntry": false,
@@ -80,10 +57,9 @@
       "name": "[macOS] Debug App",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:appExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "integrated",
       "stopOnEntry": false,
@@ -103,18 +79,16 @@
     },
 
     //===----------------------- MACOS: Sanitizer Builds -----------------------===//
-    // Enhanced memory debugging with full sanitizer instrumentation.
-    // Uses separate build directory (build/current/sanitize/) with -fsanitize flags.
-    // Includes macOS-specific malloc guards and detailed leak detection.
+    // Add sanitizer runtime options on top of the active target. Select the
+    // Sanitize / ThreadSanitize CMake preset so the target is instrumented.
 
     {
       "name": "[macOS] Debug Test + Sanitizers",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/sanitize/bin/${input:testExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build (Sanitize)",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
       "stopOnEntry": false,
@@ -130,10 +104,9 @@
       "name": "[macOS] Debug App + Sanitizers",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/sanitize/bin/${input:appExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build (Sanitize)",
       "sourceLanguages": ["cpp"],
       "terminal": "integrated",
       "stopOnEntry": false,
@@ -150,10 +123,9 @@
       "name": "[macOS] Debug Test + ThreadSanitizer",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/thread-sanitize/bin/${input:testExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build (ThreadSanitize)",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
       "stopOnEntry": false,
@@ -169,10 +141,9 @@
       "name": "[macOS] Debug App + ThreadSanitizer",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/thread-sanitize/bin/${input:appExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build (ThreadSanitize)",
       "sourceLanguages": ["cpp"],
       "terminal": "integrated",
       "stopOnEntry": false,
@@ -188,16 +159,14 @@
 
     //===----------------------------- LINUX: LLDB -----------------------------===//
     // Linux debugging with LLDB (when available).
-    // Similar to macOS but without macOS-specific malloc guards.
 
     {
       "name": "[Linux] Debug Test (LLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:testExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "console",
       "stopOnEntry": false,
@@ -215,10 +184,9 @@
       "name": "[Linux] Debug App (LLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:appExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "sourceLanguages": ["cpp"],
       "terminal": "integrated",
       "stopOnEntry": false,
@@ -233,17 +201,15 @@
 
     //===----------------------------- LINUX: GDB ------------------------------===//
     // Linux debugging with GDB (most common on Linux).
-    // Uses GDB-specific pretty-printing and Intel disassembly syntax.
 
     {
       "name": "[Linux] Debug Test (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:testExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "environment": [
         {
           "name": "ASAN_OPTIONS",
@@ -286,11 +252,10 @@
       "name": "[Linux] Debug App (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:appExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "environment": [{ "name": "TERM", "value": "xterm-256color" }],
       "externalConsole": false,
       "MIMode": "gdb",
@@ -317,15 +282,13 @@
       "name": "[Cross-Platform] Debug Test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:testExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "environment": [],
       "externalConsole": false,
       "windows": {
-        "program": "${workspaceFolder}/build/current/debug/bin/${input:testExecutable}.exe",
         "MIMode": "gdb",
         "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
       },
@@ -369,15 +332,13 @@
       "name": "[Cross-Platform] Debug App",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/current/debug/bin/${input:appExecutable}",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "CMake: Build All",
       "environment": [],
       "externalConsole": false,
       "windows": {
-        "program": "${workspaceFolder}/build/current/debug/bin/${input:appExecutable}.exe",
         "MIMode": "gdb",
         "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe"
       },
@@ -408,54 +369,5 @@
         }
       ]
     }
-  ],
-
-  //===--------------------------- INPUT DEFINITIONS ---------------------------===//
-  // User-selectable targets for debugging.
-  // These appear as dropdown menus when launching debug sessions.
-
-  "inputs": [
-    {
-      "id": "testExecutable",
-      "type": "pickString",
-      "description": "Select test executable [src/]",
-      "options": [
-        "test_Static_Array",
-        "test_Dynamic_Array",
-        "test_Circular_Array",
-        "test_Singly_Linked_List",
-        "test_Doubly_Linked_List",
-        "test_Circular_Linked_List",
-        "test_Stacks_Queues",
-        "test_Deque",
-        "test_Priority_Queue",
-        "test_Complete_Binary_Tree",
-        "test_BST",
-        "test_BBT",
-        "test_AVL",
-        "test_RBT",
-        "test_Trie",
-        "test_Fenwick_Tree",
-        "test_Segment_Tree",
-        "test_Dijkstra",
-        "test_Graph_ADJ_List",
-        "test_Graph_ADJ_Matrix",
-        "test_Disjoint_Set_Union",
-        "test_Tree_Map",
-        "test_HashMap",
-        "test_Hash_Chaining",
-        "test_Hash_Open_Addr",
-        "test_Heaps"
-      ],
-      "default": "test_BST"
-    },
-    {
-      "id": "appExecutable",
-      "type": "pickString",
-      "description": "Select application executable [apps/]",
-      "options": ["app_Snake_TUI", "app_Snake_Stress"],
-      "default": "app_Snake_TUI"
-    }
   ]
 }
-//===---------------------------------------------------------------------------===//

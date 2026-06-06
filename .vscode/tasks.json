@@ -10,17 +10,17 @@
   //   5. Utility tasks - Format and lint operations
   //
   // Build Types:
-  //   Debug           - Standard debug build (build/${input:toolchain}/debug/)
-  //   Release         - Optimized production build (build/${input:toolchain}/release/)
-  //   Sanitize        - AddressSanitizer + UBSan (build/${input:toolchain}/sanitize/)
-  //   Sanitize+Tests  - ASan + UBSan with GoogleTest (build/${input:toolchain}/sanitize-tests/)
-  //   ThreadSanitize  - ThreadSanitizer (build/${input:toolchain}/thread-sanitize/)
-  //   Debug+Tests     - GoogleTest enabled (build/${input:toolchain}/debug-tests/)
+  //   Debug            - Standard debug build (build/${input:toolchain}/debug/)
+  //   Release          - Optimized production build (build/${input:toolchain}/release/)
+  //   Sanitize         - AddressSanitizer + UBSan (build/${input:toolchain}/sanitize/)
+  //   Sanitize+Tests   - ASan + UBSan with GoogleTest (build/${input:toolchain}/sanitize-tests/)
+  //   ThreadSanitize   - ThreadSanitizer (build/${input:toolchain}/thread-sanitize/)
+  //   Debug+Tests      - GoogleTest enabled (build/${input:toolchain}/debug-tests/)
   //
   // Common Variables:
   //   ${input:toolchain}      - Toolchain family (clang|gcc)
-  //   ${input:buildJobs}       - Parallel compilation jobs
-  //   ${workspaceFolder}       - Project root directory
+  //   ${input:buildJobs}      - Parallel compilation jobs
+  //   ${workspaceFolder}      - Project root directory
   //===-------------------------------------------------------------------------===//
   "version": "2.0.0",
 
@@ -234,34 +234,15 @@
       "detail": "Build ThreadSanitizer targets with GoogleTest enabled"
     },
     {
-      "label": "CMake: Build Test Target [src/]",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "build/${input:toolchain}/debug",
-        "--target",
-        "${input:testTarget}",
-        "-j${input:buildJobs}"
-      ],
+      // Builds the target selected in the CMake Tools status bar ("Set Build Target").
+      // CMake Tools discovers the target list, so nothing is hardcoded here.
+      // Works for src/ demos and apps/ alike.
+      "label": "CMake: Build Selected Target",
+      "type": "cmake",
+      "command": "build",
       "group": "build",
       "problemMatcher": ["$gcc"],
-      "detail": "Build specific test target from src/"
-    },
-    {
-      "label": "CMake: Build App Target [apps/]",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "build/${input:toolchain}/debug",
-        "--target",
-        "${input:appTarget}",
-        "-j${input:buildJobs}"
-      ],
-      "group": "build",
-      "problemMatcher": ["$gcc"],
-      "detail": "Build specific app target from apps/"
+      "detail": "Build the target chosen in the CMake Tools status bar"
     },
 
     //===----------------------------- CLEAN TASKS -----------------------------===//
@@ -373,11 +354,14 @@
     // These tasks execute built binaries and run tests.
 
     {
-      "label": "Run: Test Binary [src/]",
+      // Runs the launch target selected in the CMake Tools status bar ("Set Launch/Debug Target").
+      // cmake.launchTargetPath builds it on demand and resolves to its binary,
+      // so no target list or build dir is hardcoded.
+      "label": "Run: Selected Target",
       "type": "shell",
-      "command": "./bin/${input:runTestTarget}",
+      "command": "${command:cmake.launchTargetPath}",
       "options": {
-        "cwd": "${workspaceFolder}/build/${input:toolchain}/debug"
+        "cwd": "${command:cmake.launchTargetDirectory}"
       },
       "group": {
         "kind": "test",
@@ -389,27 +373,8 @@
         "panel": "shared",
         "clear": true
       },
-      "dependsOn": ["CMake: Build All"],
       "problemMatcher": [],
-      "detail": "Build and run selected test binary from src/"
-    },
-    {
-      "label": "Run: App Binary [apps/]",
-      "type": "shell",
-      "command": "./bin/${input:runAppTarget}",
-      "options": {
-        "cwd": "${workspaceFolder}/build/${input:toolchain}/debug"
-      },
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "clear": true
-      },
-      "dependsOn": ["CMake: Build All"],
-      "problemMatcher": [],
-      "detail": "Build and run selected app binary from apps/"
+      "detail": "Build and run the target chosen in the CMake Tools status bar"
     },
     {
       "label": "Test: Run GoogleTest Suite",
@@ -491,8 +456,9 @@
   ],
 
   //===-------------------------- INPUT DEFINITIONS ---------------------------===//
-  // User-configurable variables used across multiple tasks.
-  // These reduce duplication and make tasks easier to customize.
+  // Shared variables used across tasks. Target selection is handled by CMake Tools
+  // (status bar pickers), so there are no hardcoded target lists to keep
+  // in sync with the sources here.
 
   "inputs": [
     {
@@ -508,88 +474,6 @@
       "description": "Number of parallel build jobs",
       "options": ["4", "8", "12", "16"],
       "default": "8"
-    },
-    {
-      "id": "testTarget",
-      "type": "pickString",
-      "description": "Select test target to build [src/]",
-      "options": [
-        "test_Static_Array",
-        "test_Dynamic_Array",
-        "test_Circular_Array",
-        "test_Singly_Linked_List",
-        "test_Doubly_Linked_List",
-        "test_Circular_Linked_List",
-        "test_Stacks_Queues",
-        "test_Deque",
-        "test_Priority_Queue",
-        "test_Complete_Binary_Tree",
-        "test_BST",
-        "test_BBT",
-        "test_AVL",
-        "test_RBT",
-        "test_Trie",
-        "test_Fenwick_Tree",
-        "test_Segment_Tree",
-        "test_Dijkstra",
-        "test_Graph_ADJ_List",
-        "test_Graph_ADJ_Matrix",
-        "test_Disjoint_Set_Union",
-        "test_Tree_Map",
-        "test_HashMap",
-        "test_Hash_Chaining",
-        "test_Hash_Open_Addr",
-        "test_Heaps"
-      ],
-      "default": "test_BST"
-    },
-    {
-      "id": "appTarget",
-      "type": "pickString",
-      "description": "Select app target to build [apps/]",
-      "options": ["app_Snake_TUI", "app_Snake_Stress"],
-      "default": "app_Snake_TUI"
-    },
-    {
-      "id": "runTestTarget",
-      "type": "pickString",
-      "description": "Select test binary to run [src/]",
-      "options": [
-        "test_Static_Array",
-        "test_Dynamic_Array",
-        "test_Circular_Array",
-        "test_Singly_Linked_List",
-        "test_Doubly_Linked_List",
-        "test_Circular_Linked_List",
-        "test_Stacks_Queues",
-        "test_Deque",
-        "test_Priority_Queue",
-        "test_Complete_Binary_Tree",
-        "test_BST",
-        "test_BBT",
-        "test_AVL",
-        "test_RBT",
-        "test_Trie",
-        "test_Fenwick_Tree",
-        "test_Segment_Tree",
-        "test_Dijkstra",
-        "test_Graph_ADJ_List",
-        "test_Graph_ADJ_Matrix",
-        "test_Disjoint_Set_Union",
-        "test_Tree_Map",
-        "test_HashMap",
-        "test_Hash_Chaining",
-        "test_Hash_Open_Addr",
-        "test_Heaps"
-      ],
-      "default": "test_BST"
-    },
-    {
-      "id": "runAppTarget",
-      "type": "pickString",
-      "description": "Select app binary to run [apps/]",
-      "options": ["app_Snake_TUI", "app_Snake_Stress"],
-      "default": "app_Snake_TUI"
     }
   ]
 }

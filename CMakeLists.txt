@@ -31,7 +31,8 @@
 #
 # ================================================================================= #
 
-cmake_minimum_required(VERSION 3.20)
+# 3.23 required by target_sources(FILE_SET HEADERS) in ads_lib (also covers presets v3).
+cmake_minimum_required(VERSION 3.23)
 project(AlgoDataStructProject
     VERSION 1.0.0
     LANGUAGES CXX
@@ -39,9 +40,8 @@ project(AlgoDataStructProject
 )
 
 # ------------------------------- ANSI Color Codes -------------------------------- #
-# These color codes make the configuration output more readable in the terminal.
-# They work on Unix-like systems and modern Windows terminals.
-if(UNIX OR APPLE OR CMAKE_HOST_WIN32)
+# ANSI colors for readable output; honor the NO_COLOR convention (no-color.org).
+if(NOT DEFINED ENV{NO_COLOR})
     string(ASCII 27 Esc)
     set(ANSI_RESET   "${Esc}[0m")
     set(ANSI_BOLD    "${Esc}[1m")
@@ -115,10 +115,9 @@ option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 option(DISABLE_PCH "Disable precompiled headers (for debugging)" OFF)
 option(DISABLE_UNITY_BUILD "Disable Unity Build for tests (for faster incremental builds)" OFF)
 
-# Output directories for built executables and libraries.
-# Putting them in the source tree makes them easier to find and run.
+# Outputs under the build tree, keeping the source tree free of build artifacts.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Create output directories if they don't exist.
 file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
@@ -133,6 +132,9 @@ include(cmake/CompilerSetup.cmake)
 
 # Run the compiler include path detection.
 detect_compiler_system_includes(COMPILER_SYSTEM_INCLUDE_PATHS)
+
+# Shared build options target; must precede anything that links it.
+include(cmake/BuildOptions.cmake)
 
 # Library definition: Header-only ads_lib target.
 include(cmake/LibraryDefinition.cmake)

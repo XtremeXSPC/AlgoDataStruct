@@ -27,14 +27,6 @@ if(NOT ENABLE_SNAKE_APP)
     return()
 endif()
 
-# Define common warning flags for all Snake targets.
-set(SNAKE_COMMON_WARNINGS
-    -Wall        # Enable all standard warnings.
-    -Wextra      # Enable extra warnings.
-    -Wpedantic   # Enforce ISO C++ compliance.
-    -Wshadow     # Warn about variable shadowing.
-)
-
 # ============================= Snake Engine Library ============================== #
 
 # Create static library for core Snake game logic.
@@ -42,44 +34,19 @@ add_library(snake_engine STATIC
     src/Snake_Engine.cpp
 )
 
-# Place compiled library in centralized lib directory.
-set_target_properties(snake_engine PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-)
-
-# Export include directory for public API access.
+# Public API include dir + ads_lib (PUBLIC: part of the API) and ads_build_options
+# (PRIVATE: flags that must not propagate to consumers).
 target_include_directories(snake_engine
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
-
-# Link against the main data structures library.
 target_link_libraries(snake_engine
     PUBLIC
-        ads_lib  # Provides core containers and algorithms.
+        ads_lib            # Provides core containers and algorithms.
+    PRIVATE
+        ads_build_options  # Shared warnings / optimization / sanitizer flags.
 )
-
-# Configure compiler options with build-specific optimizations.
-target_compile_options(snake_engine PRIVATE
-    ${SNAKE_COMMON_WARNINGS}
-    $<$<CONFIG:Debug>:-g -O0>
-    $<$<CONFIG:Release>:-O3 -DNDEBUG>
-    $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
-    $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
-)
-
-# Enable sanitizers for link stage when in Sanitize build.
-target_link_options(snake_engine PRIVATE
-    $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
-    $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
-)
-
-# Add system include paths if provided (for external dependencies).
-if(COMPILER_SYSTEM_INCLUDE_PATHS)
-    foreach(dir IN LISTS COMPILER_SYSTEM_INCLUDE_PATHS)
-        target_include_directories(snake_engine SYSTEM PRIVATE ${dir})
-    endforeach()
-endif()
+ads_apply_clangd_includes(snake_engine)
 
 # ========================== Executable Helper Function =========================== #
 
@@ -88,31 +55,8 @@ endif()
 #       SOURCE_FILE - Source file path for the executable.
 function(snake_add_executable TARGET_NAME SOURCE_FILE)
     add_executable(${TARGET_NAME} ${SOURCE_FILE})
-
-    # Link against the engine library.
-    target_link_libraries(${TARGET_NAME} PRIVATE snake_engine)
-
-    # Apply same compiler options as engine.
-    target_compile_options(${TARGET_NAME} PRIVATE
-        ${SNAKE_COMMON_WARNINGS}
-        $<$<CONFIG:Debug>:-g -O0>
-        $<$<CONFIG:Release>:-O3 -DNDEBUG>
-        $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
-        $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
-    )
-
-    # Enable sanitizers for link stage.
-    target_link_options(${TARGET_NAME} PRIVATE
-        $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
-        $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
-    )
-
-    # Add system include paths if available.
-    if(COMPILER_SYSTEM_INCLUDE_PATHS)
-        foreach(dir IN LISTS COMPILER_SYSTEM_INCLUDE_PATHS)
-            target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${dir})
-        endforeach()
-    endif()
+    target_link_libraries(${TARGET_NAME} PRIVATE snake_engine ads_build_options)
+    ads_apply_clangd_includes(${TARGET_NAME})
 endfunction()
 
 # ============================== Snake Applications =============================== #
@@ -145,33 +89,13 @@ if(ENABLE_TESTING)
 
     # Build tests only if GoogleTest is available.
     if(SNAKE_GTEST_TARGET)
-        # Create test executable.
+        # Test executable: engine + shared build options + test framework.
         add_executable(runSnakeTests tests/Test_Snake_Engine.cpp)
-
-        # Link against engine and test framework.
-        target_link_libraries(runSnakeTests PRIVATE snake_engine ${SNAKE_GTEST_TARGET})
-
-        # Apply consistent compiler options.
-        target_compile_options(runSnakeTests PRIVATE
-            ${SNAKE_COMMON_WARNINGS}
-            $<$<CONFIG:Debug>:-g -O0>
-            $<$<CONFIG:Release>:-O3 -DNDEBUG>
-            $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
-            $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
+        target_link_libraries(runSnakeTests PRIVATE
+            snake_engine
+            ads_build_options
+            ${SNAKE_GTEST_TARGET}
         )
-
-        # Enable sanitizers for link stage.
-        target_link_options(runSnakeTests PRIVATE
-            $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
-            $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
-        )
-
-        # Add system include paths if provided.
-        if(COMPILER_SYSTEM_INCLUDE_PATHS)
-            foreach(dir IN LISTS COMPILER_SYSTEM_INCLUDE_PATHS)
-                target_include_directories(runSnakeTests SYSTEM PRIVATE ${dir})
-            endforeach()
-        endif()
 
         # Integrate with CTest for automatic test discovery.
         include(GoogleTest)

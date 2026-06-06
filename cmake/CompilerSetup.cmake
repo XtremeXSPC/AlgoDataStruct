@@ -83,84 +83,27 @@ function(detect_compiler_system_includes OUTPUT_VARIABLE)
     endif()
 endfunction()
 
-# ------------------------ Helper Function: Add Executable ------------------------ #
-#
-# This function encapsulates all the logic for creating a test executable.
-# It ensures consistent compiler flags, warning levels, and configuration
-# across all test programs.
-#
+# Pass the compiler's own include paths as system includes so clangd resolves
+# standard-library headers (warnings from them stay suppressed). No-op if empty.
+function(ads_apply_clangd_includes TARGET_NAME)
+    foreach(dir IN LISTS COMPILER_SYSTEM_INCLUDE_PATHS)
+        target_include_directories(${TARGET_NAME} SYSTEM PRIVATE "${dir}")
+    endforeach()
+endfunction()
+
+# Create a demo executable from one source, linked to ads_lib + ads_build_options.
+# Standard-library hardening is enabled here (safe: demos link no external libs).
 function(ads_add_executable TARGET_NAME SOURCE_FILE)
-    # Create the executable target.
     add_executable(${TARGET_NAME} ${SOURCE_FILE})
+    target_link_libraries(${TARGET_NAME} PRIVATE ads_lib ads_build_options)
 
-    # Link with our header-only library.
-    # This automatically adds the include directory and all necessary properties.
-    target_link_libraries(${TARGET_NAME} PRIVATE ads_lib)
-
-    # --------------------- Compiler Flags and Warnings ---------------------- #
-    # We use different flags based on build configuration (Debug, Release, etc.)
-    # and compiler type (GCC vs Clang).
-
-    # Common warning flags for all compilers.
-    # These help catch potential bugs and encourage good coding practices.
-    set(COMMON_WARNINGS
-        -Wall          # Enable most common warnings
-        -Wextra        # Enable extra warnings
-        -Wpedantic     # Warn about non-standard C++
-        -Wshadow       # Warn about variable shadowing
-    )
-
-    # Configuration-specific flags using generator expressions.
-    # Generator expressions are evaluated at build time, not configure time.
-    target_compile_options(${TARGET_NAME} PRIVATE
-        ${COMMON_WARNINGS}
-
-        # Debug configuration: No optimization, full debug info.
-        $<$<CONFIG:Debug>:-g -O0>
-
-        # Release configuration: Maximum optimization, no debug info.
-        $<$<CONFIG:Release>:-O3 -DNDEBUG>
-
-        # Address/UB sanitizers configuration.
-        $<$<CONFIG:Sanitize>:-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer>
-
-        # Thread sanitizer configuration.
-        $<$<CONFIG:ThreadSanitize>:-g -O1 -fsanitize=thread -fno-omit-frame-pointer>
-    )
-
-    # Compiler-specific definitions for enhanced debugging.
     target_compile_definitions(${TARGET_NAME} PRIVATE
-        # For GCC in Debug mode, enable STL debug mode.
-        # This adds runtime checks for iterators and containers.
+        # GCC libstdc++ debug mode: runtime checks for iterators and containers.
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:GNU>>:_GLIBCXX_DEBUG>
-
-        # For Clang/libc++, enable extensive hardening checks.
+        # Clang libc++ extensive hardening checks.
         $<$<CXX_COMPILER_ID:Clang,AppleClang>:_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE>
     )
 
-    # ----------------- Add System Include Paths for clangd ------------------ #
-    # If we detected compiler include paths, add them as system includes.
-    # This helps clangd find standard library headers.
-    # System includes are treated specially: warnings in them are suppressed.
-    if(COMPILER_SYSTEM_INCLUDE_PATHS)
-        foreach(dir IN LISTS COMPILER_SYSTEM_INCLUDE_PATHS)
-            target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${dir})
-        endforeach()
-    endif()
-
-    # ------------------------- Linker Configuration ------------------------- #
-    # Configuration-specific linker flags.
-    target_link_options(${TARGET_NAME} PRIVATE
-        # Link Address/UB sanitizer runtime libraries.
-        $<$<CONFIG:Sanitize>:-fsanitize=address,undefined>
-
-        # Link thread sanitizer runtime library.
-        $<$<CONFIG:ThreadSanitize>:-fsanitize=thread>
-
-        # Strip symbols in Release builds to reduce executable size.
-        $<$<CONFIG:Release>:-s>
-    )
-
-    # Print a status message when the target is added.
-    message(STATUS "${ANSI_GREEN}Added test executable: ${TARGET_NAME}${ANSI_RESET}")
+    ads_apply_clangd_includes(${TARGET_NAME})
+    message(STATUS "${ANSI_GREEN}Added demo executable: ${TARGET_NAME}${ANSI_RESET}")
 endfunction()

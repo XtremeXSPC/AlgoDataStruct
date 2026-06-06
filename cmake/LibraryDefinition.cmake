@@ -35,13 +35,17 @@ file(GLOB_RECURSE ADS_TEMPLATE_SOURCES CONFIGURE_DEPENDS
 list(SORT ADS_PUBLIC_HEADERS)
 list(SORT ADS_TEMPLATE_SOURCES)
 
+# Headers and .tpp bodies in one header file set: members are treated as headers
+# (never compiled), so the .tpp files appear in IDEs without becoming TUs.
 target_sources(ads_lib
     INTERFACE
         FILE_SET HEADERS
-        BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        FILES ${ADS_PUBLIC_HEADERS}
-    INTERFACE
-        ${ADS_TEMPLATE_SOURCES}
+        BASE_DIRS
+            "${CMAKE_CURRENT_SOURCE_DIR}/include"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        FILES
+            ${ADS_PUBLIC_HEADERS}
+            ${ADS_TEMPLATE_SOURCES}
 )
 
 # ------------------------------ Precompiled Headers ------------------------------ #

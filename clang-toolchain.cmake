@@ -208,8 +208,9 @@ find_program(C_COMPILER_PATH
 )
 
 # If not found in same directory, try broader search.
+# Keep the version list aligned with the clang++ search names above.
 if(NOT C_COMPILER_PATH)
-    set(C_SEARCH_NAMES clang-19 clang-18 clang-17 clang-16 clang-15 clang)
+    set(C_SEARCH_NAMES clang-21 clang-20 clang-19 clang-18 clang-17 clang-16 clang)
     find_program(C_COMPILER_PATH
         NAMES ${C_SEARCH_NAMES}
         PATHS ${COMPILER_SEARCH_PATHS}
