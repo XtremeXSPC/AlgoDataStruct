@@ -5,13 +5,13 @@
  */
 //===--------------------------------------------------------------------------===//
 
+#include "../include/ads/trees/Binary_Search_Tree.hpp"
+
 #include <gtest/gtest.h>
 
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
 
 using namespace ads::trees;
 using std::string;
@@ -118,7 +118,9 @@ TEST(BinarySearchTreeTest, CustomTypes) {
     int    age;
 
     Person(string n, int a) : name(std::move(n)), age(a) {}
+
     auto operator<(const Person& other) const -> bool { return age < other.age; }
+
     auto operator==(const Person& other) const -> bool { return age == other.age; }
   };
 

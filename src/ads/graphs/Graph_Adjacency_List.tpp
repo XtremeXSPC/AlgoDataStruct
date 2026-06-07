@@ -16,15 +16,13 @@
 
 namespace ads::graphs {
 
-// DynamicArray stores vertices/adjacency without STL storage; CircularArrayQueue backs BFS worklists.
-
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) : vertices_(), is_directed_(is_directed), num_edges_(0) {
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_t num_vertices, bool is_directed) :
     vertices_(),
     is_directed_(is_directed),
@@ -32,7 +30,7 @@ GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_t num_vertic
   vertices_.reserve(num_vertices);
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(GraphAdjacencyList&& other) noexcept :
     vertices_(std::move(other.vertices_)),
     is_directed_(other.is_directed_),
@@ -40,7 +38,7 @@ GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(GraphAdjacencyLis
   other.num_edges_ = 0;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::operator=(GraphAdjacencyList&& other) noexcept -> GraphAdjacencyList& {
   if (this != &other) {
     vertices_    = std::move(other.vertices_);
@@ -54,43 +52,43 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::operator=(GraphAdjacencyList&& 
 
 //===---------------------------- VERTEX OPERATIONS ----------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> size_t {
   vertices_.emplace_back(data);
   return vertices_.size() - 1;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(VertexData&& data) -> size_t {
   vertices_.emplace_back(std::move(data));
   return vertices_.size() - 1;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::get_vertex_data(size_t vertex_id) -> VertexData& {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].data;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::get_vertex_data(size_t vertex_id) const -> const VertexData& {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].data;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::has_vertex(size_t vertex_id) const noexcept -> bool {
   return vertex_id < vertices_.size();
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::num_vertices() const noexcept -> size_t {
   return vertices_.size();
 }
 
 //===----------------------------- EDGE OPERATIONS -----------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::add_edge(size_t from, size_t to, EdgeWeight weight) -> void {
   validate_vertex(from);
   validate_vertex(to);
@@ -108,7 +106,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::add_edge(size_t from, size_t to
   }
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t to) -> void {
   validate_vertex(from);
   validate_vertex(to);
@@ -129,7 +127,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
   }
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to) const -> bool {
   if (!has_vertex(from) || !has_vertex(to)) {
     return false;
@@ -138,7 +136,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to
   return find_edge_index(from, to).has_value();
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
@@ -152,14 +150,14 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, si
   return std::nullopt;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::num_edges() const noexcept -> size_t {
   return num_edges_;
 }
 
 //===-------------------------- NAVIGATION OPERATIONS --------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id) const -> std::vector<size_t> {
   validate_vertex(vertex_id);
 
@@ -173,7 +171,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id)
   return neighbors;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors_with_weights(size_t vertex_id) const
     -> std::vector<std::pair<size_t, EdgeWeight>> {
   validate_vertex(vertex_id);
@@ -188,9 +186,11 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors_with_weights(size
   return neighbors;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 template <typename Visitor>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void
+    requires WeightedNeighborVisitor<Visitor, EdgeWeight>
+{
   validate_vertex(vertex_id);
 
   for (const auto& edge : vertices_[vertex_id].adjacency) {
@@ -198,7 +198,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(size
   }
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::degree(size_t vertex_id) const -> size_t {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].adjacency.size();
@@ -206,19 +206,19 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::degree(size_t vertex_id) const 
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::is_directed() const noexcept -> bool {
   return is_directed_;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::is_empty() const noexcept -> bool {
   return vertices_.is_empty();
 }
 
 //===----------------------------- CLEAR OPERATION -----------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::clear() -> void {
   vertices_.clear();
   num_edges_ = 0;
@@ -226,7 +226,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::clear() -> void {
 
 //===-------------------------- TRAVERSAL ALGORITHMS ---------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const -> std::vector<size_t> {
   validate_vertex(start_vertex);
 
@@ -257,7 +257,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const 
   return result;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const -> std::vector<size_t> {
   validate_vertex(start_vertex);
 
@@ -289,7 +289,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const 
   return result;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
   validate_vertex(from);
   validate_vertex(to);
@@ -339,12 +339,12 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
   return std::nullopt;
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::is_connected(size_t v1, size_t v2) const -> bool {
   return find_path(v1, v2).has_value();
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<size_t>> {
   std::vector<std::vector<size_t>> components;
   ads::arrays::DynamicArray<bool>  visited(vertices_.size(), false);
@@ -382,14 +382,14 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const ->
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
   if (vertex_id >= vertices_.size()) {
     throw GraphException("Invalid vertex ID: " + std::to_string(vertex_id));
   }
 }
 
-template <typename VertexData, typename EdgeWeight>
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(size_t from, size_t to) const -> std::optional<size_t> {
   const auto& adjacency = vertices_[from].adjacency;
 

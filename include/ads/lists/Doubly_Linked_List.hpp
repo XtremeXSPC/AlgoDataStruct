@@ -19,7 +19,6 @@
 #include "List.hpp"
 #include "List_Exception.hpp"
 
-#include <concepts>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -38,12 +37,15 @@ namespace ads::lists {
  * @tparam T The type of data to store in the list.
  */
 
-template <typename T>
+template <ListElement T>
 class DoublyLinkedList : public List<T> {
 private:
   struct Node;
 
 public:
+  using value_type = T;
+  using size_type  = typename List<T>::size_type;
+
   //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
    * @brief Forward iterator for DoublyLinkedList.
@@ -91,9 +93,7 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    const_iterator(const Node* ptr = nullptr, const DoublyLinkedList<T>* list = nullptr) :
-        node_ptr_(ptr),
-        list_ptr_(list) {}
+    const_iterator(const Node* ptr = nullptr, const DoublyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -257,7 +257,7 @@ public:
    * @return The number of elements
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t override;
+  [[nodiscard]] auto size() const noexcept -> size_type override;
 
   //===------------------------ MODIFICATION OPERATIONS ------------------------===//
 
@@ -367,7 +367,7 @@ private:
 
   std::unique_ptr<Node> head_; ///< Pointer to the first node (owns the node)
   Node*                 tail_; ///< Raw pointer to the last node (non-owning)
-  size_t                size_; ///< Number of elements in the list
+  size_type             size_; ///< Number of elements in the list
 };
 
 } // namespace ads::lists

@@ -19,9 +19,8 @@ namespace ads::associative {
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename Key, typename Value>
-TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init)
-  requires std::copy_constructible<Key> && std::copy_constructible<Value>
+template <MapKey Key, MapValue Value>
+TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init) requires CopyMapKey<Key> && CopyMapValue<Value>
 {
   for (const auto& pair : init) {
     put(pair.first, pair.second);
@@ -30,26 +29,25 @@ TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init)
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::empty() const noexcept -> bool {
   return tree_.is_empty();
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::size() const noexcept -> size_t {
   return tree_.size();
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::contains(const Key& key) const -> bool {
   return find_entry(key) != nullptr;
 }
 
 //===----------------------------- ELEMENT ACCESS ------------------------------===//
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
-  requires std::default_initializable<Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::operator[](const Key& key) -> Value& requires DefaultMapValue<Value>
 {
   if (const Entry* entry = find_entry(key)) {
     return entry->value;
@@ -63,7 +61,7 @@ auto TreeMap<Key, Value>::operator[](const Key& key) -> Value&
   return inserted->value;
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::at(const Key& key) -> Value& {
   const Entry* entry = find_entry(key);
   if (!entry) {
@@ -72,7 +70,7 @@ auto TreeMap<Key, Value>::at(const Key& key) -> Value& {
   return entry->value;
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::at(const Key& key) const -> const Value& {
   const Entry* entry = find_entry(key);
   if (!entry) {
@@ -81,7 +79,7 @@ auto TreeMap<Key, Value>::at(const Key& key) const -> const Value& {
   return entry->value;
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::find(const Key& key) -> Value* {
   const Entry* entry = find_entry(key);
   if (!entry) {
@@ -90,7 +88,7 @@ auto TreeMap<Key, Value>::find(const Key& key) -> Value* {
   return &entry->value;
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
   const Entry* entry = find_entry(key);
   if (!entry) {
@@ -101,37 +99,33 @@ auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::insert(const Key& key, const Value& value) -> bool
-  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::insert(const Key& key, const Value& value) -> bool requires CopyMapEntry<Key, Value>
 {
   bool inserted = !contains(key);
   put(key, value);
   return inserted;
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::insert(const Key& key, Value&& value) -> bool
-  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveMapEntry<Key, Value>
 {
   bool inserted = !contains(key);
   put(key, std::move(value));
   return inserted;
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::insert(Key&& key, Value&& value) -> bool
-  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::insert(Key&& key, Value&& value) -> bool requires MoveMapEntry<Key, Value>
 {
   bool inserted = !contains(key);
   put(std::move(key), std::move(value));
   return inserted;
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 template <typename... Args>
-auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool
-  requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>
+auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool requires EmplaceMapValue<Value, Args...>
 {
   if (const Entry* entry = find_entry(key)) {
     entry->value = Value(std::forward<Args>(args)...);
@@ -142,9 +136,8 @@ auto TreeMap<Key, Value>::emplace(Key key, Args&&... args) -> bool
   return true;
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void
-  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void requires CopyMapEntry<Key, Value>
 {
   if (const Entry* entry = find_entry(key)) {
     entry->value = value;
@@ -154,9 +147,8 @@ auto TreeMap<Key, Value>::put(const Key& key, const Value& value) -> void
   tree_.insert(Entry(key, value));
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(const Key& key, Value&& value) -> void
-  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::put(const Key& key, Value&& value) -> void requires CopyKeyMoveMapEntry<Key, Value>
 {
   if (const Entry* entry = find_entry(key)) {
     entry->value = std::move(value);
@@ -166,9 +158,8 @@ auto TreeMap<Key, Value>::put(const Key& key, Value&& value) -> void
   tree_.insert(Entry(key, std::move(value)));
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void
-  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void requires MoveMapEntry<Key, Value>
 {
   if (const Entry* entry = find_entry(key)) {
     entry->value = std::move(value);
@@ -180,22 +171,21 @@ auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::erase(const Key& key) -> bool {
   const Entry* entry = find_entry(key);
   return entry != nullptr && tree_.remove(*entry);
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::clear() noexcept -> void {
   tree_.clear();
 }
 
 //===--------------------------- CONVENIENCE METHODS ---------------------------===//
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::keys() const -> std::vector<Key>
-  requires std::copy_constructible<Key>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::keys() const -> std::vector<Key> requires CopyMapKey<Key>
 {
   std::vector<Key> result;
   result.reserve(tree_.size());
@@ -204,9 +194,8 @@ auto TreeMap<Key, Value>::keys() const -> std::vector<Key>
   return result;
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::values() const -> std::vector<Value>
-  requires std::copy_constructible<Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::values() const -> std::vector<Value> requires CopyMapValue<Value>
 {
   std::vector<Value> result;
   result.reserve(tree_.size());
@@ -215,9 +204,8 @@ auto TreeMap<Key, Value>::values() const -> std::vector<Value>
   return result;
 }
 
-template <typename Key, typename Value>
-auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>>
-  requires std::copy_constructible<Key> && std::copy_constructible<Value>
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>> requires CopyMapKey<Key> && CopyMapValue<Value>
 {
   std::vector<std::pair<Key, Value>> result;
   result.reserve(tree_.size());
@@ -229,12 +217,12 @@ auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>>
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::find_entry(const Key& key) -> const Entry* {
   return tree_.find_equivalent(key, EntryKeyLess{});
 }
 
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::find_entry(const Key& key) const -> const Entry* {
   return tree_.find_equivalent(key, EntryKeyLess{});
 }

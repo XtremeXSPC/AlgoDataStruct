@@ -16,14 +16,10 @@
 
 namespace ads::trees {
 
-// DynamicArray keeps iterator state copyable; LinkedQueue provides BFS storage without std::queue.
-
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <OrderedTreeElement T>
-AVLTree<T>::iterator::iterator(const iterator& other) :
-    stack_(other.stack_.begin(), other.stack_.end()),
-    current_(other.current_) {
+AVLTree<T>::iterator::iterator(const iterator& other) : stack_(other.stack_.begin(), other.stack_.end()), current_(other.current_) {
 }
 
 template <OrderedTreeElement T>
@@ -121,8 +117,7 @@ auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto AVLTree<T>::insert(const T& value) -> bool
-  requires std::copy_constructible<T>
+auto AVLTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   bool inserted = false;
   root_         = insert_helper(std::move(root_), value, inserted);
@@ -453,8 +448,7 @@ auto AVLTree<T>::is_balanced_helper(const Node* node, int& height) const noexcep
 }
 
 template <OrderedTreeElement T>
-auto AVLTree<T>::validate_helper(const Node* node, const T* lower_bound, const T* upper_bound, int& height) const
-    -> bool {
+auto AVLTree<T>::validate_helper(const Node* node, const T* lower_bound, const T* upper_bound, int& height) const -> bool {
   if (!node) {
     height = 0;
     return true;

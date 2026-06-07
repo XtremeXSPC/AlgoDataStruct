@@ -16,9 +16,6 @@
 
 namespace ads::associative {
 
-// Storage choice: HashMap stores entries through HashTableChaining; the
-// iterators use that table's ads:: bucket type rather than baking in std::list.
-
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <typename Key, typename Value, typename Hash>
@@ -165,7 +162,7 @@ HashMap<Key, Value, Hash>::HashMap(size_t initial_capacity, float max_load_facto
 // Constructor from initializer list.
 template <typename Key, typename Value, typename Hash>
 HashMap<Key, Value, Hash>::HashMap(std::initializer_list<value_type> init)
-  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+    requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
     : table_() {
   for (const auto& pair : init) {
     table_.insert(pair.first, pair.second);
@@ -207,21 +204,21 @@ auto HashMap<Key, Value, Hash>::at(const Key& key) const -> const Value& {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::put(const Key& key, const Value& value) -> void
-  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+    requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
 {
   table_.insert(key, value);
 }
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::put(const Key& key, Value&& value) -> void
-  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
 {
   table_.insert(key, std::move(value));
 }
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void
-  requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
 {
   table_.insert(std::move(key), std::move(value));
 }
@@ -230,7 +227,7 @@ auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::insert(const value_type& pair) -> std::pair<iterator, bool>
-  requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+    requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
 {
   bool inserted = !table_.contains(pair.first);
   table_.insert(pair.first, pair.second);
@@ -241,7 +238,7 @@ auto HashMap<Key, Value, Hash>::insert(const value_type& pair) -> std::pair<iter
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::insert(value_type&& pair) -> std::pair<iterator, bool>
-  requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
 {
   bool inserted = !table_.contains(pair.first);
   table_.insert(pair.first, std::move(pair.second));
@@ -355,8 +352,7 @@ auto HashMap<Key, Value, Hash>::count(const Key& key) const -> size_t {
 //===--------------------------- CONVENIENCE METHODS ---------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key>
-  requires std::copy_constructible<Key>
+auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key> requires std::copy_constructible<Key>
 {
   std::vector<Key> result;
   result.reserve(size());
@@ -371,8 +367,7 @@ auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key>
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::values() const -> std::vector<Value>
-  requires std::copy_constructible<Value>
+auto HashMap<Key, Value, Hash>::values() const -> std::vector<Value> requires std::copy_constructible<Value>
 {
   std::vector<Value> result;
   result.reserve(size());
@@ -387,8 +382,8 @@ auto HashMap<Key, Value, Hash>::values() const -> std::vector<Value>
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::entries() const -> std::vector<std::pair<Key, Value>>
-  requires std::copy_constructible<Key> && std::copy_constructible<Value>
+auto HashMap<Key, Value, Hash>::entries() const
+    -> std::vector<std::pair<Key, Value>> requires std::copy_constructible<Key> && std::copy_constructible<Value>
 {
   std::vector<std::pair<Key, Value>> result;
   result.reserve(size());
@@ -465,8 +460,7 @@ auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) const
-    -> std::pair<size_t, typename Table::Bucket::const_iterator> {
+auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) const -> std::pair<size_t, typename Table::Bucket::const_iterator> {
   size_t      bucket_idx = table_.hash(key);
   const auto& bucket     = table_.buckets_[bucket_idx];
 

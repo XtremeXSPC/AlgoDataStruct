@@ -46,8 +46,8 @@ struct City {
  * @param source The source vertex index.
  * @param shortest_paths Dijkstra result object.
  */
-auto print_shortest_paths(
-    const GraphAdjacencyList<City, double>& graph, size_t source, const ShortestPathsResult<double>& shortest_paths) -> void {
+auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const ShortestPathsResult<double>& shortest_paths)
+    -> void {
   cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
   cout << "=====--------------------------------------=====\n";
 
@@ -129,9 +129,9 @@ auto main() -> int {
   cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, " << large_graph.num_edges() << " edges\n";
 
   cout << "Running Dijkstra from vertex 0...\n";
-  auto start_time = std::chrono::high_resolution_clock::now();
+  auto start_time     = std::chrono::high_resolution_clock::now();
   auto shortest_paths = dijkstra_shortest_paths(large_graph, 0);
-  auto end_time   = std::chrono::high_resolution_clock::now();
+  auto end_time       = std::chrono::high_resolution_clock::now();
 
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
   cout << "Completed in " << static_cast<double>(duration.count()) / 1000.0 << " ms\n";

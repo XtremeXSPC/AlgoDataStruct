@@ -21,10 +21,9 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
-#include <concepts>
+#include <cstddef>
 #include <functional>
 #include <memory>
-#include <stdexcept>
 #include <utility>
 
 namespace ads::trees {
@@ -69,7 +68,7 @@ namespace ads::trees {
  *   - Space:  O(n)
  */
 template <OrderedTreeElement T, int MinDegree = 3>
-  requires ValidBTreeDegree<MinDegree>
+requires ValidBTreeDegree<MinDegree>
 class B_Tree {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -117,8 +116,7 @@ public:
    * @return true if inserted, false if duplicate.
    * @complexity O(t log_t n)
    */
-  auto insert(const T& key) -> bool
-    requires std::copy_constructible<T>;
+  auto insert(const T& key) -> bool requires std::copy_constructible<T>;
 
   /**
    * @brief Insert a key into the tree by move.
@@ -126,8 +124,7 @@ public:
    * @return true if inserted, false if duplicate.
    * @complexity O(t log_t n)
    */
-  auto insert(T&& key) -> bool
-    requires std::move_constructible<T>;
+  auto insert(T&& key) -> bool requires std::move_constructible<T>;
 
   /**
    * @brief Constructs a key in-place and inserts it into the tree.
@@ -137,8 +134,7 @@ public:
    * @complexity O(t log_t n)
    */
   template <typename... Args>
-  auto emplace(Args&&... args) -> bool
-    requires std::constructible_from<T, Args...>;
+  auto emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -418,11 +414,6 @@ private:
    */
   [[nodiscard]] auto count_nodes_helper(const Node* node) const -> size_t;
 
-  /**
-   * @brief In-order traversal helper.
-   * @param node Current node being visited.
-   * @param visit Function to call for each key.
-   */
   void in_order_helper(const Node* node, std::function<void(const T&)> visit) const;
 
   /**
@@ -434,13 +425,7 @@ private:
    * @return true if subtree is valid.
    */
   [[nodiscard]] auto validate_helper(
-      const Node* node,
-      int         min_keys,
-      int         max_keys,
-      int         level,
-      const T*    lower_bound,
-      const T*    upper_bound,
-      int&        leaf_level) const -> bool;
+      const Node* node, int min_keys, int max_keys, int level, const T* lower_bound, const T* upper_bound, int& leaf_level) const -> bool;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 

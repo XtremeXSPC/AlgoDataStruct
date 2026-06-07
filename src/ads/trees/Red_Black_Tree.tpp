@@ -16,8 +16,6 @@
 
 namespace ads::trees {
 
-// LinkedQueue provides BFS storage without std::queue.
-
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <OrderedTreeElement T>
@@ -80,8 +78,7 @@ auto Red_Black_Tree<T>::iterator::operator==(const iterator& other) const -> boo
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par)
-  requires std::copy_constructible<T>
+Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) requires std::copy_constructible<T>
     : data(val), color(col), left(nullptr), right(nullptr), parent(par) {
 }
 
@@ -124,8 +121,7 @@ auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::insert(const T& value) -> bool
-  requires std::copy_constructible<T>
+auto Red_Black_Tree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   auto [new_node, inserted] = insert_helper(root_, value, nullptr);
 
@@ -149,8 +145,7 @@ auto Red_Black_Tree<T>::insert(T&& value) -> bool {
 
 template <OrderedTreeElement T>
 template <typename... Args>
-auto Red_Black_Tree<T>::emplace(Args&&... args) -> bool
-  requires std::constructible_from<T, Args...>
+auto Red_Black_Tree<T>::emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>
 {
   return insert(T(std::forward<Args>(args)...));
 }

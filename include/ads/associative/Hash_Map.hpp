@@ -92,10 +92,7 @@ public:
      * @param bucket_idx Current bucket index.
      * @param list_it Iterator within the bucket's list.
      */
-    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it) :
-        map_(map),
-        bucket_idx_(bucket_idx),
-        list_it_(list_it) {}
+    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -139,10 +136,7 @@ public:
      * @param bucket_idx Current bucket index.
      * @param list_it Iterator within the bucket's list.
      */
-    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it) :
-        map_(map),
-        bucket_idx_(bucket_idx),
-        list_it_(list_it) {}
+    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -165,8 +159,7 @@ public:
    * @complexity Time O(n) average, Space O(n)
    */
   HashMap(std::initializer_list<value_type> init)
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>
-             && std::assignable_from<Value&, const Value&>;
+      requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Move constructor
@@ -227,8 +220,7 @@ public:
    * @param value The value to associate with the key.
    */
   auto put(const Key& key, const Value& value) -> void
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>
-             && std::assignable_from<Value&, const Value&>;
+      requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
@@ -236,7 +228,7 @@ public:
    * @param value The value to move into the map.
    */
   auto put(const Key& key, Value&& value) -> void
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+      requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move).
@@ -244,7 +236,7 @@ public:
    * @param value The value to associate with the key.
    */
   auto put(Key&& key, Value&& value) -> void
-    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+      requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
@@ -254,9 +246,8 @@ public:
    * @return Pair of iterator to element and bool indicating insertion.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(const value_type& pair) -> std::pair<iterator, bool>
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>
-             && std::assignable_from<Value&, const Value&>;
+  auto insert(const value_type& pair) -> std::pair<iterator, bool> requires std::copy_constructible<Key> && std::copy_constructible<Value>
+                                                                            && std::assignable_from<Value&, const Value&>;
 
   /**
    * @brief Inserts a key-value pair (move).
@@ -264,8 +255,8 @@ public:
    * @return Pair of iterator to element and bool indicating insertion.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(value_type&& pair) -> std::pair<iterator, bool>
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto insert(value_type&& pair) -> std::pair<iterator, bool> requires std::copy_constructible<Key> && std::move_constructible<Value>
+                                                                       && std::assignable_from<Value&, Value>;
 
   /**
    * @brief Constructs element in-place.
@@ -376,24 +367,22 @@ public:
    * @return Vector of keys.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto keys() const -> std::vector<Key>
-    requires std::copy_constructible<Key>;
+  [[nodiscard]] auto keys() const -> std::vector<Key> requires std::copy_constructible<Key>;
 
   /**
    * @brief Returns vector of all values.
    * @return Vector of values.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto values() const -> std::vector<Value>
-    requires std::copy_constructible<Value>;
+  [[nodiscard]] auto values() const -> std::vector<Value> requires std::copy_constructible<Value>;
 
   /**
    * @brief Returns vector of all key-value pairs.
    * @return Vector of entries.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>;
+  [[nodiscard]] auto entries() const
+      -> std::vector<std::pair<Key, Value>> requires std::copy_constructible<Key> && std::copy_constructible<Value>;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 

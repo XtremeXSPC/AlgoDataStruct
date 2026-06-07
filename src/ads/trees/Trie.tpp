@@ -16,8 +16,6 @@
 
 namespace ads::trees {
 
-// DynamicArray stores flexible children without std::unordered_map; vector results remain public API.
-
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <bool UseMap>
@@ -359,8 +357,8 @@ auto Trie<UseMap>::find_prefix_node(const std::string& prefix) const -> const Tr
 }
 
 template <bool UseMap>
-auto Trie<UseMap>::dfs_collect_words(
-    const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const -> void {
+auto Trie<UseMap>::dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const
+    -> void {
   if (!node) {
     return;
   }

@@ -19,9 +19,6 @@
 
 namespace ads::associative {
 
-// Storage choice: DynamicArray stores the bucket table while
-// DoublyLinkedList keeps separate chains with stable erase-by-iterator support.
-
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T, typename Hash>
@@ -37,8 +34,7 @@ HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor, Hash 
 }
 
 template <typename T, typename Hash>
-HashSet<T, Hash>::HashSet(std::initializer_list<T> values)
-  requires std::copy_constructible<T>
+HashSet<T, Hash>::HashSet(std::initializer_list<T> values) requires std::copy_constructible<T>
     : HashSet(values.size() * 2) {
   for (const auto& value : values) {
     insert(value);
@@ -69,8 +65,7 @@ auto HashSet<T, Hash>::operator=(HashSet&& other) noexcept -> HashSet& {
 //===------------------------- MODIFICATION OPERATIONS -------------------------===//
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::insert(const T& value) -> bool
-  requires std::copy_constructible<T>
+auto HashSet<T, Hash>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   if (buckets_.is_empty()) {
     rehash(1);

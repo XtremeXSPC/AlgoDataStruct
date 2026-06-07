@@ -19,6 +19,7 @@
 #include "../arrays/Dynamic_Array.hpp"
 #include "../queues/Circular_Array_Queue.hpp"
 #include "../stacks/Array_Stack.hpp"
+#include "Graph_Concepts.hpp"
 
 #include <algorithm>
 #include <concepts>
@@ -47,22 +48,22 @@ public:
  * @details This class implements a graph using an adjacency matrix, where
  *          matrix[i][j] indicates if there's an edge from vertex i to j.
  *          This representation is memory-efficient for dense graphs but
- *          uses O(V²) space even for sparse graphs.
+ *          uses O(V^2) space even for sparse graphs.
  *
- *          Space complexity: O(V²)
+ *          Space complexity: O(V^2)
  *          Edge lookup: O(1)
  *          Neighbor iteration: O(V)
  *
  *          Trade-offs vs Adjacency List:
  *          + Edge lookup is O(1) instead of O(degree).
  *          + Simple and cache-friendly for dense graphs.
- *          - Uses O(V²) space even for sparse graphs.
+ *          - Uses O(V^2) space even for sparse graphs.
  *          - Iterating neighbors is O(V) instead of O(degree).
  *
  * @tparam VertexData Type of data stored in vertices.
  * @tparam EdgeWeight Type of edge weights (default: double).
  */
-template <typename VertexData = int, typename EdgeWeight = double>
+template <VertexPayload VertexData = int, EdgeWeightValue EdgeWeight = double>
 class GraphAdjacencyMatrix {
 public:
   using vertex_data_type = VertexData;
@@ -253,7 +254,7 @@ public:
    * @complexity Time O(V), Space O(1) excluding visitor state.
    */
   template <typename Visitor>
-  auto for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void;
+  auto for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void requires WeightedNeighborVisitor<Visitor, EdgeWeight>;
 
   /**
    * @brief Gets the degree of a vertex (number of outgoing edges).

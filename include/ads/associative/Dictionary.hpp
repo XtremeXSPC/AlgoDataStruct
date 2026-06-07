@@ -16,6 +16,8 @@
 #ifndef DICTIONARY_HPP
 #define DICTIONARY_HPP
 
+#include "Associative_Concepts.hpp"
+
 #include <concepts>
 #include <cstddef>
 #include <utility>
@@ -32,21 +34,17 @@ namespace ads::associative {
  * @tparam Key The key type.
  * @tparam Value The mapped value type.
  */
-template <typename Map, typename Key, typename Value>
-concept Dictionary =
-    requires {
-      typename Map::key_type;
-      typename Map::mapped_type;
-    } && std::same_as<typename Map::key_type, Key> && std::same_as<typename Map::mapped_type, Value>
-    && requires(
-        Map& dictionary, const Map& const_dictionary, const Key& key, Key&& movable_key, Value&& movable_value) {
-         { dictionary.put(std::move(movable_key), std::move(movable_value)) } -> std::same_as<void>;
-         { dictionary.at(key) } -> std::same_as<Value&>;
-         { const_dictionary.at(key) } -> std::same_as<const Value&>;
-         { const_dictionary.contains(key) } -> std::same_as<bool>;
-         { dictionary.erase(key) } -> std::same_as<bool>;
-         { const_dictionary.size() } noexcept -> std::same_as<size_t>;
-       };
+template <typename Map, typename Key, typename Value> concept Dictionary = MapKey<Key> && MapValue<Value> && requires {
+  typename Map::key_type;
+  typename Map::mapped_type;
+} && std::same_as<typename Map::key_type, Key> && std::same_as<typename Map::mapped_type, Value> && requires(Map& dictionary, const Map& const_dictionary, const Key& key, Key&& movable_key, Value&& movable_value) {
+  { dictionary.put(std::move(movable_key), std::move(movable_value)) } -> std::same_as<void>;
+  { dictionary.at(key) } -> std::same_as<Value&>;
+  { const_dictionary.at(key) } -> std::same_as<const Value&>;
+  { const_dictionary.contains(key) } -> std::same_as<bool>;
+  { dictionary.erase(key) } -> std::same_as<bool>;
+  { const_dictionary.size() } noexcept -> std::same_as<size_t>;
+};
 
 /**
  * @brief Concept for dictionaries that also support copy-based put.
@@ -55,12 +53,10 @@ concept Dictionary =
  * @tparam Key The key type.
  * @tparam Value The mapped value type.
  */
-template <typename Map, typename Key, typename Value>
-concept CopyPutDictionary =
-    Dictionary<Map, Key, Value> && std::copy_constructible<Key> && std::copy_constructible<Value>
-    && std::assignable_from<Value&, const Value&> && requires(Map& dictionary, const Key& key, const Value& value) {
-         { dictionary.put(key, value) } -> std::same_as<void>;
-       };
+template <typename Map, typename Key, typename Value> concept CopyPutDictionary =
+    Dictionary<Map, Key, Value> && CopyMapEntry<Key, Value> && requires(Map& dictionary, const Key& key, const Value& value) {
+      { dictionary.put(key, value) } -> std::same_as<void>;
+    };
 
 } // namespace ads::associative
 

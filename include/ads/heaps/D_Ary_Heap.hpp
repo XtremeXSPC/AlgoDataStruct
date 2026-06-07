@@ -17,6 +17,7 @@
 #define D_ARY_HEAP_HPP
 
 #include "../arrays/Dynamic_Array.hpp"
+#include "Heap_Concepts.hpp"
 #include "Heap_Exception.hpp"
 
 #include <algorithm>
@@ -48,7 +49,7 @@ namespace ads::heaps {
  * @tparam T The element type.
  * @tparam Compare Comparator defining priority order.
  */
-template <typename T, typename Compare = std::less<T>>
+template <HeapValue T, typename Compare = std::less<T>>
 class DAryHeap {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -84,8 +85,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  DAryHeap(InputIt first, InputIt last, size_t arity = kDefaultArity, Compare comp = Compare{})
-      requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  DAryHeap(InputIt first, InputIt last, size_t arity = kDefaultArity, Compare comp = Compare{}) requires HeapRangeValue<InputIt, T>;
 
   /**
    * @brief Constructs a heap from an initializer list using bottom-up heapify.

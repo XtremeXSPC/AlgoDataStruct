@@ -20,8 +20,7 @@ namespace ads::associative {
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
-TreeSet<T>::TreeSet(std::initializer_list<T> values)
-  requires std::copy_constructible<T>
+TreeSet<T>::TreeSet(std::initializer_list<T> values) requires std::copy_constructible<T>
 {
   for (const auto& value : values) {
     insert(value);
@@ -31,8 +30,7 @@ TreeSet<T>::TreeSet(std::initializer_list<T> values)
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <typename T>
-auto TreeSet<T>::insert(const T& value) -> bool
-  requires std::copy_constructible<T>
+auto TreeSet<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   return tree_.insert(value);
 }
@@ -44,8 +42,7 @@ auto TreeSet<T>::insert(T&& value) -> bool {
 
 template <typename T>
 template <typename... Args>
-auto TreeSet<T>::emplace(Args&&... args) -> bool
-  requires std::constructible_from<T, Args...>
+auto TreeSet<T>::emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>
 {
   T value(std::forward<Args>(args)...);
   return insert(std::move(value));
@@ -93,8 +90,7 @@ auto TreeSet<T>::max() const -> const T& {
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <typename T>
-auto TreeSet<T>::to_vector() const -> std::vector<T>
-  requires std::copy_constructible<T>
+auto TreeSet<T>::to_vector() const -> std::vector<T> requires std::copy_constructible<T>
 {
   std::vector<T> result;
   result.reserve(size());

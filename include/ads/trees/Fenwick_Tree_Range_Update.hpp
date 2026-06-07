@@ -84,8 +84,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  FenwickTreeRangeUpdate(InputIt first, InputIt last)
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  FenwickTreeRangeUpdate(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Constructs a range-update Fenwick tree from an initializer list.
@@ -135,8 +134,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  auto build(InputIt first, InputIt last) -> void
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  auto build(InputIt first, InputIt last) -> void requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Rebuilds the tree from an initializer list of values.

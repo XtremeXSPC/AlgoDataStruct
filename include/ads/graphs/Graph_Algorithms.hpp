@@ -23,6 +23,7 @@
 #include "Disjoint_Set_Union.hpp"
 #include "Graph_Adjacency_List.hpp"
 #include "Graph_Adjacency_Matrix.hpp"
+#include "Graph_Concepts.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -42,28 +43,7 @@ public:
   using std::logic_error::logic_error;
 };
 
-//===------------------------ GRAPH CAPABILITY CONCEPTS ------------------------===//
-
-/**
- * @brief Minimal callable used to probe weighted-neighbor traversal support.
- * @tparam EdgeWeight Edge weight type emitted by the graph.
- */
-template <typename EdgeWeight>
-struct WeightedNeighborVisitorProbe {
-  auto operator()(size_t, const EdgeWeight&) const -> void {}
-};
-
-/**
- * @brief Concept for graphs exposing reusable weighted-neighbor traversal.
- * @tparam Graph Graph type to validate.
- */
-template <typename Graph> concept WeightedGraph = requires(const Graph& graph, size_t vertex_id) {
-  typename Graph::edge_weight_type;
-  typename Graph::vertex_id_type;
-  { graph.num_vertices() } noexcept -> std::same_as<size_t>;
-  { graph.is_directed() } noexcept -> std::same_as<bool>;
-  { graph.for_each_weighted_neighbor(vertex_id, WeightedNeighborVisitorProbe<typename Graph::edge_weight_type>{}) } -> std::same_as<void>;
-};
+using ads::arrays::DynamicArray;
 
 //===------------------------------ RESULT TYPES -------------------------------===//
 
@@ -72,12 +52,12 @@ template <typename Graph> concept WeightedGraph = requires(const Graph& graph, s
  *
  * @tparam EdgeWeight Numeric edge weight type.
  */
-template <typename EdgeWeight>
+template <PathWeight EdgeWeight>
 class ShortestPathsResult {
 public:
   static constexpr size_t kNoPredecessor = std::numeric_limits<size_t>::max();
 
-  ShortestPathsResult(size_t source, ads::arrays::DynamicArray<EdgeWeight>&& distances, ads::arrays::DynamicArray<size_t>&& predecessors);
+  ShortestPathsResult(size_t source, DynamicArray<EdgeWeight>&& distances, DynamicArray<size_t>&& predecessors);
   ShortestPathsResult(ShortestPathsResult&& other) noexcept                    = default;
   auto operator=(ShortestPathsResult&& other) noexcept -> ShortestPathsResult& = default;
   ~ShortestPathsResult()                                                       = default;
@@ -101,7 +81,7 @@ public:
    * @brief Returns the raw distances container.
    * @return Const reference to the distance array.
    */
-  [[nodiscard]] auto distances() const noexcept -> const ads::arrays::DynamicArray<EdgeWeight>&;
+  [[nodiscard]] auto distances() const noexcept -> const DynamicArray<EdgeWeight>&;
 
   /**
    * @brief Returns the predecessor of a vertex.
@@ -133,7 +113,7 @@ public:
    * @return Ordered vertex sequence, or std::nullopt if unreachable.
    * @throws GraphAlgorithmException if vertex_id is invalid.
    */
-  [[nodiscard]] auto path_to(size_t vertex_id) const -> std::optional<ads::arrays::DynamicArray<size_t>>;
+  [[nodiscard]] auto path_to(size_t vertex_id) const -> std::optional<DynamicArray<size_t>>;
 
   /**
    * @brief Returns the sentinel used for unreachable distances.
@@ -142,9 +122,9 @@ public:
   [[nodiscard]] static auto unreachable_distance() noexcept -> EdgeWeight;
 
 private:
-  size_t                                source_;
-  ads::arrays::DynamicArray<EdgeWeight> distances_;
-  ads::arrays::DynamicArray<size_t>     predecessors_;
+  size_t                   source_;
+  DynamicArray<EdgeWeight> distances_;
+  DynamicArray<size_t>     predecessors_;
 
   auto validate_vertex(size_t vertex_id) const -> void;
 };
@@ -154,7 +134,7 @@ private:
  *
  * @tparam EdgeWeight Numeric edge weight type.
  */
-template <typename EdgeWeight>
+template <PathWeight EdgeWeight>
 class MinimumSpanningForestResult {
 public:
   /**
@@ -168,7 +148,7 @@ public:
     auto operator==(const Edge& other) const -> bool = default;
   };
 
-  MinimumSpanningForestResult(EdgeWeight total_weight, size_t component_count, ads::arrays::DynamicArray<Edge>&& edges);
+  MinimumSpanningForestResult(EdgeWeight total_weight, size_t component_count, DynamicArray<Edge>&& edges);
   MinimumSpanningForestResult(MinimumSpanningForestResult&& other) noexcept                    = default;
   auto operator=(MinimumSpanningForestResult&& other) noexcept -> MinimumSpanningForestResult& = default;
   ~MinimumSpanningForestResult()                                                               = default;
@@ -180,7 +160,7 @@ public:
    * @brief Returns the selected forest edges.
    * @return Const reference to the ordered forest edges.
    */
-  [[nodiscard]] auto edges() const noexcept -> const ads::arrays::DynamicArray<Edge>&;
+  [[nodiscard]] auto edges() const noexcept -> const DynamicArray<Edge>&;
 
   /**
    * @brief Returns the total weight of the forest.
@@ -208,9 +188,9 @@ public:
   [[nodiscard]] auto spans_all_vertices(size_t vertex_count) const noexcept -> bool;
 
 private:
-  EdgeWeight                      total_weight_;
-  size_t                          component_count_;
-  ads::arrays::DynamicArray<Edge> edges_;
+  EdgeWeight         total_weight_;
+  size_t             component_count_;
+  DynamicArray<Edge> edges_;
 };
 
 /**
@@ -218,14 +198,12 @@ private:
  *
  * @tparam EdgeWeight Numeric edge weight type.
  */
-template <typename EdgeWeight>
+template <PathWeight EdgeWeight>
 class AllPairsShortestPathsResult {
 public:
   static constexpr size_t kNoNextVertex = std::numeric_limits<size_t>::max();
 
-  AllPairsShortestPathsResult(
-      ads::arrays::DynamicArray<ads::arrays::DynamicArray<EdgeWeight>>&& distances,
-      ads::arrays::DynamicArray<ads::arrays::DynamicArray<size_t>>&&     next_vertices);
+  AllPairsShortestPathsResult(DynamicArray<DynamicArray<EdgeWeight>>&& distances, DynamicArray<DynamicArray<size_t>>&& next_vertices);
   AllPairsShortestPathsResult(AllPairsShortestPathsResult&& other) noexcept                    = default;
   auto operator=(AllPairsShortestPathsResult&& other) noexcept -> AllPairsShortestPathsResult& = default;
   ~AllPairsShortestPathsResult()                                                               = default;
@@ -243,7 +221,7 @@ public:
    * @brief Returns the raw distance matrix.
    * @return Const reference to the distance matrix.
    */
-  [[nodiscard]] auto distances() const noexcept -> const ads::arrays::DynamicArray<ads::arrays::DynamicArray<EdgeWeight>>&;
+  [[nodiscard]] auto distances() const noexcept -> const DynamicArray<DynamicArray<EdgeWeight>>&;
 
   /**
    * @brief Returns the shortest-path distance from source to target.
@@ -270,7 +248,7 @@ public:
    * @return Ordered vertex sequence, or std::nullopt if unreachable.
    * @throws GraphAlgorithmException if either vertex is invalid.
    */
-  [[nodiscard]] auto path(size_t source, size_t target) const -> std::optional<ads::arrays::DynamicArray<size_t>>;
+  [[nodiscard]] auto path(size_t source, size_t target) const -> std::optional<DynamicArray<size_t>>;
 
   /**
    * @brief Returns the sentinel used for unreachable distances.
@@ -279,8 +257,8 @@ public:
   [[nodiscard]] static auto unreachable_distance() noexcept -> EdgeWeight;
 
 private:
-  ads::arrays::DynamicArray<ads::arrays::DynamicArray<EdgeWeight>> distances_;
-  ads::arrays::DynamicArray<ads::arrays::DynamicArray<size_t>>     next_vertices_;
+  DynamicArray<DynamicArray<EdgeWeight>> distances_;
+  DynamicArray<DynamicArray<size_t>>     next_vertices_;
 
   auto validate_vertex(size_t vertex_id) const -> void;
 };
@@ -290,8 +268,7 @@ private:
  */
 class StronglyConnectedComponentsResult {
 public:
-  StronglyConnectedComponentsResult(
-      ads::arrays::DynamicArray<ads::arrays::DynamicArray<size_t>>&& components, ads::arrays::DynamicArray<size_t>&& component_ids);
+  StronglyConnectedComponentsResult(DynamicArray<DynamicArray<size_t>>&& components, DynamicArray<size_t>&& component_ids);
   StronglyConnectedComponentsResult(StronglyConnectedComponentsResult&& other) noexcept                    = default;
   auto operator=(StronglyConnectedComponentsResult&& other) noexcept -> StronglyConnectedComponentsResult& = default;
   ~StronglyConnectedComponentsResult()                                                                     = default;
@@ -315,7 +292,7 @@ public:
    * @brief Returns the raw component collection.
    * @return Const reference to the component list.
    */
-  [[nodiscard]] auto components() const noexcept -> const ads::arrays::DynamicArray<ads::arrays::DynamicArray<size_t>>&;
+  [[nodiscard]] auto components() const noexcept -> const DynamicArray<DynamicArray<size_t>>&;
 
   /**
    * @brief Returns the vertex IDs belonging to one component.
@@ -323,7 +300,7 @@ public:
    * @return Const reference to the component vertices.
    * @throws GraphAlgorithmException if component_id is invalid.
    */
-  [[nodiscard]] auto component(size_t component_id) const -> const ads::arrays::DynamicArray<size_t>&;
+  [[nodiscard]] auto component(size_t component_id) const -> const DynamicArray<size_t>&;
 
   /**
    * @brief Returns the component index assigned to a vertex.
@@ -343,8 +320,8 @@ public:
   [[nodiscard]] auto are_strongly_connected(size_t lhs, size_t rhs) const -> bool;
 
 private:
-  ads::arrays::DynamicArray<ads::arrays::DynamicArray<size_t>> components_;
-  ads::arrays::DynamicArray<size_t>                            component_ids_;
+  DynamicArray<DynamicArray<size_t>> components_;
+  DynamicArray<size_t>               component_ids_;
 
   auto validate_vertex(size_t vertex_id) const -> void;
   auto validate_component(size_t component_id) const -> void;
@@ -436,7 +413,7 @@ auto strongly_connected_components(const Graph& graph) -> StronglyConnectedCompo
  * @complexity Time O(V + E), Space O(V).
  */
 template <WeightedGraph Graph>
-auto topological_sort(const Graph& graph) -> ads::arrays::DynamicArray<size_t>;
+auto topological_sort(const Graph& graph) -> DynamicArray<size_t>;
 
 } // namespace ads::graphs
 

@@ -16,10 +16,12 @@
 #ifndef HASH_TABLE_OPEN_ADDRESSING_HPP
 #define HASH_TABLE_OPEN_ADDRESSING_HPP
 
+#include "Hash_Concepts.hpp"
 #include "Hash_Table_Exception.hpp"
 
 #include <concepts>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -55,7 +57,8 @@ enum class ProbingStrategy : std::uint8_t { LINEAR, QUADRATIC, DOUBLE_HASH };
  * @tparam Value The type of values to store.
  * @tparam Hash Hash functor for Key.
  */
-template <typename Key, typename Value, typename Hash = std::hash<Key>>
+template <HashKey Key, HashValue Value, typename Hash = std::hash<Key>>
+requires HashFor<Hash, Key>
 class HashTableOpenAddressing {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -111,9 +114,7 @@ public:
    * @details If the key already exists, its value is updated.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(const Key& key, const Value& value) -> bool
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>
-             && std::assignable_from<Value&, const Value&>;
+  auto insert(const Key& key, const Value& value) -> bool requires CopyHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
@@ -122,8 +123,7 @@ public:
    * @return true if inserted, false if updated existing key.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(const Key& key, Value&& value) -> bool
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move version).
@@ -132,8 +132,7 @@ public:
    * @return true if inserted, false if updated existing key.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(Key&& key, Value&& value) -> bool
-    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto insert(Key&& key, Value&& value) -> bool requires MoveHashEntry<Key, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -144,9 +143,7 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   template <typename... Args>
-  auto emplace(const Key& key, Args&&... args) -> Value&
-    requires std::copy_constructible<Key> && std::constructible_from<Value, Args...>
-             && std::assignable_from<Value&, Value>;
+  auto emplace(const Key& key, Args&&... args) -> Value& requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -175,7 +172,7 @@ public:
    * @details If the key doesn't exist, inserts default-constructed value.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto operator[](const Key& key) -> Value&;
+  auto operator[](const Key& key) -> Value& requires CopyHashKey<Key> && DefaultHashValue<Value>;
 
   //===--------------------------- SEARCH OPERATIONS ---------------------------===//
 
@@ -301,8 +298,7 @@ private:
 
     Entry() = default;
 
-    Entry(const Key& k, const Value& v)
-      requires std::copy_constructible<Value>
+    Entry(const Key& k, const Value& v) requires CopyHashEntry<Key, Value>
         : key(k), value(v) {}
 
     Entry(const Key& k, Value&& v) : key(k), value(std::move(v)) {}

@@ -20,14 +20,14 @@ namespace ads::heaps {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 DAryHeap<T, Compare>::DAryHeap(size_t arity, size_t initial_capacity, Compare comp) :
     data_(initial_capacity),
     arity_(validate_arity(arity)),
     comp_(std::move(comp)) {
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 DAryHeap<T, Compare>::DAryHeap(const std::vector<T>& elements, size_t arity, Compare comp) :
     data_(elements.begin(), elements.end()),
     arity_(validate_arity(arity)),
@@ -35,15 +35,14 @@ DAryHeap<T, Compare>::DAryHeap(const std::vector<T>& elements, size_t arity, Com
   build_heap();
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 template <std::input_iterator InputIt>
-DAryHeap<T, Compare>::DAryHeap(InputIt first, InputIt last, size_t arity, Compare comp)
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+DAryHeap<T, Compare>::DAryHeap(InputIt first, InputIt last, size_t arity, Compare comp) requires HeapRangeValue<InputIt, T>
     : data_(first, last), arity_(validate_arity(arity)), comp_(std::move(comp)) {
   build_heap();
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 DAryHeap<T, Compare>::DAryHeap(std::initializer_list<T> init, size_t arity, Compare comp) :
     data_(init),
     arity_(validate_arity(arity)),
@@ -51,10 +50,10 @@ DAryHeap<T, Compare>::DAryHeap(std::initializer_list<T> init, size_t arity, Comp
   build_heap();
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 DAryHeap<T, Compare>::DAryHeap(DAryHeap&& other) noexcept(std::is_nothrow_move_constructible_v<Compare>) = default;
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::operator=(DAryHeap&& other) noexcept(std::is_nothrow_move_assignable_v<Compare>) -> DAryHeap& {
   if (this != &other) {
     data_  = std::move(other.data_);
@@ -66,19 +65,19 @@ auto DAryHeap<T, Compare>::operator=(DAryHeap&& other) noexcept(std::is_nothrow_
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::insert(const T& value) -> void {
   data_.push_back(value);
   heapify_up(data_.size() - 1);
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::insert(T&& value) -> void {
   data_.push_back(std::move(value));
   heapify_up(data_.size() - 1);
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 template <typename... Args>
 auto DAryHeap<T, Compare>::emplace(Args&&... args) -> T& {
   data_.emplace_back(std::forward<Args>(args)...);
@@ -88,13 +87,13 @@ auto DAryHeap<T, Compare>::emplace(Args&&... args) -> T& {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::top() -> T& {
   validate_non_empty("top()");
   return data_[0];
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::top() const -> const T& {
   validate_non_empty("top()");
   return data_[0];
@@ -102,7 +101,7 @@ auto DAryHeap<T, Compare>::top() const -> const T& {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::extract_top() -> T {
   validate_non_empty("extract_top()");
 
@@ -118,7 +117,7 @@ auto DAryHeap<T, Compare>::extract_top() -> T {
   return top_value;
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::update_key(size_t index, const T& new_value) -> void {
   validate_index(index, "update_key()");
 
@@ -130,7 +129,7 @@ auto DAryHeap<T, Compare>::update_key(size_t index, const T& new_value) -> void 
   }
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::update_key(size_t index, T&& new_value) -> void {
   validate_index(index, "update_key()");
 
@@ -142,34 +141,34 @@ auto DAryHeap<T, Compare>::update_key(size_t index, T&& new_value) -> void {
   }
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::clear() noexcept -> void {
   data_.clear();
 }
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::is_empty() const noexcept -> bool {
   return data_.is_empty();
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::size() const noexcept -> size_t {
   return data_.size();
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::capacity() const noexcept -> size_t {
   return data_.capacity();
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::arity() const noexcept -> size_t {
   return arity_;
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::reserve(size_t new_capacity) -> void {
   data_.reserve(new_capacity);
 }
@@ -177,22 +176,22 @@ auto DAryHeap<T, Compare>::reserve(size_t new_capacity) -> void {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::has_higher_priority(const T& lhs, const T& rhs) const -> bool {
   return comp_(rhs, lhs);
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::parent(size_t index) const noexcept -> size_t {
   return (index - 1) / arity_;
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::first_child(size_t index) const noexcept -> size_t {
   return arity_ * index + 1;
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::heapify_up(size_t index) -> size_t {
   while (index > 0) {
     const size_t parent_index = parent(index);
@@ -207,7 +206,7 @@ auto DAryHeap<T, Compare>::heapify_up(size_t index) -> size_t {
   return index;
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::heapify_down(size_t index) -> void {
   const size_t heap_size = data_.size();
 
@@ -231,7 +230,7 @@ auto DAryHeap<T, Compare>::heapify_down(size_t index) -> void {
   }
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::build_heap() -> void {
   if (data_.size() <= 1) {
     return;
@@ -242,21 +241,21 @@ auto DAryHeap<T, Compare>::build_heap() -> void {
   }
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::validate_non_empty(const char* operation) const -> void {
   if (is_empty()) {
     throw HeapException(std::string(operation) + " called on empty DAryHeap");
   }
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::validate_index(size_t index, const char* operation) const -> void {
   if (index >= data_.size()) {
     throw HeapException(std::string(operation) + " called with invalid index");
   }
 }
 
-template <typename T, typename Compare>
+template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::validate_arity(size_t arity) -> size_t {
   if (arity < 2) {
     throw HeapException("DAryHeap arity must be at least 2");

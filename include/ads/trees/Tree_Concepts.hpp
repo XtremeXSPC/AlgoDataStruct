@@ -3,8 +3,13 @@
  * @file Tree_Concepts.hpp
  * @author Costantino Lombardi
  * @brief Defines reusable C++20 concepts for tree containers.
- * @version 0.1
+ * @version 0.2
  * @date 2026-02-07
+ *
+ * @details These concepts form the semantic tree layer built on top of the
+ *          generic `ads::support` vocabulary. They describe what it means for
+ *          a type to behave well as a tree payload without pushing repetitive
+ *          low-level constraints into every tree header.
  *
  * @copyright MIT License 2026
  *
@@ -16,23 +21,21 @@
 #ifndef TREE_CONCEPTS_HPP
 #define TREE_CONCEPTS_HPP
 
+#include "../../support/Support.hpp"
+
+#include <compare>
 #include <concepts>
-#include <cstddef>
 #include <functional>
-#include <iterator>
-#include <type_traits>
-#include <utility>
 
 namespace ads::trees {
 
-template <typename T>
-concept TreeElement = std::destructible<T> && !std::is_reference_v<T>;
+namespace sup = ads::support;
 
-template <typename T>
-concept EqualityComparableTreeElement = TreeElement<T> && std::equality_comparable<T>;
+template <typename T> concept TreeElement = sup::NonReferenceDestructible<T>;
 
-template <typename T>
-concept OrderedTreeElement = EqualityComparableTreeElement<T> && requires(const T& lhs, const T& rhs) {
+template <typename T> concept EqualityComparableTreeElement = TreeElement<T> && sup::EqualityComparable<T>;
+
+template <typename T> concept OrderedTreeElement = EqualityComparableTreeElement<T> && requires(const T& lhs, const T& rhs) {
   { lhs < rhs } -> std::convertible_to<bool>;
 };
 
@@ -81,7 +84,7 @@ concept OrderedSearchTree = OrderedTreeElement<T> && requires(
 
 template <typename Tree, typename T>
 concept CopyInsertableOrderedSearchTree =
-    OrderedSearchTree<Tree, T> && std::copy_constructible<T> && requires(Tree& tree, const T& value) {
+    OrderedSearchTree<Tree, T> && sup::Copyable<T> && requires(Tree& tree, const T& value) {
       { tree.insert(value) } -> std::same_as<bool>;
     };
 
@@ -94,7 +97,7 @@ template <int MinDegree>
 concept ValidBTreeDegree = (MinDegree >= 2);
 
 template <typename T>
-concept FenwickElement = requires(T a, T b) {
+concept FenwickElement = sup::DefaultInitializable<T> && requires(T a, T b) {
   { T{} };
   { a += b } -> std::same_as<T&>;
   { a - b } -> std::convertible_to<T>;

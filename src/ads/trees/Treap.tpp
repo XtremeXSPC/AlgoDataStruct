@@ -372,7 +372,7 @@ auto Treap<T, Priority>::validate_properties() const -> bool {
   return counted == size_;
 }
 
-//===---------------------------- ITERATOR ACCESS ------------------------------===//
+//===----------------------------- ITERATOR ACCESS -----------------------------===//
 
 template <OrderedTreeElement T, typename Priority>
 requires std::totally_ordered<Priority>

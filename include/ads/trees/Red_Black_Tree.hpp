@@ -22,11 +22,11 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <stdexcept>
 #include <utility>
 
 namespace ads::trees {
@@ -158,8 +158,7 @@ public:
    * @return true if inserted, false if duplicate.
    * @complexity O(log n) time, at most 2 rotations
    */
-  auto insert(const T& value) -> bool
-    requires std::copy_constructible<T>;
+  auto insert(const T& value) -> bool requires std::copy_constructible<T>;
 
   /**
    * @brief Insert a moved value into the tree.
@@ -177,8 +176,7 @@ public:
    * @complexity O(log n) time, at most 2 rotations
    */
   template <typename... Args>
-  auto emplace(Args&&... args) -> bool
-    requires std::constructible_from<T, Args...>;
+  auto emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>;
 
   /**
    * @brief Remove a value from the tree.
@@ -346,8 +344,7 @@ private:
     std::unique_ptr<Node> right;  ///< Right child.
     Node*                 parent; // Non-owning pointer for upward traversal.
 
-    explicit Node(const T& val, Color col = Color::Red, Node* par = nullptr)
-      requires std::copy_constructible<T>;
+    explicit Node(const T& val, Color col = Color::Red, Node* par = nullptr) requires std::copy_constructible<T>;
     explicit Node(T&& val, Color col = Color::Red, Node* par = nullptr);
   };
 
@@ -455,8 +452,7 @@ private:
    * @param replacement_parent Parent of replacement after detaching.
    * @return Detached minimum node.
    */
-  auto detach_min_node(std::unique_ptr<Node>& subtree, Node*& replacement, Node*& replacement_parent)
-      -> std::unique_ptr<Node>;
+  auto detach_min_node(std::unique_ptr<Node>& subtree, Node*& replacement, Node*& replacement_parent) -> std::unique_ptr<Node>;
 
   /**
    * @brief Restore Red-Black properties after deleting a black node.

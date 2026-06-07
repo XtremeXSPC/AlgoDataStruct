@@ -44,8 +44,13 @@ namespace detail {
  *
  * @note Both Combine and Compose "MUST" be associative for correct results.
  */
-template <typename Node, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
-concept LazySegmentTreeTraits =
+template <
+    typename Node,
+    typename Tag,
+    typename Combine,
+    typename Apply,
+    typename Compose,
+    typename Identity> concept LazySegmentTreeTraits =
     requires(Node node, Tag tag, Combine combine, Apply apply, Compose compose, Identity identity, std::size_t len) {
       { combine(node, node) } -> std::convertible_to<Node>;
       { apply(node, tag, len) } -> std::convertible_to<Node>;
@@ -58,9 +63,7 @@ concept LazySegmentTreeTraits =
  */
 template <typename Node>
 struct LazyDefaultCombine {
-  constexpr auto operator()(const Node& left, const Node& right) const noexcept(noexcept(left + right)) -> Node {
-    return left + right;
-  }
+  constexpr auto operator()(const Node& left, const Node& right) const noexcept(noexcept(left + right)) -> Node { return left + right; }
 };
 
 /**
@@ -69,8 +72,8 @@ struct LazyDefaultCombine {
  */
 template <typename Node, typename Tag>
 struct LazyDefaultApply {
-  constexpr auto operator()(const Node& node, const Tag& tag, std::size_t len) const
-      noexcept(noexcept(node + tag * static_cast<Tag>(len))) -> Node {
+  constexpr auto operator()(const Node& node, const Tag& tag, std::size_t len) const noexcept(noexcept(node + tag * static_cast<Tag>(len)))
+      -> Node {
     return node + tag * static_cast<Tag>(len);
   }
 };
@@ -137,7 +140,7 @@ template <
     typename Apply    = detail::LazyDefaultApply<Value, Tag>,
     typename Compose  = detail::LazyDefaultCompose<Tag>,
     typename Identity = detail::LazyDefaultIdentity<Value>>
-  requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
+requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 class LazySegmentTree {
 public:
   //===----------------------------- TYPE ALIASES ------------------------------===//
@@ -170,8 +173,7 @@ public:
    * @param size Number of elements.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr explicit LazySegmentTree(size_type size)
-    requires std::default_initializable<Value>;
+  constexpr explicit LazySegmentTree(size_type size) requires std::default_initializable<Value>;
 
   /**
    * @brief Constructs a Lazy Segment Tree with all elements set to a value.
@@ -267,8 +269,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  constexpr auto build(InputIt first, InputIt last) -> void
-    requires std::constructible_from<Value, std::iter_reference_t<InputIt>>;
+  constexpr auto build(InputIt first, InputIt last) -> void requires std::constructible_from<Value, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Sets the element at the given index to a new value.
@@ -303,8 +304,7 @@ public:
    * @param size Number of elements.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr auto reset(size_type size) -> void
-    requires std::default_initializable<Value>;
+  constexpr auto reset(size_type size) -> void requires std::default_initializable<Value>;
 
   /**
    * @brief Removes all elements from the tree.
@@ -388,8 +388,7 @@ private:
   /**
    * @brief Recursively builds tree nodes.
    */
-  constexpr auto build_node(size_type v, size_type tl, size_type tr, const ads::arrays::DynamicArray<Value>& values)
-      -> void;
+  constexpr auto build_node(size_type v, size_type tl, size_type tr, const ads::arrays::DynamicArray<Value>& values) -> void;
 
   /**
    * @brief Pushes lazy tag down to children.
@@ -409,8 +408,7 @@ private:
   /**
    * @brief Recursively updates a range.
    */
-  constexpr auto update_range(size_type v, size_type tl, size_type tr, size_type l, size_type r, const tag_type& tag)
-      -> void;
+  constexpr auto update_range(size_type v, size_type tl, size_type tr, size_type l, size_type r, const tag_type& tag) -> void;
 
   /**
    * @brief Recursively assigns a single position.
@@ -420,8 +418,7 @@ private:
   /**
    * @brief Recursively queries a range.
    */
-  [[nodiscard]] constexpr auto query_range(size_type v, size_type tl, size_type tr, size_type l, size_type r) const
-      -> value_type;
+  [[nodiscard]] constexpr auto query_range(size_type v, size_type tl, size_type tr, size_type l, size_type r) const -> value_type;
 
   /**
    * @brief Validates index bounds.

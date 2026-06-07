@@ -19,17 +19,17 @@ namespace ads::lists {
 
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::iterator::operator*() const -> reference {
   return node_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::iterator::operator->() const -> pointer {
   return &node_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::iterator::operator++() -> iterator& {
   if (remaining_ > 0) {
     --remaining_;
@@ -42,31 +42,31 @@ auto CircularLinkedList<T>::iterator::operator++() -> iterator& {
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::iterator::operator++(int) -> iterator {
   iterator tmp = *this;
   ++(*this);
   return tmp;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::iterator::operator==(const iterator& other) const -> bool {
   return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
 }
 
 //===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::const_iterator::operator*() const -> reference {
   return node_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::const_iterator::operator->() const -> pointer {
   return &node_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::const_iterator::operator++() -> const_iterator& {
   if (remaining_ > 0) {
     --remaining_;
@@ -79,30 +79,30 @@ auto CircularLinkedList<T>::const_iterator::operator++() -> const_iterator& {
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
   const_iterator tmp = *this;
   ++(*this);
   return tmp;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::const_iterator::operator==(const const_iterator& other) const -> bool {
   return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
 }
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <ListElement T>
 CircularLinkedList<T>::CircularLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <ListElement T>
 CircularLinkedList<T>::~CircularLinkedList() {
   clear();
 }
 
-template <typename T>
+template <ListElement T>
 CircularLinkedList<T>::CircularLinkedList(CircularLinkedList&& other) noexcept :
     head_(std::move(other.head_)),
     tail_(other.tail_),
@@ -111,7 +111,7 @@ CircularLinkedList<T>::CircularLinkedList(CircularLinkedList&& other) noexcept :
   other.size_ = 0;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::operator=(CircularLinkedList&& other) noexcept -> CircularLinkedList& {
   if (this != &other) {
     clear();
@@ -126,7 +126,7 @@ auto CircularLinkedList<T>::operator=(CircularLinkedList&& other) noexcept -> Ci
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ListElement T>
 template <typename... Args>
 auto CircularLinkedList<T>::emplace_front(Args&&... args) -> T& {
   auto  new_node = std::make_unique<Node>(std::forward<Args>(args)...);
@@ -143,17 +143,17 @@ auto CircularLinkedList<T>::emplace_front(Args&&... args) -> T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::push_front(const T& value) -> void {
   emplace_front(value);
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::push_front(T&& value) -> void {
   emplace_front(std::move(value));
 }
 
-template <typename T>
+template <ListElement T>
 template <typename... Args>
 auto CircularLinkedList<T>::emplace_back(Args&&... args) -> T& {
   auto  new_node = std::make_unique<Node>(std::forward<Args>(args)...);
@@ -171,19 +171,19 @@ auto CircularLinkedList<T>::emplace_back(Args&&... args) -> T& {
   return tail_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::push_back(const T& value) -> void {
   emplace_back(value);
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::push_back(T&& value) -> void {
   emplace_back(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::pop_front() -> void {
   if (is_empty()) {
     throw ListException("pop_front on empty circular list");
@@ -199,7 +199,7 @@ auto CircularLinkedList<T>::pop_front() -> void {
   --size_;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::pop_back() -> void {
   if (is_empty()) {
     throw ListException("pop_back on empty circular list");
@@ -223,7 +223,7 @@ auto CircularLinkedList<T>::pop_back() -> void {
   --size_;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::clear() noexcept -> void {
   while (head_) {
     // Detach each successor before destruction so clearing cannot recurse deeply.
@@ -235,7 +235,7 @@ auto CircularLinkedList<T>::clear() noexcept -> void {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::front() -> T& {
   if (is_empty()) {
     throw ListException("front on empty circular list");
@@ -243,7 +243,7 @@ auto CircularLinkedList<T>::front() -> T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::front() const -> const T& {
   if (is_empty()) {
     throw ListException("front on empty circular list");
@@ -251,7 +251,7 @@ auto CircularLinkedList<T>::front() const -> const T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::back() -> T& {
   if (is_empty()) {
     throw ListException("back on empty circular list");
@@ -259,7 +259,7 @@ auto CircularLinkedList<T>::back() -> T& {
   return tail_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::back() const -> const T& {
   if (is_empty()) {
     throw ListException("back on empty circular list");
@@ -269,19 +269,19 @@ auto CircularLinkedList<T>::back() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
-auto CircularLinkedList<T>::size() const noexcept -> size_t {
+template <ListElement T>
+auto CircularLinkedList<T>::size() const noexcept -> typename CircularLinkedList<T>::size_type {
   return size_;
 }
 
 //===---------------------- CIRCULAR-SPECIFIC OPERATIONS -----------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::rotate() -> void {
   if (size_ <= 1) {
     return;
@@ -294,7 +294,7 @@ auto CircularLinkedList<T>::rotate() -> void {
   tail_       = tail_->next.get();
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::contains(const T& value) const -> bool {
   if (is_empty()) {
     return false;
@@ -313,7 +313,7 @@ auto CircularLinkedList<T>::contains(const T& value) const -> bool {
 
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::begin() -> iterator {
   if (is_empty()) {
     return end();
@@ -321,12 +321,12 @@ auto CircularLinkedList<T>::begin() -> iterator {
   return iterator(head_.get(), size_, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::end() -> iterator {
   return iterator(nullptr, 0, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::begin() const -> const_iterator {
   if (is_empty()) {
     return end();
@@ -334,17 +334,17 @@ auto CircularLinkedList<T>::begin() const -> const_iterator {
   return const_iterator(head_.get(), size_, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::end() const -> const_iterator {
   return const_iterator(nullptr, 0, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::cbegin() const -> const_iterator {
   return begin();
 }
 
-template <typename T>
+template <ListElement T>
 auto CircularLinkedList<T>::cend() const -> const_iterator {
   return end();
 }

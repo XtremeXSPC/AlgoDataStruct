@@ -139,9 +139,8 @@ void demo_autocomplete() {
   TrieType trie;
 
   // Insert a vocabulary.
-  vector<string> vocabulary = {"car",         "card",    "care",      "careful", "carefully", "careless",
-                               "carpet",      "carpool", "cat",       "catch",   "category",  "cattle",
-                               "celebration", "cell",    "cellphone", "center",  "central"};
+  vector<string> vocabulary = {"car",   "card",     "care",   "careful",     "carefully", "careless",  "carpet", "carpool", "cat",
+                               "catch", "category", "cattle", "celebration", "cell",      "cellphone", "center", "central"};
 
   for (const auto& word : vocabulary) {
     trie.insert(word);

@@ -17,8 +17,6 @@
 
 namespace ads::trees {
 
-// LinkedQueue provides breadth-first traversal storage without std::queue.
-
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <EqualityComparableTreeElement T>
@@ -33,9 +31,7 @@ CompleteBinaryTree<T>::CompleteBinaryTree(std::initializer_list<T> values) : roo
 }
 
 template <EqualityComparableTreeElement T>
-CompleteBinaryTree<T>::CompleteBinaryTree(CompleteBinaryTree&& other) noexcept :
-    root_(std::move(other.root_)),
-    size_(other.size_) {
+CompleteBinaryTree<T>::CompleteBinaryTree(CompleteBinaryTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
@@ -269,8 +265,7 @@ auto CompleteBinaryTree<T>::pre_order_impl(const Node* node, const std::function
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::post_order_impl(const Node* node, const std::function<void(const T&)>& visit) const
-    -> void {
+auto CompleteBinaryTree<T>::post_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void {
   if (node == nullptr) {
     return;
   }

@@ -16,9 +16,9 @@
 #ifndef CIRCULAR_LINKED_LIST_HPP
 #define CIRCULAR_LINKED_LIST_HPP
 
+#include "List_Concepts.hpp"
 #include "List_Exception.hpp"
 
-#include <cstddef>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -35,12 +35,15 @@ namespace ads::lists {
  *
  * @tparam T The type of data to store in the list.
  */
-template <typename T>
+template <ListElement T>
 class CircularLinkedList {
 private:
   struct Node;
 
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
   //===---------------------------- ITERATOR CLASS -----------------------------===//
 
   /**
@@ -59,10 +62,7 @@ public:
 
     iterator() = default;
 
-    iterator(Node* node, size_t remaining, CircularLinkedList<T>* list) :
-        node_(node),
-        remaining_(remaining),
-        list_(list) {}
+    iterator(Node* node, size_type remaining, CircularLinkedList<T>* list) : node_(node), remaining_(remaining), list_(list) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -72,7 +72,7 @@ public:
 
   private:
     Node*                  node_      = nullptr;
-    size_t                 remaining_ = 0;
+    size_type              remaining_ = 0;
     CircularLinkedList<T>* list_      = nullptr;
     friend class CircularLinkedList<T>;
   };
@@ -92,7 +92,7 @@ public:
 
     const_iterator() = default;
 
-    const_iterator(const Node* node, size_t remaining, const CircularLinkedList<T>* list) :
+    const_iterator(const Node* node, size_type remaining, const CircularLinkedList<T>* list) :
         node_(node),
         remaining_(remaining),
         list_(list) {}
@@ -107,7 +107,7 @@ public:
 
   private:
     const Node*                  node_      = nullptr;
-    size_t                       remaining_ = 0;
+    size_type                    remaining_ = 0;
     const CircularLinkedList<T>* list_      = nullptr;
     friend class CircularLinkedList<T>;
   };
@@ -262,7 +262,7 @@ public:
    * @return The current size.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   //===--------------------- CIRCULAR-SPECIFIC OPERATIONS ----------------------===//
 
@@ -320,7 +320,7 @@ private:
 
   std::unique_ptr<Node> head_; ///< Owning pointer to the first node.
   Node*                 tail_; ///< Non-owning pointer to the last node.
-  size_t                size_; ///< Number of elements in the list.
+  size_type             size_; ///< Number of elements in the list.
 };
 
 } // namespace ads::lists

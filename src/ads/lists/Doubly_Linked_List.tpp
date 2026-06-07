@@ -18,30 +18,30 @@ namespace ads::lists {
 
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator*() const -> typename DoublyLinkedList<T>::iterator::reference {
   return node_ptr_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator->() const -> typename DoublyLinkedList<T>::iterator::pointer {
   return &node_ptr_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator++() -> typename DoublyLinkedList<T>::iterator& {
   node_ptr_ = node_ptr_->next.get();
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator++(int) -> typename DoublyLinkedList<T>::iterator {
   iterator temp = *this;
   ++(*this);
   return temp;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator--() -> typename DoublyLinkedList<T>::iterator& {
   if (node_ptr_ == nullptr) { // -- from end()
     // Decrementing end() requires a valid list pointer.
@@ -54,7 +54,7 @@ auto DoublyLinkedList<T>::iterator::operator--() -> typename DoublyLinkedList<T>
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator--(int) -> typename DoublyLinkedList<T>::iterator {
   iterator temp = *this;
   --(*this);
@@ -63,30 +63,30 @@ auto DoublyLinkedList<T>::iterator::operator--(int) -> typename DoublyLinkedList
 
 //===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator*() const -> typename DoublyLinkedList<T>::const_iterator::reference {
   return node_ptr_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator->() const -> typename DoublyLinkedList<T>::const_iterator::pointer {
   return &node_ptr_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator++() -> typename DoublyLinkedList<T>::const_iterator& {
   node_ptr_ = node_ptr_->next.get();
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator++(int) -> typename DoublyLinkedList<T>::const_iterator {
   const_iterator temp = *this;
   ++(*this);
   return temp;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator--() -> typename DoublyLinkedList<T>::const_iterator& {
   if (node_ptr_ == nullptr) { // -- from cend()
     // Decrementing cend() requires a valid list pointer.
@@ -99,7 +99,7 @@ auto DoublyLinkedList<T>::const_iterator::operator--() -> typename DoublyLinkedL
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator--(int) -> typename DoublyLinkedList<T>::const_iterator {
   const_iterator temp = *this;
   --(*this);
@@ -108,16 +108,16 @@ auto DoublyLinkedList<T>::const_iterator::operator--(int) -> typename DoublyLink
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <ListElement T>
 DoublyLinkedList<T>::DoublyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <ListElement T>
 DoublyLinkedList<T>::~DoublyLinkedList() {
   clear();
 }
 
-template <typename T>
+template <ListElement T>
 DoublyLinkedList<T>::DoublyLinkedList(DoublyLinkedList&& other) noexcept :
     head_(std::move(other.head_)),
     tail_(other.tail_),
@@ -126,7 +126,7 @@ DoublyLinkedList<T>::DoublyLinkedList(DoublyLinkedList&& other) noexcept :
   other.size_ = 0;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept -> DoublyLinkedList<T>& {
   if (this != &other) {
     clear();
@@ -141,7 +141,7 @@ auto DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept -> Doubly
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ListElement T>
 template <typename... Args>
 auto DoublyLinkedList<T>::emplace_front(Args&&... args) -> T& {
   auto newNode = std::make_unique<Node>(nullptr, std::forward<Args>(args)...);
@@ -156,7 +156,7 @@ auto DoublyLinkedList<T>::emplace_front(Args&&... args) -> T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::push_front(const T& value) {
   if constexpr (std::copy_constructible<T>) {
     emplace_front(value);
@@ -166,12 +166,12 @@ void DoublyLinkedList<T>::push_front(const T& value) {
   }
 }
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::push_front(T&& value) {
   emplace_front(std::move(value));
 }
 
-template <typename T>
+template <ListElement T>
 template <typename... Args>
 auto DoublyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   if (!tail_) { // Empty list.
@@ -185,7 +185,7 @@ auto DoublyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   return tail_->data;
 }
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::push_back(const T& value) {
   if constexpr (std::copy_constructible<T>) {
     emplace_back(value);
@@ -195,14 +195,14 @@ void DoublyLinkedList<T>::push_back(const T& value) {
   }
 }
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::push_back(T&& value) {
   emplace_back(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::pop_front() {
   if (is_empty()) {
     throw ListException("pop_front on empty list");
@@ -216,7 +216,7 @@ void DoublyLinkedList<T>::pop_front() {
   size_--;
 }
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::pop_back() {
   if (is_empty()) {
     throw ListException("pop_back on empty list");
@@ -232,7 +232,7 @@ void DoublyLinkedList<T>::pop_back() {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::front() -> T& {
   if (is_empty()) {
     throw ListException("front on empty list");
@@ -240,7 +240,7 @@ auto DoublyLinkedList<T>::front() -> T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::front() const -> const T& {
   if (is_empty()) {
     throw ListException("front on empty list");
@@ -248,7 +248,7 @@ auto DoublyLinkedList<T>::front() const -> const T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::back() -> T& {
   if (is_empty()) {
     throw ListException("back on empty list");
@@ -256,7 +256,7 @@ auto DoublyLinkedList<T>::back() -> T& {
   return tail_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::back() const -> const T& {
   if (is_empty()) {
     throw ListException("back on empty list");
@@ -266,19 +266,19 @@ auto DoublyLinkedList<T>::back() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
-auto DoublyLinkedList<T>::size() const noexcept -> size_t {
+template <ListElement T>
+auto DoublyLinkedList<T>::size() const noexcept -> typename DoublyLinkedList<T>::size_type {
   return size_;
 }
 
 //===------------------------- MODIFICATION OPERATIONS -------------------------===//
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::clear() noexcept {
   while (head_) {
     // Detach each successor before destroying the current node to keep teardown iterative.
@@ -290,12 +290,12 @@ void DoublyLinkedList<T>::clear() noexcept {
   size_ = 0;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::insert(iterator pos, const T& value) {
   return insert(pos, T(value)); // Calls the T&& version.
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
   // Edge cases: insertion at head or tail.
   if (pos == begin()) {
@@ -327,7 +327,7 @@ auto DoublyLinkedList<T>::insert(iterator pos, T&& value) {
   return new_it;
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::erase(iterator pos) {
   if (pos == end() || is_empty()) {
     throw ListException("cannot erase an invalid or end iterator");
@@ -363,7 +363,7 @@ auto DoublyLinkedList<T>::erase(iterator pos) {
   return iterator(next_node, this);
 }
 
-template <typename T>
+template <ListElement T>
 void DoublyLinkedList<T>::reverse() noexcept {
   if (size() < 2) {
     return;
@@ -394,33 +394,33 @@ void DoublyLinkedList<T>::reverse() noexcept {
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
 // (non-const)
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::begin() noexcept -> typename DoublyLinkedList<T>::iterator {
   return iterator(head_.get(), this);
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::end() noexcept -> typename DoublyLinkedList<T>::iterator {
   return iterator(nullptr, this);
 }
 
 // (const)
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::begin() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return const_iterator(head_.get(), this);
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::end() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return const_iterator(nullptr, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::cbegin() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return begin();
 }
 
-template <typename T>
+template <ListElement T>
 auto DoublyLinkedList<T>::cend() const noexcept -> typename DoublyLinkedList<T>::const_iterator {
   return end();
 }

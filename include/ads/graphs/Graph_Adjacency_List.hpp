@@ -19,6 +19,7 @@
 #include "../arrays/Dynamic_Array.hpp"
 #include "../queues/Circular_Array_Queue.hpp"
 #include "../stacks/Array_Stack.hpp"
+#include "Graph_Concepts.hpp"
 
 #include <algorithm>
 #include <concepts>
@@ -63,7 +64,7 @@ public:
  * @tparam VertexData Type of data stored in vertices.
  * @tparam EdgeWeight Type of edge weights (default: double).
  */
-template <typename VertexData = int, typename EdgeWeight = double>
+template <VertexPayload VertexData = int, EdgeWeightValue EdgeWeight = double>
 class GraphAdjacencyList {
 public:
   using vertex_data_type = VertexData;
@@ -103,8 +104,7 @@ public:
      * @brief Copy constructor.
      * @param other Vertex to copy.
      */
-    Vertex(const Vertex& other)
-      requires std::copy_constructible<VertexData> && std::copy_constructible<Edge>
+    Vertex(const Vertex& other) requires CopyVertexPayload<VertexData> && CopyAdjacencyEdge<Edge>
         : data(other.data), adjacency(other.adjacency.begin(), other.adjacency.end()) {}
 
     /**
@@ -295,7 +295,7 @@ public:
    * @complexity Time O(degree(vertex_id)), Space O(1) excluding visitor state.
    */
   template <typename Visitor>
-  auto for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void;
+  auto for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void requires WeightedNeighborVisitor<Visitor, EdgeWeight>;
 
   /**
    * @brief Gets the degree of a vertex (number of outgoing edges).

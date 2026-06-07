@@ -16,7 +16,7 @@
 #ifndef LIST_HPP
 #define LIST_HPP
 
-#include <cstddef>
+#include "List_Concepts.hpp"
 
 namespace ads::lists {
 
@@ -26,9 +26,12 @@ namespace ads::lists {
  *
  * @tparam T The data type to store in the list.
  */
-template <typename T>
+template <ListElement T>
 class List {
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
   // A virtual destructor is mandatory in polymorphic base classes.
   virtual ~List() = default;
 
@@ -101,9 +104,9 @@ public:
 
   /**
    * @brief Returns the number of elements in the list.
-   * @return size_t The number of elements.
+   * @return The number of elements.
    */
-  [[nodiscard]] virtual auto size() const noexcept -> size_t = 0;
+  [[nodiscard]] virtual auto size() const noexcept -> size_type = 0;
 
   /**
    * @brief Empties the list, removing all elements.

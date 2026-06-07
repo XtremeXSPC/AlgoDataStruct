@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <bit>
-#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -63,7 +62,7 @@ public:
     std::unique_ptr<Node> right = nullptr;
 
     template <typename... Args>
-      requires(!std::same_as<std::remove_cvref_t<Args>, Node> && ...)
+    requires(!std::same_as<std::remove_cvref_t<Args>, Node> && ...)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 

@@ -57,8 +57,7 @@ auto expect_matches_map(const TreeMap<int, int>& map, const std::map<int, int>& 
   EXPECT_EQ(map.entries(), entries);
 }
 
-template <typename Map, typename Key, typename Value>
-concept HasTreeMapCopyPut = requires(Map& map, const Key& key, const Value& value) {
+template <typename Map, typename Key, typename Value> concept HasTreeMapCopyPut = requires(Map& map, const Key& key, const Value& value) {
   { map.put(key, value) } -> std::same_as<void>;
 };
 

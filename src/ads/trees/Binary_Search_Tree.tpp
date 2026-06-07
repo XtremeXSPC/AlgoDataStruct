@@ -16,8 +16,6 @@
 
 namespace ads::trees {
 
-// DynamicArray keeps iterator state copyable; LinkedQueue provides BFS storage without std::queue.
-
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <OrderedTreeElement T>
@@ -100,9 +98,7 @@ BinarySearchTree<T>::BinarySearchTree() : root_(nullptr), size_(0) {
 }
 
 template <OrderedTreeElement T>
-BinarySearchTree<T>::BinarySearchTree(BinarySearchTree&& other) noexcept :
-    root_(std::move(other.root_)),
-    size_(other.size_) {
+BinarySearchTree<T>::BinarySearchTree(BinarySearchTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
@@ -125,8 +121,7 @@ auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> Binary
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto BinarySearchTree<T>::insert(const T& value) -> bool
-  requires std::copy_constructible<T>
+auto BinarySearchTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   return insert_helper(root_, value);
 }

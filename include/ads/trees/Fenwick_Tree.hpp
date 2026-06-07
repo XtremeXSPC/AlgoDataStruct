@@ -21,7 +21,6 @@
 #include "Tree_Concepts.hpp"
 
 #include <bit>
-#include <concepts>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -90,8 +89,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  FenwickTree(InputIt first, InputIt last)
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  FenwickTree(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Constructs a Fenwick tree from an initializer list.
@@ -141,8 +139,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  auto build(InputIt first, InputIt last) -> void
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  auto build(InputIt first, InputIt last) -> void requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Rebuilds the tree from an initializer list of values.

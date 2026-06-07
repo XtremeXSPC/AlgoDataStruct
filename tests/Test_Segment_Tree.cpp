@@ -86,8 +86,7 @@ struct ThrowingAssignNode {
 };
 
 struct ThrowingAssignCombine {
-  auto operator()(const ThrowingAssignNode& left, const ThrowingAssignNode& right) const noexcept
-      -> ThrowingAssignNode {
+  auto operator()(const ThrowingAssignNode& left, const ThrowingAssignNode& right) const noexcept -> ThrowingAssignNode {
     return ThrowingAssignNode(left.value + right.value);
   }
 };

@@ -95,8 +95,7 @@ void demo_basic_operations() {
 void demo_probing_strategies() {
   ads::demo::print_section("Demo: Different Probing Strategies");
 
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC,
-                                        ProbingStrategy::DOUBLE_HASH};
+  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     cout << "\nTesting " << strategy_to_string(strategy) << ":\n";
@@ -204,8 +203,7 @@ void demo_rehashing() {
   for (int i = 1; i <= 20; ++i) {
     table.insert(i, i * 10);
     if (i % 5 == 0) {
-      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor()
-           << '\n';
+      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor() << '\n';
     }
   }
 
@@ -369,8 +367,7 @@ void demo_performance_comparison() {
   const int N = 50'000;
 
   // Test Open Addressing with different strategies.
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC,
-                                        ProbingStrategy::DOUBLE_HASH};
+  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     auto start = std::chrono::high_resolution_clock::now();

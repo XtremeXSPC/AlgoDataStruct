@@ -17,8 +17,6 @@
 
 namespace ads::trees {
 
-// Storage choice: DynamicArray keeps the 1-based difference BIT contiguous.
-
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <FenwickElement T>
@@ -46,7 +44,7 @@ FenwickTreeRangeUpdate<T>::FenwickTreeRangeUpdate(const std::vector<T>& values) 
 template <FenwickElement T>
 template <std::input_iterator InputIt>
 FenwickTreeRangeUpdate<T>::FenwickTreeRangeUpdate(InputIt first, InputIt last)
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>
     : tree_(), size_(0) {
   build(first, last);
 }
@@ -83,7 +81,7 @@ auto FenwickTreeRangeUpdate<T>::build(const std::vector<T>& values) -> void {
 template <FenwickElement T>
 template <std::input_iterator InputIt>
 auto FenwickTreeRangeUpdate<T>::build(InputIt first, InputIt last) -> void
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+    requires std::constructible_from<T, std::iter_reference_t<InputIt>>
 {
   ads::arrays::DynamicArray<T> differences;
   T                            previous{};

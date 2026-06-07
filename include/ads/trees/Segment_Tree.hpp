@@ -49,8 +49,7 @@ struct DefaultIdentity {
  */
 template <typename Value, typename Node>
 struct DefaultLeafBuilder {
-  constexpr auto operator()(const Value& value) const noexcept(std::is_nothrow_constructible_v<Node, const Value&>)
-      -> Node {
+  constexpr auto operator()(const Value& value) const noexcept(std::is_nothrow_constructible_v<Node, const Value&>) -> Node {
     return Node{value};
   }
 };
@@ -67,18 +66,17 @@ struct DefaultLeafBuilder {
  *       combine(combine(a, b), c) == combine(a, combine(b, c))
  *       Common associative operations: addition, multiplication, min, max, bitwise AND/OR/XOR.
  */
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-concept SegmentTreeTraits = requires(Value value, Node node, Combine combine, Identity identity, LeafBuilder leaf) {
-  { leaf(value) } -> std::convertible_to<Node>;
-  { combine(node, node) } -> std::convertible_to<Node>;
-  { identity() } -> std::convertible_to<Node>;
-};
+template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder> concept SegmentTreeTraits =
+    requires(Value value, Node node, Combine combine, Identity identity, LeafBuilder leaf) {
+      { leaf(value) } -> std::convertible_to<Node>;
+      { combine(node, node) } -> std::convertible_to<Node>;
+      { identity() } -> std::convertible_to<Node>;
+    };
 
 /**
  * @brief Concept for types supporting addition.
  */
-template <typename T>
-concept Addable = requires(T a, T b) {
+template <typename T> concept Addable = requires(T a, T b) {
   { a + b } -> std::convertible_to<T>;
 };
 
@@ -86,16 +84,14 @@ concept Addable = requires(T a, T b) {
  * @brief Helper to detect noexcept for combine operation.
  */
 template <typename Combine, typename Node>
-inline constexpr bool is_combine_nothrow_v =
-    noexcept(std::declval<Combine>()(std::declval<Node>(), std::declval<Node>()));
+inline constexpr bool is_combine_nothrow_v = noexcept(std::declval<Combine>()(std::declval<Node>(), std::declval<Node>()));
 
 /**
  * @brief Helper to detect noexcept for parent recomputation.
  */
 template <typename Combine, typename Node>
-inline constexpr bool is_propagate_up_nothrow_v =
-    noexcept(std::declval<Combine&>()(std::declval<Node&>(), std::declval<Node&>()))
-    && std::is_nothrow_assignable_v<Node&, std::invoke_result_t<Combine&, Node&, Node&>>;
+inline constexpr bool is_propagate_up_nothrow_v = noexcept(std::declval<Combine&>()(std::declval<Node&>(), std::declval<Node&>()))
+                                                  && std::is_nothrow_assignable_v<Node&, std::invoke_result_t<Combine&, Node&, Node&>>;
 
 /**
  * @brief Helper to detect noexcept for identity operation.
@@ -147,7 +143,7 @@ template <
     typename Combine     = std::plus<Node>,
     typename Identity    = detail::DefaultIdentity<Node>,
     typename LeafBuilder = detail::DefaultLeafBuilder<Value, Node>>
-  requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
+requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 class SegmentTree {
 public:
   //===--------------------------- TYPE ALIASES --------------------------------===//
@@ -194,8 +190,7 @@ public:
    * @complexity Time O(n), Space O(n)
    * @note Requires Value to be default constructible.
    */
-  constexpr explicit SegmentTree(size_type size)
-    requires std::default_initializable<Value>;
+  constexpr explicit SegmentTree(size_type size) requires std::default_initializable<Value>;
 
   /**
    * @brief Constructs a Segment Tree with the given size and custom functors.
@@ -207,7 +202,7 @@ public:
    * @note Requires Value to be default constructible.
    */
   constexpr SegmentTree(size_type size, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {})
-    requires std::default_initializable<Value>;
+      requires std::default_initializable<Value>;
 
   /**
    * @brief Constructs a Segment Tree with all elements set to a value.
@@ -226,8 +221,7 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(
-      size_type size, const Value& value, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(size_type size, const Value& value, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from a vector of values (copy).
@@ -251,8 +245,7 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(
-      const std::vector<Value>& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(const std::vector<Value>& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from a vector with custom functors (move).
@@ -262,8 +255,7 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(
-      std::vector<Value>&& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(std::vector<Value>&& values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from an initializer list.
@@ -280,8 +272,7 @@ public:
    * @param leaf_builder Functor that converts a value into a node.
    * @complexity Time O(n), Space O(n)
    */
-  constexpr SegmentTree(
-      std::initializer_list<Value> values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(std::initializer_list<Value> values, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Constructs a Segment Tree from an iterator range.
@@ -304,8 +295,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  constexpr SegmentTree(
-      InputIt first, InputIt last, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
+  constexpr SegmentTree(InputIt first, InputIt last, Combine combine, Identity identity = {}, LeafBuilder leaf_builder = {});
 
   /**
    * @brief Move constructor.
@@ -390,8 +380,7 @@ public:
    * @complexity Time O(log n), Space O(1)
    * @note Requires operator+ for Value. Intended for sum trees.
    */
-  constexpr auto add(size_type index, const Value& delta) -> void
-    requires detail::Addable<Value>;
+  constexpr auto add(size_type index, const Value& delta) -> void requires detail::Addable<Value>;
 
   /**
    * @brief Resets the tree to a given size with default values.
@@ -399,8 +388,7 @@ public:
    * @complexity Time O(n), Space O(n)
    * @note Requires Value to be default constructible.
    */
-  constexpr auto reset(size_type size) -> void
-    requires std::default_initializable<Value>;
+  constexpr auto reset(size_type size) -> void requires std::default_initializable<Value>;
 
   /**
    * @brief Removes all elements from the tree.
@@ -581,8 +569,7 @@ private:
    * @param leaf_index Internal index of the leaf node (in [n, 2n-1]).
    * @complexity Time O(log n), Space O(1)
    */
-  constexpr auto propagate_up(size_type leaf_index) noexcept(detail::is_propagate_up_nothrow_v<Combine, node_type>)
-      -> void;
+  constexpr auto propagate_up(size_type leaf_index) noexcept(detail::is_propagate_up_nothrow_v<Combine, node_type>) -> void;
 
   /**
    * @brief Validates that the index is within range.

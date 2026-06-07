@@ -22,6 +22,7 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -147,8 +148,7 @@ public:
    * @return true if the value was inserted, false if it already exists.
    * @complexity Time O(log n), Space O(log n) due to recursion.
    */
-  auto insert(const T& value) -> bool
-    requires std::copy_constructible<T>;
+  auto insert(const T& value) -> bool requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts a value into the tree (move).
@@ -391,7 +391,7 @@ private:
     std::unique_ptr<Node> right = nullptr;
 
     template <typename... Args>
-      requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
+    requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
@@ -562,18 +562,8 @@ private:
    */
   void in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
-  /**
-   * @brief Recursive helper for pre-order traversal.
-   * @param node Current node being visited.
-   * @param visit Function to call for each node's value.
-   */
   void pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
-  /**
-   * @brief Recursive helper for post-order traversal.
-   * @param node Current node being visited.
-   * @param visit Function to call for each node's value.
-   */
   void post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//

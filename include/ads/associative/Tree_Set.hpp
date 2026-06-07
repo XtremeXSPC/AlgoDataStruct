@@ -54,8 +54,7 @@ public:
    * @param values Elements to insert.
    * @complexity Time O(n log n), Space O(n)
    */
-  TreeSet(std::initializer_list<T> values)
-    requires std::copy_constructible<T>;
+  TreeSet(std::initializer_list<T> values) requires std::copy_constructible<T>;
 
   /**
    * @brief Move constructor.
@@ -86,8 +85,7 @@ public:
    * @return true if inserted, false if already exists.
    * @complexity Time O(log n), Space O(1)
    */
-  auto insert(const T& value) -> bool
-    requires std::copy_constructible<T>;
+  auto insert(const T& value) -> bool requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts an element into the set (move).
@@ -105,8 +103,7 @@ public:
    * @complexity Time O(log n), Space O(1)
    */
   template <typename... Args>
-  auto emplace(Args&&... args) -> bool
-    requires std::constructible_from<T, Args...>;
+  auto emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -171,8 +168,7 @@ public:
    * @return Vector of elements in ascending order.
    * @complexity Time O(n), Space O(n)
    */
-  [[nodiscard]] auto to_vector() const -> std::vector<T>
-    requires std::copy_constructible<T>;
+  [[nodiscard]] auto to_vector() const -> std::vector<T> requires std::copy_constructible<T>;
 
   /**
    * @brief Performs an in-order traversal (sorted order).

@@ -17,8 +17,6 @@
 
 namespace ads::trees {
 
-// Storage choice: DynamicArray preserves FenwickTree's contiguous index tables.
-
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <FenwickElement T>
@@ -42,8 +40,7 @@ FenwickTree<T>::FenwickTree(const std::vector<T>& values) : values_(), tree_(), 
 
 template <FenwickElement T>
 template <std::input_iterator InputIt>
-FenwickTree<T>::FenwickTree(InputIt first, InputIt last)
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+FenwickTree<T>::FenwickTree(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>
     : values_(), tree_(), size_(0) {
   build(first, last);
 }
@@ -90,8 +87,7 @@ auto FenwickTree<T>::build(const std::vector<T>& values) -> void {
 
 template <FenwickElement T>
 template <std::input_iterator InputIt>
-auto FenwickTree<T>::build(InputIt first, InputIt last) -> void
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+auto FenwickTree<T>::build(InputIt first, InputIt last) -> void requires std::constructible_from<T, std::iter_reference_t<InputIt>>
 {
   values_.assign(first, last);
   size_ = values_.size();

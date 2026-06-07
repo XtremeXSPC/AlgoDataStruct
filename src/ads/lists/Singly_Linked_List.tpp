@@ -18,17 +18,17 @@ namespace ads::lists {
 
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::iterator::operator*() const -> reference {
   return node_ptr_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::iterator::operator->() const -> pointer {
   return &(node_ptr_->data);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::iterator::operator++() -> iterator& {
   if (node_ptr_) {
     node_ptr_ = node_ptr_->next.get();
@@ -36,7 +36,7 @@ auto SinglyLinkedList<T>::iterator::operator++() -> iterator& {
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::iterator::operator++(int) -> iterator {
   iterator temp = *this;
   ++(*this);
@@ -45,17 +45,17 @@ auto SinglyLinkedList<T>::iterator::operator++(int) -> iterator {
 
 //===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::const_iterator::operator*() const -> reference {
   return node_ptr_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::const_iterator::operator->() const -> pointer {
   return &(node_ptr_->data);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::const_iterator::operator++() -> const_iterator& {
   if (node_ptr_) {
     node_ptr_ = node_ptr_->next.get();
@@ -63,7 +63,7 @@ auto SinglyLinkedList<T>::const_iterator::operator++() -> const_iterator& {
   return *this;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
   const_iterator temp = *this;
   ++(*this);
@@ -72,16 +72,16 @@ auto SinglyLinkedList<T>::const_iterator::operator++(int) -> const_iterator {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <ListElement T>
 SinglyLinkedList<T>::SinglyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <ListElement T>
 SinglyLinkedList<T>::~SinglyLinkedList() {
   clear();
 }
 
-template <typename T>
+template <ListElement T>
 SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList&& other) noexcept :
     head_(std::move(other.head_)),
     tail_(other.tail_),
@@ -90,7 +90,7 @@ SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList&& other) noexcept :
   other.size_ = 0;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::operator=(SinglyLinkedList&& other) noexcept -> SinglyLinkedList& {
   if (this != &other) {
     clear();
@@ -105,7 +105,7 @@ auto SinglyLinkedList<T>::operator=(SinglyLinkedList&& other) noexcept -> Singly
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ListElement T>
 template <typename... Args>
 auto SinglyLinkedList<T>::emplace_front(Args&&... args) -> T& {
   auto new_node  = std::make_unique<Node>(std::forward<Args>(args)...);
@@ -121,7 +121,7 @@ auto SinglyLinkedList<T>::emplace_front(Args&&... args) -> T& {
   return ref;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::push_front(const T& value) -> void {
   auto new_node  = std::make_unique<Node>(value);
   new_node->next = std::move(head_);
@@ -134,7 +134,7 @@ auto SinglyLinkedList<T>::push_front(const T& value) -> void {
   ++size_;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::push_front(T&& value) -> void {
   auto new_node  = std::make_unique<Node>(std::move(value));
   new_node->next = std::move(head_);
@@ -147,7 +147,7 @@ auto SinglyLinkedList<T>::push_front(T&& value) -> void {
   ++size_;
 }
 
-template <typename T>
+template <ListElement T>
 template <typename... Args>
 auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
@@ -165,7 +165,7 @@ auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   return ref;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::push_back(const T& value) -> void {
   auto new_node = std::make_unique<Node>(value);
 
@@ -180,7 +180,7 @@ auto SinglyLinkedList<T>::push_back(const T& value) -> void {
   ++size_;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::push_back(T&& value) -> void {
   auto new_node = std::make_unique<Node>(std::move(value));
 
@@ -197,7 +197,7 @@ auto SinglyLinkedList<T>::push_back(T&& value) -> void {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::pop_front() -> void {
   if (is_empty()) {
     throw ListException("pop_front() called on empty SinglyLinkedList");
@@ -211,7 +211,7 @@ auto SinglyLinkedList<T>::pop_front() -> void {
   }
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::pop_back() -> void {
   if (is_empty()) {
     throw ListException("pop_back() called on empty SinglyLinkedList");
@@ -235,7 +235,7 @@ auto SinglyLinkedList<T>::pop_back() -> void {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::front() -> T& {
   if (is_empty()) {
     throw ListException("front() called on empty SinglyLinkedList");
@@ -243,7 +243,7 @@ auto SinglyLinkedList<T>::front() -> T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::front() const -> const T& {
   if (is_empty()) {
     throw ListException("front() called on empty SinglyLinkedList");
@@ -251,7 +251,7 @@ auto SinglyLinkedList<T>::front() const -> const T& {
   return head_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::back() -> T& {
   if (is_empty()) {
     throw ListException("back() called on empty SinglyLinkedList");
@@ -259,7 +259,7 @@ auto SinglyLinkedList<T>::back() -> T& {
   return tail_->data;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::back() const -> const T& {
   if (is_empty()) {
     throw ListException("back() called on empty SinglyLinkedList");
@@ -269,19 +269,19 @@ auto SinglyLinkedList<T>::back() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
-auto SinglyLinkedList<T>::size() const noexcept -> size_t {
+template <ListElement T>
+auto SinglyLinkedList<T>::size() const noexcept -> typename SinglyLinkedList<T>::size_type {
   return size_;
 }
 
 //===------------------------- MODIFICATION OPERATIONS -------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::clear() noexcept -> void {
   // Iterative deallocation to avoid stack overflow with large lists.
   while (head_) {
@@ -291,7 +291,7 @@ auto SinglyLinkedList<T>::clear() noexcept -> void {
   size_ = 0;
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::reverse() noexcept -> void {
   if (size_ <= 1) {
     return; // Nothing to reverse.
@@ -313,32 +313,32 @@ auto SinglyLinkedList<T>::reverse() noexcept -> void {
 
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::begin() -> iterator {
   return iterator(head_.get(), this);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::begin() const -> const_iterator {
   return const_iterator(head_.get(), this);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::end() -> iterator {
   return iterator(nullptr, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::end() const -> const_iterator {
   return const_iterator(nullptr, this);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::cbegin() const -> const_iterator {
   return const_iterator(head_.get(), this);
 }
 
-template <typename T>
+template <ListElement T>
 auto SinglyLinkedList<T>::cend() const -> const_iterator {
   return const_iterator(nullptr, this);
 }

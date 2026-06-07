@@ -203,8 +203,7 @@ void demo_rehashing() {
   for (int i = 1; i <= 20; ++i) {
     table.insert(i, i * 10);
     if (i % 5 == 0) {
-      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor()
-           << '\n';
+      cout << "After " << i << " insertions: capacity=" << table.capacity() << ", load_factor=" << table.load_factor() << '\n';
     }
   }
 

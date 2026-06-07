@@ -16,8 +16,6 @@
 
 namespace ads::heaps {
 
-// DynamicArray keeps heap storage contiguous while centralizing RAII ownership.
-
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <typename T>
@@ -31,8 +29,7 @@ MaxHeap<T>::MaxHeap(const std::vector<T>& elements) : data_(elements.begin(), el
 
 template <typename T>
 template <std::input_iterator InputIt>
-MaxHeap<T>::MaxHeap(InputIt first, InputIt last)
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+MaxHeap<T>::MaxHeap(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>
     : data_(first, last) {
   build_heap();
 }

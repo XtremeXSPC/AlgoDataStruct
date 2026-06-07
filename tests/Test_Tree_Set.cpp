@@ -27,10 +27,10 @@ struct TreeSetMoveOnlyOrdered {
 
   explicit TreeSetMoveOnlyOrdered(int v) : value(v) {}
 
-  TreeSetMoveOnlyOrdered(const TreeSetMoveOnlyOrdered&)                                = delete;
-  auto operator=(const TreeSetMoveOnlyOrdered&) -> TreeSetMoveOnlyOrdered&             = delete;
-  TreeSetMoveOnlyOrdered(TreeSetMoveOnlyOrdered&&) noexcept                            = default;
-  auto operator=(TreeSetMoveOnlyOrdered&&) noexcept -> TreeSetMoveOnlyOrdered&         = default;
+  TreeSetMoveOnlyOrdered(const TreeSetMoveOnlyOrdered&)                        = delete;
+  auto operator=(const TreeSetMoveOnlyOrdered&) -> TreeSetMoveOnlyOrdered&     = delete;
+  TreeSetMoveOnlyOrdered(TreeSetMoveOnlyOrdered&&) noexcept                    = default;
+  auto operator=(TreeSetMoveOnlyOrdered&&) noexcept -> TreeSetMoveOnlyOrdered& = default;
 
   auto operator<(const TreeSetMoveOnlyOrdered& other) const -> bool { return value < other.value; }
 

@@ -17,6 +17,7 @@
 #define TREE_MAP_HPP
 
 #include "../trees/AVL_Tree.hpp"
+#include "Associative_Concepts.hpp"
 #include "Dictionary.hpp"
 #include "Tree_Map_Exception.hpp"
 
@@ -37,29 +38,24 @@ namespace ads::associative {
  * @tparam Key The type of keys (must be comparable with operator< and operator==).
  * @tparam Value The type of mapped values.
  */
-template <typename Key, typename Value>
+template <MapKey Key, MapValue Value>
 class TreeMap {
 private:
   struct Entry {
     Key           key;
     mutable Value value;
 
-    Entry(const Key& k, const Value& v)
-      requires std::copy_constructible<Key> && std::copy_constructible<Value>
+    Entry(const Key& k, const Value& v) requires CopyMapKey<Key> && CopyMapValue<Value>
         : key(k), value(v) {}
 
-    Entry(const Key& k, Value&& v)
-      requires std::copy_constructible<Key> && std::move_constructible<Value>
+    Entry(const Key& k, Value&& v) requires CopyMapKey<Key> && MoveMapValue<Value>
         : key(k), value(std::move(v)) {}
 
-    Entry(Key&& k, Value&& v)
-      requires std::move_constructible<Key> && std::move_constructible<Value>
+    Entry(Key&& k, Value&& v) requires MoveMapKey<Key> && MoveMapValue<Value>
         : key(std::move(k)), value(std::move(v)) {}
 
     template <typename... Args>
-    Entry(std::piecewise_construct_t, Key&& k, Args&&... args) :
-        key(std::move(k)),
-        value(std::forward<Args>(args)...) {}
+    Entry(std::piecewise_construct_t, Key&& k, Args&&... args) : key(std::move(k)), value(std::forward<Args>(args)...) {}
 
     auto operator<(const Entry& other) const -> bool { return key < other.key; }
 
@@ -94,8 +90,7 @@ public:
    * @param init Initializer list of key-value pairs.
    * @complexity Time O(n log n), Space O(n)
    */
-  TreeMap(std::initializer_list<std::pair<Key, Value>> init)
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>;
+  TreeMap(std::initializer_list<std::pair<Key, Value>> init) requires CopyMapKey<Key> && CopyMapValue<Value>;
 
   /**
    * @brief Move constructor.
@@ -147,8 +142,7 @@ public:
    * @return Reference to the associated value.
    * @note Inserts default-constructed value if key doesn't exist.
    */
-  auto operator[](const Key& key) -> Value&
-    requires std::default_initializable<Value>;
+  auto operator[](const Key& key) -> Value& requires DefaultMapValue<Value>;
 
   /**
    * @brief Access element with bounds checking.
@@ -188,9 +182,7 @@ public:
    * @param value The value to associate.
    * @return true if inserted, false if updated.
    */
-  auto insert(const Key& key, const Value& value) -> bool
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>
-             && std::assignable_from<Value&, const Value&>;
+  auto insert(const Key& key, const Value& value) -> bool requires CopyMapEntry<Key, Value>;
 
   /**
    * @brief Inserts a key-value pair with a copied key and moved value.
@@ -198,8 +190,7 @@ public:
    * @param value The value to move into the map.
    * @return true if inserted, false if updated.
    */
-  auto insert(const Key& key, Value&& value) -> bool
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveMapEntry<Key, Value>;
 
   /**
    * @brief Inserts a key-value pair (move).
@@ -207,8 +198,7 @@ public:
    * @param value The value to associate.
    * @return true if inserted, false if updated.
    */
-  auto insert(Key&& key, Value&& value) -> bool
-    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto insert(Key&& key, Value&& value) -> bool requires MoveMapEntry<Key, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -218,33 +208,28 @@ public:
    * @return true if inserted, false if updated.
    */
   template <typename... Args>
-  auto emplace(Key key, Args&&... args) -> bool
-    requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>;
+  auto emplace(Key key, Args&&... args) -> bool requires EmplaceMapValue<Value, Args...>;
 
   /**
    * @brief Inserts or updates a key-value pair.
    * @param key The key to insert or update.
    * @param value The value to associate with the key.
    */
-  auto put(const Key& key, const Value& value) -> void
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>
-             && std::assignable_from<Value&, const Value&>;
+  auto put(const Key& key, const Value& value) -> void requires CopyMapEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
    * @param key The key to insert or update.
    * @param value The value to move into the map.
    */
-  auto put(const Key& key, Value&& value) -> void
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto put(const Key& key, Value&& value) -> void requires CopyKeyMoveMapEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move).
    * @param key The key to insert or update.
    * @param value The value to associate with the key.
    */
-  auto put(Key&& key, Value&& value) -> void
-    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto put(Key&& key, Value&& value) -> void requires MoveMapEntry<Key, Value>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -265,20 +250,17 @@ public:
   /**
    * @brief Returns vector of all keys in sorted order.
    */
-  [[nodiscard]] auto keys() const -> std::vector<Key>
-    requires std::copy_constructible<Key>;
+  [[nodiscard]] auto keys() const -> std::vector<Key> requires CopyMapKey<Key>;
 
   /**
    * @brief Returns vector of all values ordered by key.
    */
-  [[nodiscard]] auto values() const -> std::vector<Value>
-    requires std::copy_constructible<Value>;
+  [[nodiscard]] auto values() const -> std::vector<Value> requires CopyMapValue<Value>;
 
   /**
    * @brief Returns vector of all key-value pairs ordered by key.
    */
-  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>>
-    requires std::copy_constructible<Key> && std::copy_constructible<Value>;
+  [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>> requires CopyMapKey<Key> && CopyMapValue<Value>;
 
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//

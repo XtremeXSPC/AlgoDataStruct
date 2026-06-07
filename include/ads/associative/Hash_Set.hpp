@@ -103,8 +103,7 @@ public:
    * @param values Elements to insert.
    * @complexity Time O(n) average, Space O(n)
    */
-  HashSet(std::initializer_list<T> values)
-    requires std::copy_constructible<T>;
+  HashSet(std::initializer_list<T> values) requires std::copy_constructible<T>;
 
   /**
    * @brief Destructor.
@@ -135,8 +134,7 @@ public:
    * @return true if inserted, false if already exists.
    * @complexity Time O(1) average, Space O(1)
    */
-  auto insert(const T& value) -> bool
-    requires std::copy_constructible<T>;
+  auto insert(const T& value) -> bool requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts an element into the set (move).

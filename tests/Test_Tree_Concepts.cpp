@@ -68,20 +68,15 @@ struct MoveOnlyOrdered {
   auto operator==(const MoveOnlyOrdered& other) const -> bool { return value == other.value; }
 };
 
-template <typename T>
-concept CanInstantiateBinarySearchTree = requires { typename BinarySearchTree<T>; };
+template <typename T> concept CanInstantiateBinarySearchTree = requires { typename BinarySearchTree<T>; };
 
-template <typename T>
-concept CanInstantiateAVLTree = requires { typename AVLTree<T>; };
+template <typename T> concept CanInstantiateAVLTree = requires { typename AVLTree<T>; };
 
-template <typename T>
-concept CanInstantiateRedBlackTree = requires { typename Red_Black_Tree<T>; };
+template <typename T> concept CanInstantiateRedBlackTree = requires { typename Red_Black_Tree<T>; };
 
-template <typename T, int Degree>
-concept CanInstantiateBTree = requires { typename B_Tree<T, Degree>; };
+template <typename T, int Degree> concept CanInstantiateBTree = requires { typename B_Tree<T, Degree>; };
 
-template <typename T>
-concept CanInstantiateCompleteBinaryTree = requires { typename CompleteBinaryTree<T>; };
+template <typename T> concept CanInstantiateCompleteBinaryTree = requires { typename CompleteBinaryTree<T>; };
 
 static_assert(TreeElement<int>);
 static_assert(!TreeElement<NonDestructibleType>);

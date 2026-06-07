@@ -22,6 +22,7 @@
 #include "Tree_Concepts.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -144,8 +145,7 @@ public:
    * @complexity Time O(h), Space O(1).
    * @note Worst-case O(n), average-case O(log n).
    */
-  auto insert(const T& value) -> bool
-    requires std::copy_constructible<T>;
+  auto insert(const T& value) -> bool requires std::copy_constructible<T>;
 
   /**
    * @brief Inserts a value into the tree (move).
@@ -350,7 +350,7 @@ private:
     std::unique_ptr<Node> right = nullptr;
 
     template <typename... Args>
-      requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
+    requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 

@@ -18,6 +18,7 @@
 
 #include "../arrays/Dynamic_Array.hpp"
 #include "../lists/Doubly_Linked_List.hpp"
+#include "Hash_Concepts.hpp"
 #include "Hash_Table_Exception.hpp"
 
 #include <concepts>
@@ -54,7 +55,8 @@ namespace ads::hash {
  * @tparam Value The type of values to store.
  * @tparam Hash Hash functor for Key.
  */
-template <typename Key, typename Value, typename Hash = std::hash<Key>>
+template <CopyHashKey Key, HashValue Value, typename Hash = std::hash<Key>>
+requires HashFor<Hash, Key>
 class HashTableChaining {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -104,8 +106,7 @@ public:
    * @details If the key already exists, its value is updated.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(const Key& key, const Value& value)
-    requires std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
+  void insert(const Key& key, const Value& value) requires CopyHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
@@ -113,8 +114,7 @@ public:
    * @param value The value to move into the table.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(const Key& key, Value&& value)
-    requires std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  void insert(const Key& key, Value&& value) requires CopyKeyMoveHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move version).
@@ -122,8 +122,7 @@ public:
    * @param value The value to move into the table.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(Key&& key, Value&& value)
-    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  void insert(Key&& key, Value&& value) requires MoveHashEntry<Key, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -134,8 +133,7 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   template <typename... Args>
-  Value& emplace(const Key& key, Args&&... args)
-    requires std::constructible_from<Value, Args...> && std::assignable_from<Value&, Value>;
+  Value& emplace(const Key& key, Args&&... args) requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -164,7 +162,7 @@ public:
    * @details If the key doesn't exist, inserts default-constructed value.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  Value& operator[](const Key& key);
+  Value& operator[](const Key& key) requires CopyHashKey<Key> && DefaultHashValue<Value>;
 
   //===--------------------------- SEARCH OPERATIONS ---------------------------===//
 
@@ -271,7 +269,7 @@ private:
   friend class ::ads::associative::HashMap;
 
   /**
-   * @brief Entry is std::pair for structured bindings support.
+   * @brief Entries keep immutable keys to preserve hash-table invariants.
    */
   using Entry = std::pair<const Key, Value>;
 

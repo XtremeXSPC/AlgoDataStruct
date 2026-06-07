@@ -72,8 +72,7 @@ public:
    * @note Uses bottom-up heapify for O(n) construction.
    */
   template <std::input_iterator InputIt>
-  explicit MaxHeap(InputIt first, InputIt last)
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  explicit MaxHeap(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
 
   /**
    * @brief Move constructor.
