@@ -16,6 +16,7 @@
 #ifndef DYNAMIC_ARRAY_HPP
 #define DYNAMIC_ARRAY_HPP
 
+#include "../../support/Container_Facade.hpp"
 #include "Array_Concepts.hpp"
 #include "Array_Exception.hpp"
 
@@ -32,6 +33,8 @@
 
 namespace ads::arrays {
 
+using ads::support::ContainerFacade;
+
 /**
  * @brief A dynamic array implementation similar to std::vector.
  *
@@ -43,7 +46,7 @@ namespace ads::arrays {
  * @tparam T The type of elements stored in the array.
  */
 template <ArrayElement T>
-class DynamicArray {
+class DynamicArray : public ContainerFacade<DynamicArray<T>> {
 public:
   using value_type             = T;
   using size_type              = size_t;
@@ -90,8 +93,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  DynamicArray(InputIt first, InputIt last)
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>;
+  DynamicArray(InputIt first, InputIt last) requires RangeArrayElement<InputIt, T>;
 
   /**
    * @brief Move constructor.
@@ -128,24 +130,21 @@ public:
    * @complexity Time O(1) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace_back(Args&&... args) -> T&
-    requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>;
+  auto emplace_back(Args&&... args) -> T& requires AppendArrayElement<T, Args...>;
 
   /**
    * @brief Appends an element to the end (copy).
    * @param value The value to append.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_back(const T& value) -> void
-    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
+  auto push_back(const T& value) -> void requires CopyArrayElement<T>;
 
   /**
    * @brief Appends an element to the end (move).
    * @param value The value to append.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_back(T&& value) -> void
-    requires std::move_constructible<T> && RelocatableArrayElement<T>;
+  auto push_back(T&& value) -> void requires MoveArrayElement<T>;
 
   /**
    * @brief Constructs an element in-place at the given index.
@@ -157,8 +156,7 @@ public:
    * @complexity Time O(n), Space O(1)
    */
   template <typename... Args>
-  auto emplace(size_t index, Args&&... args) -> T&
-    requires EmplaceConstructible<T, Args...> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>;
+  auto emplace(size_t index, Args&&... args) -> T& requires InsertArrayElement<T, Args...>;
 
   /**
    * @brief Inserts an element at the given index (copy).
@@ -167,8 +165,7 @@ public:
    * @throws ArrayOutOfRangeException if index > size().
    * @complexity Time O(n), Space O(1)
    */
-  auto insert(size_t index, const T& value) -> void
-    requires std::copy_constructible<T> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>;
+  auto insert(size_t index, const T& value) -> void requires InsertCopyArrayElement<T>;
 
   /**
    * @brief Inserts an element at the given index (move).
@@ -177,8 +174,7 @@ public:
    * @throws ArrayOutOfRangeException if index > size().
    * @complexity Time O(n), Space O(1)
    */
-  auto insert(size_t index, T&& value) -> void
-    requires std::move_constructible<T> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>;
+  auto insert(size_t index, T&& value) -> void requires InsertMoveArrayElement<T>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
@@ -209,16 +205,14 @@ public:
    * @param value Value to fill the array with.
    * @complexity Time O(n), Space O(n)
    */
-  auto assign(size_t count, const T& value) -> void
-    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
+  auto assign(size_t count, const T& value) -> void requires CopyArrayElement<T>;
 
   /**
    * @brief Replaces all elements from an initializer list.
    * @param values Elements to copy into the array.
    * @complexity Time O(n), Space O(n)
    */
-  auto assign(std::initializer_list<T> values) -> void
-    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
+  auto assign(std::initializer_list<T> values) -> void requires CopyArrayElement<T>;
 
   /**
    * @brief Replaces all elements from an iterator range.
@@ -228,8 +222,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  auto assign(InputIt first, InputIt last) -> void
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>;
+  auto assign(InputIt first, InputIt last) -> void requires RangeArrayElement<InputIt, T>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -323,29 +316,25 @@ public:
    * @brief Reserves capacity for at least n elements.
    * @param new_capacity The minimum capacity to reserve.
    */
-  auto reserve(size_t new_capacity) -> void
-    requires RelocatableArrayElement<T>;
+  auto reserve(size_t new_capacity) -> void requires RelocatableArrayElement<T>;
 
   /**
    * @brief Shrinks the capacity to fit the current size.
    */
-  auto shrink_to_fit() -> void
-    requires RelocatableArrayElement<T>;
+  auto shrink_to_fit() -> void requires RelocatableArrayElement<T>;
 
   /**
    * @brief Resizes the array, default-initializing new elements.
    * @param new_size The desired size.
    */
-  auto resize(size_t new_size) -> void
-    requires std::default_initializable<T> && RelocatableArrayElement<T>;
+  auto resize(size_t new_size) -> void requires ResizeArrayElement<T>;
 
   /**
    * @brief Resizes the array, filling new elements with a value.
    * @param new_size The desired size.
    * @param value The value to fill new elements with.
    */
-  auto resize(size_t new_size, const T& value) -> void
-    requires std::copy_constructible<T> && RelocatableArrayElement<T>;
+  auto resize(size_t new_size, const T& value) -> void requires CopyArrayElement<T>;
 
   //===------------------------- ITERATOR OPERATIONS ---------------------------===//
 
@@ -361,43 +350,42 @@ public:
   auto end() noexcept -> iterator;
   auto end() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns a const_iterator to the beginning/end of the array.
-   */
-  auto cbegin() const noexcept -> const_iterator;
-  auto cend() const noexcept -> const_iterator;
-
-  /**
-   * @brief Returns a reverse_iterator/const_reverse_iterator to the beginning.
-   */
-  auto rbegin() noexcept -> reverse_iterator;
-  auto rbegin() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a reverse_iterator/const_reverse_iterator to the end.
-   */
-  auto rend() noexcept -> reverse_iterator;
-  auto rend() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a const_reverse_iterator to the beginning/end of the array.
-   */
-  auto crbegin() const noexcept -> const_reverse_iterator;
-  auto crend() const noexcept -> const_reverse_iterator;
+  // cbegin/cend, rbegin/rend, crbegin/crend, and the relational operators
+  // (==, <=>) are inherited from ContainerFacade<DynamicArray<T>>.
 
 private:
+  //===------------------------- PRIVATE TYPE ALIASES --------------------------===//
+
+  /// Owning pointer to the raw element storage with a custom array deleter.
+  using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
+
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+
+  /**
+   * @brief Returns the maximum number of elements that can be allocated for T.
+   * @return floor(SIZE_MAX / sizeof(T)).
+   */
+  static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
+
+  /**
+   * @brief Releases raw storage previously obtained from allocate().
+   * @param ptr Pointer to release (may be null).
+   */
+  static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
+
+  /**
+   * @brief Allocates uninitialized storage for the given number of elements.
+   * @param capacity Number of elements to reserve space for.
+   * @return Owning pointer to the newly allocated storage.
+   * @throws ArrayOverflowException if capacity exceeds max_elements().
+   */
+  static auto allocate(size_t capacity) -> storage_ptr;
 
   /**
    * @brief Ensures capacity for at least min_capacity elements.
    * @param min_capacity The minimum capacity required.
    */
   auto ensure_capacity(size_t min_capacity) -> void;
-
-  /**
-   * @brief Grows the array capacity when full.
-   */
-  auto grow() -> void;
 
   /**
    * @brief Reallocates the internal buffer to new_capacity.
@@ -407,9 +395,9 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::unique_ptr<T[], void (*)(T*)> data_;     ///< Raw storage for elements.
-  size_t                             size_;     ///< Number of constructed elements.
-  size_t                             capacity_; ///< Allocated capacity.
+  storage_ptr data_;     ///< Raw storage for elements.
+  size_t      size_;     ///< Number of constructed elements.
+  size_t      capacity_; ///< Allocated capacity.
 
   static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity.
   static constexpr size_t kGrowthFactor    = 2;  ///< Growth factor for resizing.

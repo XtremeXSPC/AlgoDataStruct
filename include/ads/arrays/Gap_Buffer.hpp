@@ -1,10 +1,10 @@
 //===---------------------------------------------------------------------------===//
 /**
- * @file Circular_Array.hpp
+ * @file Gap_Buffer.hpp
  * @author Costantino Lombardi
- * @brief Declaration of the CircularArray class template.
+ * @brief Declaration of the GapBuffer class template.
  * @version 0.1
- * @date 2026-01-26
+ * @date 2026-06-08
  *
  * @copyright MIT License 2026
  *
@@ -13,15 +13,14 @@
 
 #pragma once
 
-#ifndef CIRCULAR_ARRAY_HPP
-#define CIRCULAR_ARRAY_HPP
+#ifndef GAP_BUFFER_HPP
+#define GAP_BUFFER_HPP
 
 #include "../../support/Container_Facade.hpp"
 #include "../../support/Indexed_Iterator.hpp"
 #include "Array_Concepts.hpp"
 #include "Array_Exception.hpp"
 
-#include <algorithm>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -37,17 +36,20 @@ using ads::support::ContainerFacade;
 using ads::support::IndexedIterator;
 
 /**
- * @brief A dynamic circular array implementation supporting O(1) operations at both ends.
+ * @brief A gap buffer: a sequence optimized for localized insertions and deletions.
  *
- * @details This class implements a circular buffer with dynamic resizing. Unlike a
- *          standard dynamic array, it supports efficient push/pop operations at both
- *          the front and back. Internally uses modular arithmetic for wrap-around
- *          behavior. Suitable for implementing queues, deques, and ring buffers.
+ * @details A gap buffer stores its elements in a single contiguous allocation that
+ *          is split into two segments separated by an internal "gap" of unused
+ *          slots. The gap sits at the cursor position, so insertions and deletions
+ *          at the cursor are amortized O(1) (they simply shrink or grow the gap).
+ *          Moving the cursor shifts elements across the gap in O(distance). This is
+ *          the classic data structure behind text editors. Like the other dynamic
+ *          array structures in this library, GapBuffer is move-only.
  *
- * @tparam T The type of elements stored in the array.
+ * @tparam T The type of elements stored in the buffer.
  */
 template <ArrayElement T>
-class CircularArray : public ContainerFacade<CircularArray<T>> {
+class GapBuffer : public ContainerFacade<GapBuffer<T>> {
 public:
   using value_type      = T;
   using size_type       = size_t;
@@ -59,126 +61,132 @@ public:
 
   //===---------------------------- ITERATOR TYPES -----------------------------===//
 
-  // The logical (wrap-around) iteration order is provided by IndexedIterator,
+  // The logical (gap-skipping) iteration order is provided by IndexedIterator,
   // which dereferences through this container's operator[]. See Indexed_Iterator.hpp.
-  using iterator               = IndexedIterator<CircularArray<T>, false>;
-  using const_iterator         = IndexedIterator<CircularArray<T>, true>;
+  using iterator               = IndexedIterator<GapBuffer<T>, false>;
+  using const_iterator         = IndexedIterator<GapBuffer<T>, true>;
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
   /**
-   * @brief Constructs an empty circular array with optional initial capacity.
+   * @brief Constructs an empty gap buffer with optional initial capacity.
    * @param initial_capacity The initial capacity (default: 16).
-   * @throws std::bad_alloc if memory allocation fails.
+   * @throws ArrayOverflowException if the capacity would overflow.
    * @complexity Time O(1), Space O(initial_capacity)
    */
-  explicit CircularArray(size_t initial_capacity = kInitialCapacity);
+  explicit GapBuffer(size_t initial_capacity = kInitialCapacity);
 
   /**
-   * @brief Constructs a circular array from an initializer list.
+   * @brief Constructs a gap buffer from an initializer list (cursor at the end).
    * @param values The initializer list of elements.
    * @complexity Time O(n), Space O(n)
    */
-  CircularArray(std::initializer_list<T> values);
+  GapBuffer(std::initializer_list<T> values) requires CopyArrayElement<T>;
 
   /**
    * @brief Move constructor.
-   * @param other The array to move from.
+   * @param other The buffer to move from.
    * @complexity Time O(1), Space O(1)
    */
-  CircularArray(CircularArray&& other) noexcept;
+  GapBuffer(GapBuffer&& other) noexcept;
 
   /**
    * @brief Destructor. Destroys all elements and deallocates memory.
    * @complexity Time O(n), Space O(1)
    */
-  ~CircularArray();
+  ~GapBuffer();
 
   /**
    * @brief Move assignment operator.
-   * @param other The array to move from.
+   * @param other The buffer to move from.
    * @return Reference to this instance.
    * @complexity Time O(n), Space O(1)
    */
-  auto operator=(CircularArray&& other) noexcept -> CircularArray&;
+  auto operator=(GapBuffer&& other) noexcept -> GapBuffer&;
 
   // Copy constructor and assignment are disabled (move-only type).
-  CircularArray(const CircularArray&)                    = delete;
-  auto operator=(const CircularArray&) -> CircularArray& = delete;
+  GapBuffer(const GapBuffer&)                    = delete;
+  auto operator=(const GapBuffer&) -> GapBuffer& = delete;
 
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
   /**
-   * @brief Constructs an element in-place at the front.
+   * @brief Constructs an element in-place at the cursor.
    * @tparam Args Types of arguments to forward to T's constructor.
    * @param args Arguments to forward to T's constructor.
    * @return Reference to the newly constructed element.
    * @complexity Time O(1) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace_front(Args&&... args) -> T& requires AppendArrayElement<T, Args...>;
+  auto emplace(Args&&... args) -> T& requires AppendArrayElement<T, Args...>;
 
   /**
-   * @brief Inserts an element at the front.
+   * @brief Inserts an element at the cursor (copy).
    * @param value The value to insert.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_front(const T& value) -> void requires CopyArrayElement<T>;
+  auto insert(const T& value) -> void requires CopyArrayElement<T>;
 
   /**
-   * @brief Inserts an element at the front (move).
+   * @brief Inserts an element at the cursor (move).
    * @param value The value to insert.
    * @complexity Time O(1) amortized, Space O(1)
    */
-  auto push_front(T&& value) -> void requires MoveArrayElement<T>;
-
-  /**
-   * @brief Constructs an element in-place at the back.
-   * @tparam Args Types of arguments to forward to T's constructor.
-   * @param args Arguments to forward to T's constructor.
-   * @return Reference to the newly constructed element.
-   * @complexity Time O(1) amortized, Space O(1)
-   */
-  template <typename... Args>
-  auto emplace_back(Args&&... args) -> T& requires AppendArrayElement<T, Args...>;
-
-  /**
-   * @brief Inserts an element at the back.
-   * @param value The value to insert.
-   * @complexity Time O(1) amortized, Space O(1)
-   */
-  auto push_back(const T& value) -> void requires CopyArrayElement<T>;
-
-  /**
-   * @brief Inserts an element at the back (move).
-   * @param value The value to insert.
-   * @complexity Time O(1) amortized, Space O(1)
-   */
-  auto push_back(T&& value) -> void requires MoveArrayElement<T>;
+  auto insert(T&& value) -> void requires MoveArrayElement<T>;
 
   //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
 
   /**
-   * @brief Removes the first element.
-   * @throws ArrayUnderflowException if the array is empty.
+   * @brief Removes the element immediately before the cursor (backspace).
+   * @throws ArrayUnderflowException if the cursor is at the beginning.
    * @complexity Time O(1), Space O(1)
    */
-  auto pop_front() -> void;
+  auto erase() -> void;
 
   /**
-   * @brief Removes the last element.
-   * @throws ArrayUnderflowException if the array is empty.
+   * @brief Removes the element immediately after the cursor (delete).
+   * @throws ArrayUnderflowException if the cursor is at the end.
    * @complexity Time O(1), Space O(1)
    */
-  auto pop_back() -> void;
+  auto erase_forward() -> void;
 
   /**
-   * @brief Removes all elements from the array.
+   * @brief Removes all elements from the buffer.
    * @complexity Time O(n), Space O(1)
    */
   auto clear() noexcept -> void;
+
+  //===--------------------------- CURSOR OPERATIONS ---------------------------===//
+
+  /**
+   * @brief Returns the current cursor position (logical index of the gap).
+   * @complexity Time O(1), Space O(1)
+   */
+  [[nodiscard]] auto cursor() const noexcept -> size_t;
+
+  /**
+   * @brief Moves the cursor to the given logical position.
+   * @param position The target logical position (0..size()).
+   * @throws ArrayOutOfRangeException if position > size().
+   * @complexity Time O(|position - cursor()|), Space O(1)
+   */
+  auto move_cursor_to(size_t position) -> void;
+
+  /**
+   * @brief Moves the cursor one position toward the end.
+   * @throws ArrayUnderflowException if the cursor is already at the end.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto advance_cursor() -> void;
+
+  /**
+   * @brief Moves the cursor one position toward the beginning.
+   * @throws ArrayUnderflowException if the cursor is already at the beginning.
+   * @complexity Time O(1), Space O(1)
+   */
+  auto retreat_cursor() -> void;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -218,28 +226,28 @@ public:
 
   /**
    * @brief Returns a reference to the first element.
-   * @throws ArrayUnderflowException if the array is empty.
+   * @throws ArrayUnderflowException if the buffer is empty.
    * @complexity Time O(1), Space O(1)
    */
   auto front() -> T&;
 
   /**
    * @brief Returns a const reference to the first element.
-   * @throws ArrayUnderflowException if the array is empty.
+   * @throws ArrayUnderflowException if the buffer is empty.
    * @complexity Time O(1), Space O(1)
    */
   auto front() const -> const T&;
 
   /**
    * @brief Returns a reference to the last element.
-   * @throws ArrayUnderflowException if the array is empty.
+   * @throws ArrayUnderflowException if the buffer is empty.
    * @complexity Time O(1), Space O(1)
    */
   auto back() -> T&;
 
   /**
    * @brief Returns a const reference to the last element.
-   * @throws ArrayUnderflowException if the array is empty.
+   * @throws ArrayUnderflowException if the buffer is empty.
    * @complexity Time O(1), Space O(1)
    */
   auto back() const -> const T&;
@@ -247,42 +255,21 @@ public:
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
   /**
-   * @brief Checks if the array is empty.
-   * @return true if empty, false otherwise.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] auto is_empty() const noexcept -> bool;
-
-  /**
-   * @brief Returns the number of elements in the array.
-   * @return The current size.
+   * @brief Returns the number of elements in the buffer.
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
-   * @brief Returns the current capacity of the array.
-   * @return The capacity.
+   * @brief Returns the current total capacity (elements plus gap).
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] auto capacity() const noexcept -> size_t;
 
-  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+  // is_empty(), cbegin/cend, rbegin/rend, crbegin/crend, and the relational
+  // operators (==, <=>) are inherited from ContainerFacade<GapBuffer<T>>.
 
-  /**
-   * @brief Reserves capacity for at least n elements.
-   * @param new_capacity The minimum capacity to reserve.
-   * @complexity Time O(n), Space O(new_capacity)
-   */
-  auto reserve(size_t new_capacity) -> void requires RelocatableArrayElement<T>;
-
-  /**
-   * @brief Shrinks the capacity to fit the current size.
-   * @complexity Time O(n), Space O(size)
-   */
-  auto shrink_to_fit() -> void requires RelocatableArrayElement<T>;
-
-  //===------------------------- ITERATOR OPERATIONS ---------------------------===//
+  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning.
@@ -296,9 +283,6 @@ public:
   auto end() noexcept -> iterator;
   auto end() const noexcept -> const_iterator;
 
-  // cbegin/cend, rbegin/rend, crbegin/crend, and the relational operators
-  // (==, <=>) are inherited from ContainerFacade<CircularArray<T>>.
-
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
@@ -307,7 +291,6 @@ private:
 
   /**
    * @brief Returns the maximum number of elements that can be allocated for T.
-   * @return floor(SIZE_MAX / sizeof(T)).
    */
   static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
 
@@ -327,29 +310,33 @@ private:
 
   /**
    * @brief Converts a logical index to a physical index in the buffer.
-   * @param logical_index The logical index (0 = front).
+   * @param logical_index The logical index (gap-skipping).
    * @return The physical index in the buffer.
    */
   [[nodiscard]] auto to_physical_index(size_t logical_index) const noexcept -> size_t;
 
   /**
-   * @brief Ensures capacity for at least min_capacity elements.
-   * @param min_capacity The minimum capacity required.
+   * @brief Returns the number of free slots in the gap.
    */
-  auto ensure_capacity(size_t min_capacity) -> void;
+  [[nodiscard]] auto gap_size() const noexcept -> size_t;
 
   /**
-   * @brief Reallocates the buffer to a new capacity, linearizing elements.
-   * @param new_capacity The new capacity.
+   * @brief Ensures the gap has room for at least one element, growing if needed.
+   */
+  auto ensure_gap() -> void;
+
+  /**
+   * @brief Reallocates to new_capacity, repositioning the gap at the cursor.
+   * @param new_capacity The new total capacity.
    */
   auto reallocate(size_t new_capacity) -> void;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  storage_ptr data_;     ///< Raw storage for elements.
-  size_t      head_;     ///< Physical index of the first element.
-  size_t      size_;     ///< Number of elements.
-  size_t      capacity_; ///< Allocated capacity.
+  storage_ptr data_;      ///< Raw storage for elements and the gap.
+  size_t      capacity_;  ///< Total slots (elements + gap).
+  size_t      gap_begin_; ///< Physical index where the gap starts (= cursor).
+  size_t      gap_end_;   ///< Physical index just past the gap.
 
   static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity.
   static constexpr size_t kGrowthFactor    = 2;  ///< Growth factor for resizing.
@@ -359,8 +346,8 @@ private:
 } // namespace ads::arrays
 
 // Include the implementation file for templates.
-#include "../../../src/ads/arrays/Circular_Array.tpp"
+#include "../../../src/ads/arrays/Gap_Buffer.tpp"
 
-#endif // CIRCULAR_ARRAY_HPP
+#endif // GAP_BUFFER_HPP
 
 //===---------------------------------------------------------------------------===//

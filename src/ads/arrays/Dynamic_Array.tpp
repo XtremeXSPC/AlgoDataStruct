@@ -21,27 +21,20 @@ namespace ads::arrays {
 
 template <ArrayElement T>
 DynamicArray<T>::DynamicArray(size_t initial_capacity) :
-    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     size_(0),
     capacity_(std::max(initial_capacity, kMinCapacity)) {
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("DynamicArray capacity overflow");
-  }
-
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // allocate() validates against capacity overflow before reserving storage.
+  data_ = allocate(capacity_);
 }
 
 template <ArrayElement T>
 DynamicArray<T>::DynamicArray(std::initializer_list<T> values) :
-    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     size_(0),
     capacity_(std::max(values.size(), kMinCapacity)) {
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("DynamicArray capacity overflow");
-  }
-
-  // Allocate raw memory.
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // Allocate raw memory (allocate() validates against capacity overflow).
+  data_ = allocate(capacity_);
 
   // Construct elements from initializer list.
   size_t constructed = 0;
@@ -63,15 +56,11 @@ DynamicArray<T>::DynamicArray(std::initializer_list<T> values) :
 
 template <ArrayElement T>
 DynamicArray<T>::DynamicArray(size_t count, const T& value) :
-    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     size_(0),
     capacity_(std::max(count, kMinCapacity)) {
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("DynamicArray capacity overflow");
-  }
-
-  // Allocate raw memory.
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // Allocate raw memory (allocate() validates against capacity overflow).
+  data_ = allocate(capacity_);
 
   // Construct elements with the given value.
   size_t constructed = 0;
@@ -92,10 +81,9 @@ DynamicArray<T>::DynamicArray(size_t count, const T& value) :
 
 template <ArrayElement T>
 template <std::input_iterator InputIt>
-DynamicArray<T>::DynamicArray(InputIt first, InputIt last)
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>
-    : data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }), size_(0), capacity_(kMinCapacity) {
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+DynamicArray<T>::DynamicArray(InputIt first, InputIt last) requires RangeArrayElement<InputIt, T>
+    : data_(nullptr, &deallocate), size_(0), capacity_(kMinCapacity) {
+  data_ = allocate(capacity_);
 
   if constexpr (std::forward_iterator<InputIt>) {
     const auto count = std::distance(first, last);
@@ -146,8 +134,7 @@ auto DynamicArray<T>::operator=(DynamicArray&& other) noexcept -> DynamicArray<T
 
 template <ArrayElement T>
 template <typename... Args>
-auto DynamicArray<T>::emplace_back(Args&&... args) -> T&
-  requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>
+auto DynamicArray<T>::emplace_back(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
   ensure_capacity(size_ + 1);
 
@@ -158,23 +145,20 @@ auto DynamicArray<T>::emplace_back(Args&&... args) -> T&
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::push_back(const T& value) -> void
-  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::push_back(const T& value) -> void requires CopyArrayElement<T>
 {
   emplace_back(value);
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::push_back(T&& value) -> void
-  requires std::move_constructible<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::push_back(T&& value) -> void requires MoveArrayElement<T>
 {
   emplace_back(std::move(value));
 }
 
 template <ArrayElement T>
 template <typename... Args>
-auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T&
-  requires EmplaceConstructible<T, Args...> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T& requires InsertArrayElement<T, Args...>
 {
   if (index > size_) {
     throw ArrayOutOfRangeException("insert position out of range");
@@ -213,15 +197,13 @@ auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T&
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::insert(size_t index, const T& value) -> void
-  requires std::copy_constructible<T> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::insert(size_t index, const T& value) -> void requires InsertCopyArrayElement<T>
 {
   emplace(index, value);
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::insert(size_t index, T&& value) -> void
-  requires std::move_constructible<T> && ShiftAssignableArrayElement<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::insert(size_t index, T&& value) -> void requires InsertMoveArrayElement<T>
 {
   emplace(index, std::move(value));
 }
@@ -287,8 +269,7 @@ auto DynamicArray<T>::clear() noexcept -> void {
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::assign(size_t count, const T& value) -> void
-  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::assign(size_t count, const T& value) -> void requires CopyArrayElement<T>
 {
   // Build first so a failed copy leaves the existing array untouched.
   DynamicArray replacement(count, value);
@@ -296,16 +277,14 @@ auto DynamicArray<T>::assign(size_t count, const T& value) -> void
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::assign(std::initializer_list<T> values) -> void
-  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::assign(std::initializer_list<T> values) -> void requires CopyArrayElement<T>
 {
   assign(values.begin(), values.end());
 }
 
 template <ArrayElement T>
 template <std::input_iterator InputIt>
-auto DynamicArray<T>::assign(InputIt first, InputIt last) -> void
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>> && RelocatableArrayElement<T>
+auto DynamicArray<T>::assign(InputIt first, InputIt last) -> void requires RangeArrayElement<InputIt, T>
 {
   // Build first so a failed range copy/move leaves the existing array untouched.
   DynamicArray replacement(first, last);
@@ -402,8 +381,7 @@ auto DynamicArray<T>::capacity() const noexcept -> size_t {
 //===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
 template <ArrayElement T>
-auto DynamicArray<T>::reserve(size_t new_capacity) -> void
-  requires RelocatableArrayElement<T>
+auto DynamicArray<T>::reserve(size_t new_capacity) -> void requires RelocatableArrayElement<T>
 {
   if (new_capacity > capacity_) {
     reallocate(new_capacity);
@@ -411,8 +389,7 @@ auto DynamicArray<T>::reserve(size_t new_capacity) -> void
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::shrink_to_fit() -> void
-  requires RelocatableArrayElement<T>
+auto DynamicArray<T>::shrink_to_fit() -> void requires RelocatableArrayElement<T>
 {
   if (size_ < capacity_) {
     const size_t new_capacity = std::max(size_, kMinCapacity);
@@ -423,8 +400,7 @@ auto DynamicArray<T>::shrink_to_fit() -> void
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::resize(size_t new_size) -> void
-  requires std::default_initializable<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::resize(size_t new_size) -> void requires ResizeArrayElement<T>
 {
   // Handle shrinking the array.
   if (new_size < size_) {
@@ -446,8 +422,7 @@ auto DynamicArray<T>::resize(size_t new_size) -> void
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::resize(size_t new_size, const T& value) -> void
-  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+auto DynamicArray<T>::resize(size_t new_size, const T& value) -> void requires CopyArrayElement<T>
 {
   if (new_size < size_) {
     for (size_t i = new_size; i < size_; ++i) {
@@ -488,45 +463,8 @@ auto DynamicArray<T>::end() const noexcept -> const_iterator {
   return data_.get() + size_;
 }
 
-template <ArrayElement T>
-auto DynamicArray<T>::cbegin() const noexcept -> const_iterator {
-  return data_.get();
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::cend() const noexcept -> const_iterator {
-  return data_.get() + size_;
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::rbegin() noexcept -> reverse_iterator {
-  return reverse_iterator(end());
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::rend() noexcept -> reverse_iterator {
-  return reverse_iterator(begin());
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::rbegin() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(end());
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::rend() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(begin());
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::crbegin() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(end());
-}
-
-template <ArrayElement T>
-auto DynamicArray<T>::crend() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(begin());
-}
+// cbegin/cend, the reverse-iterator accessors, and the relational operators are
+// provided by ContainerFacade<DynamicArray<T>>; no out-of-line definitions needed.
 
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
@@ -551,14 +489,11 @@ auto DynamicArray<T>::ensure_capacity(size_t min_capacity) -> void {
 }
 
 template <ArrayElement T>
-auto DynamicArray<T>::grow() -> void {
-  if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
+auto DynamicArray<T>::allocate(size_t capacity) -> storage_ptr {
+  if (capacity > max_elements()) {
     throw ArrayOverflowException("DynamicArray capacity overflow");
   }
-
-  // Calculate new capacity and reallocate.
-  const size_t new_capacity = std::max(capacity_ * kGrowthFactor, kMinCapacity);
-  reallocate(new_capacity);
+  return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }
 
 template <ArrayElement T>
@@ -567,15 +502,8 @@ auto DynamicArray<T>::reallocate(size_t new_capacity) -> void {
     new_capacity = size_;
   }
 
-  // Check for overflow BEFORE multiplication.
-  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("DynamicArray capacity overflow");
-  }
-
-  // Allocate new memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) {
-    ::operator delete[](ptr);
-  });
+  // Allocate new storage (allocate() validates against capacity overflow).
+  storage_ptr new_data = allocate(new_capacity);
 
   size_t constructed = 0;
   try {

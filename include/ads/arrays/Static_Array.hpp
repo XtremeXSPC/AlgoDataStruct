@@ -16,6 +16,7 @@
 #ifndef STATIC_ARRAY_HPP
 #define STATIC_ARRAY_HPP
 
+#include "../../support/Container_Facade.hpp"
 #include "Array_Concepts.hpp"
 #include "Array_Exception.hpp"
 
@@ -28,6 +29,8 @@
 
 namespace ads::arrays {
 
+using ads::support::ContainerFacade;
+
 /**
  * @brief A fixed-size array implementation similar to std::array.
  *
@@ -39,8 +42,8 @@ namespace ads::arrays {
  * @tparam N The fixed size of the array (must be > 0).
  */
 template <ArrayElement T, size_t N>
-  requires(N > 0)
-class StaticArray {
+requires ValidStaticArrayExtent<N>
+class StaticArray : public ContainerFacade<StaticArray<T, N>> {
 public:
   using value_type             = T;
   using size_type              = size_t;
@@ -60,8 +63,7 @@ public:
    * @brief Default constructor. Value-initializes all elements.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray()
-    requires std::default_initializable<T>;
+  StaticArray() requires sup::DefaultInitializable<T>;
 
   /**
    * @brief Constructs a static array from an initializer list.
@@ -69,32 +71,28 @@ public:
    * @throws ArrayOutOfRangeException if initializer list size != N.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(std::initializer_list<T> values)
-    requires std::default_initializable<T> && std::assignable_from<T&, const T&>;
+  StaticArray(std::initializer_list<T> values) requires StaticCopyArrayElement<T>;
 
   /**
    * @brief Constructs a static array filled with a single value.
    * @param value The value to fill the array with.
    * @complexity Time O(N), Space O(1)
    */
-  explicit StaticArray(const T& value)
-    requires std::default_initializable<T> && std::assignable_from<T&, const T&>;
+  explicit StaticArray(const T& value) requires StaticCopyArrayElement<T>;
 
   /**
    * @brief Copy constructor.
    * @param other The array to copy from.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(const StaticArray& other)
-    requires std::default_initializable<T> && std::assignable_from<T&, const T&>;
+  StaticArray(const StaticArray& other) requires StaticCopyArrayElement<T>;
 
   /**
    * @brief Move constructor.
    * @param other The array to move from.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>)
-    requires std::default_initializable<T> && std::assignable_from<T&, T>;
+  StaticArray(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) requires StaticMoveArrayElement<T>;
 
   /**
    * @brief Destructor. Destroys all elements.
@@ -108,8 +106,7 @@ public:
    * @return Reference to this instance.
    * @complexity Time O(N), Space O(1)
    */
-  auto operator=(const StaticArray& other) -> StaticArray&
-    requires std::assignable_from<T&, const T&>;
+  auto operator=(const StaticArray& other) -> StaticArray& requires CopyAssignableArrayElement<T>;
 
   /**
    * @brief Move assignment operator.
@@ -117,8 +114,7 @@ public:
    * @return Reference to this instance.
    * @complexity Time O(N), Space O(1)
    */
-  auto operator=(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) -> StaticArray&
-    requires std::assignable_from<T&, T>;
+  auto operator=(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) -> StaticArray& requires MoveAssignableArrayElement<T>;
 
   //===------------------------ MODIFICATION OPERATIONS -------------------------===//
 
@@ -127,16 +123,14 @@ public:
    * @param value The value to fill with.
    * @complexity Time O(N), Space O(1)
    */
-  auto fill(const T& value) -> void
-    requires std::assignable_from<T&, const T&>;
+  auto fill(const T& value) -> void requires CopyAssignableArrayElement<T>;
 
   /**
    * @brief Swaps contents with another StaticArray.
    * @param other The array to swap with.
    * @complexity Time O(N), Space O(1)
    */
-  auto swap(StaticArray& other) noexcept(std::is_nothrow_swappable_v<T>) -> void
-    requires std::swappable<T>;
+  auto swap(StaticArray& other) noexcept(std::is_nothrow_swappable_v<T>) -> void requires SwappableArrayElement<T>;
 
   //===--------------------------- ACCESS OPERATIONS ---------------------------===//
 
@@ -239,7 +233,7 @@ public:
    */
   [[nodiscard]] static constexpr auto is_empty() noexcept -> bool { return false; }
 
-  //===------------------------- ITERATOR OPERATIONS ---------------------------===//
+  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
   /**
    * @brief Returns an iterator to the beginning of the array.
@@ -261,65 +255,13 @@ public:
    */
   auto end() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns a const iterator to the beginning/end of the array.
-   */
-  auto cbegin() const noexcept -> const_iterator;
+  // cbegin/cend, rbegin/rend, and crbegin/crend are inherited from
+  // ContainerFacade<StaticArray<T, N>>.
 
-  /**
-   * @brief Returns a const iterator to the end of the array.
-   */
-  auto cend() const noexcept -> const_iterator;
+  //===------------------------- COMPARISON OPERATORS --------------------------===//
 
-  /**
-   * @brief Returns a reverse iterator to the beginning (end of array).
-   */
-  auto rbegin() noexcept -> reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator to the beginning (end of array).
-   */
-  auto rbegin() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a reverse iterator to the end (beginning of array).
-   */
-  auto rend() noexcept -> reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator to the end (beginning of array).
-   */
-  auto rend() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator to the beginning/end of the array.
-   */
-  auto crbegin() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator to the end/beginning of the array.
-   */
-  auto crend() const noexcept -> const_reverse_iterator;
-
-  //===-------------------------- COMPARISON OPERATORS -------------------------===//
-
-  /**
-   * @brief Equality comparison operator.
-   * @param other The array to compare with.
-   * @return true if all elements are equal, false otherwise.
-   * @complexity Time O(N), Space O(1)
-   */
-  auto operator==(const StaticArray& other) const -> bool
-    requires EqualityComparableArrayElement<T>;
-
-  /**
-   * @brief Three-way comparison operator.
-   * @param other The array to compare with.
-   * @return Ordering result.
-   * @complexity Time O(N), Space O(1)
-   */
-  auto operator<=>(const StaticArray& other) const
-    requires ThreeWayComparableArrayElement<T>;
+  // operator== and operator<=> (and the rewritten !=, <, >, <=, >=) are inherited
+  // from ContainerFacade<StaticArray<T, N>>, constrained on the element type.
 
 private:
   //===----------------------------- DATA MEMBERS ------------------------------===//

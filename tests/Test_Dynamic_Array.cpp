@@ -80,9 +80,7 @@ struct ThrowingDefaultConstructionType {
 
   ThrowingDefaultConstructionType(const ThrowingDefaultConstructionType& other) : value(other.value) { ++live_count; }
 
-  ThrowingDefaultConstructionType(ThrowingDefaultConstructionType&& other) noexcept : value(other.value) {
-    ++live_count;
-  }
+  ThrowingDefaultConstructionType(ThrowingDefaultConstructionType&& other) noexcept : value(other.value) { ++live_count; }
 
   auto operator=(const ThrowingDefaultConstructionType& other) -> ThrowingDefaultConstructionType& {
     value = other.value;

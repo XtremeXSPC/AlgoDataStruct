@@ -17,141 +17,29 @@
 
 namespace ads::arrays {
 
-//===---------------------------- ITERATOR METHODS -----------------------------===//
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator*() const -> reference {
-  return (*array_)[static_cast<size_t>(logical_index_)];
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator->() const -> pointer {
-  return &(*array_)[static_cast<size_t>(logical_index_)];
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator[](difference_type n) const -> reference {
-  return (*array_)[static_cast<size_t>(logical_index_ + n)];
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator++() -> iterator& {
-  ++logical_index_;
-  return *this;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator++(int) -> iterator {
-  iterator tmp = *this;
-  ++(*this);
-  return tmp;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator--() -> iterator& {
-  --logical_index_;
-  return *this;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator--(int) -> iterator {
-  iterator tmp = *this;
-  --(*this);
-  return tmp;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator+=(difference_type n) -> iterator& {
-  logical_index_ += n;
-  return *this;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::iterator::operator-=(difference_type n) -> iterator& {
-  logical_index_ -= n;
-  return *this;
-}
-
-//===------------------------- CONST_ITERATOR METHODS --------------------------===//
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator*() const -> reference {
-  return (*array_)[static_cast<size_t>(logical_index_)];
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator->() const -> pointer {
-  return &(*array_)[static_cast<size_t>(logical_index_)];
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator[](difference_type n) const -> reference {
-  return (*array_)[static_cast<size_t>(logical_index_ + n)];
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator++() -> const_iterator& {
-  ++logical_index_;
-  return *this;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator++(int) -> const_iterator {
-  const_iterator tmp = *this;
-  ++(*this);
-  return tmp;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator--() -> const_iterator& {
-  --logical_index_;
-  return *this;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator--(int) -> const_iterator {
-  const_iterator tmp = *this;
-  --(*this);
-  return tmp;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator+=(difference_type n) -> const_iterator& {
-  logical_index_ += n;
-  return *this;
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::const_iterator::operator-=(difference_type n) -> const_iterator& {
-  logical_index_ -= n;
-  return *this;
-}
+// The iterator and const_iterator types are aliases of IndexedIterator
+// (see Indexed_Iterator.hpp); their operations need no out-of-line definitions.
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
 template <ArrayElement T>
 CircularArray<T>::CircularArray(size_t initial_capacity) :
-    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     head_(0),
     size_(0),
     capacity_(std::max(initial_capacity, kMinCapacity)) {
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("CircularArray capacity overflow");
-  }
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // allocate() validates against capacity overflow before reserving storage.
+  data_ = allocate(capacity_);
 }
 
 template <ArrayElement T>
 CircularArray<T>::CircularArray(std::initializer_list<T> values) :
-    data_(nullptr, [](T* ptr) { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     head_(0),
     size_(0),
     capacity_(std::max(values.size(), kMinCapacity)) {
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("CircularArray capacity overflow");
-  }
-
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // Allocate raw memory (allocate() validates against capacity overflow).
+  data_ = allocate(capacity_);
 
   size_t constructed = 0;
   try {
@@ -203,8 +91,7 @@ auto CircularArray<T>::operator=(CircularArray&& other) noexcept -> CircularArra
 
 template <ArrayElement T>
 template <typename... Args>
-auto CircularArray<T>::emplace_front(Args&&... args) -> T&
-  requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>
+auto CircularArray<T>::emplace_front(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
   ensure_capacity(size_ + 1);
 
@@ -218,23 +105,20 @@ auto CircularArray<T>::emplace_front(Args&&... args) -> T&
 }
 
 template <ArrayElement T>
-auto CircularArray<T>::push_front(const T& value) -> void
-  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+auto CircularArray<T>::push_front(const T& value) -> void requires CopyArrayElement<T>
 {
   emplace_front(value);
 }
 
 template <ArrayElement T>
-auto CircularArray<T>::push_front(T&& value) -> void
-  requires std::move_constructible<T> && RelocatableArrayElement<T>
+auto CircularArray<T>::push_front(T&& value) -> void requires MoveArrayElement<T>
 {
   emplace_front(std::move(value));
 }
 
 template <ArrayElement T>
 template <typename... Args>
-auto CircularArray<T>::emplace_back(Args&&... args) -> T&
-  requires EmplaceConstructible<T, Args...> && RelocatableArrayElement<T>
+auto CircularArray<T>::emplace_back(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
   ensure_capacity(size_ + 1);
 
@@ -246,15 +130,13 @@ auto CircularArray<T>::emplace_back(Args&&... args) -> T&
 }
 
 template <ArrayElement T>
-auto CircularArray<T>::push_back(const T& value) -> void
-  requires std::copy_constructible<T> && RelocatableArrayElement<T>
+auto CircularArray<T>::push_back(const T& value) -> void requires CopyArrayElement<T>
 {
   emplace_back(value);
 }
 
 template <ArrayElement T>
-auto CircularArray<T>::push_back(T&& value) -> void
-  requires std::move_constructible<T> && RelocatableArrayElement<T>
+auto CircularArray<T>::push_back(T&& value) -> void requires MoveArrayElement<T>
 {
   emplace_back(std::move(value));
 }
@@ -372,8 +254,7 @@ auto CircularArray<T>::capacity() const noexcept -> size_t {
 //===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
 template <ArrayElement T>
-auto CircularArray<T>::reserve(size_t new_capacity) -> void
-  requires RelocatableArrayElement<T>
+auto CircularArray<T>::reserve(size_t new_capacity) -> void requires RelocatableArrayElement<T>
 {
   if (new_capacity > capacity_) {
     reallocate(new_capacity);
@@ -381,8 +262,7 @@ auto CircularArray<T>::reserve(size_t new_capacity) -> void
 }
 
 template <ArrayElement T>
-auto CircularArray<T>::shrink_to_fit() -> void
-  requires RelocatableArrayElement<T>
+auto CircularArray<T>::shrink_to_fit() -> void requires RelocatableArrayElement<T>
 {
   if (size_ < capacity_) {
     const size_t new_capacity = std::max(size_, kMinCapacity);
@@ -414,48 +294,19 @@ auto CircularArray<T>::end() const noexcept -> const_iterator {
   return const_iterator(static_cast<const_iterator::difference_type>(size_), this);
 }
 
-template <ArrayElement T>
-auto CircularArray<T>::cbegin() const noexcept -> const_iterator {
-  return const_iterator(0, this);
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::cend() const noexcept -> const_iterator {
-  return const_iterator(static_cast<const_iterator::difference_type>(size_), this);
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::rbegin() noexcept -> reverse_iterator {
-  return reverse_iterator(end());
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::rend() noexcept -> reverse_iterator {
-  return reverse_iterator(begin());
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::rbegin() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(end());
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::rend() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(begin());
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::crbegin() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(end());
-}
-
-template <ArrayElement T>
-auto CircularArray<T>::crend() const noexcept -> const_reverse_iterator {
-  return const_reverse_iterator(begin());
-}
+// cbegin/cend, the reverse-iterator accessors, and the relational operators are
+// provided by ContainerFacade<CircularArray<T>>; no out-of-line definitions needed.
 
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
+
+template <ArrayElement T>
+auto CircularArray<T>::allocate(size_t capacity) -> storage_ptr {
+  if (capacity > max_elements()) {
+    throw ArrayOverflowException("CircularArray capacity overflow");
+  }
+  return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
+}
 
 template <ArrayElement T>
 auto CircularArray<T>::to_physical_index(size_t logical_index) const noexcept -> size_t {
@@ -485,13 +336,8 @@ auto CircularArray<T>::reallocate(size_t new_capacity) -> void {
     new_capacity = size_;
   }
 
-  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw ArrayOverflowException("CircularArray capacity overflow");
-  }
-
-  std::unique_ptr<T[], void (*)(T*)> new_data(static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) {
-    ::operator delete[](ptr);
-  });
+  // Allocate new storage (allocate() validates against capacity overflow).
+  storage_ptr new_data = allocate(new_capacity);
 
   // Move elements to new buffer in linear order.
   size_t constructed = 0;
