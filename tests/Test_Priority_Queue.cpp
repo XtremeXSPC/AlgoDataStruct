@@ -52,7 +52,7 @@ protected:
 //===---------------------------- BASIC STATE TESTS ----------------------------===//
 
 TEST_F(PriorityQueueTest, IsEmptyOnConstruction) {
-  EXPECT_TRUE(queue.empty());
+  EXPECT_TRUE(queue.is_empty());
   EXPECT_EQ(queue.size(), 0);
 }
 
@@ -72,12 +72,12 @@ TEST_F(PriorityQueueTest, PushPopMaintainsMaxHeapOrder) {
 
   const std::vector<int> expected = {9, 9, 7, 4, 3, 1};
   for (int value : expected) {
-    ASSERT_FALSE(queue.empty());
+    ASSERT_FALSE(queue.is_empty());
     EXPECT_EQ(queue.top(), value);
     queue.pop();
   }
 
-  EXPECT_TRUE(queue.empty());
+  EXPECT_TRUE(queue.is_empty());
 }
 
 TEST_F(PriorityQueueTest, ConstTopReadsHighestPriorityElement) {
@@ -93,7 +93,7 @@ TEST_F(PriorityQueueTest, SingleElementPopLeavesQueueEmpty) {
   queue.push(42);
   queue.pop();
 
-  EXPECT_TRUE(queue.empty());
+  EXPECT_TRUE(queue.is_empty());
   EXPECT_EQ(queue.size(), 0);
 }
 
@@ -107,12 +107,12 @@ TEST(PriorityQueueMinHeapTest, CustomComparatorBuildsMinHeap) {
 
   const std::vector<int> expected = {1, 4, 7, 9};
   for (int value : expected) {
-    ASSERT_FALSE(queue.empty());
+    ASSERT_FALSE(queue.is_empty());
     EXPECT_EQ(queue.top(), value);
     queue.pop();
   }
 
-  EXPECT_TRUE(queue.empty());
+  EXPECT_TRUE(queue.is_empty());
 }
 
 //===---------------------------- CONSTRUCTOR TESTS ----------------------------===//
@@ -148,7 +148,7 @@ TEST(PriorityQueueUtilityTest, SortedElementsExtractsInPriorityOrder) {
   const std::vector<int> sorted = queue.sorted_elements();
 
   EXPECT_EQ(sorted, (std::vector<int>{9, 7, 4, 3, 1}));
-  EXPECT_TRUE(queue.empty());
+  EXPECT_TRUE(queue.is_empty());
 }
 
 TEST(PriorityQueueUtilityTest, ReserveSupportsBulkInsertion) {
@@ -168,7 +168,7 @@ TEST(PriorityQueueUtilityTest, ClearRemovesAllElements) {
 
   queue.clear();
 
-  EXPECT_TRUE(queue.empty());
+  EXPECT_TRUE(queue.is_empty());
   EXPECT_EQ(queue.size(), 0);
 }
 
@@ -188,14 +188,14 @@ TEST(PriorityQueueValueTest, MoveSemanticsTransferOwnership) {
   PriorityQueue<int> source{3, 1, 2};
   PriorityQueue<int> moved(std::move(source));
 
-  EXPECT_TRUE(source.empty());
+  EXPECT_TRUE(source.is_empty());
   EXPECT_EQ(moved.top(), 3);
 
   PriorityQueue<int> assigned;
   assigned.push(10);
   assigned = std::move(moved);
 
-  EXPECT_TRUE(moved.empty());
+  EXPECT_TRUE(moved.is_empty());
   EXPECT_EQ(assigned.size(), 3);
   EXPECT_EQ(assigned.top(), 3);
 }

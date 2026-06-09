@@ -19,26 +19,22 @@ namespace ads::queues {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <QueueValue T>
 CircularArrayDeque<T>::CircularArrayDeque(size_t initial_capacity) :
-    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     front_(0),
     size_(0),
     capacity_(std::max(initial_capacity, kMinCapacity)) {
-  // Keep even zero-capacity requests growable through the normal push path.
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw QueueOverflowException("Deque capacity overflow");
-  }
-
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // allocate() validates against capacity overflow before reserving storage.
+  data_ = allocate(capacity_);
 }
 
-template <typename T>
+template <QueueValue T>
 CircularArrayDeque<T>::~CircularArrayDeque() {
   clear();
 }
 
-template <typename T>
+template <QueueValue T>
 CircularArrayDeque<T>::CircularArrayDeque(CircularArrayDeque&& other) noexcept :
     data_(std::move(other.data_)),
     front_(other.front_),
@@ -49,7 +45,7 @@ CircularArrayDeque<T>::CircularArrayDeque(CircularArrayDeque&& other) noexcept :
   other.capacity_ = 0;
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::operator=(CircularArrayDeque&& other) noexcept -> CircularArrayDeque<T>& {
   if (this != &other) {
     clear();
@@ -64,57 +60,12 @@ auto CircularArrayDeque<T>::operator=(CircularArrayDeque&& other) noexcept -> Ci
   return *this;
 }
 
-//===---------------------------- ITERATOR METHODS -----------------------------===//
-
-template <typename T>
-auto CircularArrayDeque<T>::iterator::operator*() const -> reference {
-  return deque_->element_at(index_);
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::iterator::operator->() const -> pointer {
-  return std::addressof(deque_->element_at(index_));
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::iterator::operator++() -> iterator& {
-  ++index_;
-  return *this;
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::iterator::operator++(int) -> iterator {
-  iterator temp = *this;
-  ++(*this);
-  return temp;
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::const_iterator::operator*() const -> reference {
-  return deque_->element_at(index_);
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::const_iterator::operator->() const -> pointer {
-  return std::addressof(deque_->element_at(index_));
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::const_iterator::operator++() -> const_iterator& {
-  ++index_;
-  return *this;
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::const_iterator::operator++(int) -> const_iterator {
-  const_iterator temp = *this;
-  ++(*this);
-  return temp;
-}
+// The iterator and const_iterator types are aliases of IndexedIterator
+// (see Indexed_Iterator.hpp); their operations need no out-of-line definitions.
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <QueueValue T>
 template <typename... Args>
 auto CircularArrayDeque<T>::emplace_front(Args&&... args) -> T& {
   ensure_capacity(size_ + 1);
@@ -128,7 +79,7 @@ auto CircularArrayDeque<T>::emplace_front(Args&&... args) -> T& {
   return *element_ptr;
 }
 
-template <typename T>
+template <QueueValue T>
 template <typename... Args>
 auto CircularArrayDeque<T>::emplace_back(Args&&... args) -> T& {
   ensure_capacity(size_ + 1);
@@ -141,29 +92,29 @@ auto CircularArrayDeque<T>::emplace_back(Args&&... args) -> T& {
   return *element_ptr;
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::push_front(const T& value) -> void {
   emplace_front(value);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::push_front(T&& value) -> void {
   emplace_front(std::move(value));
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::push_back(const T& value) -> void {
   emplace_back(value);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::push_back(T&& value) -> void {
   emplace_back(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::pop_front() -> void {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot pop_front from empty deque");
@@ -189,7 +140,7 @@ auto CircularArrayDeque<T>::pop_front() -> void {
   }
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::pop_back() -> void {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot pop_back from empty deque");
@@ -215,7 +166,7 @@ auto CircularArrayDeque<T>::pop_back() -> void {
   }
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::clear() noexcept -> void {
   size_t current = front_;
   for (size_t i = 0; i < size_; ++i) {
@@ -228,7 +179,7 @@ auto CircularArrayDeque<T>::clear() noexcept -> void {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::front() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty deque");
@@ -236,7 +187,7 @@ auto CircularArrayDeque<T>::front() -> T& {
   return data_[front_];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::front() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty deque");
@@ -244,7 +195,7 @@ auto CircularArrayDeque<T>::front() const -> const T& {
   return data_[front_];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::back() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access back of empty deque");
@@ -252,7 +203,7 @@ auto CircularArrayDeque<T>::back() -> T& {
   return data_[index_from_front(size_ - 1)];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::back() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access back of empty deque");
@@ -260,17 +211,17 @@ auto CircularArrayDeque<T>::back() const -> const T& {
   return data_[index_from_front(size_ - 1)];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::operator[](size_t index) -> T& {
   return element_at(index);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::operator[](size_t index) const -> const T& {
   return element_at(index);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::at(size_t index) -> T& {
   if (index >= size_) {
     throw QueueException("Index out of range");
@@ -278,7 +229,7 @@ auto CircularArrayDeque<T>::at(size_t index) -> T& {
   return element_at(index);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::at(size_t index) const -> const T& {
   if (index >= size_) {
     throw QueueException("Index out of range");
@@ -288,31 +239,31 @@ auto CircularArrayDeque<T>::at(size_t index) const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
 //===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::reserve(size_t new_capacity) -> void {
   if (new_capacity > capacity_) {
     reallocate(new_capacity);
   }
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::shrink_to_fit() -> void {
   if (size_ < capacity_) {
     const size_t new_capacity = std::max(size_, kMinCapacity);
@@ -324,49 +275,41 @@ auto CircularArrayDeque<T>::shrink_to_fit() -> void {
 
 //===------------------------- ITERATOR OPERATIONS -----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::begin() noexcept -> iterator {
   return iterator(0, this);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::end() noexcept -> iterator {
-  return iterator(size_, this);
+  return iterator(static_cast<difference_type>(size_), this);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::begin() const noexcept -> const_iterator {
   return const_iterator(0, this);
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::end() const noexcept -> const_iterator {
-  return const_iterator(size_, this);
+  return const_iterator(static_cast<difference_type>(size_), this);
 }
 
-template <typename T>
-auto CircularArrayDeque<T>::cbegin() const noexcept -> const_iterator {
-  return const_iterator(0, this);
-}
-
-template <typename T>
-auto CircularArrayDeque<T>::cend() const noexcept -> const_iterator {
-  return const_iterator(size_, this);
-}
+// cbegin/cend are inherited from ContainerFacade<CircularArrayDeque<T>>.
 
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::element_at(size_t index) -> T& {
   return data_[index_from_front(index)];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::element_at(size_t index) const -> const T& {
   return data_[index_from_front(index)];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayDeque<T>::ensure_capacity(size_t min_capacity) -> void {
   if (min_capacity <= capacity_) {
     return;
@@ -385,18 +328,22 @@ auto CircularArrayDeque<T>::ensure_capacity(size_t min_capacity) -> void {
   reallocate(new_capacity);
 }
 
-template <typename T>
+template <QueueValue T>
+auto CircularArrayDeque<T>::allocate(size_t capacity) -> storage_ptr {
+  if (capacity > max_elements()) {
+    throw QueueOverflowException("Deque capacity overflow");
+  }
+  return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
+}
+
+template <QueueValue T>
 auto CircularArrayDeque<T>::reallocate(size_t new_capacity) -> void {
   if (new_capacity < size_) {
     new_capacity = size_;
   }
 
-  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw QueueOverflowException("Deque capacity overflow");
-  }
-
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
+  // Allocate new storage (allocate() validates against capacity overflow).
+  storage_ptr new_data = allocate(new_capacity);
 
   // Move existing elements to new storage.
   size_t constructed = 0;

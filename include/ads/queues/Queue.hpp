@@ -16,6 +16,8 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include "Queue_Concepts.hpp"
+
 #include <cstddef>
 
 namespace ads::queues {
@@ -30,7 +32,7 @@ namespace ads::queues {
  *
  * @tparam T The data type to store in the queue.
  */
-template <typename T>
+template <QueueValue T>
 class Queue {
 public:
   // A virtual destructor is mandatory in polymorphic base classes.

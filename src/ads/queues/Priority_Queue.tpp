@@ -16,44 +16,39 @@
 
 namespace ads::queues {
 
-// DynamicArray preserves contiguous heap indexing without introducing STL storage.
-
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 PriorityQueue<T, Compare>::PriorityQueue(Compare comp) : heap_(), comp_(comp) {
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 PriorityQueue<T, Compare>::PriorityQueue(const std::vector<T>& elements, Compare comp) :
     heap_(elements.begin(), elements.end()),
     comp_(comp) {
   build_heap();
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 template <std::input_iterator InputIt>
-PriorityQueue<T, Compare>::PriorityQueue(InputIt first, InputIt last, Compare comp)
-  requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+PriorityQueue<T, Compare>::PriorityQueue(InputIt first, InputIt last, Compare comp) requires QueueRangeValue<InputIt, T>
     : heap_(first, last), comp_(comp) {
   build_heap();
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 PriorityQueue<T, Compare>::PriorityQueue(std::initializer_list<T> init, Compare comp) : heap_(init), comp_(comp) {
   build_heap();
 }
 
-template <typename T, typename Compare>
-PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept(
-    std::is_nothrow_move_constructible_v<Compare>) :
+template <QueueValue T, typename Compare>
+PriorityQueue<T, Compare>::PriorityQueue(PriorityQueue&& other) noexcept(std::is_nothrow_move_constructible_v<Compare>) :
     heap_(std::move(other.heap_)),
     comp_(std::move(other.comp_)) {
 }
 
-template <typename T, typename Compare>
-auto PriorityQueue<T, Compare>::operator=(PriorityQueue&& other) noexcept(std::is_nothrow_move_assignable_v<Compare>)
-    -> PriorityQueue& {
+template <QueueValue T, typename Compare>
+auto PriorityQueue<T, Compare>::operator=(PriorityQueue&& other) noexcept(std::is_nothrow_move_assignable_v<Compare>) -> PriorityQueue& {
   if (this != &other) {
     heap_ = std::move(other.heap_);
     comp_ = std::move(other.comp_);
@@ -63,19 +58,19 @@ auto PriorityQueue<T, Compare>::operator=(PriorityQueue&& other) noexcept(std::i
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::push(const T& value) -> void {
   heap_.push_back(value);
   heapify_up(heap_.size() - 1);
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::push(T&& value) -> void {
   heap_.push_back(std::move(value));
   heapify_up(heap_.size() - 1);
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 template <typename... Args>
 auto PriorityQueue<T, Compare>::emplace(Args&&... args) -> void {
   heap_.emplace_back(std::forward<Args>(args)...);
@@ -84,9 +79,9 @@ auto PriorityQueue<T, Compare>::emplace(Args&&... args) -> void {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::pop() -> void {
-  if (empty()) {
+  if (is_empty()) {
     throw QueueException("Cannot pop from empty priority queue");
   }
 
@@ -102,24 +97,24 @@ auto PriorityQueue<T, Compare>::pop() -> void {
   heapify_down(0);
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::clear() noexcept -> void {
   heap_.clear();
 }
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::top() -> T& {
-  if (empty()) {
+  if (is_empty()) {
     throw QueueException("Cannot access top of empty priority queue");
   }
   return heap_[0];
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::top() const -> const T& {
-  if (empty()) {
+  if (is_empty()) {
     throw QueueException("Cannot access top of empty priority queue");
   }
   return heap_[0];
@@ -127,30 +122,30 @@ auto PriorityQueue<T, Compare>::top() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T, typename Compare>
-auto PriorityQueue<T, Compare>::empty() const noexcept -> bool {
+template <QueueValue T, typename Compare>
+auto PriorityQueue<T, Compare>::is_empty() const noexcept -> bool {
   return heap_.is_empty();
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::size() const noexcept -> size_t {
   return heap_.size();
 }
 
 //===--------------------------- UTILITY OPERATIONS ----------------------------===//
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::reserve(size_t capacity) -> void {
   heap_.reserve(capacity);
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::sorted_elements() -> std::vector<T> {
   std::vector<T> result;
   result.reserve(heap_.size());
 
   // Extract elements one by one (they will be in sorted order).
-  while (!empty()) {
+  while (!is_empty()) {
     result.push_back(std::move(heap_[0]));
     pop();
   }
@@ -160,7 +155,7 @@ auto PriorityQueue<T, Compare>::sorted_elements() -> std::vector<T> {
 
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::heapify_up(size_t index) -> void {
   while (index > 0) {
     size_t parent_index = parent(index);
@@ -176,7 +171,7 @@ auto PriorityQueue<T, Compare>::heapify_up(size_t index) -> void {
   }
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::heapify_down(size_t index) -> void {
   const size_t heap_size = heap_.size();
 
@@ -205,7 +200,7 @@ auto PriorityQueue<T, Compare>::heapify_down(size_t index) -> void {
   }
 }
 
-template <typename T, typename Compare>
+template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::build_heap() -> void {
   // Bottom-up heapification for O(n) construction.
   if (heap_.size() <= 1) {

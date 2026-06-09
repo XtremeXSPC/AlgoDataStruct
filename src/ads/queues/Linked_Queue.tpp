@@ -18,11 +18,11 @@ namespace ads::queues {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <QueueValue T>
 LinkedQueue<T>::LinkedQueue() noexcept : front_(nullptr), rear_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <QueueValue T>
 LinkedQueue<T>::~LinkedQueue() {
   // The chain of unique_ptr will automatically deallocate all nodes
   // However, for deep queues, this recursive destruction might cause
@@ -30,16 +30,13 @@ LinkedQueue<T>::~LinkedQueue() {
   clear();
 }
 
-template <typename T>
-LinkedQueue<T>::LinkedQueue(LinkedQueue&& other) noexcept :
-    front_(std::move(other.front_)),
-    rear_(other.rear_),
-    size_(other.size_) {
+template <QueueValue T>
+LinkedQueue<T>::LinkedQueue(LinkedQueue&& other) noexcept : front_(std::move(other.front_)), rear_(other.rear_), size_(other.size_) {
   other.rear_ = nullptr;
   other.size_ = 0;
 }
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept -> LinkedQueue<T>& {
   if (this != &other) {
     clear(); // Clear existing elements first.
@@ -54,17 +51,17 @@ auto LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept -> LinkedQueue<T>& 
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <QueueValue T>
 void LinkedQueue<T>::enqueue(const T& value) {
   emplace(value);
 }
 
-template <typename T>
+template <QueueValue T>
 void LinkedQueue<T>::enqueue(T&& value) {
   emplace(std::move(value));
 }
 
-template <typename T>
+template <QueueValue T>
 template <typename... Args>
 auto LinkedQueue<T>::emplace(Args&&... args) -> T& {
   // Create new node with forwarded arguments.
@@ -93,7 +90,7 @@ auto LinkedQueue<T>::emplace(Args&&... args) -> T& {
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 void LinkedQueue<T>::dequeue() {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot dequeue from empty queue");
@@ -110,7 +107,7 @@ void LinkedQueue<T>::dequeue() {
   size_--;
 }
 
-template <typename T>
+template <QueueValue T>
 void LinkedQueue<T>::clear() noexcept {
   // Iterative destruction to avoid potential stack overflow
   // with recursive unique_ptr destruction.
@@ -123,7 +120,7 @@ void LinkedQueue<T>::clear() noexcept {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::front() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
@@ -131,7 +128,7 @@ auto LinkedQueue<T>::front() -> T& {
   return front_->data;
 }
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::front() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
@@ -139,7 +136,7 @@ auto LinkedQueue<T>::front() const -> const T& {
   return front_->data;
 }
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::rear() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
@@ -147,7 +144,7 @@ auto LinkedQueue<T>::rear() -> T& {
   return rear_->data;
 }
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::rear() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
@@ -157,12 +154,12 @@ auto LinkedQueue<T>::rear() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::is_empty() const noexcept -> bool {
   return front_ == nullptr;
 }
 
-template <typename T>
+template <QueueValue T>
 auto LinkedQueue<T>::size() const noexcept -> size_t {
   return size_;
 }

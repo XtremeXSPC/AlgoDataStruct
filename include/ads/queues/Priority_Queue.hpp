@@ -17,6 +17,7 @@
 #define PRIORITY_QUEUE_HPP
 
 #include "../arrays/Dynamic_Array.hpp"
+#include "Queue_Concepts.hpp"
 #include "Queue_Exception.hpp"
 
 #include <concepts>
@@ -51,7 +52,7 @@ namespace ads::queues {
  * @tparam Compare Comparison function object (default: std::less<T> for max-heap).
  *
  */
-template <typename T, typename Compare = std::less<T>>
+template <QueueValue T, typename Compare = std::less<T>>
 class PriorityQueue {
 public:
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
@@ -82,8 +83,7 @@ public:
    * @note Uses bottom-up heapify for O(n) construction.
    */
   template <std::input_iterator InputIt>
-  PriorityQueue(InputIt first, InputIt last, Compare comp = Compare{})
-    requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  PriorityQueue(InputIt first, InputIt last, Compare comp = Compare{}) requires QueueRangeValue<InputIt, T>;
 
   /**
    * @brief Constructs a priority queue from an initializer list.
@@ -183,7 +183,7 @@ public:
    * @return true if the queue is empty, false otherwise.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto empty() const noexcept -> bool;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Returns the number of elements in the queue.

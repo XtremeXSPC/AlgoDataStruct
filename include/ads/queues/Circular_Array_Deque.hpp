@@ -16,6 +16,9 @@
 #ifndef CIRCULAR_ARRAY_DEQUE_HPP
 #define CIRCULAR_ARRAY_DEQUE_HPP
 
+#include "../../support/Container_Facade.hpp"
+#include "../../support/Indexed_Iterator.hpp"
+#include "Queue_Concepts.hpp"
 #include "Queue_Exception.hpp"
 
 #include <algorithm>
@@ -28,6 +31,9 @@
 
 namespace ads::queues {
 
+using ads::support::ContainerFacade;
+using ads::support::IndexedIterator;
+
 /**
  * @brief A deque implementation based on a circular dynamic array.
  *
@@ -37,68 +43,25 @@ namespace ads::queues {
  *
  * @tparam T The type of data to store in the deque.
  */
-template <typename T>
-class CircularArrayDeque {
+template <QueueValue T>
+class CircularArrayDeque : public ContainerFacade<CircularArrayDeque<T>> {
 public:
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
-  /**
-   * @brief Forward iterator for CircularArrayDeque.
-   */
-  class iterator {
-  public:
-    using iterator_category = std::forward_iterator_tag;
-    using value_type        = T;
-    using difference_type   = std::ptrdiff_t;
-    using pointer           = T*;
-    using reference         = T&;
+  using value_type      = T;
+  using size_type       = size_t;
+  using difference_type = std::ptrdiff_t;
+  using reference       = T&;
+  using const_reference = const T&;
+  using pointer         = T*;
+  using const_pointer   = const T*;
 
-    explicit iterator(size_t index = 0, CircularArrayDeque<T>* deque = nullptr) : index_(index), deque_(deque) {}
+  //===----------------------------- ITERATOR TYPES ----------------------------===//
 
-    auto operator*() const -> reference;
-    auto operator->() const -> pointer;
-    auto operator++() -> iterator&;
-    auto operator++(int) -> iterator;
-
-    auto operator==(const iterator& other) const -> bool { return index_ == other.index_ && deque_ == other.deque_; }
-
-  private:
-    size_t                 index_;
-    CircularArrayDeque<T>* deque_;
-    friend class CircularArrayDeque<T>;
-  };
-
-  //===------------------------- CONST_ITERATOR CLASS --------------------------===//
-  /**
-   * @brief Const forward iterator for CircularArrayDeque.
-   */
-  class const_iterator {
-  public:
-    using iterator_category = std::forward_iterator_tag;
-    using value_type        = T;
-    using difference_type   = std::ptrdiff_t;
-    using pointer           = const T*;
-    using reference         = const T&;
-
-    explicit const_iterator(size_t index = 0, const CircularArrayDeque<T>* deque = nullptr) :
-        index_(index),
-        deque_(deque) {}
-
-    explicit const_iterator(const iterator& it) : index_(it.index_), deque_(it.deque_) {}
-
-    auto operator*() const -> reference;
-    auto operator->() const -> pointer;
-    auto operator++() -> const_iterator&;
-    auto operator++(int) -> const_iterator;
-
-    auto operator==(const const_iterator& other) const -> bool {
-      return index_ == other.index_ && deque_ == other.deque_;
-    }
-
-  private:
-    size_t                       index_;
-    const CircularArrayDeque<T>* deque_;
-    friend class CircularArrayDeque<T>;
-  };
+  // The logical (wrap-around) iteration order is provided by IndexedIterator, which
+  // dereferences through this container's operator[]. See Indexed_Iterator.hpp.
+  using iterator               = IndexedIterator<CircularArrayDeque<T>, false>;
+  using const_iterator         = IndexedIterator<CircularArrayDeque<T>, true>;
+  using reverse_iterator       = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
@@ -314,11 +277,8 @@ public:
   auto end() noexcept -> iterator;
   auto end() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns a const_iterator to the beginning of the deque.
-   */
-  auto cbegin() const noexcept -> const_iterator;
-  auto cend() const noexcept -> const_iterator;
+  // cbegin/cend, the reverse-iterator accessors, and the relational operators
+  // (==, <=>) are inherited from ContainerFacade<CircularArrayDeque<T>>.
 
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
@@ -373,12 +333,24 @@ private:
    */
   auto reallocate(size_t new_capacity) -> void;
 
+  /// Owning pointer to the raw element storage with a custom array deleter.
+  using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
+
+  /// Returns the maximum number of elements that can be allocated for T.
+  static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
+
+  /// Releases raw storage previously obtained from allocate().
+  static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
+
+  /// Allocates uninitialized storage for capacity elements; throws on overflow.
+  static auto allocate(size_t capacity) -> storage_ptr;
+
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  std::unique_ptr<T[], void (*)(T*)> data_;     ///< The dynamic array holding deque elements.
-  size_t                             front_;    ///< Index of the front element.
-  size_t                             size_;     ///< Current number of elements.
-  size_t                             capacity_; ///< Current capacity of the array.
+  storage_ptr data_;     ///< The dynamic array holding deque elements.
+  size_t      front_;    ///< Index of the front element.
+  size_t      size_;     ///< Current number of elements.
+  size_t      capacity_; ///< Current capacity of the array.
 
   static constexpr size_t kGrowthFactor = 2; ///< Growth factor for dynamic resizing.
   static constexpr size_t kMinCapacity  = 8; ///< Minimum capacity to maintain.

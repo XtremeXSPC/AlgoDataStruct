@@ -18,27 +18,23 @@ namespace ads::queues {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <QueueValue T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
-    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     front_(0),
     rear_(0),
     size_(0),
     capacity_(std::max(initial_capacity, kMinCapacity)) {
-  // Keep even zero-capacity requests growable through the normal enqueue path.
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw QueueOverflowException("Queue capacity overflow");
-  }
-
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // allocate() validates against capacity overflow before reserving storage.
+  data_ = allocate(capacity_);
 }
 
-template <typename T>
+template <QueueValue T>
 CircularArrayQueue<T>::~CircularArrayQueue() {
   clear();
 }
 
-template <typename T>
+template <QueueValue T>
 CircularArrayQueue<T>::CircularArrayQueue(CircularArrayQueue&& other) noexcept :
     data_(std::move(other.data_)),
     front_(other.front_),
@@ -51,7 +47,7 @@ CircularArrayQueue<T>::CircularArrayQueue(CircularArrayQueue&& other) noexcept :
   other.capacity_ = 0;
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept -> CircularArrayQueue<T>& {
   if (this != &other) {
     clear();
@@ -70,7 +66,7 @@ auto CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept -> Ci
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <QueueValue T>
 template <typename... Args>
 auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
   if (is_full()) {
@@ -86,19 +82,19 @@ auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
   return *rear_ptr;
 }
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::enqueue(const T& value) {
   emplace(value);
 }
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::enqueue(T&& value) {
   emplace(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::dequeue() {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot dequeue from empty queue");
@@ -121,7 +117,7 @@ void CircularArrayQueue<T>::dequeue() {
   }
 }
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::clear() noexcept {
   // Explicitly destroy all elements in the queue.
   while (!is_empty()) {
@@ -135,7 +131,7 @@ void CircularArrayQueue<T>::clear() noexcept {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::front() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
@@ -143,7 +139,7 @@ auto CircularArrayQueue<T>::front() -> T& {
   return data_[front_];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::front() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access front of empty queue");
@@ -151,7 +147,7 @@ auto CircularArrayQueue<T>::front() const -> const T& {
   return data_[front_];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::rear() -> T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
@@ -160,7 +156,7 @@ auto CircularArrayQueue<T>::rear() -> T& {
   return data_[rear_element_index];
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::rear() const -> const T& {
   if (is_empty()) {
     throw QueueUnderflowException("Cannot access rear of empty queue");
@@ -171,26 +167,26 @@ auto CircularArrayQueue<T>::rear() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
+template <QueueValue T>
 auto CircularArrayQueue<T>::size() const noexcept -> size_t {
   return size_;
 }
 
 //===--------------------------- CAPACITY OPERATIONS ---------------------------===//
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::reserve(size_t n) {
   if (n > capacity_) {
     reallocate(n);
   }
 }
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::shrink_to_fit() {
   if (size_ < capacity_) {
     size_t new_capacity = std::max(size_, kMinCapacity);
@@ -198,7 +194,7 @@ void CircularArrayQueue<T>::shrink_to_fit() {
   }
 }
 
-template <typename T>
+template <QueueValue T>
 void CircularArrayQueue<T>::grow() {
   if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw QueueOverflowException("Queue capacity overflow");
@@ -209,19 +205,22 @@ void CircularArrayQueue<T>::grow() {
   reallocate(new_capacity);
 }
 
-template <typename T>
+template <QueueValue T>
+auto CircularArrayQueue<T>::allocate(size_t capacity) -> storage_ptr {
+  if (capacity > max_elements()) {
+    throw QueueOverflowException("Queue capacity overflow");
+  }
+  return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
+}
+
+template <QueueValue T>
 void CircularArrayQueue<T>::reallocate(size_t new_capacity) {
   if (new_capacity < size_) {
     new_capacity = size_;
   }
 
-  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw QueueOverflowException("Queue capacity overflow");
-  }
-
-  // Allocate raw memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
+  // Allocate new storage (allocate() validates against capacity overflow).
+  storage_ptr new_data = allocate(new_capacity);
 
   // Copy elements to new array in logical order with exception safety.
   size_t constructed_count = 0;

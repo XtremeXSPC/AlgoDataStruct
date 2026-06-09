@@ -39,7 +39,7 @@ namespace ads::queues {
  *
  * @tparam T The type of data to store in the queue.
  */
-template <typename T>
+template <QueueValue T>
 class LinkedQueue : public Queue<T> {
 private:
   struct Node;
