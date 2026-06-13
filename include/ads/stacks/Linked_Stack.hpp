@@ -37,7 +37,7 @@ namespace ads::stacks {
  *
  * @tparam T The type of data to store in the stack.
  */
-template <typename T>
+template <StackValue T>
 class LinkedStack : public Stack<T> {
 private:
   struct Node;
@@ -166,7 +166,6 @@ private:
     std::unique_ptr<Node> next = nullptr;
 
     template <typename... Args>
-      requires(!std::is_same_v<std::remove_cvref_t<Args>..., Node>)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 

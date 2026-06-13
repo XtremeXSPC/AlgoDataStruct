@@ -18,16 +18,16 @@ namespace ads::stacks {
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <typename T>
+template <StackValue T>
 LinkedStack<T>::LinkedStack() noexcept : head_(nullptr), size_(0) {
 }
 
-template <typename T>
+template <StackValue T>
 LinkedStack<T>::LinkedStack(LinkedStack&& other) noexcept : head_(std::move(other.head_)), size_(other.size_) {
   other.size_ = 0;
 }
 
-template <typename T>
+template <StackValue T>
 auto LinkedStack<T>::operator=(LinkedStack&& other) noexcept -> LinkedStack<T>& {
   if (this != &other) {
     clear(); // Clear existing elements first
@@ -38,7 +38,7 @@ auto LinkedStack<T>::operator=(LinkedStack&& other) noexcept -> LinkedStack<T>& 
   return *this;
 }
 
-template <typename T>
+template <StackValue T>
 LinkedStack<T>::~LinkedStack() {
   // The chain of unique_ptr will automatically deallocate all nodes.
   // However, for deep stacks, this recursive destruction might cause
@@ -48,7 +48,7 @@ LinkedStack<T>::~LinkedStack() {
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <StackValue T>
 template <typename... Args>
 auto LinkedStack<T>::emplace(Args&&... args) -> T& {
   // Create new node with forwarded arguments.
@@ -68,19 +68,19 @@ auto LinkedStack<T>::emplace(Args&&... args) -> T& {
   return data_ref;
 }
 
-template <typename T>
+template <StackValue T>
 void LinkedStack<T>::push(const T& value) {
   emplace(value);
 }
 
-template <typename T>
+template <StackValue T>
 void LinkedStack<T>::push(T&& value) {
   emplace(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <StackValue T>
 void LinkedStack<T>::pop() {
   if (is_empty()) {
     throw StackUnderflowException("Cannot pop from empty stack");
@@ -91,7 +91,7 @@ void LinkedStack<T>::pop() {
   size_--;
 }
 
-template <typename T>
+template <StackValue T>
 void LinkedStack<T>::clear() noexcept {
   // Iterative destruction to avoid potential stack overflow
   // with recursive unique_ptr destruction.
@@ -103,7 +103,7 @@ void LinkedStack<T>::clear() noexcept {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <StackValue T>
 auto LinkedStack<T>::top() -> T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
@@ -111,7 +111,7 @@ auto LinkedStack<T>::top() -> T& {
   return head_->data;
 }
 
-template <typename T>
+template <StackValue T>
 auto LinkedStack<T>::top() const -> const T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
@@ -121,12 +121,12 @@ auto LinkedStack<T>::top() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <StackValue T>
 auto LinkedStack<T>::is_empty() const noexcept -> bool {
   return head_ == nullptr;
 }
 
-template <typename T>
+template <StackValue T>
 auto LinkedStack<T>::size() const noexcept -> size_t {
   return size_;
 }

@@ -16,6 +16,8 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
+#include "Stack_Concepts.hpp"
+
 #include <cstddef>
 
 namespace ads::stacks {
@@ -29,7 +31,7 @@ namespace ads::stacks {
  *
  * @tparam T The data type to store in the stack.
  */
-template <typename T>
+template <StackValue T>
 class Stack {
 public:
   // A virtual destructor is mandatory in polymorphic base classes.

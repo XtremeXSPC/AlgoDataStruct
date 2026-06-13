@@ -18,34 +18,27 @@ namespace ads::stacks {
 
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
-template <typename T>
+template <StackValue T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
-    data_(nullptr, [](T* ptr) -> auto { ::operator delete[](ptr); }),
+    data_(nullptr, &deallocate),
     size_(0),
     capacity_(std::max(initial_capacity, kMinCapacity)) {
-  // Keep even zero-capacity requests growable through the normal push path.
-  if (capacity_ > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw StackOverflowException("Stack capacity overflow");
-  }
-
-  data_.reset(static_cast<T*>(::operator new[](capacity_ * sizeof(T))));
+  // allocate() validates against capacity overflow before reserving storage.
+  data_ = allocate(capacity_);
 }
 
-template <typename T>
+template <StackValue T>
 ArrayStack<T>::~ArrayStack() {
   clear();
 }
 
-template <typename T>
-ArrayStack<T>::ArrayStack(ArrayStack&& other) noexcept :
-    data_(std::move(other.data_)),
-    size_(other.size_),
-    capacity_(other.capacity_) {
+template <StackValue T>
+ArrayStack<T>::ArrayStack(ArrayStack&& other) noexcept : data_(std::move(other.data_)), size_(other.size_), capacity_(other.capacity_) {
   other.size_     = 0;
   other.capacity_ = 0;
 }
 
-template <typename T>
+template <StackValue T>
 auto ArrayStack<T>::operator=(ArrayStack&& other) noexcept -> ArrayStack<T>& {
   if (this != &other) {
     // Raw storage does not know which slots are live, so destroy them before replacing it.
@@ -61,7 +54,7 @@ auto ArrayStack<T>::operator=(ArrayStack&& other) noexcept -> ArrayStack<T>& {
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <typename T>
+template <StackValue T>
 template <typename... Args>
 auto ArrayStack<T>::emplace(Args&&... args) -> T& {
   if (size_ == capacity_) {
@@ -75,19 +68,19 @@ auto ArrayStack<T>::emplace(Args&&... args) -> T& {
   return *top_ptr;
 }
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::push(const T& value) {
   emplace(value);
 }
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::push(T&& value) {
   emplace(std::move(value));
 }
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::pop() {
   if (is_empty()) {
     throw StackUnderflowException("Cannot pop from empty stack");
@@ -111,7 +104,7 @@ void ArrayStack<T>::pop() {
   }
 }
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::clear() noexcept {
   // Explicitly destroy all elements.
   while (size_ > 0) {
@@ -122,7 +115,7 @@ void ArrayStack<T>::clear() noexcept {
 
 //===---------------------------- ACCESS OPERATIONS ----------------------------===//
 
-template <typename T>
+template <StackValue T>
 auto ArrayStack<T>::top() -> T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
@@ -130,7 +123,7 @@ auto ArrayStack<T>::top() -> T& {
   return data_[size_ - 1];
 }
 
-template <typename T>
+template <StackValue T>
 auto ArrayStack<T>::top() const -> const T& {
   if (is_empty()) {
     throw StackUnderflowException("Cannot access top of empty stack");
@@ -140,26 +133,26 @@ auto ArrayStack<T>::top() const -> const T& {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <typename T>
+template <StackValue T>
 auto ArrayStack<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <typename T>
+template <StackValue T>
 auto ArrayStack<T>::size() const noexcept -> size_t {
   return size_;
 }
 
 //===--------------------------- CAPACITY MANAGEMENT ---------------------------===//
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::reserve(size_t n) {
   if (n > capacity_) {
     reallocate(n);
   }
 }
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::shrink_to_fit() {
   if (size_ < capacity_) {
     size_t new_capacity = std::max(size_, kMinCapacity);
@@ -167,7 +160,7 @@ void ArrayStack<T>::shrink_to_fit() {
   }
 }
 
-template <typename T>
+template <StackValue T>
 void ArrayStack<T>::grow() {
   if (capacity_ > std::numeric_limits<size_t>::max() / kGrowthFactor) {
     throw StackOverflowException("Stack capacity overflow");
@@ -180,19 +173,22 @@ void ArrayStack<T>::grow() {
 
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <typename T>
+template <StackValue T>
+auto ArrayStack<T>::allocate(size_t capacity) -> storage_ptr {
+  if (capacity > max_elements()) {
+    throw StackOverflowException("Stack capacity overflow");
+  }
+  return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
+}
+
+template <StackValue T>
 void ArrayStack<T>::reallocate(size_t new_capacity) {
   if (new_capacity < size_) {
     new_capacity = size_;
   }
 
-  if (new_capacity > std::numeric_limits<size_t>::max() / sizeof(T)) {
-    throw StackOverflowException("Stack capacity overflow");
-  }
-
-  // Allocate raw memory with custom deleter.
-  std::unique_ptr<T[], void (*)(T*)> new_data(
-      static_cast<T*>(::operator new[](new_capacity * sizeof(T))), [](T* ptr) -> auto { ::operator delete[](ptr); });
+  // Allocate new storage (allocate() validates against capacity overflow).
+  storage_ptr new_data = allocate(new_capacity);
 
   // Move/copy elements to new array with exception safety.
   size_t constructed_count = 0;

@@ -176,9 +176,7 @@ void demo_emplace_functionality() {
     string name;
     int    age;
 
-    Person(string n, int a) : name(std::move(n)), age(a) {
-      cout << "  Constructed: " << name << " (age " << age << ")\n";
-    }
+    Person(string n, int a) : name(std::move(n)), age(a) { cout << "  Constructed: " << name << " (age " << age << ")\n"; }
   };
 
   ArrayStack<Person>         stack;
