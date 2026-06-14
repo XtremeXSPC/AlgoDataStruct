@@ -15,12 +15,12 @@
 #ifndef ADS_SUPPORT_DEMO_UTILITIES_HPP
 #define ADS_SUPPORT_DEMO_UTILITIES_HPP
 
+#include "Terminal_Colors.hpp"
+
 #include <initializer_list>
 #include <iostream>
 #include <string>
 #include <string_view>
-
-#include "Terminal_Colors.hpp"
 
 //===---------------------------------------------------------------------------===//
 

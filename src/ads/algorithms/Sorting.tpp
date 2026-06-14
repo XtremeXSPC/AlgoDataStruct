@@ -420,7 +420,7 @@ auto merge_force_collapse(ads::arrays::DynamicArray<Run<Iter>>& runs, Compare& c
 //===------------------------------- BUBBLE SORT -------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto bubble_sort(Iter first, Iter last, Compare comp) -> void {
   // Get the number of elements.
   auto count = last - first;
@@ -452,7 +452,7 @@ auto bubble_sort(Iter first, Iter last, Compare comp) -> void {
 //===----------------------------- SELECTION SORT ------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto selection_sort(Iter first, Iter last, Compare comp) -> void {
   // Get the number of elements.
   for (Iter it = first; it != last; ++it) {
@@ -473,7 +473,7 @@ auto selection_sort(Iter first, Iter last, Compare comp) -> void {
 //===----------------------------- INSERTION SORT ------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto insertion_sort(Iter first, Iter last, Compare comp) -> void {
   // Check for trivial case.
   if (last - first <= 1) {
@@ -498,7 +498,7 @@ auto insertion_sort(Iter first, Iter last, Compare comp) -> void {
 //===------------------------------- SHELL SORT --------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto shell_sort(Iter first, Iter last, Compare comp) -> void {
   const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {
@@ -550,7 +550,7 @@ auto shell_sort(Iter first, Iter last, Compare comp) -> void {
 //===------------------------------- MERGE SORT --------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto merge_sort(Iter first, Iter last, Compare comp) -> void {
   const auto count = last - first;
   if (count <= 1) {
@@ -567,7 +567,7 @@ auto merge_sort(Iter first, Iter last, Compare comp) -> void {
 }
 
 template <std::forward_iterator Iter, typename Compare>
-  requires(!std::random_access_iterator<Iter> && std::sortable<Iter, Compare>)
+requires(!std::random_access_iterator<Iter> && std::sortable<Iter, Compare>)
 auto merge_sort(Iter first, Iter last, Compare comp) -> void {
   if (first == last) {
     return;
@@ -583,7 +583,7 @@ auto merge_sort(Iter first, Iter last, Compare comp) -> void {
 //===------------------------------- QUICK SORT --------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto quick_sort(Iter first, Iter last, Compare comp) -> void {
   const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {
@@ -597,7 +597,7 @@ auto quick_sort(Iter first, Iter last, Compare comp) -> void {
 //===-------------------------------- HEAP SORT --------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto heap_sort(Iter first, Iter last, Compare comp) -> void {
   const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {
@@ -617,7 +617,7 @@ auto heap_sort(Iter first, Iter last, Compare comp) -> void {
 //===-------------------------------- TIM SORT ---------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto tim_sort(Iter first, Iter last, Compare comp) -> void {
   const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {
@@ -657,7 +657,7 @@ auto tim_sort(Iter first, Iter last, Compare comp) -> void {
 //===------------------------------ COUNTING SORT ------------------------------===//
 
 template <std::random_access_iterator Iter>
-  requires std::integral<std::iter_value_t<Iter>>
+requires std::integral<std::iter_value_t<Iter>>
 auto counting_sort(Iter first, Iter last) -> void {
   if (last - first <= 1) {
     return;
@@ -680,9 +680,8 @@ auto counting_sort(Iter first, Iter last) -> void {
 }
 
 template <std::random_access_iterator Iter>
-  requires std::integral<std::iter_value_t<Iter>>
-auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std::iter_value_t<Iter> max_value)
-    -> void {
+requires std::integral<std::iter_value_t<Iter>>
+auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std::iter_value_t<Iter> max_value) -> void {
   if (last - first <= 1) {
     return;
   }
@@ -722,7 +721,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
 //===------------------------------- RADIX SORT --------------------------------===//
 
 template <std::random_access_iterator Iter>
-  requires std::integral<std::iter_value_t<Iter>>
+requires std::integral<std::iter_value_t<Iter>>
 auto radix_sort(Iter first, Iter last) -> void {
   const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {
@@ -765,7 +764,7 @@ auto radix_sort(Iter first, Iter last) -> void {
 //===------------------------------- BUCKET SORT -------------------------------===//
 
 template <std::random_access_iterator Iter>
-  requires std::floating_point<std::iter_value_t<Iter>>
+requires std::floating_point<std::iter_value_t<Iter>>
 auto bucket_sort(Iter first, Iter last, std::size_t bucket_count) -> void {
   const auto count = static_cast<std::size_t>(last - first);
   if (count <= 1) {

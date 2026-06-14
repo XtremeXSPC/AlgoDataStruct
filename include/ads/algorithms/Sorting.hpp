@@ -43,7 +43,7 @@ namespace ads::algorithms {
  * @note Stable and in-place.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto bubble_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -62,7 +62,7 @@ auto bubble_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Not stable, in-place.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto selection_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -81,7 +81,7 @@ auto selection_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Stable and in-place.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto insertion_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -102,7 +102,7 @@ auto insertion_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Not stable, in-place.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto shell_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -121,7 +121,7 @@ auto shell_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Stable but not in-place due to the auxiliary buffer.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto merge_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -140,7 +140,7 @@ auto merge_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Stable but not in-place due to the auxiliary buffer.
  */
 template <std::forward_iterator Iter, typename Compare = std::less<>>
-  requires(!std::random_access_iterator<Iter> && std::sortable<Iter, Compare>)
+requires(!std::random_access_iterator<Iter> && std::sortable<Iter, Compare>)
 auto merge_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -160,7 +160,7 @@ auto merge_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Not stable, in-place.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto quick_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -179,7 +179,7 @@ auto quick_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Not stable, in-place.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto heap_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -198,7 +198,7 @@ auto heap_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Stable but not in-place due to the merge buffer.
  */
 template <std::random_access_iterator Iter, typename Compare = std::less<>>
-  requires std::sortable<Iter, Compare>
+requires std::sortable<Iter, Compare>
 auto tim_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
 
 /**
@@ -215,7 +215,7 @@ auto tim_sort(Iter first, Iter last, Compare comp = Compare{}) -> void;
  * @note Stable. Suitable only for integral types with reasonable ranges.
  */
 template <std::random_access_iterator Iter>
-  requires std::integral<std::iter_value_t<Iter>>
+requires std::integral<std::iter_value_t<Iter>>
 auto counting_sort(Iter first, Iter last) -> void;
 
 /**
@@ -233,7 +233,7 @@ auto counting_sort(Iter first, Iter last) -> void;
  * @note Stable. Suitable only for integral types with reasonable ranges.
  */
 template <std::random_access_iterator Iter>
-  requires std::integral<std::iter_value_t<Iter>>
+requires std::integral<std::iter_value_t<Iter>>
 auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std::iter_value_t<Iter> max_value) -> void;
 
 /**
@@ -250,7 +250,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
  * @note Stable. Requires integral types.
  */
 template <std::random_access_iterator Iter>
-  requires std::integral<std::iter_value_t<Iter>>
+requires std::integral<std::iter_value_t<Iter>>
 auto radix_sort(Iter first, Iter last) -> void;
 
 /**
@@ -269,7 +269,7 @@ auto radix_sort(Iter first, Iter last) -> void;
  * @note Stable for equal keys when insertion sort is used within buckets.
  */
 template <std::random_access_iterator Iter>
-  requires std::floating_point<std::iter_value_t<Iter>>
+requires std::floating_point<std::iter_value_t<Iter>>
 auto bucket_sort(Iter first, Iter last, std::size_t bucket_count = 0) -> void;
 
 } // namespace ads::algorithms

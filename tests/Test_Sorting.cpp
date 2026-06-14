@@ -82,12 +82,9 @@ TEST(SortingAlgorithmsTest, ShellSortHandlesNegatives) {
 }
 
 TEST(SortingAlgorithmsTest, MergeSortIsStable) {
-  std::vector<StableItem> items = {
-      {.key = 2, .id = 0}, {.key = 1, .id = 0}, {.key = 2, .id = 1}, {.key = 1, .id = 1}, {.key = 2, .id = 2}};
+  std::vector<StableItem> items = {{.key = 2, .id = 0}, {.key = 1, .id = 0}, {.key = 2, .id = 1}, {.key = 1, .id = 1}, {.key = 2, .id = 2}};
 
-  merge_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) {
-    return lhs.key < rhs.key;
-  });
+  merge_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
 
   std::vector<int> keys;
   std::vector<int> ids_for_twos;
@@ -134,8 +131,7 @@ TEST(SortingAlgorithmsTest, HeapSortWithCustomComparator) {
 }
 
 TEST(SortingAlgorithmsTest, TimSortIsStable) {
-  std::vector<StableItem> items = {
-      {.key = 3, .id = 0}, {.key = 2, .id = 0}, {.key = 3, .id = 1}, {.key = 1, .id = 0}, {.key = 2, .id = 1}};
+  std::vector<StableItem> items = {{.key = 3, .id = 0}, {.key = 2, .id = 0}, {.key = 3, .id = 1}, {.key = 1, .id = 0}, {.key = 2, .id = 1}};
 
   tim_sort(items.begin(), items.end(), [](const StableItem& lhs, const StableItem& rhs) { return lhs.key < rhs.key; });
 
@@ -400,8 +396,7 @@ TEST(SortingBucketSortTest, ThrowsOnNaN) {
 }
 
 TEST(SortingBucketSortTest, HandlesInfinity) {
-  std::vector<double> data = {
-      3.0, std::numeric_limits<double>::infinity(), 1.0, -std::numeric_limits<double>::infinity(), 2.0};
+  std::vector<double> data = {3.0, std::numeric_limits<double>::infinity(), 1.0, -std::numeric_limits<double>::infinity(), 2.0};
   bucket_sort(data.begin(), data.end());
 
   EXPECT_EQ(data[0], -std::numeric_limits<double>::infinity());

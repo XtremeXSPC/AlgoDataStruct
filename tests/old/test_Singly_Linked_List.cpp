@@ -5,12 +5,12 @@
  */
 //===--------------------------------------------------------------------------===//
 
+#include "../include/ads/lists/Singly_Linked_List.hpp"
+
 #include <gtest/gtest.h>
 
 #include <string>
 #include <vector>
-
-#include "../include/ads/lists/Singly_Linked_List.hpp"
 
 using namespace ads::lists;
 
@@ -127,7 +127,7 @@ TEST(SinglyLinkedListTest, ExceptionHandling) {
 
 TEST(SinglyLinkedListTest, LargeList) {
   SinglyLinkedList<int> list;
-  const int             N = 10000;
+  const int             N = 10'000;
 
   for (int i = 0; i < N; ++i) {
     list.push_back(i);
