@@ -61,7 +61,7 @@ public:
   using priority_type = Priority;
   using size_type     = size_t;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
 
   class iterator {
   public:
@@ -93,7 +93,7 @@ public:
     void push_left(Node* node);
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty treap with a deterministic internal priority seed.
@@ -126,7 +126,7 @@ public:
   Treap(const Treap&)                    = delete;
   auto operator=(const Treap&) -> Treap& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts a value with an internally generated priority.
@@ -183,7 +183,7 @@ public:
   template <typename... Args>
   auto emplace_with_priority(const Priority& priority, Args&&... args) -> bool;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes a value from the treap.
@@ -199,7 +199,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks whether the treap is empty.
@@ -248,7 +248,7 @@ public:
    */
   [[nodiscard]] auto priority_of(const T& value) const -> const Priority*;
 
-  //===--------------------------- TRAVERSAL API -------------------------------===//
+  //===----- TRAVERSAL API -----------------------------------------------------===//
 
   /**
    * @brief Traverses the treap in sorted order.
@@ -295,7 +295,7 @@ public:
    */
   [[nodiscard]] auto validate_properties() const -> bool;
 
-  //===--------------------------- ITERATOR ACCESS -----------------------------===//
+  //===----- ITERATOR ACCESS ---------------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the first value in sorted order.
@@ -334,7 +334,7 @@ public:
   auto cend() const -> iterator;
 
 private:
-  //===--------------------------- INTERNAL STORAGE ----------------------------===//
+  //===----- INTERNAL STORAGE --------------------------------------------------===//
 
   struct Node {
     T                     data;
@@ -352,7 +352,7 @@ private:
 
   static constexpr std::uint64_t kDefaultSeed = 0x9E37'79B9'7F4A'7C15ULL;
 
-  //===----------------------------- HELPER API --------------------------------===//
+  //===----- HELPER API --------------------------------------------------------===//
 
   template <typename U>
   auto insert_with_priority_impl(std::unique_ptr<Node>& node, U&& value, const Priority& priority) -> bool;

@@ -45,7 +45,7 @@ namespace ads::support {
 template <typename Derived>
 class ContainerFacade {
 public:
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks whether the container holds no elements.
@@ -54,7 +54,7 @@ public:
    */
   [[nodiscard]] auto is_empty() const noexcept -> bool { return self().size() == 0; }
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns a const iterator to the beginning of the container.
@@ -104,7 +104,7 @@ public:
    */
   auto crend() const noexcept { return std::reverse_iterator(self().begin()); }
 
-  //===------------------------- COMPARISON OPERATORS --------------------------===//
+  //===----- COMPARISON OPERATORS ----------------------------------------------===//
 
   /**
    * @brief Equality comparison between two derived containers.
@@ -144,7 +144,7 @@ public:
   }
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Returns a reference to the derived instance.

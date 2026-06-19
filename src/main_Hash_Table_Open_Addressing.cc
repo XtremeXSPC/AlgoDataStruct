@@ -32,7 +32,7 @@ using std::vector;
 
 using namespace ads::hash;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to convert probing strategy to string.
 auto strategy_to_string(ProbingStrategy strategy) -> string {
@@ -60,7 +60,7 @@ void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string&
   cout << "  Empty:       " << (table.is_empty() ? "Yes" : "No") << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access.
 void demo_basic_operations() {
@@ -89,7 +89,7 @@ void demo_basic_operations() {
   cout << "  Contains 10? " << (table.contains(10) ? "Yes" : "No") << '\n';
 }
 
-//===-------------------- DIFFERENT PROBING STRATEGIES DEMO --------------------===//
+//===----- DIFFERENT PROBING STRATEGIES DEMO -----------------------------------===//
 
 // Demonstrates different probing strategies.
 void demo_probing_strategies() {
@@ -124,7 +124,7 @@ void demo_probing_strategies() {
   }
 }
 
-//===------------------------- TOMBSTONE HANDLING DEMO -------------------------===//
+//===----- TOMBSTONE HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates tombstone handling.
 void demo_tombstones() {
@@ -160,7 +160,7 @@ void demo_tombstones() {
   print_stats(table, "after tombstone operations");
 }
 
-//===------------------------- UPDATE OPERATIONS DEMO --------------------------===//
+//===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates updating existing keys.
 void demo_updates() {
@@ -188,7 +188,7 @@ void demo_updates() {
   print_stats(table, "after updates");
 }
 
-//===----------------------------- REHASHING DEMO ------------------------------===//
+//===----- REHASHING DEMO ------------------------------------------------------===//
 
 // Demonstrates rehashing.
 void demo_rehashing() {
@@ -223,7 +223,7 @@ void demo_rehashing() {
   }
 }
 
-//===-------------------------- HIGH COLLISIONS DEMO ---------------------------===//
+//===----- HIGH COLLISIONS DEMO ------------------------------------------------===//
 
 // Demonstrates handling of high collision rates.
 void demo_high_collisions() {
@@ -246,7 +246,7 @@ void demo_high_collisions() {
   print_stats(table, "with high collisions");
 }
 
-//===------------------------------ RESERVE DEMO -------------------------------===//
+//===----- RESERVE DEMO --------------------------------------------------------===//
 
 // Demonstrates reserve method.
 void demo_reserve() {
@@ -269,7 +269,7 @@ void demo_reserve() {
   print_stats(table, "after reserve");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
 void demo_exceptions() {
@@ -305,7 +305,7 @@ void demo_exceptions() {
   }
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -333,7 +333,7 @@ void demo_move_semantics() {
   cout << "table2 size: " << table2.size() << " (should be 0)\n";
 }
 
-//===------------------------------- CLEAR DEMO --------------------------------===//
+//===----- CLEAR DEMO ----------------------------------------------------------===//
 
 // Demonstrates clear method.
 void demo_clear() {
@@ -358,7 +358,7 @@ void demo_clear() {
   cout << "  table[42] = " << table[42] << '\n';
 }
 
-//===----------------------- PERFORMANCE COMPARISON DEMO -----------------------===//
+//===----- PERFORMANCE COMPARISON DEMO -----------------------------------------===//
 
 // Performance comparison: Open Addressing vs Chaining.
 void demo_performance_comparison() {
@@ -405,7 +405,7 @@ void demo_performance_comparison() {
   cout << "  Load factor: " << chaining_table.load_factor() << '\n';
 }
 
-//===----------------------------- EDGE CASES DEMO -----------------------------===//
+//===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Test edge cases.
 void demo_edge_cases() {
@@ -432,7 +432,7 @@ void demo_edge_cases() {
   cout << "  Size after operator[]: " << table.size() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("HASH TABLE OPEN ADDRESSING - COMPREHENSIVE DEMO");

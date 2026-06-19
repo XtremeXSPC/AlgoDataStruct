@@ -21,7 +21,7 @@ protected:
   DisjointSetUnion dsu{5};
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(DisjointSetUnionTest, ConstructionInitializesSets) {
   EXPECT_EQ(dsu.size(), 5);
@@ -79,7 +79,7 @@ TEST_F(DisjointSetUnionTest, MoveSemanticsTransferState) {
   EXPECT_TRUE(assigned.connected(2, 3));
 }
 
-//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
+//===----- ERROR HANDLING TESTS ------------------------------------------------===//
 
 TEST_F(DisjointSetUnionTest, OutOfRangeThrows) {
   EXPECT_THROW({ [[maybe_unused]] auto _ = dsu.find(99); }, DisjointSetException);

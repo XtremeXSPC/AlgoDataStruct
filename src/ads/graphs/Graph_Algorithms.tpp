@@ -19,7 +19,7 @@
 
 namespace ads::graphs {
 
-//===--------------------------- INTERNAL UTILITIES ----------------------------===//
+//===----- INTERNAL UTILITIES --------------------------------------------------===//
 
 namespace graph_algorithm_detail {
 
@@ -80,7 +80,7 @@ auto add_with_negative_support(const EdgeWeight& lhs, const EdgeWeight& rhs, con
 
 } // namespace graph_algorithm_detail
 
-//===--------------------------- RESULT TYPE METHODS ---------------------------===//
+//===----- RESULT TYPE METHODS -------------------------------------------------===//
 
 template <PathWeight EdgeWeight>
 ShortestPathsResult<EdgeWeight>::ShortestPathsResult(
@@ -314,7 +314,7 @@ auto StronglyConnectedComponentsResult::validate_component(size_t component_id) 
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <WeightedGraph Graph>
 auto collect_weighted_edges_once(const Graph& graph)
@@ -436,7 +436,7 @@ auto collect_component_from_transpose(const DynamicArray<DynamicArray<size_t>>& 
   return component;
 }
 
-//===------------------------ ALGORITHM IMPLEMENTATIONS ------------------------===//
+//===----- ALGORITHM IMPLEMENTATIONS -------------------------------------------===//
 
 template <WeightedGraph Graph>
 auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::edge_weight_type> {

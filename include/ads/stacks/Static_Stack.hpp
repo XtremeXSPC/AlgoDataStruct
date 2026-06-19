@@ -48,7 +48,7 @@ public:
   using value_type = T;
   using size_type  = size_t;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty stack (size 0, capacity N).
@@ -81,7 +81,7 @@ public:
   StaticStack(const StaticStack&)                    = delete;
   auto operator=(const StaticStack&) -> StaticStack& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place on top of the stack.
@@ -110,7 +110,7 @@ public:
    */
   void push(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the top element from the stack.
@@ -125,7 +125,7 @@ public:
    */
   void clear() noexcept override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the top element.
@@ -141,7 +141,7 @@ public:
    */
   auto top() const -> const T& override;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the stack is empty.
@@ -174,7 +174,7 @@ public:
   [[nodiscard]] static constexpr auto max_size() noexcept -> size_t { return N; }
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /// Returns a typed pointer to the inline storage.
   auto data() noexcept -> T* { return reinterpret_cast<T*>(storage_); }
@@ -182,7 +182,7 @@ private:
   /// Returns a typed const pointer to the inline storage.
   auto data() const noexcept -> const T* { return reinterpret_cast<const T*>(storage_); }
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   alignas(T) std::byte storage_[sizeof(T) * N]; ///< Raw inline storage for N elements.
   size_t size_;                                 ///< Number of constructed elements.

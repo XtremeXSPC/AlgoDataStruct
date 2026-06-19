@@ -18,7 +18,7 @@
 
 namespace ads::heaps {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <HeapValue T, typename Compare>
 DAryHeap<T, Compare>::DAryHeap(size_t arity, size_t initial_capacity, Compare comp) :
@@ -63,7 +63,7 @@ auto DAryHeap<T, Compare>::operator=(DAryHeap&& other) noexcept(std::is_nothrow_
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::insert(const T& value) -> void {
@@ -85,7 +85,7 @@ auto DAryHeap<T, Compare>::emplace(Args&&... args) -> T& {
   return data_[final_index];
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::top() -> T& {
@@ -99,7 +99,7 @@ auto DAryHeap<T, Compare>::top() const -> const T& {
   return data_[0];
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::extract_top() -> T {
@@ -146,7 +146,7 @@ auto DAryHeap<T, Compare>::clear() noexcept -> void {
   data_.clear();
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::is_empty() const noexcept -> bool {
@@ -174,7 +174,7 @@ auto DAryHeap<T, Compare>::reserve(size_t new_capacity) -> void {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <HeapValue T, typename Compare>
 auto DAryHeap<T, Compare>::has_higher_priority(const T& lhs, const T& rhs) const -> bool {

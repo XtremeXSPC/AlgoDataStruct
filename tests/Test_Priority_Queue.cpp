@@ -49,7 +49,7 @@ protected:
   PriorityQueue<int> queue;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(PriorityQueueTest, IsEmptyOnConstruction) {
   EXPECT_TRUE(queue.is_empty());
@@ -61,7 +61,7 @@ TEST_F(PriorityQueueTest, EmptyAccessThrows) {
   EXPECT_THROW(queue.pop(), QueueException);
 }
 
-//===---------------------------- HEAP ORDER TESTS -----------------------------===//
+//===----- HEAP ORDER TESTS ----------------------------------------------------===//
 
 TEST_F(PriorityQueueTest, PushPopMaintainsMaxHeapOrder) {
   const std::vector<int> values = {4, 1, 9, 7, 3, 9};
@@ -115,7 +115,7 @@ TEST(PriorityQueueMinHeapTest, CustomComparatorBuildsMinHeap) {
   EXPECT_TRUE(queue.is_empty());
 }
 
-//===---------------------------- CONSTRUCTOR TESTS ----------------------------===//
+//===----- CONSTRUCTOR TESTS ---------------------------------------------------===//
 
 TEST(PriorityQueueConstructorTest, VectorConstructorHeapifiesElements) {
   const std::vector<int> values = {6, 2, 8, 1, 5};
@@ -140,7 +140,7 @@ TEST(PriorityQueueConstructorTest, InitializerListConstructorHeapifiesElements) 
   EXPECT_EQ(queue.top(), 8);
 }
 
-//===------------------------------ UTILITY TESTS ------------------------------===//
+//===----- UTILITY TESTS -------------------------------------------------------===//
 
 TEST(PriorityQueueUtilityTest, SortedElementsExtractsInPriorityOrder) {
   PriorityQueue<int> queue{4, 1, 9, 7, 3};
@@ -172,7 +172,7 @@ TEST(PriorityQueueUtilityTest, ClearRemovesAllElements) {
   EXPECT_EQ(queue.size(), 0);
 }
 
-//===-------------------------- VALUE CATEGORY TESTS ---------------------------===//
+//===----- VALUE CATEGORY TESTS ------------------------------------------------===//
 
 TEST(PriorityQueueValueTest, EmplaceConstructsElementInPlace) {
   PriorityQueue<std::string> queue;

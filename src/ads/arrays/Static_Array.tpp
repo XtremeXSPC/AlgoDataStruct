@@ -17,7 +17,7 @@
 
 namespace ads::arrays {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -77,7 +77,7 @@ auto StaticArray<T, N>::operator=(StaticArray&& other) noexcept(std::is_nothrow_
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -93,7 +93,7 @@ auto StaticArray<T, N>::swap(StaticArray& other) noexcept(std::is_nothrow_swappa
   std::swap_ranges(std::begin(data_), std::end(data_), std::begin(other.data_));
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -161,7 +161,7 @@ auto StaticArray<T, N>::data() const noexcept -> const T* {
   return data_;
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>

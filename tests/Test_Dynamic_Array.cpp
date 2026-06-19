@@ -146,7 +146,7 @@ protected:
   DynamicArray<int> array;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(DynamicArrayTest, IsEmptyOnConstruction) {
   EXPECT_EQ(array.size(), 0);
@@ -194,7 +194,7 @@ TEST_F(DynamicArrayTest, EmplaceBack) {
   EXPECT_EQ(strings.back(), "World");
 }
 
-//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
+//===----- ERROR HANDLING TESTS ------------------------------------------------===//
 
 TEST_F(DynamicArrayTest, PopBackOnEmptyThrows) {
   EXPECT_THROW(array.pop_back(), ArrayUnderflowException);
@@ -205,7 +205,7 @@ TEST_F(DynamicArrayTest, AtThrowsOnOutOfRange) {
   EXPECT_THROW(array.at(1), ArrayOutOfRangeException);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(DynamicArrayTest, MoveSemantics) {
   array.push_back(10);

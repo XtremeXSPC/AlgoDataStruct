@@ -29,7 +29,7 @@ using std::vector;
 
 using namespace ads::associative;
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access.
 void demo_hashmap_basic() {
@@ -51,7 +51,7 @@ void demo_hashmap_basic() {
   cout << std::format("Contains 'David': {}\n", scores.contains("David"));
 }
 
-//===----------------------------- ITERATION DEMO ------------------------------===//
+//===----- ITERATION DEMO ------------------------------------------------------===//
 
 // Demonstrates iteration over HashMap.
 void demo_hashmap_iteration() {
@@ -70,7 +70,7 @@ void demo_hashmap_iteration() {
   }
 }
 
-//===----------------------- INSERTION AND EMPLACE DEMO ------------------------===//
+//===----- INSERTION AND EMPLACE DEMO ------------------------------------------===//
 
 // Demonstrates insert and emplace methods.
 void demo_hashmap_insert_emplace() {
@@ -95,7 +95,7 @@ void demo_hashmap_insert_emplace() {
   }
 }
 
-//===-------------------------- ERASE OPERATIONS DEMO --------------------------===//
+//===----- ERASE OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates erase method.
 void demo_hashmap_erase() {
@@ -122,7 +122,7 @@ void demo_hashmap_erase() {
   }
 }
 
-//===-------------------------- UTILITY METHODS DEMO ---------------------------===//
+//===----- UTILITY METHODS DEMO ------------------------------------------------===//
 
 // Demonstrates keys, values, and entries methods.
 void demo_hashmap_utility_methods() {
@@ -156,7 +156,7 @@ void demo_hashmap_utility_methods() {
   }
 }
 
-//===------------------------ APPLICATION EXAMPLE DEMO -------------------------===//
+//===----- APPLICATION EXAMPLE DEMO --------------------------------------------===//
 
 // Demonstrates a word frequency counter application.
 void demo_word_frequency() {
@@ -192,7 +192,7 @@ void demo_word_frequency() {
   cout << "  '" << most_frequent << "' appears " << max_count << " times\n";
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_hashmap_move_semantics() {
@@ -215,7 +215,7 @@ void demo_hashmap_move_semantics() {
   cout << "  Map3 size: " << map3.size() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("HASH MAP - COMPREHENSIVE DEMO PROGRAM");

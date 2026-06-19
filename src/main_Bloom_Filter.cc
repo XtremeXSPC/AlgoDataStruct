@@ -22,7 +22,7 @@ using std::string;
 
 using namespace ads::probabilistic;
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"BLOOM FILTER DEMO", "Probabilistic membership queries"});

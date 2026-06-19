@@ -16,7 +16,7 @@
 
 namespace ads::queues {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <QueueValue T>
 CircularArrayQueue<T>::CircularArrayQueue(size_t initial_capacity) :
@@ -64,7 +64,7 @@ auto CircularArrayQueue<T>::operator=(CircularArrayQueue&& other) noexcept -> Ci
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <QueueValue T>
 template <typename... Args>
@@ -92,7 +92,7 @@ void CircularArrayQueue<T>::enqueue(T&& value) {
   emplace(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <QueueValue T>
 void CircularArrayQueue<T>::dequeue() {
@@ -129,7 +129,7 @@ void CircularArrayQueue<T>::clear() noexcept {
   rear_  = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayQueue<T>::front() -> T& {
@@ -165,7 +165,7 @@ auto CircularArrayQueue<T>::rear() const -> const T& {
   return data_[rear_element_index];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayQueue<T>::is_empty() const noexcept -> bool {
@@ -177,7 +177,7 @@ auto CircularArrayQueue<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-//===--------------------------- CAPACITY OPERATIONS ---------------------------===//
+//===----- CAPACITY OPERATIONS -------------------------------------------------===//
 
 template <QueueValue T>
 void CircularArrayQueue<T>::reserve(size_t n) {

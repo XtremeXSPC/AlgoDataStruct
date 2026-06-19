@@ -17,7 +17,7 @@
 
 namespace ads::trees {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <FenwickElement T>
 FenwickTree<T>::FenwickTree() : values_(), tree_(), size_(0) {
@@ -69,7 +69,7 @@ auto FenwickTree<T>::operator=(FenwickTree&& other) noexcept -> FenwickTree<T>& 
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS --------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <FenwickElement T>
 auto FenwickTree<T>::reset(size_t size) -> void {
@@ -127,7 +127,7 @@ auto FenwickTree<T>::set(size_t index, const T& value) -> void {
   add(index, delta);
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <FenwickElement T>
 auto FenwickTree<T>::prefix_sum(size_t index) const -> T {
@@ -203,7 +203,7 @@ auto FenwickTree<T>::lower_bound(const T& target_sum) const -> size_t {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <FenwickElement T>
 constexpr auto FenwickTree<T>::lsb(size_t index) noexcept -> size_t {

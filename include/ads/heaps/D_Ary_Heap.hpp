@@ -52,7 +52,7 @@ namespace ads::heaps {
 template <HeapValue T, typename Compare = std::less<T>>
 class DAryHeap {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty d-ary heap.
@@ -121,7 +121,7 @@ public:
   DAryHeap(const DAryHeap&)                    = delete;
   auto operator=(const DAryHeap&) -> DAryHeap& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts an element into the heap.
@@ -147,7 +147,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the top-priority element.
@@ -165,7 +165,7 @@ public:
    */
   auto top() const -> const T&;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes and returns the top-priority element.
@@ -199,7 +199,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks whether the heap is empty.

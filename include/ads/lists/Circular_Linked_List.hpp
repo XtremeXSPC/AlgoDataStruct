@@ -44,7 +44,7 @@ public:
   using value_type = T;
   using size_type  = size_t;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
 
   /**
    * @brief Forward iterator for CircularLinkedList.
@@ -77,7 +77,7 @@ public:
     friend class CircularLinkedList<T>;
   };
 
-  //===------------------------- CONST_ITERATOR CLASS --------------------------===//
+  //===----- CONST_ITERATOR CLASS ----------------------------------------------===//
 
   /**
    * @brief Const forward iterator for CircularLinkedList.
@@ -112,7 +112,7 @@ public:
     friend class CircularLinkedList<T>;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty circular linked list.
@@ -145,7 +145,7 @@ public:
   CircularLinkedList(const CircularLinkedList&)                    = delete;
   auto operator=(const CircularLinkedList&) -> CircularLinkedList& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the front of the list.
@@ -195,7 +195,7 @@ public:
    */
   auto push_back(T&& value) -> void;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the first element from the list.
@@ -218,7 +218,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the first element.
@@ -248,7 +248,7 @@ public:
    */
   auto back() const -> const T&;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the list is empty.
@@ -264,7 +264,7 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_type;
 
-  //===--------------------- CIRCULAR-SPECIFIC OPERATIONS ----------------------===//
+  //===----- CIRCULAR-SPECIFIC OPERATIONS --------------------------------------===//
 
   /**
    * @brief Rotates the list by moving the head to the next element.
@@ -281,7 +281,7 @@ public:
    */
   [[nodiscard]] auto contains(const T& value) const -> bool;
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning of the list.
@@ -302,7 +302,7 @@ public:
   auto cend() const -> const_iterator;
 
 private:
-  //===----------------------------- INTERNAL NODE -----------------------------===//
+  //===----- INTERNAL NODE -----------------------------------------------------===//
 
   /**
    * @brief Internal node structure.

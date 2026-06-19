@@ -48,7 +48,7 @@ public:
   using value_type = T;
   using size_type  = size_t;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty queue (size 0, capacity N).
@@ -82,7 +82,7 @@ public:
   StaticQueue(const StaticQueue&)                    = delete;
   auto operator=(const StaticQueue&) -> StaticQueue& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the rear of the queue.
@@ -111,7 +111,7 @@ public:
    */
   void enqueue(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the element at the front of the queue.
@@ -126,7 +126,7 @@ public:
    */
   void clear() noexcept override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the front element.
@@ -156,7 +156,7 @@ public:
    */
   auto rear() const -> const T& override;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the queue is empty.
@@ -189,7 +189,7 @@ public:
   [[nodiscard]] static constexpr auto max_size() noexcept -> size_t { return N; }
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /// Returns a typed pointer to the inline storage.
   auto data() noexcept -> T* { return reinterpret_cast<T*>(storage_); }
@@ -200,7 +200,7 @@ private:
   /// Maps a logical offset from the front to a physical index in the ring buffer.
   [[nodiscard]] auto physical(size_t logical) const noexcept -> size_t { return (front_ + logical) % N; }
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   alignas(T) std::byte storage_[sizeof(T) * N]; ///< Raw inline storage for N elements.
   size_t front_;                                ///< Physical index of the front element.

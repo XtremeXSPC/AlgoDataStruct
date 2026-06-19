@@ -93,7 +93,7 @@ struct ThrowingAssignCombine {
 
 static_assert(!detail::is_propagate_up_nothrow_v<ThrowingAssignCombine, ThrowingAssignNode>);
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST(SegmentTreeBasicTest, DefaultConstruction) {
   SegmentTree<int> segment;
@@ -157,7 +157,7 @@ TEST_F(SegmentTreeTest, ValueAtAccess) {
   EXPECT_EQ(tree.value_at(3), 4);
 }
 
-//===--------------------------- NODE_AT ACCESS TESTS ---------------------------===//
+//===----- NODE_AT ACCESS TESTS ------------------------------------------------===//
 
 TEST_F(SegmentTreeTest, NodeAtAccess) {
   EXPECT_EQ(tree.node_at(0), 1);
@@ -177,7 +177,7 @@ TEST(SegmentTreeNodeAtTest, CustomNodeType) {
   EXPECT_EQ(node2.count, 1);
 }
 
-//===---------------------------- UPDATE OPERATIONS ----------------------------===//
+//===----- UPDATE OPERATIONS ---------------------------------------------------===//
 
 TEST_F(SegmentTreeTest, AddUpdates) {
   tree.add(1, 5);
@@ -199,7 +199,7 @@ TEST_F(SegmentTreeTest, SetWithMoveSemantics) {
   EXPECT_EQ(str_tree.value_at(0), "hello");
 }
 
-//===--------------------------- RESET & CLEAR TESTS ---------------------------===//
+//===----- RESET & CLEAR TESTS -------------------------------------------------===//
 
 TEST_F(SegmentTreeTest, ResetAndClear) {
   tree.clear();
@@ -211,7 +211,7 @@ TEST_F(SegmentTreeTest, ResetAndClear) {
   EXPECT_EQ(tree.total_sum(), 0);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(SegmentTreeTest, MoveSemantics) {
   SegmentTree<int> moved = std::move(tree);
@@ -241,7 +241,7 @@ TEST(SegmentTreeMoveTest, BuildFromMovedVector) {
   EXPECT_EQ(tree.total(), 60);
 }
 
-//===----------------------------- ITERATOR TESTS ------------------------------===//
+//===----- ITERATOR TESTS ------------------------------------------------------===//
 
 TEST_F(SegmentTreeTest, IteratorBasic) {
   std::vector<int> expected = {1, 2, 3, 4, 5};
@@ -290,7 +290,7 @@ TEST(SegmentTreeIteratorTest, STLAlgorithms) {
   EXPECT_EQ(stl_sum, tree.total());
 }
 
-//===----------------------- ITERATOR CONSTRUCTION TESTS -----------------------===//
+//===----- ITERATOR CONSTRUCTION TESTS -----------------------------------------===//
 
 TEST(SegmentTreeConstructorTest, FromIteratorRange) {
   std::vector<int> source = {1, 2, 3, 4, 5};
@@ -314,7 +314,7 @@ TEST(SegmentTreeConstructorTest, BuildFromIteratorRange) {
   EXPECT_EQ(tree.total(), 30);
 }
 
-//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
+//===----- ERROR HANDLING TESTS ------------------------------------------------===//
 
 TEST(SegmentTreeErrorTest, OutOfRangeThrows) {
   SegmentTree<int> segment(3);
@@ -339,7 +339,7 @@ TEST(SegmentTreeErrorTest, AddOutOfRange) {
   EXPECT_THROW(segment.add(5, 10), SegmentTreeException);
 }
 
-//===------------------------- FUNCTOR EXTENSION TESTS -------------------------===//
+//===----- FUNCTOR EXTENSION TESTS ---------------------------------------------===//
 
 TEST(SegmentTreeFunctorTest, MaxAggregate) {
   SegmentTree<int, int, MaxCombine, MaxIdentity> segment({1, 5, 3, -2});
@@ -378,7 +378,7 @@ TEST(SegmentTreeFunctorTest, FunctorAccessors) {
   EXPECT_EQ(segment.range_query(0, 2), 3);
 }
 
-//===----------------------------- EDGE CASE TESTS -----------------------------===//
+//===----- EDGE CASE TESTS -----------------------------------------------------===//
 
 TEST(SegmentTreeEdgeCaseTest, SingleElementQueries) {
   SegmentTree<int> segment({42});
@@ -423,7 +423,7 @@ protected:
   LazySegmentTree<int> tree{std::vector<int>{1, 2, 3, 4, 5}};
 };
 
-//===---------------------------- BASIC LAZY TESTS -----------------------------===//
+//===----- BASIC LAZY TESTS ----------------------------------------------------===//
 
 TEST(LazySegmentTreeBasicTest, DefaultConstruction) {
   LazySegmentTree<int> segment;
@@ -461,7 +461,7 @@ TEST_F(LazySegmentTreeTest, RangeQueries) {
   EXPECT_EQ(tree.range_query(2, 2), 3);
 }
 
-//===--------------------------- RANGE UPDATE TESTS ----------------------------===//
+//===----- RANGE UPDATE TESTS --------------------------------------------------===//
 
 TEST_F(LazySegmentTreeTest, RangeUpdateSingleElement) {
   tree.range_update(2, 2, 10); // Add 10 to element at index 2
@@ -507,7 +507,7 @@ TEST(LazySegmentTreeRangeUpdateTest, OverlappingUpdates) {
   EXPECT_EQ(segment.total(), 18);
 }
 
-//===--------------------------- POINT ACCESS TESTS ----------------------------===//
+//===----- POINT ACCESS TESTS --------------------------------------------------===//
 
 TEST_F(LazySegmentTreeTest, ValueAtAfterRangeUpdate) {
   tree.range_update(1, 3, 10);
@@ -536,7 +536,7 @@ TEST_F(LazySegmentTreeTest, SetAfterRangeUpdatePreservesExistingUpdates) {
   EXPECT_EQ(tree.total(), 137);
 }
 
-//===----------------------------- LAZY MOVE TESTS -----------------------------===//
+//===----- LAZY MOVE TESTS -----------------------------------------------------===//
 
 TEST(LazySegmentTreeMoveTest, MoveConstructor) {
   LazySegmentTree<int> original({1, 2, 3, 4, 5});
@@ -557,7 +557,7 @@ TEST(LazySegmentTreeMoveTest, MoveAssignment) {
   EXPECT_EQ(target.total(), 6);
 }
 
-//===---------------------------- LAZY ERROR TESTS -----------------------------===//
+//===----- LAZY ERROR TESTS ----------------------------------------------------===//
 
 TEST(LazySegmentTreeErrorTest, OutOfRangeThrows) {
   LazySegmentTree<int> segment(3);
@@ -566,7 +566,7 @@ TEST(LazySegmentTreeErrorTest, OutOfRangeThrows) {
   EXPECT_THROW({ [[maybe_unused]] auto _ = segment.value_at(5); }, SegmentTreeException);
 }
 
-//===-------------------------- LAZY EDGE CASE TESTS ---------------------------===//
+//===----- LAZY EDGE CASE TESTS ------------------------------------------------===//
 
 TEST(LazySegmentTreeEdgeCaseTest, SingleElement) {
   LazySegmentTree<int> segment({42});

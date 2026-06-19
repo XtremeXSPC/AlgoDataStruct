@@ -25,7 +25,7 @@ protected:
   CircularArrayQueue<int> queue;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(CircularArrayQueueTest, IsEmptyOnConstruction) {
   EXPECT_EQ(queue.size(), 0);
@@ -156,7 +156,7 @@ TEST_F(CircularArrayQueueTest, LargeQueueOperations) {
   EXPECT_TRUE(queue.is_empty());
 }
 
-//===--------------------------- LINKED QUEUE TESTS ----------------------------===//
+//===----- LINKED QUEUE TESTS --------------------------------------------------===//
 
 class LinkedQueueTest : public ::testing::Test {
 protected:
@@ -273,7 +273,7 @@ TEST_F(LinkedQueueTest, LargeQueueOperations) {
   EXPECT_TRUE(queue.is_empty());
 }
 
-//===--------------------------- POLYMORPHISM TESTS ----------------------------===//
+//===----- POLYMORPHISM TESTS --------------------------------------------------===//
 
 TEST(QueuePolymorphismTest, CircularArrayQueueThroughInterface) {
   CircularArrayQueue<int> concrete_queue;

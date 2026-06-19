@@ -22,7 +22,7 @@ using namespace ads::matrices;
 
 namespace {
 
-//===---------------------------- SPARSE MATRIX DEMOS --------------------------===//
+//===----- SPARSE MATRIX DEMOS -------------------------------------------------===//
 
 auto demo_triplet_build() -> void {
   ads::demo::print_section("Build from triplets");
@@ -64,7 +64,7 @@ auto demo_mutation_and_rows() -> void {
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"SPARSE MATRIX DEMO", "Compressed Sparse Row (CSR) container"});

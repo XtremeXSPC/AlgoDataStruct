@@ -45,7 +45,7 @@ public:
   using value_type = T;
   using size_type  = size_t;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
 
   /**
    * @brief Forward iterator for HashSet.
@@ -86,7 +86,7 @@ public:
 
   using const_iterator = iterator;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty hash set.
@@ -126,7 +126,7 @@ public:
   HashSet(const HashSet&)                    = delete;
   auto operator=(const HashSet&) -> HashSet& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Inserts an element into the set.
@@ -168,7 +168,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if an element exists in the set.
@@ -204,7 +204,7 @@ public:
    */
   [[nodiscard]] auto load_factor() const noexcept -> double;
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the beginning.
@@ -231,7 +231,7 @@ public:
   auto cend() const -> const_iterator;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Computes the bucket index for a given value.
@@ -251,7 +251,7 @@ private:
    */
   auto check_load_factor() -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   ads::arrays::DynamicArray<ads::lists::DoublyLinkedList<T>> buckets_;         ///< Buckets for separate chaining.
   size_t                                                     size_;            ///< Number of elements in the set.

@@ -64,7 +64,7 @@ public:
   using size_type    = size_t;
   using visitor_type = std::function<void(const T&)>;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
   /**
    * @brief Forward iterator performing an in-order traversal.
    *
@@ -98,7 +98,7 @@ public:
     Node* current_ = nullptr;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty splay tree.
@@ -131,7 +131,7 @@ public:
   SplayTree(const SplayTree&)                    = delete;
   auto operator=(const SplayTree&) -> SplayTree& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts a value into the tree (copy) and splays it to the root.
@@ -159,7 +159,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> bool;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes a value from the tree.
@@ -176,7 +176,7 @@ public:
    */
   void clear() noexcept;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the tree is empty.
@@ -222,7 +222,7 @@ public:
    */
   [[nodiscard]] auto find_max() const -> const T&;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Performs an in-order traversal of the tree.
@@ -260,7 +260,7 @@ public:
    */
   [[nodiscard]] auto validate_properties() const -> bool;
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   auto begin() -> iterator;
   auto begin() const -> iterator;
@@ -270,7 +270,7 @@ public:
   auto cend() const -> iterator;
 
 private:
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
   struct Node {
     T                     data;
     std::unique_ptr<Node> left;
@@ -282,7 +282,7 @@ private:
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
-  //===---------------------- STRUCTURAL (SPLAY) HELPERS -----------------------===//
+  //===----- STRUCTURAL (SPLAY) HELPERS ----------------------------------------===//
   // These operate on the mutable root_ and are const-qualified so the logically
   // const queries (contains/find_min/find_max) may splay the accessed node.
 
@@ -316,7 +316,7 @@ private:
    */
   void splay(Node* node) const;
 
-  //===---------------------------- SEARCH HELPERS -----------------------------===//
+  //===----- SEARCH HELPERS ----------------------------------------------------===//
 
   /**
    * @brief Locates the node holding @p value without splaying.
@@ -332,12 +332,12 @@ private:
   template <typename U>
   auto insert_impl(U&& value) -> bool;
 
-  //===------------------------ ITERATIVE TREE HELPERS -------------------------===//
+  //===----- ITERATIVE TREE HELPERS --------------------------------------------===//
 
   auto height_helper(const Node* node) const noexcept -> int;
   auto validate_helper() const -> bool;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   mutable std::unique_ptr<Node> root_; ///< Root of the tree (mutable: splay-on-access).
   size_t                        size_; ///< Number of nodes in the tree.

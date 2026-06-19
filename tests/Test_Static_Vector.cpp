@@ -24,7 +24,7 @@ protected:
   StaticVector<int, 5> vec{1, 2, 3};
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(StaticVectorTest, CapacityIsFixedSizeIsDynamic) {
   EXPECT_EQ(vec.size(), 3u);
@@ -54,7 +54,7 @@ TEST_F(StaticVectorTest, InitializerListOverCapacityThrows) {
   EXPECT_THROW((StaticVector<int, 3>(4, 0)), ArrayOverflowException);
 }
 
-//===----------------------------- INSERTION TESTS -----------------------------===//
+//===----- INSERTION TESTS -----------------------------------------------------===//
 
 TEST_F(StaticVectorTest, PushBackUntilFull) {
   vec.push_back(4);
@@ -96,7 +96,7 @@ TEST_F(StaticVectorTest, InsertWhenFullThrows) {
   EXPECT_THROW(v.insert(1, 0), ArrayOverflowException);
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(StaticVectorTest, PopBack) {
   vec.pop_back();
@@ -139,7 +139,7 @@ TEST_F(StaticVectorTest, ResizeOverCapacityThrows) {
   EXPECT_THROW(vec.resize(6), ArrayOverflowException);
 }
 
-//===------------------------------ ACCESS TESTS -------------------------------===//
+//===----- ACCESS TESTS --------------------------------------------------------===//
 
 TEST_F(StaticVectorTest, AtWithBoundsChecking) {
   EXPECT_EQ(vec.at(0), 1);
@@ -160,7 +160,7 @@ TEST_F(StaticVectorTest, FrontOnEmptyThrows) {
   EXPECT_THROW(v.back(), ArrayUnderflowException);
 }
 
-//===----------------------------- ITERATION TESTS -----------------------------===//
+//===----- ITERATION TESTS -----------------------------------------------------===//
 
 TEST_F(StaticVectorTest, RangeBasedIteration) {
   std::vector<int> values;
@@ -181,7 +181,7 @@ TEST_F(StaticVectorTest, ConstIteration) {
   EXPECT_EQ(values, (std::vector<int>{1, 2, 3}));
 }
 
-//===---------------------------- COMPARISON TESTS -----------------------------===//
+//===----- COMPARISON TESTS ----------------------------------------------------===//
 
 TEST_F(StaticVectorTest, EqualityAndThreeWay) {
   StaticVector<int, 5> same{1, 2, 3};
@@ -198,7 +198,7 @@ TEST_F(StaticVectorTest, ComparisonRespectsSize) {
   EXPECT_FALSE(prefix == vec);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(StaticVectorTest, MoveConstructionLeavesSourceEmpty) {
   StaticVector<std::string, 4> s;

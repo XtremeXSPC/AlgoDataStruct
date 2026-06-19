@@ -46,7 +46,7 @@ namespace ads::heaps {
 template <typename T>
 class MinHeap {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty heap with specified initial capacity.
@@ -99,7 +99,7 @@ public:
   MinHeap(const MinHeap&)                    = delete;
   auto operator=(const MinHeap&) -> MinHeap& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts an element into the heap.
@@ -128,7 +128,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the minimum element.
@@ -146,7 +146,7 @@ public:
    */
   auto top() const -> const T&;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes and returns the minimum element.
@@ -156,7 +156,7 @@ public:
    */
   auto extract_min() -> T;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the heap is empty.
@@ -185,7 +185,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===-------------------------- ADVANCED OPERATIONS --------------------------===//
+  //===----- ADVANCED OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Decreases the value at a given index.
@@ -197,14 +197,14 @@ public:
   auto decrease_key(size_t index, const T& new_value) -> void;
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   ads::arrays::DynamicArray<T> data_; ///< Contiguous heap storage.
 
   static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity.
 
   //===============================================================================//
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Restores heap property by moving element up.
@@ -226,7 +226,7 @@ private:
    */
   auto build_heap() -> void;
 
-  //===----------------------- INDEX CALCULATION METHODS -----------------------===//
+  //===----- INDEX CALCULATION METHODS -----------------------------------------===//
 
   /**
    * @brief Returns the index of the parent of node at index 'i'.

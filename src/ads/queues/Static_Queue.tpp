@@ -17,7 +17,7 @@
 
 namespace ads::queues {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <QueueValue T, size_t N>
 requires(N > 0)
@@ -55,7 +55,7 @@ auto StaticQueue<T, N>::operator=(StaticQueue&& other) noexcept(std::is_nothrow_
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <QueueValue T, size_t N>
 requires(N > 0)
@@ -83,7 +83,7 @@ void StaticQueue<T, N>::enqueue(T&& value) {
   emplace(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <QueueValue T, size_t N>
 requires(N > 0)
@@ -108,7 +108,7 @@ void StaticQueue<T, N>::clear() noexcept {
   size_  = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <QueueValue T, size_t N>
 requires(N > 0)
@@ -146,7 +146,7 @@ auto StaticQueue<T, N>::rear() const -> const T& {
   return data()[physical(size_ - 1)];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <QueueValue T, size_t N>
 requires(N > 0)

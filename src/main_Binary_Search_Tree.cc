@@ -29,7 +29,7 @@ using std::vector;
 
 using namespace ads::trees;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents via in-order traversal.
 template <typename T>
@@ -46,7 +46,7 @@ void print_tree(const BinarySearchTree<T>& tree, const string& name) {
   cout << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and traversal operations.
 void demo_basic_operations() {
@@ -88,7 +88,7 @@ void demo_basic_operations() {
   print_tree(bst, "bst after duplicate attempt");
 }
 
-//===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
+//===----- SEARCH OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates search operations.
 void demo_search_operations() {
@@ -130,7 +130,7 @@ void demo_search_operations() {
   cout << "  Predecessor of " << demo_val << ": " << (pred ? to_string(*pred) : "none") << '\n';
 }
 
-//===------------------------- REMOVE OPERATIONS DEMO --------------------------===//
+//===----- REMOVE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates remove operations.
 void demo_removal() {
@@ -172,7 +172,7 @@ void demo_removal() {
   cout << (removed ? "removed" : "not found (correct behavior)") << '\n';
 }
 
-//===----------------------- SORTED SEQUENCE COMPARISON ------------------------===//
+//===----- SORTED SEQUENCE COMPARISON ------------------------------------------===//
 
 // Demonstrates sorted sequence insertion.
 void demo_iterators() {
@@ -213,7 +213,7 @@ void demo_iterators() {
   cout << '\n';
 }
 
-//===---------------------------- CUSTOM TYPES DEMO ----------------------------===//
+//===----- CUSTOM TYPES DEMO ---------------------------------------------------===//
 
 // Demonstrates usage with custom types.
 void demo_custom_types() {
@@ -248,7 +248,7 @@ void demo_custom_types() {
   cout << "Oldest person: " << people.find_max().name << " (age " << people.find_max().age << ")\n";
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -284,7 +284,7 @@ void demo_move_semantics() {
   print_tree(bst3, "bst3 (should have bst2's data)");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
 void demo_exceptions() {
@@ -311,7 +311,7 @@ void demo_exceptions() {
   }
 }
 
-//===----------------------- SORTED SEQUENCE COMPARISON ------------------------===//
+//===----- SORTED SEQUENCE COMPARISON ------------------------------------------===//
 
 // Test edge cases.
 void demo_edge_cases() {
@@ -347,7 +347,7 @@ void demo_edge_cases() {
   print_tree(degenerate, "degenerate after reuse");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

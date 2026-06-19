@@ -57,7 +57,7 @@ public:
   using pointer         = T*;
   using const_pointer   = const T*;
 
-  //===---------------------------- ITERATOR TYPES -----------------------------===//
+  //===----- ITERATOR TYPES ----------------------------------------------------===//
 
   // The logical (wrap-around) iteration order is provided by IndexedIterator,
   // which dereferences through this container's operator[]. See Indexed_Iterator.hpp.
@@ -66,7 +66,7 @@ public:
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty circular array with optional initial capacity.
@@ -108,7 +108,7 @@ public:
   CircularArray(const CircularArray&)                    = delete;
   auto operator=(const CircularArray&) -> CircularArray& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the front.
@@ -158,7 +158,7 @@ public:
    */
   auto push_back(T&& value) -> void requires MoveArrayElement<T>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the first element.
@@ -180,7 +180,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses an element by logical index without bounds checking.
@@ -244,7 +244,7 @@ public:
    */
   auto back() const -> const T&;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the array is empty.
@@ -267,7 +267,7 @@ public:
    */
   [[nodiscard]] auto capacity() const noexcept -> size_t;
 
-  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+  //===----- CAPACITY OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Reserves capacity for at least n elements.
@@ -282,7 +282,7 @@ public:
    */
   auto shrink_to_fit() -> void requires RelocatableArrayElement<T>;
 
-  //===------------------------- ITERATOR OPERATIONS ---------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning.
@@ -300,7 +300,7 @@ public:
   // (==, <=>) are inherited from ContainerFacade<CircularArray<T>>.
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /// Owning pointer to the raw element storage with a custom array deleter.
   using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
@@ -344,7 +344,7 @@ private:
    */
   auto reallocate(size_t new_capacity) -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   storage_ptr data_;     ///< Raw storage for elements.
   size_t      head_;     ///< Physical index of the first element.

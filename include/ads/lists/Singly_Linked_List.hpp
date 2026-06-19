@@ -46,7 +46,7 @@ public:
   using value_type = T;
   using size_type  = typename List<T>::size_type;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
   /**
    * @brief Forward iterator for SinglyLinkedList.
    *
@@ -76,7 +76,7 @@ public:
     friend class SinglyLinkedList<T>;
   };
 
-  //===------------------------- CONST_ITERATOR CLASS --------------------------===//
+  //===----- CONST_ITERATOR CLASS ----------------------------------------------===//
   /**
    * @brief Const forward iterator for SinglyLinkedList.
    *
@@ -106,7 +106,7 @@ public:
     friend class SinglyLinkedList<T>;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty list.
@@ -190,7 +190,7 @@ public:
    */
   auto push_back(T&& value) -> void override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the first element from the list.
@@ -207,7 +207,7 @@ public:
    */
   auto pop_back() -> void override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the first element.
@@ -257,7 +257,7 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_type override;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Removes all elements from the list.

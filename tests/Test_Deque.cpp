@@ -24,7 +24,7 @@ protected:
   CircularArrayDeque<int> deque;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(CircularArrayDequeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(deque.size(), 0);
@@ -84,7 +84,7 @@ TEST_F(CircularArrayDequeTest, IndexAccess) {
   EXPECT_THROW(deque.at(5), QueueException);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(CircularArrayDequeTest, MoveSemantics) {
   deque.push_back(10);
@@ -99,7 +99,7 @@ TEST_F(CircularArrayDequeTest, MoveSemantics) {
   EXPECT_EQ(deque.size(), 2);
 }
 
-//===----------------------------- ITERATOR TESTS ------------------------------===//
+//===----- ITERATOR TESTS ------------------------------------------------------===//
 
 TEST_F(CircularArrayDequeTest, IteratorTraversal) {
   for (int i = 1; i <= 4; ++i) {

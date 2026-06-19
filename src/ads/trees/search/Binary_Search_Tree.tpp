@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <OrderedTreeElement T>
 BinarySearchTree<T>::iterator::iterator(const iterator& other) :
@@ -91,7 +91,7 @@ auto BinarySearchTree<T>::iterator::operator==(const iterator& other) const -> b
   return current_ == other.current_;
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <OrderedTreeElement T>
 BinarySearchTree<T>::BinarySearchTree() : root_(nullptr), size_(0) {
@@ -118,7 +118,7 @@ auto BinarySearchTree<T>::operator=(BinarySearchTree&& other) noexcept -> Binary
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -138,7 +138,7 @@ auto BinarySearchTree<T>::emplace(Args&&... args) -> bool {
   return insert_helper(root_, T(std::forward<Args>(args)...));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::remove(const T& value) -> bool {
@@ -162,7 +162,7 @@ void BinarySearchTree<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::is_empty() const noexcept -> bool {
@@ -200,7 +200,7 @@ auto BinarySearchTree<T>::find_max() const -> const T& {
   return find_max_node(root_.get())->data;
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void BinarySearchTree<T>::in_order_traversal(const visitor_type& visit) const {
@@ -241,7 +241,7 @@ void BinarySearchTree<T>::level_order_traversal(const visitor_type& visit) const
   }
 }
 
-//===------------------ ADDITIONAL BST-SPECIFIC FUNCTIONALITY ------------------===//
+//===----- ADDITIONAL BST-SPECIFIC FUNCTIONALITY -------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::successor(const T& value) const -> const T* {
@@ -321,7 +321,7 @@ auto BinarySearchTree<T>::validate_properties() const -> bool {
   return counted == size_;
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::begin() -> iterator {
@@ -354,7 +354,7 @@ auto BinarySearchTree<T>::cend() const -> iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <OrderedTreeElement T>
 template <typename U>
@@ -431,7 +431,7 @@ auto BinarySearchTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique
   return min_node;
 }
 
-//===----------------------------- SEARCH HELPERS ------------------------------===//
+//===----- SEARCH HELPERS ------------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto BinarySearchTree<T>::find_helper(Node* node, const T& value) const -> Node* {
@@ -496,7 +496,7 @@ auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int 
   return max_depth;
 }
 
-//===---------------------------- TRAVERSAL HELPERS ----------------------------===//
+//===----- TRAVERSAL HELPERS ---------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void BinarySearchTree<T>::in_order_helper(const Node* node, const visitor_type& visit) const {

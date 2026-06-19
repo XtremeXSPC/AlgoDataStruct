@@ -65,7 +65,7 @@ namespace arr = ads::arrays;
 template <bool UseMap = true>
 class Trie {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Construct an empty Trie.
@@ -98,7 +98,7 @@ public:
   Trie(const Trie&)                    = delete;
   auto operator=(const Trie&) -> Trie& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Insert a word into the trie.
@@ -111,7 +111,7 @@ public:
    */
   void insert(const std::string& word);
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Remove a word from the trie.
@@ -132,7 +132,7 @@ public:
    */
   void clear();
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Check if trie is empty.
@@ -210,7 +210,7 @@ public:
   [[nodiscard]] auto search(const std::string& word) const -> bool;
 
 private:
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
   /**
    * @brief Internal node structure for Trie.
    *
@@ -249,7 +249,7 @@ private:
   };
 
   //===============================================================================//
-  //===------------------------- PRIVATE HELPER METHODS ------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Get child index for array-based implementation.
@@ -298,7 +298,7 @@ private:
    */
   auto dfs_collect_words(const TrieNode* node, const std::string& current_word, std::vector<std::string>& results) const -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<TrieNode> root_;       ///< Root node (empty prefix).
   size_t                    word_count_; ///< Number of words stored.

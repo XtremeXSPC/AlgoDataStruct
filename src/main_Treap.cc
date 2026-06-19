@@ -22,7 +22,7 @@ using namespace ads::trees;
 
 namespace {
 
-//===------------------------------ DEMO HELPERS -------------------------------===//
+//===----- DEMO HELPERS --------------------------------------------------------===//
 
 auto demo_explicit_priorities() -> void {
   ads::demo::print_section("Deterministic priorities");
@@ -39,7 +39,7 @@ auto demo_explicit_priorities() -> void {
   cout << '\n';
 }
 
-//===----------------------------- TREAP DEMOS ---------------------------------===//
+//===----- TREAP DEMOS ---------------------------------------------------------===//
 
 auto demo_regular_usage() -> void {
   ads::demo::print_section("Regular randomized priorities");
@@ -57,7 +57,7 @@ auto demo_regular_usage() -> void {
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"TREAP DEMO", "BST order with heap priorities"});

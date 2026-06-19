@@ -17,7 +17,7 @@
 
 namespace ads::trees {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <FenwickElement T>
 FenwickTreeRangeUpdate<T>::FenwickTreeRangeUpdate() : tree_(), size_(0) {
@@ -71,7 +71,7 @@ auto FenwickTreeRangeUpdate<T>::operator=(FenwickTreeRangeUpdate&& other) noexce
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <FenwickElement T>
 auto FenwickTreeRangeUpdate<T>::build(const std::vector<T>& values) -> void {
@@ -129,7 +129,7 @@ auto FenwickTreeRangeUpdate<T>::range_add(size_t left, size_t right, const T& de
   }
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <FenwickElement T>
 auto FenwickTreeRangeUpdate<T>::point_query(size_t index) const -> T {
@@ -148,7 +148,7 @@ auto FenwickTreeRangeUpdate<T>::is_empty() const noexcept -> bool {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <FenwickElement T>
 constexpr auto FenwickTreeRangeUpdate<T>::lsb(size_t index) noexcept -> size_t {

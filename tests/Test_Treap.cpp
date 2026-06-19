@@ -22,7 +22,7 @@ using namespace ads::trees;
 
 namespace {
 
-//===----------------------------- TEST UTILITIES ------------------------------===//
+//===----- TEST UTILITIES ------------------------------------------------------===//
 
 struct TreapMoveOnlyOrdered {
   int value;
@@ -78,7 +78,7 @@ protected:
   }
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(TreapTest, IsEmptyOnConstruction) {
   EXPECT_TRUE(tree.is_empty());
@@ -105,7 +105,7 @@ TEST_F(TreapTest, DuplicateInsertionsAreRejected) {
   EXPECT_EQ(*tree.priority_of(42), 10);
 }
 
-//===----------------------- STRUCTURE AND TRAVERSAL TESTS ---------------------===//
+//===----- STRUCTURE AND TRAVERSAL TESTS ---------------------------------------===//
 
 TEST_F(TreapTest, ExplicitPrioritiesProduceDeterministicShape) {
   ASSERT_TRUE(tree.insert_with_priority(30, 10));
@@ -179,7 +179,7 @@ TEST_F(TreapTest, IteratorTraversalIsSorted) {
   EXPECT_EQ(values, (std::vector<int>{20, 30, 40, 50, 60, 70, 80}));
 }
 
-//===------------------------ RANDOMIZED AND MODEL TESTS -----------------------===//
+//===----- RANDOMIZED AND MODEL TESTS ------------------------------------------===//
 
 TEST_F(TreapTest, InternalPriorityGeneratorStillMaintainsInvariants) {
   for (int value = 1; value <= 200; ++value) {
@@ -213,7 +213,7 @@ TEST_F(TreapTest, RandomizedOperationsMatchStdSet) {
   }
 }
 
-//===-------------------------- MOVE AND UTILITY TESTS -------------------------===//
+//===----- MOVE AND UTILITY TESTS ----------------------------------------------===//
 
 TEST_F(TreapTest, MoveSemanticsTransferContents) {
   build_reference_tree();
@@ -240,7 +240,7 @@ TEST_F(TreapTest, ClearResetsTree) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
-//===-------------------------- VALUE-TYPE SUPPORT TESTS -----------------------===//
+//===----- VALUE-TYPE SUPPORT TESTS --------------------------------------------===//
 
 TEST(TreapValueTest, SupportsMoveOnlyValuesWithExplicitPriority) {
   Treap<TreapMoveOnlyOrdered> tree;
@@ -255,7 +255,7 @@ TEST(TreapValueTest, SupportsMoveOnlyValuesWithExplicitPriority) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
-//===----------------------------- CONCEPT TESTS -------------------------------===//
+//===----- CONCEPT TESTS -------------------------------------------------------===//
 
 TEST(TreapApiTest, SatisfiesOrderedSearchTreeConcept) {
   static_assert(OrderedSearchTree<Treap<int>, int>);

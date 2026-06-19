@@ -41,7 +41,7 @@ public:
   using value_type = T;
   using size_type  = size_t;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty tree set.
@@ -77,7 +77,7 @@ public:
   TreeSet(const TreeSet&)                    = delete;
   auto operator=(const TreeSet&) -> TreeSet& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts an element into the set.
@@ -105,7 +105,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes an element from the set.
@@ -121,7 +121,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if an element exists in the set.
@@ -161,7 +161,7 @@ public:
    */
   [[nodiscard]] auto max() const -> const T&;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Collects all elements in sorted order.
@@ -178,7 +178,7 @@ public:
   auto for_each(const std::function<void(const T&)>& visit) const -> void;
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   ads::trees::AVLTree<T> tree_; ///< Underlying AVL tree.
 };

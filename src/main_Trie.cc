@@ -30,7 +30,7 @@ using std::vector;
 
 using TrieType = ads::trees::Trie<>;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print trie statistics.
 void print_trie_stats(const TrieType& trie, const string& name) {
@@ -55,7 +55,7 @@ void print_trie_stats(const TrieType& trie, const string& name) {
   cout << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
 void demo_basic_operations() {
@@ -91,7 +91,7 @@ void demo_basic_operations() {
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-//===------------------------- PREFIX OPERATIONS DEMO --------------------------===//
+//===----- PREFIX OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates prefix-based operations.
 void demo_prefix_operations() {
@@ -130,7 +130,7 @@ void demo_prefix_operations() {
   cout << '\n';
 }
 
-//===---------------------------- AUTOCOMPLETE DEMO ----------------------------===//
+//===----- AUTOCOMPLETE DEMO ---------------------------------------------------===//
 
 // Demonstrates autocomplete functionality.
 void demo_autocomplete() {
@@ -168,7 +168,7 @@ void demo_autocomplete() {
   autocomplete("xyz");
 }
 
-//===--------------------------- WORD COUNTING DEMO ----------------------------===//
+//===----- WORD COUNTING DEMO --------------------------------------------------===//
 
 // Demonstrates word counting with prefixes.
 void demo_word_counting() {
@@ -192,7 +192,7 @@ void demo_word_counting() {
   cout << "  Words starting with 'xyz': " << trie.count_words_with_prefix("xyz") << '\n';
 }
 
-//===------------------------- REMOVE OPERATIONS DEMO --------------------------===//
+//===----- REMOVE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates remove operations.
 void demo_remove_operations() {
@@ -223,7 +223,7 @@ void demo_remove_operations() {
   print_trie_stats(trie, "after removals");
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -258,7 +258,7 @@ void demo_move_semantics() {
   print_trie_stats(trie3, "trie3 (should have trie2's data)");
 }
 
-//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+//===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Permormance testing.
 void demo_performance() {
@@ -304,7 +304,7 @@ void demo_performance() {
   cout << "  Found: " << word1_set.size() << " words\n";
 }
 
-//===-------------------------- CASE SENSITIVITY DEMO --------------------------===//
+//===----- CASE SENSITIVITY DEMO -----------------------------------------------===//
 
 // Test case sensitivity.
 void demo_case_sensitivity() {
@@ -326,7 +326,7 @@ void demo_case_sensitivity() {
   cout << "  Contains 'HeLLo'? " << (trie.search("HeLLo") ? "Yes" : "No") << '\n';
 }
 
-//===----------------------------- EDGE CASES DEMO -----------------------------===//
+//===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Edge cases.
 void demo_edge_cases() {
@@ -368,7 +368,7 @@ void demo_edge_cases() {
   print_trie_stats(trie, "trie after reuse");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

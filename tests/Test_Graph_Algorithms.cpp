@@ -22,7 +22,7 @@ using namespace ads::graphs;
 
 namespace {
 
-//===----------------------------- TEST UTILITIES ------------------------------===//
+//===----- TEST UTILITIES ------------------------------------------------------===//
 
 auto make_path(std::initializer_list<size_t> vertices) -> ads::arrays::DynamicArray<size_t> {
   ads::arrays::DynamicArray<size_t> path;
@@ -81,7 +81,7 @@ auto normalize_components(const StronglyConnectedComponentsResult& result) -> st
 
 } // namespace
 
-//===--------------------------- DIJKSTRA TESTS -------------------------------===//
+//===----- DIJKSTRA TESTS ------------------------------------------------------===//
 
 TEST(GraphAlgorithmsDijkstraListTest, ComputesShortestDistancesAndPaths) {
   GraphAdjacencyList<int, double> graph(false);
@@ -184,7 +184,7 @@ TEST(GraphAlgorithmsDijkstraTest, SourcePathIsSingleVertex) {
   expect_path_eq(shortest_paths.path_to(0), {0});
 }
 
-//===------------------------- BELLMAN-FORD TESTS -----------------------------===//
+//===----- BELLMAN-FORD TESTS --------------------------------------------------===//
 
 TEST(GraphAlgorithmsBellmanFordTest, HandlesNegativeEdgesWithoutNegativeCycles) {
   GraphAdjacencyList<int, int> graph(true);
@@ -249,7 +249,7 @@ TEST(GraphAlgorithmsBellmanFordMatrixTest, WorksWithAdjacencyMatrixGraphs) {
   expect_path_eq(shortest_paths.path_to(3), {0, 1, 2, 3});
 }
 
-//===---------------------------- PRIM TESTS -----------------------------------===//
+//===----- PRIM TESTS ----------------------------------------------------------===//
 
 TEST(GraphAlgorithmsPrimTest, BuildsMinimumSpanningForestForUndirectedGraph) {
   GraphAdjacencyList<int, int> graph(false);
@@ -303,7 +303,7 @@ TEST(GraphAlgorithmsPrimTest, RejectsDirectedGraphs) {
   EXPECT_THROW(static_cast<void>(prim_minimum_spanning_forest(graph)), GraphAlgorithmException);
 }
 
-//===--------------------------- KRUSKAL TESTS --------------------------------===//
+//===----- KRUSKAL TESTS -------------------------------------------------------===//
 
 TEST(GraphAlgorithmsKruskalTest, BuildsMinimumSpanningForestForUndirectedGraph) {
   GraphAdjacencyList<int, int> graph(false);
@@ -402,7 +402,7 @@ TEST(GraphAlgorithmsKruskalTest, RejectsDirectedGraphs) {
   EXPECT_THROW(static_cast<void>(kruskal_minimum_spanning_forest(graph)), GraphAlgorithmException);
 }
 
-//===------------------------ FLOYD-WARSHALL TESTS ----------------------------===//
+//===----- FLOYD-WARSHALL TESTS ------------------------------------------------===//
 
 TEST(GraphAlgorithmsFloydWarshallMatrixTest, ComputesAllPairsShortestPaths) {
   GraphAdjacencyMatrix<int, int> graph(true);
@@ -479,7 +479,7 @@ TEST(GraphAlgorithmsFloydWarshallTest, DetectsNegativeCycles) {
   EXPECT_THROW(static_cast<void>(floyd_warshall_all_pairs_shortest_paths(graph)), GraphAlgorithmException);
 }
 
-//===------------------------------- SCC TESTS ---------------------------------===//
+//===----- SCC TESTS -----------------------------------------------------------===//
 
 TEST(GraphAlgorithmsSccTest, ReturnsSingletonComponentsForDag) {
   GraphAdjacencyList<int, int> graph(true);
@@ -601,7 +601,7 @@ TEST(GraphAlgorithmsSccTest, RejectsUndirectedGraphs) {
   EXPECT_THROW(static_cast<void>(strongly_connected_components(graph)), GraphAlgorithmException);
 }
 
-//===------------------------- TOPOLOGICAL SORT TESTS --------------------------===//
+//===----- TOPOLOGICAL SORT TESTS ----------------------------------------------===//
 
 TEST(GraphAlgorithmsTopologicalSortTest, ProducesValidOrderForDag) {
   GraphAdjacencyList<int, int> graph(true);

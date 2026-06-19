@@ -53,7 +53,7 @@ class CompleteBinaryTree {
 public:
   using visitor_type = std::function<void(const T&)>;
 
-  //===---------------------------- NODE STRUCTURE -----------------------------===//
+  //===----- NODE STRUCTURE ----------------------------------------------------===//
 
   /**
    * @brief A node in the binary tree.
@@ -68,7 +68,7 @@ public:
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty binary tree.
@@ -108,7 +108,7 @@ public:
   CompleteBinaryTree(const CompleteBinaryTree&)                    = delete;
   auto operator=(const CompleteBinaryTree&) -> CompleteBinaryTree& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts a value into the tree in level-order position.
@@ -134,7 +134,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes all elements from the tree.
@@ -142,7 +142,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the root element.
@@ -172,7 +172,7 @@ public:
    */
   auto root_node() const -> const Node*;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the tree is empty.
@@ -203,7 +203,7 @@ public:
    */
   [[nodiscard]] auto contains(const T& value) const -> bool;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Performs an in-order traversal (left, root, right).
@@ -241,7 +241,7 @@ public:
   [[nodiscard]] auto to_vector() const -> std::vector<T>;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Computes the height of a subtree rooted at the given node.
@@ -281,7 +281,7 @@ private:
    */
   auto post_order_impl(const Node* node, const visitor_type& visit) const -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Node> root_; ///< Pointer to the root node.
   size_t                size_; ///< Number of elements in the tree.

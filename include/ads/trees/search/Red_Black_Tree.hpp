@@ -80,7 +80,7 @@ public:
   using visitor_type = std::function<void(const T&)>;
   using size_type    = size_t;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
   /**
    * @brief Forward iterator for in-order traversal of the Red-Black Tree.
    *
@@ -114,7 +114,7 @@ public:
     static auto successor(Node* node) noexcept -> Node*;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Construct empty Red-Black Tree.
@@ -147,7 +147,7 @@ public:
   RedBlackTree(const RedBlackTree&)                    = delete;
   auto operator=(const RedBlackTree&) -> RedBlackTree& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Insert a value into the tree.
@@ -187,7 +187,7 @@ public:
    */
   auto remove(const T& value) -> bool;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Check if tree is empty.
@@ -236,7 +236,7 @@ public:
    */
   [[nodiscard]] auto find_max() const -> const T&;
 
-  //===------------------ RED-BLACK TREE SPECIFIC OPERATIONS -------------------===//
+  //===----- RED-BLACK TREE SPECIFIC OPERATIONS --------------------------------===//
 
   /**
    * @brief Get black height of tree.
@@ -258,7 +258,7 @@ public:
    */
   [[nodiscard]] auto validate_properties() const -> bool;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief In-order traversal.
@@ -288,7 +288,7 @@ public:
    */
   void level_order_traversal(const visitor_type& visit) const;
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the smallest element.
@@ -333,7 +333,7 @@ public:
   auto cend() const -> iterator;
 
 private:
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
   /**
    * @brief Internal node structure.
    */
@@ -350,7 +350,7 @@ private:
   };
 
   //===============================================================================//
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Get color of node (nullptr is considered black).
@@ -366,7 +366,7 @@ private:
    */
   static void set_color(Node* node, Color color);
 
-  //===--------------------------- ROTATION HELPERS ----------------------------===//
+  //===----- ROTATION HELPERS --------------------------------------------------===//
 
   /**
    * @brief Left rotation around node x.
@@ -396,7 +396,7 @@ private:
    */
   auto rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique_ptr<Node>;
 
-  //===--------------------------- INSERTION HELPERS ---------------------------===//
+  //===----- INSERTION HELPERS -------------------------------------------------===//
 
   /**
    * @brief Fix Red-Black properties after insertion.
@@ -418,7 +418,7 @@ private:
   template <typename U>
   auto insert_helper(std::unique_ptr<Node>& node, U&& value, Node* parent) -> std::pair<Node*, bool>;
 
-  //===---------------------------- REMOVAL HELPERS ----------------------------===//
+  //===----- REMOVAL HELPERS ---------------------------------------------------===//
 
   /**
    * @brief Find a node by value.
@@ -463,7 +463,7 @@ private:
    */
   void delete_fixup(Node* node, Node* parent, bool node_is_left_child);
 
-  //===---------------------------- SEARCH HELPERS -----------------------------===//
+  //===----- SEARCH HELPERS ----------------------------------------------------===//
 
   /**
    * @brief Find minimum node in subtree.
@@ -472,7 +472,7 @@ private:
    */
   static auto find_min_node(Node* node) -> Node*;
 
-  //===--------------------------- TRAVERSAL HELPERS ---------------------------===//
+  //===----- TRAVERSAL HELPERS -------------------------------------------------===//
 
   /**
    * @brief Pre-order traversal helper.
@@ -488,7 +488,7 @@ private:
    */
   void post_order_helper(const Node* node, const visitor_type& visit) const;
 
-  //===-------------------------- HEIGHT/VALIDATION ----------------------------===//
+  //===----- HEIGHT/VALIDATION -------------------------------------------------===//
 
   /**
    * @brief Calculate height of subtree.
@@ -511,7 +511,7 @@ private:
    */
   [[nodiscard]] auto validate_helper(const Node* node, const T* lower_bound, const T* upper_bound) const -> int;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Node> root_;   ///< Root of the tree.
   size_t                size_{}; ///< Number of nodes in the tree.

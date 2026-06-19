@@ -29,7 +29,7 @@ using std::vector;
 
 using namespace ads::graphs;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // City graph vertex data.
 struct City {
@@ -61,7 +61,7 @@ auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t 
   }
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO", "Graph (Adjacency List) + Priority Queue"});

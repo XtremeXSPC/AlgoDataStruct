@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <OrderedTreeElement T>
 RedBlackTree<T>::iterator::iterator(Node* root) : current_(leftmost(root)) {
@@ -75,7 +75,7 @@ auto RedBlackTree<T>::iterator::operator==(const iterator& other) const -> bool 
   return current_ == other.current_;
 }
 
-//===--------------------------- NODE IMPLEMENTATION ---------------------------===//
+//===----- NODE IMPLEMENTATION -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 RedBlackTree<T>::Node::Node(const T& val, Color col, Node* par) requires std::copy_constructible<T>
@@ -91,7 +91,7 @@ RedBlackTree<T>::Node::Node(T&& val, Color col, Node* par) :
     parent(par) {
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <OrderedTreeElement T>
 RedBlackTree<T>::RedBlackTree() : root_(nullptr), size_(0) {
@@ -118,7 +118,7 @@ auto RedBlackTree<T>::operator=(RedBlackTree&& other) noexcept -> RedBlackTree& 
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -224,7 +224,7 @@ auto RedBlackTree<T>::remove(const T& value) -> bool {
   return true;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void RedBlackTree<T>::clear() noexcept {
@@ -232,7 +232,7 @@ void RedBlackTree<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::is_empty() const noexcept -> bool {
@@ -280,7 +280,7 @@ auto RedBlackTree<T>::find_max() const -> const T& {
   return node->data;
 }
 
-//===------------------- RED-BLACK TREE SPECIFIC OPERATIONS -------------------===//
+//===----- RED-BLACK TREE SPECIFIC OPERATIONS ----------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::black_height() const -> int {
@@ -302,7 +302,7 @@ auto RedBlackTree<T>::validate_properties() const -> bool {
   return validate_helper(root_.get(), nullptr, nullptr) != -1;
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void RedBlackTree<T>::in_order_traversal(const visitor_type& visit) const {
@@ -345,7 +345,7 @@ void RedBlackTree<T>::level_order_traversal(const visitor_type& visit) const {
   }
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::begin() -> iterator {
@@ -378,7 +378,7 @@ auto RedBlackTree<T>::cend() const -> iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::get_color(const Node* node) -> Color {
@@ -392,7 +392,7 @@ void RedBlackTree<T>::set_color(Node* node, Color color) {
   }
 }
 
-//===--------------------------- ROTATION OPERATIONS ---------------------------===//
+//===----- ROTATION OPERATIONS -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_ptr<Node> {
@@ -438,7 +438,7 @@ auto RedBlackTree<T>::rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique_p
   return x_ptr;
 }
 
-//===---------------------------- INSERTION HELPERS ----------------------------===//
+//===----- INSERTION HELPERS ---------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void RedBlackTree<T>::insert_fixup(Node* node) {
@@ -543,7 +543,7 @@ auto RedBlackTree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value, Node
   }
 }
 
-//===----------------------------- REMOVAL HELPERS -----------------------------===//
+//===----- REMOVAL HELPERS -----------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::find_node(const T& value) const -> Node* {
@@ -685,7 +685,7 @@ void RedBlackTree<T>::delete_fixup(Node* node, Node* parent, bool node_is_left_c
   set_color(node, Color::Black);
 }
 
-//===----------------------------- SEARCH HELPERS ------------------------------===//
+//===----- SEARCH HELPERS ------------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::find_min_node(Node* node) -> Node* {
@@ -695,7 +695,7 @@ auto RedBlackTree<T>::find_min_node(Node* node) -> Node* {
   return node;
 }
 
-//===---------------------------- TRAVERSAL HELPERS ----------------------------===//
+//===----- TRAVERSAL HELPERS ---------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void RedBlackTree<T>::pre_order_helper(const Node* node, const visitor_type& visit) const {
@@ -715,7 +715,7 @@ void RedBlackTree<T>::post_order_helper(const Node* node, const visitor_type& vi
   }
 }
 
-//===--------------------------- HEIGHT/VALIDATION -----------------------------===//
+//===----- HEIGHT/VALIDATION ---------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto RedBlackTree<T>::height_helper(const Node* node) const noexcept -> int {

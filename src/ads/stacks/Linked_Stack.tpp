@@ -16,7 +16,7 @@
 
 namespace ads::stacks {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <StackValue T>
 LinkedStack<T>::LinkedStack() noexcept : head_(nullptr), size_(0) {
@@ -46,7 +46,7 @@ LinkedStack<T>::~LinkedStack() {
   clear();
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <StackValue T>
 template <typename... Args>
@@ -78,7 +78,7 @@ void LinkedStack<T>::push(T&& value) {
   emplace(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <StackValue T>
 void LinkedStack<T>::pop() {
@@ -101,7 +101,7 @@ void LinkedStack<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <StackValue T>
 auto LinkedStack<T>::top() -> T& {
@@ -119,7 +119,7 @@ auto LinkedStack<T>::top() const -> const T& {
   return head_->data;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <StackValue T>
 auto LinkedStack<T>::is_empty() const noexcept -> bool {

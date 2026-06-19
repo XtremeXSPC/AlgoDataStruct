@@ -27,7 +27,7 @@ using std::string;
 
 using namespace ads::queues;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print deque contents.
 template <typename T>
@@ -45,7 +45,7 @@ void print_deque(const CircularArrayDeque<T>& deque, const string& label) {
   cout << "\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_front, push_back, front, back operations.
 void demo_basic_operations() {
@@ -66,7 +66,7 @@ void demo_basic_operations() {
   cout << "Back element: " << deque.back() << "\n";
 }
 
-//===-------------------------- POP OPERATIONS DEMO ----------------------------===//
+//===----- POP OPERATIONS DEMO -------------------------------------------------===//
 
 // Demonstrate pop_front and pop_back operations.
 void demo_pop_operations() {
@@ -87,7 +87,7 @@ void demo_pop_operations() {
   print_deque(deque, "After pop_back");
 }
 
-//===------------------------- RESERVE & INDEX DEMO ----------------------------===//
+//===----- RESERVE & INDEX DEMO ------------------------------------------------===//
 
 // Demonstrate reserve and index access operations.
 void demo_reserve_and_index() {
@@ -106,7 +106,7 @@ void demo_reserve_and_index() {
   cout << "\nAccess by index: deque[0] = " << deque[0] << ", deque[3] = " << deque[3] << "\n";
 }
 
-//===------------------------- EMPLACE & ITERATOR DEMO -------------------------===//
+//===----- EMPLACE & ITERATOR DEMO ---------------------------------------------===//
 
 // Demonstrate emplace and iterator functionality.
 void demo_emplace_iterators() {
@@ -130,7 +130,7 @@ void demo_emplace_iterators() {
   }
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrate move semantics.
 void demo_move_semantics() {
@@ -147,7 +147,7 @@ void demo_move_semantics() {
   print_deque(source, "Source after move");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

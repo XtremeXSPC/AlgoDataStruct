@@ -55,7 +55,7 @@ namespace ads::queues {
 template <QueueValue T, typename Compare = std::less<T>>
 class PriorityQueue {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty priority queue.
@@ -118,7 +118,7 @@ public:
   PriorityQueue(const PriorityQueue&)                    = delete;
   auto operator=(const PriorityQueue&) -> PriorityQueue& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts an element into the priority queue.
@@ -143,7 +143,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> void;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the element with highest priority.
@@ -158,7 +158,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the element with highest priority.
@@ -176,7 +176,7 @@ public:
    */
   auto top() const -> const T&;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the priority queue is empty.
@@ -192,7 +192,7 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_t;
 
-  //===-------------------------- UTILITY OPERATIONS ---------------------------===//
+  //===----- UTILITY OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Reserves capacity for at least the specified number of elements.
@@ -211,12 +211,12 @@ public:
   auto sorted_elements() -> std::vector<T>;
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   ads::arrays::DynamicArray<T> heap_; ///< Dynamic array storing the heap.
   Compare                      comp_; ///< Comparison function object.
 
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Restores heap property by moving element up.

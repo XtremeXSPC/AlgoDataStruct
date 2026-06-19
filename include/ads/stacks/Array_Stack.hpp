@@ -45,7 +45,7 @@ namespace ads::stacks {
 template <StackValue T>
 class ArrayStack : public Stack<T> {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty stack with optional initial capacity.
@@ -80,7 +80,7 @@ public:
   ArrayStack(const ArrayStack&)                    = delete;
   auto operator=(const ArrayStack&) -> ArrayStack& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place on top of the stack.
@@ -109,7 +109,7 @@ public:
    */
   void push(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the top element from the stack.
@@ -125,7 +125,7 @@ public:
    */
   void clear() noexcept override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the top element.
@@ -143,7 +143,7 @@ public:
    */
   auto top() const -> const T& override;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the stack is empty.
@@ -159,7 +159,7 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_t override;
 
-  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+  //===----- CAPACITY OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Reserves capacity for at least n elements.
@@ -185,7 +185,7 @@ public:
   [[nodiscard]] auto capacity() const noexcept -> size_t { return capacity_; }
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
   /**
    * @brief Grows the internal array when capacity is reached.
    * @details Typically doubles the capacity.
@@ -214,7 +214,7 @@ private:
   /// Allocates uninitialized storage for capacity elements; throws on overflow.
   static auto allocate(size_t capacity) -> storage_ptr;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   storage_ptr data_;     ///< The dynamic array holding stack elements.
   size_t      size_;     ///< The current number of elements.

@@ -138,7 +138,7 @@ auto print_top_scores(const Leaderboard& leaderboard, std::size_t count) -> void
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 /**
  * @brief Main function for the Snake stress test.

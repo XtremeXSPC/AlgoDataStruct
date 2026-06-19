@@ -26,7 +26,7 @@ using std::string;
 
 using namespace ads::associative;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print map entries.
 template <typename K, typename V>
@@ -43,7 +43,7 @@ void print_entries(const TreeMap<K, V>& map, const string& label) {
   }
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
 void demo_basic_operations() {
@@ -64,7 +64,7 @@ void demo_basic_operations() {
   cout << "Contains Diana? " << (scores.contains("Diana") ? "yes" : "no") << "\n";
 }
 
-//===-------------------------- ACCESS OPERATIONS DEMO -------------------------===//
+//===----- ACCESS OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates access operations.
 void demo_access_operations() {
@@ -88,7 +88,7 @@ void demo_access_operations() {
   }
 }
 
-//===-------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+//===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates emplace operations.
 void demo_emplace_operations() {
@@ -112,7 +112,7 @@ void demo_emplace_operations() {
   }
 }
 
-//===-------------------------- REMOVAL OPERATIONS DEMO -------------------------===//
+//===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates removal operations.
 void demo_removal_operations() {
@@ -130,7 +130,7 @@ void demo_removal_operations() {
   print_entries(items, "After removal");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

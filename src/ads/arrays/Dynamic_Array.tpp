@@ -17,7 +17,7 @@
 
 namespace ads::arrays {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ArrayElement T>
 DynamicArray<T>::DynamicArray(size_t initial_capacity) :
@@ -130,7 +130,7 @@ auto DynamicArray<T>::operator=(DynamicArray&& other) noexcept -> DynamicArray<T
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <ArrayElement T>
 template <typename... Args>
@@ -208,7 +208,7 @@ auto DynamicArray<T>::insert(size_t index, T&& value) -> void requires InsertMov
   emplace(index, std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <ArrayElement T>
 auto DynamicArray<T>::pop_back() -> void {
@@ -291,7 +291,7 @@ auto DynamicArray<T>::assign(InputIt first, InputIt last) -> void requires Range
   *this = std::move(replacement);
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ArrayElement T>
 auto DynamicArray<T>::operator[](size_t index) -> T& {
@@ -361,7 +361,7 @@ auto DynamicArray<T>::data() const noexcept -> const T* {
   return data_.get();
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <ArrayElement T>
 auto DynamicArray<T>::is_empty() const noexcept -> bool {
@@ -378,7 +378,7 @@ auto DynamicArray<T>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
-//===--------------------------- CAPACITY OPERATIONS ---------------------------===//
+//===----- CAPACITY OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T>
 auto DynamicArray<T>::reserve(size_t new_capacity) -> void requires RelocatableArrayElement<T>
@@ -441,7 +441,7 @@ auto DynamicArray<T>::resize(size_t new_size, const T& value) -> void requires C
   }
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T>
 auto DynamicArray<T>::begin() noexcept -> iterator {
@@ -467,7 +467,7 @@ auto DynamicArray<T>::end() const noexcept -> const_iterator {
 // provided by ContainerFacade<DynamicArray<T>>; no out-of-line definitions needed.
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <ArrayElement T>
 auto DynamicArray<T>::ensure_capacity(size_t min_capacity) -> void {

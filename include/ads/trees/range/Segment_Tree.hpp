@@ -151,7 +151,7 @@ template <
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 class SegmentTree : public ContainerFacade<SegmentTree<Value, Node, Combine, Identity, LeafBuilder>> {
 public:
-  //===--------------------------- TYPE ALIASES --------------------------------===//
+  //===----- TYPE ALIASES ------------------------------------------------------===//
 
   using value_type      = Value;
   using node_type       = Node;
@@ -162,7 +162,7 @@ public:
   using pointer         = Value*;
   using const_pointer   = const Value*;
 
-  //===---------------------------- ITERATOR TYPES -----------------------------===//
+  //===----- ITERATOR TYPES ----------------------------------------------------===//
 
   /**
    * @brief Const iterator for traversing the original values.
@@ -170,7 +170,7 @@ public:
   using const_iterator         = typename arr::DynamicArray<Value>::const_iterator;
   using const_reverse_iterator = typename arr::DynamicArray<Value>::const_reverse_iterator;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty Segment Tree.
@@ -326,7 +326,7 @@ public:
   SegmentTree(const SegmentTree&)                    = delete;
   auto operator=(const SegmentTree&) -> SegmentTree& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Rebuilds the tree from a vector of values (copy).
@@ -401,7 +401,7 @@ public:
    */
   constexpr auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the aggregate over the range [left, right].
@@ -472,7 +472,7 @@ public:
    */
   [[nodiscard]] constexpr auto is_empty() const noexcept -> bool;
 
-  //===--------------------------- ITERATOR ACCESS -----------------------------===//
+  //===----- ITERATOR ACCESS ---------------------------------------------------===//
 
   /**
    * @brief Returns a const iterator to the first value.
@@ -488,7 +488,7 @@ public:
    */
   [[nodiscard]] constexpr auto end() const noexcept -> const_iterator;
 
-  //===-------------------------- FUNCTOR ACCESSORS ----------------------------===//
+  //===----- FUNCTOR ACCESSORS -------------------------------------------------===//
 
   /**
    * @brief Returns a const reference to the combine functor.
@@ -512,7 +512,7 @@ public:
   [[nodiscard]] constexpr auto get_leaf_builder() const noexcept -> const LeafBuilder&;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Builds the internal segment tree from values_.
@@ -542,7 +542,7 @@ private:
    */
   constexpr auto validate_range(size_type left, size_type right) const -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   Combine                              combine_{};      ///< Functor to combine two nodes.
   Identity                             identity_{};     ///< Functor to get the identity node.

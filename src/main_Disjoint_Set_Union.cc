@@ -26,14 +26,14 @@ using std::string;
 
 using namespace ads::graphs;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Prints the current status of the DisjointSetUnion.
 void print_status(const DisjointSetUnion& dsu, const string& label) {
   cout << label << " (elements: " << dsu.size() << ", sets: " << dsu.set_count() << ")\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic union and connectivity operations.
 void demo_basic_operations() {
@@ -52,7 +52,7 @@ void demo_basic_operations() {
   cout << "Connected(2,3): " << (dsu.connected(2, 3) ? "yes" : "no") << "\n";
 }
 
-//===-------------------------- FIND OPERATIONS DEMO ---------------------------===//
+//===----- FIND OPERATIONS DEMO ------------------------------------------------===//
 
 // Demonstrates find operations with path compression.
 void demo_find_operations() {
@@ -67,7 +67,7 @@ void demo_find_operations() {
   cout << "Representative of 4: " << dsu.find(4) << "\n";
 }
 
-//===-------------------------- DYNAMIC GROWTH DEMO ----------------------------===//
+//===----- DYNAMIC GROWTH DEMO -------------------------------------------------===//
 
 // Demonstrates adding new elements dynamically.
 void demo_dynamic_growth() {
@@ -83,7 +83,7 @@ void demo_dynamic_growth() {
   print_status(dsu, "After adding and union");
 }
 
-//===-------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling for invalid operations.
 void demo_exceptions() {
@@ -97,7 +97,7 @@ void demo_exceptions() {
   }
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

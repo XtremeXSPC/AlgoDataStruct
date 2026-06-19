@@ -49,7 +49,7 @@ public:
   using key_type    = Key;
   using hasher_type = Hash;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs a filter with a fixed bit array and hash count.
@@ -77,7 +77,7 @@ public:
   BloomFilter(const BloomFilter&)                    = delete;
   auto operator=(const BloomFilter&) -> BloomFilter& = delete;
 
-  //===---------------------------- CORE OPERATIONS ----------------------------===//
+  //===----- CORE OPERATIONS ---------------------------------------------------===//
 
   /**
    * @brief Inserts a key into the filter.
@@ -108,7 +108,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of bits in the filter.
@@ -147,7 +147,7 @@ public:
   [[nodiscard]] auto estimated_false_positive_rate() const noexcept -> double;
 
 private:
-  //===--------------------------- INTERNAL STORAGE ----------------------------===//
+  //===----- INTERNAL STORAGE --------------------------------------------------===//
 
   static constexpr size_t kDefaultBitCount  = 1'024;
   static constexpr size_t kDefaultHashCount = 3;
@@ -159,7 +159,7 @@ private:
   size_t                          set_bit_count_;
   Hash                            hasher_;
 
-  //===------------------------------ HELPER API -------------------------------===//
+  //===----- HELPER API --------------------------------------------------------===//
 
   [[nodiscard]] static auto mix_hash(std::uint64_t value) noexcept -> std::uint64_t;
   [[nodiscard]] auto        probe_index(const Key& key, size_t probe_number) const -> size_t;

@@ -16,7 +16,7 @@
 
 namespace ads::lists {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <ListElement T>
 auto DoublyLinkedList<T>::iterator::operator*() const -> typename DoublyLinkedList<T>::iterator::reference {
@@ -61,7 +61,7 @@ auto DoublyLinkedList<T>::iterator::operator--(int) -> typename DoublyLinkedList
   return temp;
 }
 
-//===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
+//===----- CONST_ITERATOR IMPLEMENTATION ---------------------------------------===//
 
 template <ListElement T>
 auto DoublyLinkedList<T>::const_iterator::operator*() const -> typename DoublyLinkedList<T>::const_iterator::reference {
@@ -106,7 +106,7 @@ auto DoublyLinkedList<T>::const_iterator::operator--(int) -> typename DoublyLink
   return temp;
 }
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ListElement T>
 DoublyLinkedList<T>::DoublyLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
@@ -139,7 +139,7 @@ auto DoublyLinkedList<T>::operator=(DoublyLinkedList&& other) noexcept -> Doubly
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <ListElement T>
 template <typename... Args>
@@ -200,7 +200,7 @@ void DoublyLinkedList<T>::push_back(T&& value) {
   emplace_back(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <ListElement T>
 void DoublyLinkedList<T>::pop_front() {
@@ -230,7 +230,7 @@ void DoublyLinkedList<T>::pop_back() {
   }
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ListElement T>
 auto DoublyLinkedList<T>::front() -> T& {
@@ -264,7 +264,7 @@ auto DoublyLinkedList<T>::back() const -> const T& {
   return tail_->data;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <ListElement T>
 auto DoublyLinkedList<T>::is_empty() const noexcept -> bool {
@@ -276,7 +276,7 @@ auto DoublyLinkedList<T>::size() const noexcept -> typename DoublyLinkedList<T>:
   return size_;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <ListElement T>
 void DoublyLinkedList<T>::clear() noexcept {
@@ -391,7 +391,7 @@ void DoublyLinkedList<T>::reverse() noexcept {
   }
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 // (non-const)
 template <ListElement T>

@@ -59,7 +59,7 @@ template <CopyHashKey Key, HashValue Value, typename Hash = std::hash<Key>>
 requires HashFor<Hash, Key>
 class HashTableChaining {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs a hash table with specified capacity and load factor.
@@ -97,7 +97,7 @@ public:
   HashTableChaining(const HashTableChaining&)            = delete;
   HashTableChaining& operator=(const HashTableChaining&) = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts or updates a key-value pair.
@@ -135,7 +135,7 @@ public:
   template <typename... Args>
   Value& emplace(const Key& key, Args&&... args) requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses value by key with bounds checking.
@@ -164,7 +164,7 @@ public:
    */
   Value& operator[](const Key& key) requires CopyHashKey<Key> && DefaultHashValue<Value>;
 
-  //===--------------------------- SEARCH OPERATIONS ---------------------------===//
+  //===----- SEARCH OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Checks if a key exists in the table.
@@ -190,7 +190,7 @@ public:
    */
   [[nodiscard]] const Value* find(const Key& key) const;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes a key-value pair from the table.
@@ -206,7 +206,7 @@ public:
    */
   void clear() noexcept;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of entries in the table.
@@ -243,7 +243,7 @@ public:
    */
   [[nodiscard]] float max_load_factor() const noexcept;
 
-  //===----------------------- CONFIGURATION OPERATIONS ------------------------===//
+  //===----- CONFIGURATION OPERATIONS ------------------------------------------===//
 
   /**
    * @brief Sets the maximum load factor.
@@ -262,7 +262,7 @@ public:
   void reserve(size_t new_capacity);
 
 private:
-  //===-------------------------- INTERNAL STRUCTURES --------------------------===//
+  //===----- INTERNAL STRUCTURES -----------------------------------------------===//
 
   // Friend declaration for HashMap to access internal structure.
   template <typename, typename, typename>
@@ -279,7 +279,7 @@ private:
   using Bucket = ads::lists::DoublyLinkedList<Entry>;
 
   //===============================================================================//
-  //===------------------------ PRIVATE HASHING METHODS ------------------------===//
+  //===----- PRIVATE HASHING METHODS -------------------------------------------===//
 
   /**
    * @brief Computes the hash of a key.
@@ -289,7 +289,7 @@ private:
    */
   [[nodiscard]] size_t hash(const Key& key) const;
 
-  //===------------------------- BUCKET SEARCH METHODS -------------------------===//
+  //===----- BUCKET SEARCH METHODS ---------------------------------------------===//
 
   /**
    * @brief Finds an entry in a bucket.
@@ -309,7 +309,7 @@ private:
    */
   auto find_in_bucket(const Bucket& bucket, const Key& key) const -> typename Bucket::const_iterator;
 
-  //===------------------------- REHASHING OPERATIONS --------------------------===//
+  //===----- REHASHING OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Rehashes the table to a new capacity.
@@ -330,7 +330,7 @@ private:
    */
   void ensure_capacity_for_insert();
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   ads::arrays::DynamicArray<Bucket> buckets_;         ///< Array of buckets.
   size_t                            capacity_;        ///< Number of buckets.

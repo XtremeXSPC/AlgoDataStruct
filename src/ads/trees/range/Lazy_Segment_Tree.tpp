@@ -19,7 +19,7 @@
 
 namespace ads::trees {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
 requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
@@ -139,7 +139,7 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::o
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
 requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
@@ -218,7 +218,7 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::c
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
 requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
@@ -257,7 +257,7 @@ constexpr auto LazySegmentTree<Value, Tag, Combine, Apply, Compose, Identity>::i
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename Value, typename Tag, typename Combine, typename Apply, typename Compose, typename Identity>
 requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>

@@ -45,7 +45,7 @@ public:
 
 using ads::arrays::DynamicArray;
 
-//===------------------------------ RESULT TYPES -------------------------------===//
+//===----- RESULT TYPES --------------------------------------------------------===//
 
 /**
  * @brief Result of a single-source shortest path computation.
@@ -327,7 +327,7 @@ private:
   auto validate_component(size_t component_id) const -> void;
 };
 
-//===--------------------------- ALGORITHM INTERFACE ---------------------------===//
+//===----- ALGORITHM INTERFACE -------------------------------------------------===//
 
 /**
  * @brief Computes single-source shortest paths with Dijkstra's algorithm.

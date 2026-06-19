@@ -28,7 +28,7 @@ protected:
   ArrayView<int> view{raw, 5};
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(ArrayViewTest, SizeAndEmptiness) {
   EXPECT_EQ(view.size(), 5u);
@@ -51,7 +51,7 @@ TEST_F(ArrayViewTest, PointerRangeConstruction) {
   EXPECT_EQ(v.back(), 4);
 }
 
-//===----------------------------- CONTAINER VIEWS -----------------------------===//
+//===----- CONTAINER VIEWS -----------------------------------------------------===//
 
 TEST_F(ArrayViewTest, ViewOverDynamicArray) {
   DynamicArray<int> da{10, 20, 30};
@@ -83,7 +83,7 @@ TEST_F(ArrayViewTest, ReadOnlyViewOverConstContainer) {
   EXPECT_EQ(rov.size(), 3u);
 }
 
-//===------------------------------ ACCESS TESTS -------------------------------===//
+//===----- ACCESS TESTS --------------------------------------------------------===//
 
 TEST_F(ArrayViewTest, AtWithBoundsChecking) {
   EXPECT_EQ(view.at(0), 1);
@@ -103,7 +103,7 @@ TEST_F(ArrayViewTest, MutationWritesThrough) {
   EXPECT_EQ(raw[0], 200);
 }
 
-//===----------------------------- SUBVIEW TESTS -------------------------------===//
+//===----- SUBVIEW TESTS -------------------------------------------------------===//
 
 TEST_F(ArrayViewTest, FirstAndLast) {
   EXPECT_EQ(view.first(2).size(), 2u);
@@ -124,7 +124,7 @@ TEST_F(ArrayViewTest, SubviewOutOfRangeThrows) {
   EXPECT_THROW(view.last(6), ArrayOutOfRangeException);
 }
 
-//===----------------------------- ITERATION TESTS -----------------------------===//
+//===----- ITERATION TESTS -----------------------------------------------------===//
 
 TEST_F(ArrayViewTest, RangeBasedIteration) {
   std::vector<int> values;
@@ -139,7 +139,7 @@ TEST_F(ArrayViewTest, ReverseIteration) {
   EXPECT_EQ(values, (std::vector<int>{5, 4, 3, 2, 1}));
 }
 
-//===---------------------------- COMPARISON TESTS -----------------------------===//
+//===----- COMPARISON TESTS ----------------------------------------------------===//
 
 TEST_F(ArrayViewTest, EqualityAndThreeWay) {
   int            other[3] = {2, 3, 4};
@@ -153,7 +153,7 @@ TEST_F(ArrayViewTest, EqualityAndThreeWay) {
   EXPECT_TRUE((a <=> c) < 0);
 }
 
-//===------------------------------- TRAIT TESTS -------------------------------===//
+//===----- TRAIT TESTS ---------------------------------------------------------===//
 
 TEST_F(ArrayViewTest, IsCopyableValueType) {
   static_assert(std::is_copy_constructible_v<ArrayView<int>>);

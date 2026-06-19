@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===--------------------------- NODE IMPLEMENTATION ---------------------------===//
+//===----- NODE IMPLEMENTATION -------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto NaryTree<T>::Node::value() noexcept -> T& {
@@ -64,7 +64,7 @@ auto NaryTree<T>::Node::is_leaf() const noexcept -> bool {
   return children_.is_empty();
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 NaryTree<T>::NaryTree() : root_(nullptr), size_(0) {
@@ -91,7 +91,7 @@ auto NaryTree<T>::operator=(NaryTree&& other) noexcept -> NaryTree<T>& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto NaryTree<T>::set_root(const T& value) -> Node* requires std::copy_constructible<T>
@@ -152,7 +152,7 @@ auto NaryTree<T>::add_child_impl(Node* parent, U&& value) -> Node* {
   return raw;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 void NaryTree<T>::clear() noexcept {
@@ -179,7 +179,7 @@ void NaryTree<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto NaryTree<T>::root() noexcept -> Node* {
@@ -191,7 +191,7 @@ auto NaryTree<T>::root() const noexcept -> const Node* {
   return root_.get();
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto NaryTree<T>::is_empty() const noexcept -> bool {
@@ -255,7 +255,7 @@ auto NaryTree<T>::contains(const T& value) const -> bool {
   return false;
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 void NaryTree<T>::pre_order_traversal(const visitor_type& visit) const {

@@ -73,7 +73,7 @@ protected:
   TreeMap<int, std::string> map;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(TreeMapTest, IsEmptyOnConstruction) {
   EXPECT_EQ(map.size(), 0);
@@ -101,7 +101,7 @@ TEST_F(TreeMapTest, AtThrowsOnMissingKey) {
   EXPECT_THROW(map.at(42), ads::associative::KeyNotFoundException);
 }
 
-//===----------------------- INSERTION OPERATIONS TESTS ------------------------===//
+//===----- INSERTION OPERATIONS TESTS ------------------------------------------===//
 
 TEST_F(TreeMapTest, InsertReturnsInsertionState) {
   EXPECT_TRUE(map.insert(3, "three"));
@@ -109,7 +109,7 @@ TEST_F(TreeMapTest, InsertReturnsInsertionState) {
   EXPECT_EQ(map.at(3), "THREE");
 }
 
-//===------------------------ CONTAINS AND REMOVE TESTS ------------------------===//
+//===----- CONTAINS AND REMOVE TESTS -------------------------------------------===//
 
 TEST_F(TreeMapTest, ContainsAndRemove) {
   map.put(2, "two");

@@ -25,7 +25,7 @@ protected:
   ArrayStack<int> stack;
 };
 
-//===---------------------------- ARRAY STACK TESTS ----------------------------===//
+//===----- ARRAY STACK TESTS ---------------------------------------------------===//
 
 TEST_F(ArrayStackTest, IsEmptyOnConstruction) {
   EXPECT_EQ(stack.size(), 0);
@@ -132,7 +132,7 @@ TEST_F(ArrayStackTest, LargeStackOperations) {
   EXPECT_TRUE(stack.is_empty());
 }
 
-//===--------------------------- LINKED STACK TESTS ----------------------------===//
+//===----- LINKED STACK TESTS --------------------------------------------------===//
 
 class LinkedStackTest : public ::testing::Test {
 protected:
@@ -244,7 +244,7 @@ TEST_F(LinkedStackTest, LargeStackOperations) {
   EXPECT_TRUE(stack.is_empty());
 }
 
-//===------------------------ STACK POLYMORPHISM TESTS -------------------------===//
+//===----- STACK POLYMORPHISM TESTS --------------------------------------------===//
 
 TEST(StackPolymorphismTest, ArrayStackThroughInterface) {
   ArrayStack<int> concrete_stack;

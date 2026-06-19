@@ -30,7 +30,7 @@ using std::vector;
 
 using namespace ads::lists;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print the list contents.
 template <typename T>
@@ -59,7 +59,7 @@ void print_list(const DoublyLinkedList<T>& list, const string& name) {
   cout << "\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access operations.
 void demo_basic_operations() {
@@ -88,7 +88,7 @@ void demo_basic_operations() {
   cout << "Back element: " << list.back() << "\n";
 }
 
-//===--------------------------- POP OPERATIONS DEMO ---------------------------===//
+//===----- POP OPERATIONS DEMO -------------------------------------------------===//
 
 // Demonstrates pop_front and pop_back operations.
 void demo_pop_operations() {
@@ -111,7 +111,7 @@ void demo_pop_operations() {
   print_list(list, "after pop_back");
 }
 
-//===--------------------- INSERT & ERASE OPERATIONS DEMO ----------------------===//
+//===----- INSERT & ERASE OPERATIONS DEMO --------------------------------------===//
 
 // Demonstrates insert and erase operations.
 void demo_insert_erase() {
@@ -150,7 +150,7 @@ void demo_insert_erase() {
   print_list(list, "after insert at end");
 }
 
-//===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+//===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates emplace operations.
 void demo_emplace() {
@@ -176,7 +176,7 @@ void demo_emplace() {
   }
 }
 
-//===------------------------------ ITERATOR DEMO ------------------------------===//
+//===----- ITERATOR DEMO -------------------------------------------------------===//
 
 // Demonstrates iterator functionality.
 void demo_iterators() {
@@ -226,7 +226,7 @@ void demo_iterators() {
   cout << "\n";
 }
 
-//===------------------------------ REVERSE DEMO -------------------------------===//
+//===----- REVERSE DEMO --------------------------------------------------------===//
 
 // Demonstrates reverse operation.
 void demo_reverse() {
@@ -253,7 +253,7 @@ void demo_reverse() {
   cout << "Single element after reverse: " << single.front() << "\n";
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -287,7 +287,7 @@ void demo_move_semantics() {
   print_list(list3, "list3 (should have list2's data)");
 }
 
-//===------------------------------- CLEAR DEMO --------------------------------===//
+//===----- CLEAR DEMO ----------------------------------------------------------===//
 
 // Demonstrates clear operation.
 void demo_clear() {
@@ -310,7 +310,7 @@ void demo_clear() {
   print_list(list, "after reuse");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
 void demo_exceptions() {
@@ -353,7 +353,7 @@ void demo_exceptions() {
   }
 }
 
-//===----------------------------- EDGE CASES DEMO -----------------------------===//
+//===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Test edge cases.
 void demo_edge_cases() {
@@ -385,7 +385,7 @@ void demo_edge_cases() {
   cout << "  After reverse - Front: " << large.front() << ", Back: " << large.back() << "\n";
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

@@ -57,7 +57,7 @@ public:
   using iterator        = T*;
   using const_iterator  = const T*;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty view (null pointer, zero length).
@@ -101,7 +101,7 @@ public:
   constexpr auto operator=(ArrayView&&) noexcept -> ArrayView& = default;
   ~ArrayView()                                                 = default;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses an element without bounds checking.
@@ -155,7 +155,7 @@ public:
    */
   constexpr auto data() const noexcept -> T* { return data_; }
 
-  //===-------------------------- SUBVIEW OPERATIONS ---------------------------===//
+  //===----- SUBVIEW OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Returns a view of the first count elements.
@@ -197,7 +197,7 @@ public:
     return ArrayView(data_ + offset, count);
   }
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of elements in the view.
@@ -208,7 +208,7 @@ public:
   // is_empty(), cbegin/cend, rbegin/rend, crbegin/crend, and the relational
   // operators (==, <=>) are inherited from ContainerFacade<ArrayView<T>>.
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the beginning of the view.
@@ -223,13 +223,13 @@ public:
   constexpr auto end() const noexcept -> iterator { return data_ + size_; }
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   T*     data_; ///< Pointer to the first viewed element (not owned).
   size_t size_; ///< Number of viewed elements.
 };
 
-//===---------------------------- DEDUCTION GUIDES -----------------------------===//
+//===----- DEDUCTION GUIDES ----------------------------------------------------===//
 
 /// Deduce ArrayView<T> from a contiguous container exposing data()/size().
 template <typename Container>

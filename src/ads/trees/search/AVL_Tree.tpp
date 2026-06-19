@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <OrderedTreeElement T>
 AVLTree<T>::iterator::iterator(const iterator& other) : stack_(other.stack_.begin(), other.stack_.end()), current_(other.current_) {
@@ -93,7 +93,7 @@ auto AVLTree<T>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <OrderedTreeElement T>
 AVLTree<T>::AVLTree() : root_(nullptr), size_(0) {
@@ -114,7 +114,7 @@ auto AVLTree<T>::operator=(AVLTree&& other) noexcept -> AVLTree<T>& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -143,7 +143,7 @@ auto AVLTree<T>::emplace(Args&&... args) -> bool {
   return insert(T(std::forward<Args>(args)...));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::remove(const T& value) -> bool {
@@ -161,7 +161,7 @@ void AVLTree<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::is_empty() const noexcept -> bool {
@@ -225,7 +225,7 @@ auto AVLTree<T>::find_max() const -> const T& {
   return find_max_node(root_.get())->data;
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void AVLTree<T>::in_order_traversal(const visitor_type& visit) const {
@@ -266,7 +266,7 @@ void AVLTree<T>::level_order_traversal(const visitor_type& visit) const {
   }
 }
 
-//===------------------ ADDITIONAL AVL-SPECIFIC FUNCTIONALITY ------------------===//
+//===----- ADDITIONAL AVL-SPECIFIC FUNCTIONALITY -------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::get_balance() const noexcept -> int {
@@ -285,7 +285,7 @@ auto AVLTree<T>::validate_properties() const -> bool {
   return validate_helper(root_.get(), nullptr, nullptr, height);
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::begin() -> iterator {
@@ -318,7 +318,7 @@ auto AVLTree<T>::cend() const -> iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::get_height(const Node* node) const noexcept -> int {
@@ -337,7 +337,7 @@ void AVLTree<T>::update_height(Node* node) noexcept {
   }
 }
 
-//===--------------------------- ROTATION OPERATIONS ---------------------------===//
+//===----- ROTATION OPERATIONS -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::rotate_right(std::unique_ptr<Node> y) -> std::unique_ptr<Node> {
@@ -391,7 +391,7 @@ auto AVLTree<T>::rotate_right_left(std::unique_ptr<Node> node) -> std::unique_pt
   return rotate_left(std::move(node));
 }
 
-//===-------------------------------- BALANCING --------------------------------===//
+//===----- BALANCING -----------------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::balance(std::unique_ptr<Node> node) -> std::unique_ptr<Node> {
@@ -473,7 +473,7 @@ auto AVLTree<T>::validate_helper(const Node* node, const T* lower_bound, const T
   return balance >= -1 && balance <= 1 && node->height == height;
 }
 
-//===----------------------- MODIFICATION HELPER METHODS -----------------------===//
+//===----- MODIFICATION HELPER METHODS -----------------------------------------===//
 
 template <OrderedTreeElement T>
 template <typename U>
@@ -559,7 +559,7 @@ auto AVLTree<T>::detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node
   return min_node;
 }
 
-//===---------------------------- SEARCH OPERATIONS ----------------------------===//
+//===----- SEARCH OPERATIONS ---------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto AVLTree<T>::find_helper(Node* node, const T& value) const -> Node* {
@@ -616,7 +616,7 @@ auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
   return node;
 }
 
-//===---------------------------- TRAVERSAL HELPERS ----------------------------===//
+//===----- TRAVERSAL HELPERS ---------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void AVLTree<T>::in_order_helper(const Node* node, const visitor_type& visit) const {

@@ -62,7 +62,7 @@ protected:
   RedBlackTreeType<int> tree;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -80,7 +80,7 @@ TEST_F(RedBlackTreeTest, Clear) {
   EXPECT_TRUE(tree.is_empty());
 }
 
-//===----------------------------- INSERTION TESTS -----------------------------===//
+//===----- INSERTION TESTS -----------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, InsertSingleElement) {
   tree.insert(50);
@@ -109,7 +109,7 @@ TEST_F(RedBlackTreeTest, InsertDuplicateRejected) {
   EXPECT_EQ(tree.size(), 1);
 }
 
-//===----------------------------- ACCESSOR TESTS ------------------------------===//
+//===----- ACCESSOR TESTS ------------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, ContainsElement) {
   tree.insert(50);
@@ -138,7 +138,7 @@ TEST_F(RedBlackTreeTest, FindMinMaxOnEmptyThrows) {
   EXPECT_THROW([[maybe_unused]] auto val = tree.find_max(), EmptyTreeException);
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, RemoveLeafNode) {
   tree.insert(50);
@@ -190,7 +190,7 @@ TEST_F(RedBlackTreeTest, RemoveNonExistent) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
-//===----------------------------- TRAVERSAL TESTS -----------------------------===//
+//===----- TRAVERSAL TESTS -----------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, InOrderTraversal) {
   tree.insert(50);
@@ -257,7 +257,7 @@ TEST_F(RedBlackTreeTest, LevelOrderTraversal) {
   EXPECT_EQ(result.size(), expected.size());
 }
 
-//===----------------------------- ITERATOR TESTS ------------------------------===//
+//===----- ITERATOR TESTS ------------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, IteratorTraversal) {
   tree.insert(50);
@@ -342,7 +342,7 @@ TEST_F(RedBlackTreeTest, STLAlgorithms) {
   EXPECT_NE(std::find(tree.begin(), tree.end(), 50), tree.end());
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, MoveConstructor) {
   tree.insert(50);
@@ -368,7 +368,7 @@ TEST_F(RedBlackTreeTest, MoveAssignment) {
   EXPECT_EQ(other_tree.size(), 3);
 }
 
-//===------------------------------ BALANCE TESTS ------------------------------===//
+//===----- BALANCE TESTS -------------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, BalanceAfterAscendingInsertions) {
   // Insert in ascending order.
@@ -500,7 +500,7 @@ TEST_F(RedBlackTreeTest, RandomizedOperationsMatchStdSet) {
   }
 }
 
-//===----------------------------- EDGE CASE TESTS -----------------------------===//
+//===----- EDGE CASE TESTS -----------------------------------------------------===//
 
 TEST_F(RedBlackTreeTest, SingleElementTree) {
   tree.insert(42);
@@ -520,7 +520,7 @@ TEST_F(RedBlackTreeTest, ClearAndReuse) {
   EXPECT_TRUE(tree.contains(100));
 }
 
-//===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
+//===----- CUSTOM TYPE TESTS ---------------------------------------------------===//
 
 TEST(RedBlackTreeCustomTypeTest, StringKeys) {
   RedBlackTreeType<std::string> str_tree;

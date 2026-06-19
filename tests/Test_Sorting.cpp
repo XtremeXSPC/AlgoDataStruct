@@ -41,7 +41,7 @@ struct StableItem {
 
 } // namespace
 
-//===---------------------------- BASIC SORT TESTS -----------------------------===//
+//===----- BASIC SORT TESTS ----------------------------------------------------===//
 
 TEST(SortingAlgorithmsTest, BubbleSortWorks) {
   std::vector<int> data = {5, 1, 4, 2, 8};
@@ -150,7 +150,7 @@ TEST(SortingAlgorithmsTest, TimSortIsStable) {
   EXPECT_EQ(ids_for_threes, expected_ids_threes);
 }
 
-//===----------------------- COUNTING & RADIX SORT TESTS -----------------------===//
+//===----- COUNTING & RADIX SORT TESTS -----------------------------------------===//
 
 TEST(SortingAlgorithmsTest, CountingSortHandlesNegatives) {
   std::vector<int> data = {4, -1, 3, -2, 0, -1};
@@ -206,7 +206,7 @@ TEST(SortingAlgorithmsTest, BufferBackedAlgorithmsSupportDynamicArray) {
   EXPECT_EQ(to_vector(bucket_data.begin(), bucket_data.end()), (std::vector<double>{0.12, 0.33, 0.42, 0.92}));
 }
 
-//===----------------------------- EDGE CASE TESTS -----------------------------===//
+//===----- EDGE CASE TESTS -----------------------------------------------------===//
 
 TEST(SortingEdgeCasesTest, EmptyRange) {
   std::vector<int> data;
@@ -336,7 +336,7 @@ TEST(SortingEdgeCasesTest, AllEqualElements) {
   EXPECT_EQ(float_data, (std::vector<double>{2.5, 2.5, 2.5, 2.5}));
 }
 
-//===----------------------- INTEGER TYPE VARIANT TESTS ------------------------===//
+//===----- INTEGER TYPE VARIANT TESTS ------------------------------------------===//
 
 TEST(SortingIntegerTypesTest, CountingSortWithChar) {
   std::vector<char> data = {'z', 'a', 'm', 'b', 'y'};
@@ -388,7 +388,7 @@ TEST(SortingIntegerTypesTest, RadixSortWithUnsignedTypes) {
   EXPECT_EQ(ushort_data, (std::vector<unsigned short>{0, 1'000, 32'768, 65'535}));
 }
 
-//===----------------------- BUCKET SORT SPECIAL VALUES ------------------------===//
+//===----- BUCKET SORT SPECIAL VALUES ------------------------------------------===//
 
 TEST(SortingBucketSortTest, ThrowsOnNaN) {
   std::vector<double> data = {1.0, std::numeric_limits<double>::quiet_NaN(), 2.0};
@@ -414,7 +414,7 @@ TEST(SortingBucketSortTest, NegativeFloats) {
   EXPECT_EQ(data, expected);
 }
 
-//===---------------------- COUNTING SORT EXCEPTION TESTS ----------------------===//
+//===----- COUNTING SORT EXCEPTION TESTS ---------------------------------------===//
 
 TEST(SortingCountingSortTest, ThrowsOnInvalidRange) {
   std::vector<int> data = {1, 2, 3};
@@ -430,7 +430,7 @@ TEST(SortingCountingSortTest, FullInt8RangeWorks) {
   EXPECT_EQ(data, expected);
 }
 
-//===---------------------------- LARGE DATA TESTS -----------------------------===//
+//===----- LARGE DATA TESTS ----------------------------------------------------===//
 
 TEST(SortingLargeDataTest, QuickSortLargeReversed) {
   const std::size_t size = 10'000;

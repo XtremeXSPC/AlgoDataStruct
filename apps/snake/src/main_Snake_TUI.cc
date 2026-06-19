@@ -31,7 +31,7 @@ using ads::apps::snake::Direction;
 using ads::apps::snake::Position;
 using ads::apps::snake::SnakeEngine;
 
-//===--------------------------- TERMINAL ROW LAYOUT ---------------------------===//
+//===----- TERMINAL ROW LAYOUT -------------------------------------------------===//
 
 // Fixed terminal row indices for different sections of the TUI. These are 1-indexed
 // for ANSI cursor positioning and include spacing for a title and controls legend.
@@ -50,7 +50,7 @@ constexpr int kFinalOutputRow  = kPromptRow + 1;
 constexpr int kMinTerminalRows = kFinalOutputRow + 3;                      // Final output needs ~3-4 lines.
 constexpr int kMinTerminalCols = static_cast<int>(SnakeEngine::kCols) + 2; // Board + borders.
 
-//===--------------------------------- STYLING ---------------------------------===//
+//===----- STYLING -------------------------------------------------------------===//
 
 constexpr const char* kStyleReset  = "\033[0m";
 constexpr const char* kStyleBold   = "\033[1m";
@@ -67,7 +67,7 @@ constexpr const char* kStyleDead   = "\033[1;91m";
 constexpr const char* kStylePrompt = "\033[1;96m";
 constexpr const char* kStyleError  = "\033[1;91m";
 
-//===---------------------------- BOX-DRAWING GLYPHS ---------------------------===//
+//===----- BOX-DRAWING GLYPHS --------------------------------------------------===//
 
 // Unicode box-drawing characters for cleaner borders.
 constexpr const char* kBoxTopLeft     = "╔";
@@ -82,7 +82,7 @@ constexpr const char* kSnakeHead = "◉"; // U+25C9: Fisheye (filled circle with
 constexpr const char* kSnakeBody = "○"; // U+25CB: White circle
 constexpr const char* kSnakeFood = "●"; // U+25CF: Black circle
 
-//===------------------------------ ANSI HELPERS -------------------------------===//
+//===----- ANSI HELPERS --------------------------------------------------------===//
 
 /// @brief Clears the entire terminal screen and moves cursor to the home position.
 inline auto ansi_clear_screen() -> void {
@@ -129,7 +129,7 @@ struct TerminalSize {
   return TerminalSize{.rows = static_cast<int>(ws.ws_row), .cols = static_cast<int>(ws.ws_col)};
 }
 
-//===------------------------------ STYLE HELPERS ------------------------------===//
+//===----- STYLE HELPERS -------------------------------------------------------===//
 
 /// @brief Returns a string label for the given direction enum value.
 [[nodiscard]] auto direction_label(Direction direction) -> const char* {
@@ -209,7 +209,7 @@ auto draw_prompt() -> void {
   std::cout << kStylePrompt << "Key [W/A/S/D, Q]> " << kStyleReset << std::flush;
 }
 
-//===------------------------------ INPUT HELPERS ------------------------------===//
+//===----- INPUT HELPERS -------------------------------------------------------===//
 
 /**
  * @brief RAII guard enabling non-canonical terminal input for single-key controls.
@@ -294,7 +294,7 @@ private:
   return line.front();
 }
 
-//===------------------------------ INPUT PARSING ------------------------------===//
+//===----- INPUT PARSING -------------------------------------------------------===//
 
 /**
  * @brief Parses a character input into a direction using WASD mapping.
@@ -404,7 +404,7 @@ template <typename UInt>
   return parse_unsigned_arg(value, fallback);
 }
 
-//===---------------------------- RENDERING HELPERS ----------------------------===//
+//===----- RENDERING HELPERS ---------------------------------------------------===//
 
 // Number of recent moves to display in the final summary.
 constexpr std::size_t kRecentMovesDisplayCount = 5;
@@ -494,7 +494,7 @@ auto apply_deltas(const SnakeEngine& engine) -> void {
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 /**
  * @brief Entry point for the interactive Snake TUI.

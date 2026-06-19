@@ -31,7 +31,7 @@ using std::vector;
 
 using namespace ads::queues;
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
 void demo_priority_queue_basic() {
@@ -62,7 +62,7 @@ void demo_priority_queue_basic() {
   cout << std::format("Queue is now empty: {}\n", pq.is_empty());
 }
 
-//===----------------------------- MIN HEAP DEMOS ------------------------------===//
+//===----- MIN HEAP DEMOS ------------------------------------------------------===//
 
 // Priority Queue with Min-Heap comparator.
 void demo_priority_queue_min_heap() {
@@ -88,7 +88,7 @@ void demo_priority_queue_min_heap() {
   cout << '\n';
 }
 
-//===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
+//===----- CONSTRUCTION FROM VECTOR DEMO ---------------------------------------===//
 
 // Demonstrates construction from vector.
 void demo_priority_queue_from_vector() {
@@ -113,7 +113,7 @@ void demo_priority_queue_from_vector() {
   cout << '\n';
 }
 
-//===------------------- INITIALIZER LIST CONSTRUCTION DEMO --------------------===//
+//===----- INITIALIZER LIST CONSTRUCTION DEMO ----------------------------------===//
 
 // Demonstrates initializer list construction.
 void demo_priority_queue_initializer_list() {
@@ -132,7 +132,7 @@ void demo_priority_queue_initializer_list() {
   cout << '\n';
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_priority_queue_move_semantics() {
@@ -161,7 +161,7 @@ void demo_priority_queue_move_semantics() {
   // Note: pq2 is in a valid but unspecified state after move.
 }
 
-//===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+//===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates emplace operations.
 void demo_priority_queue_emplace() {
@@ -185,7 +185,7 @@ void demo_priority_queue_emplace() {
   }
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
 void demo_priority_queue_exception_handling() {
@@ -208,7 +208,7 @@ void demo_priority_queue_exception_handling() {
   }
 }
 
-//===--------------------- SORTED ELEMENTS EXTRACTION DEMO ---------------------===//
+//===----- SORTED ELEMENTS EXTRACTION DEMO -------------------------------------===//
 
 // Demonstrates extraction of sorted elements.
 void demo_priority_queue_sorted_elements() {
@@ -230,7 +230,7 @@ void demo_priority_queue_sorted_elements() {
   cout << std::format("Queue is now empty: {}\n", pq.is_empty());
 }
 
-//===---------------------------- APPLICATION DEMOS ----------------------------===//
+//===----- APPLICATION DEMOS ---------------------------------------------------===//
 
 // Task struct for scheduling demo.
 struct Task {
@@ -245,7 +245,7 @@ struct TaskCompare {
   auto operator()(const Task& a, const Task& b) const -> bool { return a.priority < b.priority; }
 };
 
-//===-------------------------- TASK SCHEDULING DEMO ---------------------------===//
+//===----- TASK SCHEDULING DEMO ------------------------------------------------===//
 
 // Task scheduling application demo.
 void demo_task_scheduling() {
@@ -271,7 +271,7 @@ void demo_task_scheduling() {
   }
 }
 
-//===-------------------------- EVENT SIMULATION DEMO --------------------------===//
+//===----- EVENT SIMULATION DEMO -----------------------------------------------===//
 
 // Event struct for simulation demo.
 struct Event {
@@ -308,7 +308,7 @@ void demo_event_simulation() {
   }
 }
 
-//===--------------------------- TOP-K ELEMENTS DEMO ---------------------------===//
+//===----- TOP-K ELEMENTS DEMO -------------------------------------------------===//
 
 // Top-K largest elements application demo.
 void demo_top_k_elements() {
@@ -345,7 +345,7 @@ void demo_top_k_elements() {
   cout << '\n';
 }
 
-//===------------------------ LARGE DATASET PERFORMANCE ------------------------===//
+//===----- LARGE DATASET PERFORMANCE -------------------------------------------===//
 
 // Priority Queue performance with large dataset.
 void demo_priority_queue_large() {
@@ -385,7 +385,7 @@ void demo_priority_queue_large() {
   cout << "Elements extracted: " << count << '\n';
 }
 
-//===-------------------- HEAPIFY CONSTRUCTION PERFORMANCE ---------------------===//
+//===----- HEAPIFY CONSTRUCTION PERFORMANCE ------------------------------------===//
 
 // Heapify construction performance demo.
 void demo_heapify_construction_performance() {
@@ -411,7 +411,7 @@ void demo_heapify_construction_performance() {
   cout << "Queue size: " << pq.size() << ", Top: " << pq.top() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("PRIORITY QUEUE - COMPREHENSIVE DEMO");

@@ -43,7 +43,7 @@ protected:
   AVLTree<int> tree;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(AVLTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -61,7 +61,7 @@ TEST_F(AVLTreeTest, Clear) {
   EXPECT_TRUE(tree.is_empty());
 }
 
-//===----------------------------- INSERTION TESTS -----------------------------===//
+//===----- INSERTION TESTS -----------------------------------------------------===//
 
 TEST_F(AVLTreeTest, InsertSingleElement) {
   tree.insert(50);
@@ -88,7 +88,7 @@ TEST_F(AVLTreeTest, InsertDuplicateRejected) {
   EXPECT_EQ(tree.size(), 1);
 }
 
-//===----------------------------- ROTATION TESTS ------------------------------===//
+//===----- ROTATION TESTS ------------------------------------------------------===//
 
 TEST_F(AVLTreeTest, LeftLeftRotation) {
   // Insert in descending order to trigger LL rotation.
@@ -139,7 +139,7 @@ TEST_F(AVLTreeTest, RightLeftRotation) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
-//===------------------------------ SEARCH TESTS -------------------------------===//
+//===----- SEARCH TESTS --------------------------------------------------------===//
 
 TEST_F(AVLTreeTest, ContainsElement) {
   tree.insert(50);
@@ -168,7 +168,7 @@ TEST_F(AVLTreeTest, FindMinMaxOnEmptyThrows) {
   EXPECT_THROW({ [[maybe_unused]] auto result = tree.find_max(); }, EmptyTreeException);
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(AVLTreeTest, RemoveLeafNode) {
   tree.insert(50);
@@ -229,7 +229,7 @@ TEST_F(AVLTreeTest, RemoveWithRebalancing) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
-//===----------------------------- TRAVERSAL TESTS -----------------------------===//
+//===----- TRAVERSAL TESTS -----------------------------------------------------===//
 
 TEST_F(AVLTreeTest, InOrderTraversal) {
   tree.insert(50);
@@ -245,7 +245,7 @@ TEST_F(AVLTreeTest, InOrderTraversal) {
   EXPECT_EQ(result, expected);
 }
 
-//===----------------------------- ITERATOR TESTS ------------------------------===//
+//===----- ITERATOR TESTS ------------------------------------------------------===//
 
 TEST_F(AVLTreeTest, IteratorTraversal) {
   tree.insert(50);
@@ -277,7 +277,7 @@ TEST_F(AVLTreeTest, EmptyIteratorsCompareEqual) {
   EXPECT_EQ(tree.begin(), tree.end());
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(AVLTreeTest, MoveConstructor) {
   tree.insert(50);
@@ -303,7 +303,7 @@ TEST_F(AVLTreeTest, MoveAssignment) {
   EXPECT_EQ(other_tree.size(), 3);
 }
 
-//===------------------------------ BALANCE TESTS ------------------------------===//
+//===----- BALANCE TESTS -------------------------------------------------------===//
 
 TEST_F(AVLTreeTest, BalanceAfterMultipleInsertions) {
   // Insert many elements.

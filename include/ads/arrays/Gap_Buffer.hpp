@@ -59,7 +59,7 @@ public:
   using pointer         = T*;
   using const_pointer   = const T*;
 
-  //===---------------------------- ITERATOR TYPES -----------------------------===//
+  //===----- ITERATOR TYPES ----------------------------------------------------===//
 
   // The logical (gap-skipping) iteration order is provided by IndexedIterator,
   // which dereferences through this container's operator[]. See Indexed_Iterator.hpp.
@@ -68,7 +68,7 @@ public:
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty gap buffer with optional initial capacity.
@@ -110,7 +110,7 @@ public:
   GapBuffer(const GapBuffer&)                    = delete;
   auto operator=(const GapBuffer&) -> GapBuffer& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the cursor.
@@ -136,7 +136,7 @@ public:
    */
   auto insert(T&& value) -> void requires MoveArrayElement<T>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the element immediately before the cursor (backspace).
@@ -158,7 +158,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- CURSOR OPERATIONS ---------------------------===//
+  //===----- CURSOR OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns the current cursor position (logical index of the gap).
@@ -188,7 +188,7 @@ public:
    */
   auto retreat_cursor() -> void;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses an element by logical index without bounds checking.
@@ -252,7 +252,7 @@ public:
    */
   auto back() const -> const T&;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of elements in the buffer.
@@ -269,7 +269,7 @@ public:
   // is_empty(), cbegin/cend, rbegin/rend, crbegin/crend, and the relational
   // operators (==, <=>) are inherited from ContainerFacade<GapBuffer<T>>.
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning.
@@ -284,7 +284,7 @@ public:
   auto end() const noexcept -> const_iterator;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /// Owning pointer to the raw element storage with a custom array deleter.
   using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
@@ -331,7 +331,7 @@ private:
    */
   auto reallocate(size_t new_capacity) -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   storage_ptr data_;      ///< Raw storage for elements and the gap.
   size_t      capacity_;  ///< Total slots (elements + gap).

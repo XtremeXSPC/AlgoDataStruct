@@ -34,7 +34,7 @@ using std::vector;
 
 using namespace ads::hash;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print hash table statistics.
 template <typename Key, typename Value>
@@ -47,7 +47,7 @@ void print_stats(const HashTableChaining<Key, Value>& table, const string& name)
   cout << "  Empty:       " << (table.is_empty() ? "Yes" : "No") << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access.
 void demo_basic_operations() {
@@ -76,7 +76,7 @@ void demo_basic_operations() {
   cout << "  Contains 10? " << (table.contains(10) ? "Yes" : "No") << '\n';
 }
 
-//===------------------------------ UPDATES DEMO -------------------------------===//
+//===----- UPDATES DEMO --------------------------------------------------------===//
 
 // Demonstrates updating existing keys.
 void demo_updates() {
@@ -104,7 +104,7 @@ void demo_updates() {
   print_stats(table, "after updates");
 }
 
-//===----------------------------- OPERATOR[] DEMO -----------------------------===//
+//===----- OPERATOR[] DEMO -----------------------------------------------------===//
 
 // Demonstrates operator[].
 void demo_bracket_operator() {
@@ -128,7 +128,7 @@ void demo_bracket_operator() {
   cout << "  Table size is now: " << table.size() << '\n';
 }
 
-//===-------------------------------- FIND DEMO --------------------------------===//
+//===----- FIND DEMO -----------------------------------------------------------===//
 
 // Demonstrates find method.
 void demo_find() {
@@ -156,7 +156,7 @@ void demo_find() {
   }
 }
 
-//===------------------------------- ERASE DEMO --------------------------------===//
+//===----- ERASE DEMO ----------------------------------------------------------===//
 
 // Demonstrates erase method.
 void demo_erase() {
@@ -187,7 +187,7 @@ void demo_erase() {
   }
 }
 
-//===----------------------------- REHASHING DEMO ------------------------------===//
+//===----- REHASHING DEMO ------------------------------------------------------===//
 
 // Demonstrates rehashing.
 void demo_rehashing() {
@@ -223,7 +223,7 @@ void demo_rehashing() {
   }
 }
 
-//===------------------------------ RESERVE DEMO -------------------------------===//
+//===----- RESERVE DEMO --------------------------------------------------------===//
 
 // Demonstrates reserve method.
 void demo_reserve() {
@@ -259,7 +259,7 @@ struct Person {
   bool operator==(const Person& other) const { return name == other.name && age == other.age; }
 };
 
-//===---------------------------- CUSTOM TYPES DEMO ----------------------------===//
+//===----- CUSTOM TYPES DEMO ---------------------------------------------------===//
 
 // Demonstrates usage with custom types.
 void demo_custom_types() {
@@ -279,7 +279,7 @@ void demo_custom_types() {
   print_stats(table, "custom types table");
 }
 
-//===------------------------- COLLISION HANDLING DEMO -------------------------===//
+//===----- COLLISION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates collision handling.
 void demo_collisions() {
@@ -304,7 +304,7 @@ void demo_collisions() {
   cout << "  table[12] = " << table[12] << '\n';
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
 void demo_exceptions() {
@@ -333,7 +333,7 @@ void demo_exceptions() {
   }
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -361,7 +361,7 @@ void demo_move_semantics() {
   cout << "table2 size: " << table2.size() << " (should be 0)\n";
 }
 
-//===------------------------------- CLEAR DEMO --------------------------------===//
+//===----- CLEAR DEMO ----------------------------------------------------------===//
 
 // Demonstrates clear method.
 void demo_clear() {
@@ -386,7 +386,7 @@ void demo_clear() {
   cout << "  table[42] = " << table[42] << '\n';
 }
 
-//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+//===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Performance comparison with unordered_map.
 void demo_performance() {
@@ -428,7 +428,7 @@ void demo_performance() {
   cout << "  Load factor: " << std_table.load_factor() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("HASH TABLE CHAINING - COMPREHENSIVE DEMO");

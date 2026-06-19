@@ -28,7 +28,7 @@ using std::vector;
 
 using namespace ads::trees;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree information.
 template <typename T>
@@ -51,7 +51,7 @@ void print_traversal(const vector<int>& elements, const string& name) {
   cout << "]\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic insertion and properties.
 void demo_basic_operations() {
@@ -77,7 +77,7 @@ void demo_basic_operations() {
   ads::demo::print_success("Basic operations work correctly.");
 }
 
-//===----------------------------- TRAVERSAL DEMO ------------------------------===//
+//===----- TRAVERSAL DEMO ------------------------------------------------------===//
 
 // Demonstrate various tree traversals.
 void demo_traversals() {
@@ -121,7 +121,7 @@ void demo_traversals() {
   ads::demo::print_success("All traversals work correctly.");
 }
 
-//===------------------------- HEIGHT CALCULATION DEMO -------------------------===//
+//===----- HEIGHT CALCULATION DEMO ---------------------------------------------===//
 
 // Demonstrate height calculation.
 void demo_height() {
@@ -151,7 +151,7 @@ void demo_height() {
   ads::demo::print_success("Height calculation works correctly.");
 }
 
-//===------------------------------- SEARCH DEMO -------------------------------===//
+//===----- SEARCH DEMO ---------------------------------------------------------===//
 
 // Demonstrate search operations.
 void demo_search() {
@@ -174,7 +174,7 @@ void demo_search() {
   ads::demo::print_success("Search operations work correctly.");
 }
 
-//===---------------------------- NODE ACCESS DEMO -----------------------------===//
+//===----- NODE ACCESS DEMO ----------------------------------------------------===//
 
 // Demonstrate accessing nodes directly.
 void demo_node_access() {
@@ -195,7 +195,7 @@ void demo_node_access() {
   ads::demo::print_success("Node access works correctly.");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrate exception handling for invalid operations.
 void demo_exception_handling() {
@@ -215,7 +215,7 @@ void demo_exception_handling() {
   ads::demo::print_success("Exception handling works correctly.");
 }
 
-//===---------------------------- STRING TYPE DEMO -----------------------------===//
+//===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrate CompleteBinaryTree with string type.
 void demo_string_type() {
@@ -242,7 +242,7 @@ void demo_string_type() {
   ads::demo::print_success("String type support works correctly.");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("CompleteBinaryTree Demo");

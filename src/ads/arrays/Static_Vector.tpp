@@ -17,7 +17,7 @@
 
 namespace ads::arrays {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -85,7 +85,7 @@ auto StaticVector<T, N>::operator=(StaticVector&& other) noexcept(std::is_nothro
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -168,7 +168,7 @@ auto StaticVector<T, N>::insert(size_t index, T&& value) -> void requires Insert
   emplace(index, std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -249,7 +249,7 @@ auto StaticVector<T, N>::resize(size_t new_size, const T& value) -> void require
   }
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -329,7 +329,7 @@ auto StaticVector<T, N>::data() const noexcept -> const T* {
   return reinterpret_cast<const T*>(storage_);
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
@@ -349,7 +349,7 @@ auto StaticVector<T, N>::size() const noexcept -> size_t {
   return size_;
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>

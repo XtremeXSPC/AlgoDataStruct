@@ -23,7 +23,7 @@ protected:
   FenwickTree<int> tree{std::vector<int>{1, 2, 3, 4, 5}};
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST(FenwickTreeBasicTest, DefaultConstruction) {
   FenwickTree<int> fenwick;
@@ -82,7 +82,7 @@ TEST_F(FenwickTreeTest, ValueAtAccess) {
   EXPECT_EQ(tree.value_at(3), 4);
 }
 
-//===---------------------------- UPDATE OPERATIONS ----------------------------===//
+//===----- UPDATE OPERATIONS ---------------------------------------------------===//
 
 TEST_F(FenwickTreeTest, AddUpdates) {
   tree.add(1, 5);
@@ -115,7 +115,7 @@ TEST_F(FenwickTreeTest, BuildFromDynamicArrayRange) {
   EXPECT_EQ(tree.range_sum(1, 3), 13);
 }
 
-//===--------------------------- RESET & CLEAR TESTS ---------------------------===//
+//===----- RESET & CLEAR TESTS -------------------------------------------------===//
 
 TEST_F(FenwickTreeTest, ResetAndClear) {
   tree.clear();
@@ -126,7 +126,7 @@ TEST_F(FenwickTreeTest, ResetAndClear) {
   EXPECT_EQ(tree.total_sum(), 0);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(FenwickTreeTest, MoveSemantics) {
   FenwickTree<int> moved = std::move(tree);
@@ -139,7 +139,7 @@ TEST_F(FenwickTreeTest, MoveSemantics) {
   EXPECT_TRUE(moved.is_empty());
 }
 
-//===----------------------------- EDGE CASE TESTS -----------------------------===//
+//===----- EDGE CASE TESTS -----------------------------------------------------===//
 
 TEST(FenwickTreeEdgeCaseTest, SingleElement) {
   FenwickTree<int> fenwick{42};
@@ -184,7 +184,7 @@ TEST(FenwickTreeEdgeCaseTest, LargeValues) {
   EXPECT_EQ(fenwick.prefix_sum(1), 3'000'000'000LL);
 }
 
-//===---------------------------- LOWER_BOUND TESTS ----------------------------===//
+//===----- LOWER_BOUND TESTS ---------------------------------------------------===//
 
 TEST(FenwickTreeLowerBoundTest, BasicLowerBound) {
   FenwickTree<int> fenwick{1, 2, 3, 4, 5}; // prefix sums: 1, 3, 6, 10, 15
@@ -226,7 +226,7 @@ TEST(FenwickTreeLowerBoundTest, LowerBoundAllSameValues) {
   EXPECT_EQ(fenwick.lower_bound(11), 2);
 }
 
-//===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
+//===----- CUSTOM TYPE TESTS ---------------------------------------------------===//
 
 TEST(FenwickTreeCustomTypeTest, DoubleType) {
   FenwickTree<double> fenwick{1.5, 2.5, 3.0};
@@ -249,7 +249,7 @@ TEST(FenwickTreeCustomTypeTest, LongLongType) {
   EXPECT_EQ(fenwick.total_sum(), 114LL);
 }
 
-//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
+//===----- ERROR HANDLING TESTS ------------------------------------------------===//
 
 TEST(FenwickTreeErrorTest, OutOfRangeThrows) {
   FenwickTree<int> fenwick(3);

@@ -64,7 +64,7 @@ public:
   using visitor_type = std::function<void(const T&)>;
   using size_type    = size_t;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
   /**
    * @brief Forward iterator for in-order traversal of the BST.
    *
@@ -106,7 +106,7 @@ public:
     void push_left(Node* node);
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty binary search tree.
@@ -139,7 +139,7 @@ public:
   BinarySearchTree(const BinarySearchTree&)                    = delete;
   auto operator=(const BinarySearchTree&) -> BinarySearchTree& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts a value into the tree (copy).
@@ -170,7 +170,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> bool;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes a value from the tree.
@@ -187,7 +187,7 @@ public:
    */
   void clear() noexcept;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the tree is empty.
@@ -235,7 +235,7 @@ public:
    */
   [[nodiscard]] auto find_max() const -> const T&;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Performs an in-order traversal of the tree.
@@ -265,7 +265,7 @@ public:
    */
   void level_order_traversal(const visitor_type& visit) const;
 
-  //===----------------- ADDITIONAL BST-SPECIFIC FUNCTIONALITY -----------------===//
+  //===----- ADDITIONAL BST-SPECIFIC FUNCTIONALITY -----------------------------===//
 
   /**
    * @brief Returns the successor of a given value.
@@ -295,7 +295,7 @@ public:
    */
   [[nodiscard]] auto validate_properties() const -> bool;
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the beginning (smallest element).
@@ -340,7 +340,7 @@ public:
   auto cend() const -> iterator;
 
 private:
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
   /**
    * @brief Internal node structure for the BST.
    *
@@ -358,7 +358,7 @@ private:
   };
 
   //===============================================================================//
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Iterative helper for inserting a value.
@@ -385,7 +385,7 @@ private:
    */
   auto detach_min(std::unique_ptr<Node>& node) -> std::unique_ptr<Node>;
 
-  //===---------------------------- SEARCH HELPERS -----------------------------===//
+  //===----- SEARCH HELPERS ----------------------------------------------------===//
 
   /**
    * @brief Iterative helper for searching.
@@ -416,7 +416,7 @@ private:
    */
   auto height_helper(const Node* node) const noexcept -> int;
 
-  //===--------------------------- TRAVERSAL HELPERS ---------------------------===//
+  //===----- TRAVERSAL HELPERS -------------------------------------------------===//
 
   /**
    * @brief Iterative helper for in-order traversal.
@@ -439,7 +439,7 @@ private:
    */
   void post_order_helper(const Node* node, const visitor_type& visit) const;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Node> root_; ///< Root of the tree.
   size_t                size_; ///< Number of nodes in the tree.

@@ -45,7 +45,7 @@ private:
   struct Node;
 
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty queue.
@@ -79,7 +79,7 @@ public:
   LinkedQueue(const LinkedQueue&)                    = delete;
   auto operator=(const LinkedQueue&) -> LinkedQueue& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Adds an element to the rear of the queue (copy).
@@ -105,7 +105,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> T&;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the element at the front of the queue.
@@ -120,7 +120,7 @@ public:
    */
   void clear() noexcept override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the front element.
@@ -154,7 +154,7 @@ public:
    */
   auto rear() const -> const T& override;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the queue is empty.
@@ -171,7 +171,7 @@ public:
   [[nodiscard]] auto size() const noexcept -> size_t override;
 
 private:
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
   /**
    * @brief Internal node structure.
    *
@@ -186,7 +186,7 @@ private:
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
   };
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Node> front_; ///< Pointer to the front node (owns the node).
   Node*                 rear_;  ///< Raw pointer to the rear node (non-owning).

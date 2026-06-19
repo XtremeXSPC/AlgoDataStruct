@@ -26,7 +26,7 @@ protected:
   DoublyLinkedList<int> list;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(DoublyLinkedListTest, IsEmptyOnConstruction) {
   EXPECT_EQ(list.size(), 0);
@@ -45,7 +45,7 @@ TEST_F(DoublyLinkedListTest, Clear) {
   EXPECT_THROW(list.front(), ListException);
 }
 
-//===--------------------------- MODIFICATION TESTS ----------------------------===//
+//===----- MODIFICATION TESTS --------------------------------------------------===//
 
 TEST_F(DoublyLinkedListTest, PushFront) {
   list.push_front(10);
@@ -123,7 +123,7 @@ TEST(DoublyLinkedListStringTest, Emplace) {
   EXPECT_EQ(str_list.back(), "!");
 }
 
-//===----------------------------- ACCESSOR TESTS ------------------------------===//
+//===----- ACCESSOR TESTS ------------------------------------------------------===//
 
 TEST_F(DoublyLinkedListTest, AccessOnEmptyThrows) {
   EXPECT_THROW(list.front(), ListException);
@@ -162,7 +162,7 @@ TEST_F(DoublyLinkedListTest, ConstCorrectness) {
   EXPECT_EQ(actual, expected);
 }
 
-//===--------------------------- COMPREHENSIVE TESTS ---------------------------===//
+//===----- COMPREHENSIVE TESTS -------------------------------------------------===//
 
 TEST_F(DoublyLinkedListTest, InsertComprehensive) {
   // 1. Insertion into an empty list (equivalent to push_front).
@@ -247,7 +247,7 @@ TEST_F(DoublyLinkedListTest, ReverseEdgeCases) {
   EXPECT_EQ(list.back(), 42);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(DoublyLinkedListTest, MoveSemantics) {
   list.push_back(10);

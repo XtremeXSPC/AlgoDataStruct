@@ -17,7 +17,7 @@
 
 namespace ads::trees {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
@@ -206,7 +206,7 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::operato
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
@@ -288,7 +288,7 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::clear()
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
@@ -366,7 +366,7 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::is_empt
   return size_ == 0;
 }
 
-//===---------------------------- ITERATOR ACCESS ------------------------------===//
+//===----- ITERATOR ACCESS -----------------------------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
@@ -380,7 +380,7 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::end() c
   return values_.cend();
 }
 
-//===--------------------------- FUNCTOR ACCESSORS -----------------------------===//
+//===----- FUNCTOR ACCESSORS ---------------------------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
@@ -401,7 +401,7 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::get_lea
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>

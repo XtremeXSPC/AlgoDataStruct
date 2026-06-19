@@ -61,7 +61,7 @@ template <HashKey Key, HashValue Value, typename Hash = std::hash<Key>>
 requires HashFor<Hash, Key>
 class HashTableOpenAddressing {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs a hash table with specified capacity, load factor,
@@ -104,7 +104,7 @@ public:
   HashTableOpenAddressing(const HashTableOpenAddressing&)                    = delete;
   auto operator=(const HashTableOpenAddressing&) -> HashTableOpenAddressing& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts or updates a key-value pair.
@@ -145,7 +145,7 @@ public:
   template <typename... Args>
   auto emplace(const Key& key, Args&&... args) -> Value& requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses value by key with bounds checking.
@@ -174,7 +174,7 @@ public:
    */
   auto operator[](const Key& key) -> Value& requires CopyHashKey<Key> && DefaultHashValue<Value>;
 
-  //===--------------------------- SEARCH OPERATIONS ---------------------------===//
+  //===----- SEARCH OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Checks if a key exists in the table.
@@ -200,7 +200,7 @@ public:
    */
   [[nodiscard]] auto find(const Key& key) const -> const Value*;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes a key-value pair from the table.
@@ -217,7 +217,7 @@ public:
    */
   void clear() noexcept;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of active entries in the table.
@@ -261,7 +261,7 @@ public:
    */
   [[nodiscard]] auto probing_strategy() const noexcept -> ProbingStrategy;
 
-  //===----------------------- CONFIGURATION OPERATIONS ------------------------===//
+  //===----- CONFIGURATION OPERATIONS ------------------------------------------===//
 
   /**
    * @brief Reserves space for at least new_capacity slots.
@@ -282,7 +282,7 @@ public:
   void set_max_load_factor(float mlf);
 
 private:
-  //===-------------------------- INTERNAL STRUCTURES --------------------------===//
+  //===----- INTERNAL STRUCTURES -----------------------------------------------===//
 
   /**
    * @brief State of a slot in the hash table.
@@ -320,7 +320,7 @@ private:
   };
 
   //===============================================================================//
-  //===------------------------ PRIVATE HASHING METHODS ------------------------===//
+  //===----- PRIVATE HASHING METHODS -------------------------------------------===//
 
   /**
    * @brief Primary hash function.
@@ -356,7 +356,7 @@ private:
    */
   [[nodiscard]] auto hash2(const Key& key, size_t capacity) const -> size_t;
 
-  //===---------------------------- PROBING METHODS ----------------------------===//
+  //===----- PROBING METHODS ---------------------------------------------------===//
   /**
    * @brief Computes probe sequence index.
    * @param key The key being probed.
@@ -393,7 +393,7 @@ private:
    */
   [[nodiscard]] static auto next_power_of_two(size_t value) noexcept -> size_t;
 
-  //===------------------------- SLOT FINDING METHODS --------------------------===//
+  //===----- SLOT FINDING METHODS ----------------------------------------------===//
   /**
    * @brief Finds a slot for a given key.
    * @param key The key to search for.
@@ -428,7 +428,7 @@ private:
    */
   auto find_insert_slot(Slot* slots, size_t slot_count, const Key& key) const -> Slot*;
 
-  //===------------------------- REHASHING OPERATIONS --------------------------===//
+  //===----- REHASHING OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Rehashes the table to a new capacity.
@@ -450,7 +450,7 @@ private:
    */
   void ensure_capacity_for_insert();
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Slot[]> table_;           ///< Array of slots.
   size_t                  capacity_;        ///< Number of slots.

@@ -17,7 +17,7 @@
 
 namespace ads::lists {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::iterator::operator*() const -> reference {
@@ -54,7 +54,7 @@ auto CircularLinkedList<T>::iterator::operator==(const iterator& other) const ->
   return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
 }
 
-//===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
+//===----- CONST_ITERATOR IMPLEMENTATION ---------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::const_iterator::operator*() const -> reference {
@@ -91,7 +91,7 @@ auto CircularLinkedList<T>::const_iterator::operator==(const const_iterator& oth
   return remaining_ == other.remaining_ && (remaining_ == 0 || node_ == other.node_);
 }
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ListElement T>
 CircularLinkedList<T>::CircularLinkedList() : head_(nullptr), tail_(nullptr), size_(0) {
@@ -124,7 +124,7 @@ auto CircularLinkedList<T>::operator=(CircularLinkedList&& other) noexcept -> Ci
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <ListElement T>
 template <typename... Args>
@@ -181,7 +181,7 @@ auto CircularLinkedList<T>::push_back(T&& value) -> void {
   emplace_back(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::pop_front() -> void {
@@ -233,7 +233,7 @@ auto CircularLinkedList<T>::clear() noexcept -> void {
   size_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::front() -> T& {
@@ -267,7 +267,7 @@ auto CircularLinkedList<T>::back() const -> const T& {
   return tail_->data;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::is_empty() const noexcept -> bool {
@@ -279,7 +279,7 @@ auto CircularLinkedList<T>::size() const noexcept -> typename CircularLinkedList
   return size_;
 }
 
-//===---------------------- CIRCULAR-SPECIFIC OPERATIONS -----------------------===//
+//===----- CIRCULAR-SPECIFIC OPERATIONS ----------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::rotate() -> void {
@@ -311,7 +311,7 @@ auto CircularLinkedList<T>::contains(const T& value) const -> bool {
   return false;
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ListElement T>
 auto CircularLinkedList<T>::begin() -> iterator {

@@ -50,7 +50,7 @@ protected:
   HashTableChaining<int, std::string> table;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(HashTableChainingTest, IsEmptyOnConstruction) {
   EXPECT_EQ(table.size(), 0);
@@ -87,7 +87,7 @@ TEST_F(HashTableChainingTest, GetNonExistentThrows) {
   EXPECT_THROW(table.at(1), KeyNotFoundException);
 }
 
-//===--------------------------- MODIFICATION TESTS ----------------------------===//
+//===----- MODIFICATION TESTS --------------------------------------------------===//
 
 TEST_F(HashTableChainingTest, Remove) {
   table.insert(1, "one");
@@ -125,7 +125,7 @@ TEST_F(HashTableChainingTest, CollisionHandling) {
   }
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(HashTableChainingTest, MoveSemantics) {
   table.insert(1, "one");
@@ -249,7 +249,7 @@ TEST(HashMapEraseTest, ConstIteratorEraseReturnsNextIterator) {
   EXPECT_EQ(next, map.begin());
 }
 
-//===-------------------------- OPEN ADDRESSING TESTS --------------------------===//
+//===----- OPEN ADDRESSING TESTS -----------------------------------------------===//
 
 class HashTableOpenAddressingTest : public ::testing::Test {
 protected:
@@ -443,7 +443,7 @@ TEST(HashTableOpenAddressingQuadraticTest, OperatorBracketSurvivesDenseCollision
   }
 }
 
-//===---------------------------- STRING KEY TESTS -----------------------------===//
+//===----- STRING KEY TESTS ----------------------------------------------------===//
 
 TEST(HashTableStringKeyTest, ChainingWithStringKeys) {
   HashTableChaining<std::string, int> table;

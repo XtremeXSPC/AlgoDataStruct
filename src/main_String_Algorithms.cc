@@ -23,7 +23,7 @@ using namespace ads::algorithms;
 
 namespace {
 
-//===------------------------------ DEMO HELPERS -------------------------------===//
+//===----- DEMO HELPERS --------------------------------------------------------===//
 
 auto print_matches(std::string_view label, const ads::arrays::DynamicArray<size_t>& matches) -> void {
   cout << label;
@@ -43,7 +43,7 @@ auto print_matches(std::string_view label, const ads::arrays::DynamicArray<size_
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"STRING ALGORITHMS DEMO", "KMP and Rabin-Karp"});

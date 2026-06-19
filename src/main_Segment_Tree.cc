@@ -57,7 +57,7 @@ struct SumCountLeaf {
   auto operator()(int value) const -> SumCount { return SumCount{.sum = value, .count = 1}; }
 };
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Print the current state of the Segment Tree.
 template <typename T>
@@ -77,7 +77,7 @@ void print_tree_state(const SegmentTree<T>& tree, const string& label) {
   cout << "  Total sum: " << tree.total_sum() << "\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates building the tree and performing queries.
 void demo_build_and_queries() {
@@ -91,7 +91,7 @@ void demo_build_and_queries() {
   cout << "Sum [2..4]: " << tree.range_sum(2, 4) << "\n";
 }
 
-//===------------------------- UPDATE OPERATIONS DEMO --------------------------===//
+//===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates point updates (set and add).
 void demo_updates() {
@@ -109,7 +109,7 @@ void demo_updates() {
   cout << "Sum [1..3]: " << tree.range_sum(1, 3) << "\n";
 }
 
-//===------------------------ RESET & CLEAR OPERATIONS -------------------------===//
+//===----- RESET & CLEAR OPERATIONS --------------------------------------------===//
 
 // Demonstrates resetting and clearing the tree.
 void demo_reset_clear() {
@@ -127,7 +127,7 @@ void demo_reset_clear() {
   print_tree_state(tree, "After clear");
 }
 
-//===--------------------------- CUSTOM FUNCTOR DEMO ---------------------------===//
+//===----- CUSTOM FUNCTOR DEMO -------------------------------------------------===//
 
 // Demonstrates custom combine and identity functors (max segment tree).
 void demo_custom_functors() {
@@ -144,7 +144,7 @@ void demo_custom_functors() {
   cout << "Max [0..4] after update: " << tree.range_query(0, 4) << "\n";
 }
 
-//===---------------------------- CUSTOM NODE DEMO -----------------------------===//
+//===----- CUSTOM NODE DEMO ----------------------------------------------------===//
 
 // Demonstrates custom node aggregation using a leaf builder.
 void demo_custom_nodes() {
@@ -159,7 +159,7 @@ void demo_custom_nodes() {
   cout << "Range [1..3] count: " << result.count << "\n";
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling for invalid operations.
 void demo_exceptions() {
@@ -180,7 +180,7 @@ void demo_exceptions() {
   }
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

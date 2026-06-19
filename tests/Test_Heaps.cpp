@@ -26,7 +26,7 @@ protected:
   MinHeap<int> heap;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(MinHeapTest, IsEmptyOnConstruction) {
   EXPECT_EQ(heap.size(), 0);
@@ -161,7 +161,7 @@ TEST_F(MinHeapTest, LargeHeapOperations) {
   }
 }
 
-//===----------------------------- MAX HEAP TESTS ------------------------------===//
+//===----- MAX HEAP TESTS ------------------------------------------------------===//
 
 class MaxHeapTest : public ::testing::Test {
 protected:
@@ -314,7 +314,7 @@ TEST_F(MaxHeapTest, LargeHeapOperations) {
   }
 }
 
-//===---------------------------- COMPARISON TESTS -----------------------------===//
+//===----- COMPARISON TESTS ----------------------------------------------------===//
 
 TEST(HeapComparisonTest, MinMaxHeapWithSameData) {
   std::vector<int> data = {5, 2, 8, 1, 9, 3, 7};

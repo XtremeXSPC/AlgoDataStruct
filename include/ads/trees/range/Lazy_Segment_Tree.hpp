@@ -145,14 +145,14 @@ template <
 requires detail::LazySegmentTreeTraits<Value, Tag, Combine, Apply, Compose, Identity>
 class LazySegmentTree {
 public:
-  //===----------------------------- TYPE ALIASES ------------------------------===//
+  //===----- TYPE ALIASES ------------------------------------------------------===//
 
   using value_type      = Value;
   using tag_type        = Tag;
   using size_type       = std::size_t;
   using difference_type = std::ptrdiff_t;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty Lazy Segment Tree.
@@ -240,7 +240,7 @@ public:
   LazySegmentTree(const LazySegmentTree&)                    = delete;
   auto operator=(const LazySegmentTree&) -> LazySegmentTree& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Rebuilds the tree from a vector of values.
@@ -314,7 +314,7 @@ public:
    */
   constexpr auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the aggregate over the range [left, right].
@@ -358,7 +358,7 @@ public:
   [[nodiscard]] constexpr auto is_empty() const noexcept -> bool;
 
 private:
-  //===----------------------------- INTERNAL NODE -----------------------------===//
+  //===----- INTERNAL NODE -----------------------------------------------------===//
 
   /**
    * @brief Internal node structure with value and optional lazy tag.
@@ -372,7 +372,7 @@ private:
     constexpr explicit TreeNode(const value_type& v) : value(v), lazy{} {}
   };
 
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Builds the tree from input values.
@@ -425,7 +425,7 @@ private:
    */
   constexpr auto validate_range(size_type left, size_type right) const -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   Combine                                     combine_{};  ///< Functor to combine two nodes.
   Apply                                       apply_{};    ///< Functor to apply a tag to a node.

@@ -75,7 +75,7 @@ public:
   requires(IsConst && !RHSConst)
   IndexedIterator(const IndexedIterator<Container, RHSConst>& other) : index_(other.index_), container_(other.container_) {}
 
-  //===------------------------- DEREFERENCE OPERATORS -------------------------===//
+  //===----- DEREFERENCE OPERATORS ---------------------------------------------===//
 
   auto operator*() const -> reference { return (*container_)[static_cast<size_t>(index_)]; }
 
@@ -83,7 +83,7 @@ public:
 
   auto operator[](difference_type n) const -> reference { return (*container_)[static_cast<size_t>(index_ + n)]; }
 
-  //===--------------------- INCREMENT/DECREMENT OPERATORS ---------------------===//
+  //===----- INCREMENT/DECREMENT OPERATORS -------------------------------------===//
 
   auto operator++() -> IndexedIterator& {
     ++index_;
@@ -107,7 +107,7 @@ public:
     return tmp;
   }
 
-  //===------------------------- ARITHMETIC OPERATORS --------------------------===//
+  //===----- ARITHMETIC OPERATORS ----------------------------------------------===//
 
   auto operator+=(difference_type n) -> IndexedIterator& {
     index_ += n;
@@ -127,7 +127,7 @@ public:
 
   friend auto operator-(const IndexedIterator& lhs, const IndexedIterator& rhs) -> difference_type { return lhs.index_ - rhs.index_; }
 
-  //===------------------------- COMPARISON OPERATORS --------------------------===//
+  //===----- COMPARISON OPERATORS ----------------------------------------------===//
 
   auto operator<=>(const IndexedIterator& other) const noexcept        = default;
   auto operator==(const IndexedIterator& other) const noexcept -> bool = default;

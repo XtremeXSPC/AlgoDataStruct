@@ -17,7 +17,7 @@
 
 namespace ads::queues {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <QueueValue T>
 CircularArrayDeque<T>::CircularArrayDeque(size_t initial_capacity) :
@@ -63,7 +63,7 @@ auto CircularArrayDeque<T>::operator=(CircularArrayDeque&& other) noexcept -> Ci
 // The iterator and const_iterator types are aliases of IndexedIterator
 // (see Indexed_Iterator.hpp); their operations need no out-of-line definitions.
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <QueueValue T>
 template <typename... Args>
@@ -112,7 +112,7 @@ auto CircularArrayDeque<T>::push_back(T&& value) -> void {
   emplace_back(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayDeque<T>::pop_front() -> void {
@@ -177,7 +177,7 @@ auto CircularArrayDeque<T>::clear() noexcept -> void {
   front_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayDeque<T>::front() -> T& {
@@ -237,7 +237,7 @@ auto CircularArrayDeque<T>::at(size_t index) const -> const T& {
   return element_at(index);
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayDeque<T>::is_empty() const noexcept -> bool {
@@ -254,7 +254,7 @@ auto CircularArrayDeque<T>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
-//===--------------------------- CAPACITY OPERATIONS ---------------------------===//
+//===----- CAPACITY OPERATIONS -------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayDeque<T>::reserve(size_t new_capacity) -> void {
@@ -273,7 +273,7 @@ auto CircularArrayDeque<T>::shrink_to_fit() -> void {
   }
 }
 
-//===------------------------- ITERATOR OPERATIONS -----------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayDeque<T>::begin() noexcept -> iterator {
@@ -297,7 +297,7 @@ auto CircularArrayDeque<T>::end() const noexcept -> const_iterator {
 
 // cbegin/cend are inherited from ContainerFacade<CircularArrayDeque<T>>.
 
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <QueueValue T>
 auto CircularArrayDeque<T>::element_at(size_t index) -> T& {

@@ -24,7 +24,7 @@ protected:
   CircularLinkedList<int> list;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(CircularLinkedListTest, IsEmptyOnConstruction) {
   EXPECT_EQ(list.size(), 0u);

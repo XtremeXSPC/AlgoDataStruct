@@ -16,7 +16,7 @@
 
 namespace ads::associative {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::iterator::operator*() const -> reference {
@@ -81,7 +81,7 @@ auto HashMap<Key, Value, Hash>::iterator::advance_to_next_bucket() -> void {
   }
 }
 
-//===---------------------- CONST_ITERATOR IMPLEMENTATION ----------------------===//
+//===----- CONST_ITERATOR IMPLEMENTATION ---------------------------------------===//
 
 // Constructor from const iterator.
 template <typename Key, typename Value, typename Hash>
@@ -151,7 +151,7 @@ auto HashMap<Key, Value, Hash>::const_iterator::advance_to_next_bucket() -> void
   }
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 // Constructor with initial capacity and load factor.
 template <typename Key, typename Value, typename Hash>
@@ -183,7 +183,7 @@ auto HashMap<Key, Value, Hash>::operator=(HashMap&& other) noexcept -> HashMap& 
   return *this;
 }
 
-//===----------------------------- ELEMENT ACCESS ------------------------------===//
+//===----- ELEMENT ACCESS ------------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::operator[](const Key& key) -> Value& {
@@ -200,7 +200,7 @@ auto HashMap<Key, Value, Hash>::at(const Key& key) const -> const Value& {
   return table_.at(key);
 }
 
-//===------------------------- DICTIONARY INTERFACE ---------------------------===//
+//===----- DICTIONARY INTERFACE ------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::put(const Key& key, const Value& value) -> void
@@ -223,7 +223,7 @@ auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void
   table_.insert(std::move(key), std::move(value));
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::insert(const value_type& pair) -> std::pair<iterator, bool>
@@ -255,7 +255,7 @@ auto HashMap<Key, Value, Hash>::emplace(Args&&... args) -> std::pair<iterator, b
   return insert(std::move(pair));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::erase(const Key& key) -> bool {
@@ -294,7 +294,7 @@ auto HashMap<Key, Value, Hash>::clear() noexcept -> void {
   table_.clear();
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::empty() const noexcept -> bool {
@@ -349,7 +349,7 @@ auto HashMap<Key, Value, Hash>::count(const Key& key) const -> size_t {
   return table_.contains(key) ? 1 : 0;
 }
 
-//===--------------------------- CONVENIENCE METHODS ---------------------------===//
+//===----- CONVENIENCE METHODS -------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key> requires std::copy_constructible<Key>
@@ -397,7 +397,7 @@ auto HashMap<Key, Value, Hash>::entries() const
   return result;
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::begin() -> iterator {
@@ -443,7 +443,7 @@ auto HashMap<Key, Value, Hash>::cend() const -> const_iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_t, typename Table::Bucket::iterator> {

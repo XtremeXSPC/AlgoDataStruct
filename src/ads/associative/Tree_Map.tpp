@@ -17,7 +17,7 @@
 
 namespace ads::associative {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init) requires CopyMapKey<Key> && CopyMapValue<Value>
@@ -27,7 +27,7 @@ TreeMap<Key, Value>::TreeMap(std::initializer_list<std::pair<Key, Value>> init) 
   }
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::empty() const noexcept -> bool {
@@ -44,7 +44,7 @@ auto TreeMap<Key, Value>::contains(const Key& key) const -> bool {
   return find_entry(key) != nullptr;
 }
 
-//===----------------------------- ELEMENT ACCESS ------------------------------===//
+//===----- ELEMENT ACCESS ------------------------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::operator[](const Key& key) -> Value& requires DefaultMapValue<Value>
@@ -97,7 +97,7 @@ auto TreeMap<Key, Value>::find(const Key& key) const -> const Value* {
   return &entry->value;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::insert(const Key& key, const Value& value) -> bool requires CopyMapEntry<Key, Value>
@@ -169,7 +169,7 @@ auto TreeMap<Key, Value>::put(Key&& key, Value&& value) -> void requires MoveMap
   tree_.insert(Entry(std::move(key), std::move(value)));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::erase(const Key& key) -> bool {
@@ -182,7 +182,7 @@ auto TreeMap<Key, Value>::clear() noexcept -> void {
   tree_.clear();
 }
 
-//===--------------------------- CONVENIENCE METHODS ---------------------------===//
+//===----- CONVENIENCE METHODS -------------------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::keys() const -> std::vector<Key> requires CopyMapKey<Key>
@@ -215,7 +215,7 @@ auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>> 
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::find_entry(const Key& key) -> const Entry* {

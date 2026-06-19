@@ -75,7 +75,7 @@ class BTree {
 public:
   using visitor_type = std::function<void(const T&)>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Construct empty B-Tree.
@@ -108,7 +108,7 @@ public:
   BTree(const BTree&)                    = delete;
   auto operator=(const BTree&) -> BTree& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Insert a key into the tree.
@@ -140,7 +140,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Remove a key from the tree.
@@ -156,7 +156,7 @@ public:
    */
   void clear() noexcept;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Check if tree is empty.
@@ -209,7 +209,7 @@ public:
    */
   [[nodiscard]] auto search(const T& key) const -> bool;
 
-  //===----------------------- B-TREE SPECIFIC OPERATIONS ----------------------===//
+  //===----- B-TREE SPECIFIC OPERATIONS ----------------------------------------===//
 
   /**
    * @brief Get minimum degree.
@@ -250,7 +250,7 @@ public:
    */
   [[nodiscard]] auto validate_properties() const -> bool;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief In-order traversal.
@@ -270,7 +270,7 @@ private:
   static constexpr int MAX_KEYS = 2 * t - 1;
   static constexpr int MIN_KEYS = t - 1;
 
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
 
   /**
    * @brief Internal node structure.
@@ -286,7 +286,7 @@ private:
   };
 
   //===============================================================================//
-  //===------------------------- PRIVATE HELPER METHODS ------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Split full child of parent at given index.
@@ -317,7 +317,7 @@ private:
   template <typename U>
   auto insert_non_full(Node* node, U&& key) -> bool;
 
-  //===---------------------------- REMOVAL HELPERS ---------------------------===//
+  //===----- REMOVAL HELPERS ---------------------------------------------------===//
 
   /**
    * @brief Finds the first key index greater than or equal to key.
@@ -431,7 +431,7 @@ private:
   [[nodiscard]] auto validate_helper(
       const Node* node, int min_keys, int max_keys, int level, const T* lower_bound, const T* upper_bound, int& leaf_level) const -> bool;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Node> root_; ///< Root node.
   size_t                size_; ///< Number of keys in the tree.

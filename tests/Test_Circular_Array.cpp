@@ -24,7 +24,7 @@ protected:
   CircularArray<int> array;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(CircularArrayTest, IsEmptyOnConstruction) {
   EXPECT_EQ(array.size(), 0u);

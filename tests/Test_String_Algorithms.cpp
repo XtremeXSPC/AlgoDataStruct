@@ -20,7 +20,7 @@ using namespace ads::algorithms;
 
 namespace {
 
-//===----------------------------- TEST UTILITIES ------------------------------===//
+//===----- TEST UTILITIES ------------------------------------------------------===//
 
 auto expect_indices_eq(const ads::arrays::DynamicArray<size_t>& actual, std::initializer_list<size_t> expected) -> void {
   ASSERT_EQ(actual.size(), expected.size());
@@ -33,7 +33,7 @@ auto expect_indices_eq(const ads::arrays::DynamicArray<size_t>& actual, std::ini
 
 } // namespace
 
-//===--------------------------- PREFIX / KMP TESTS ----------------------------===//
+//===----- PREFIX / KMP TESTS --------------------------------------------------===//
 
 TEST(StringAlgorithmsKmpTest, ComputesPrefixFunction) {
   const auto prefix = compute_kmp_prefix_function("ababaca");
@@ -55,7 +55,7 @@ TEST(StringAlgorithmsKmpTest, HandlesPatternLongerThanText) {
   EXPECT_TRUE(matches.is_empty());
 }
 
-//===-------------------------- RABIN-KARP TESTS -------------------------------===//
+//===----- RABIN-KARP TESTS ----------------------------------------------------===//
 
 TEST(StringAlgorithmsRabinKarpTest, FindsSameMatchesAsKmp) {
   constexpr std::string_view text    = "bananabanaba";

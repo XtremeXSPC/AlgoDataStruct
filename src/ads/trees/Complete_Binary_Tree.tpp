@@ -17,7 +17,7 @@
 
 namespace ads::trees {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <EqualityComparableTreeElement T>
 CompleteBinaryTree<T>::CompleteBinaryTree() : root_(nullptr), size_(0) {
@@ -45,7 +45,7 @@ auto CompleteBinaryTree<T>::operator=(CompleteBinaryTree&& other) noexcept -> Co
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::insert(const T& value) -> void {
@@ -84,7 +84,7 @@ auto CompleteBinaryTree<T>::emplace(Args&&... args) -> T& {
   return ref;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::clear() noexcept -> void {
@@ -92,7 +92,7 @@ auto CompleteBinaryTree<T>::clear() noexcept -> void {
   size_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::root() -> T& {
@@ -120,7 +120,7 @@ auto CompleteBinaryTree<T>::root_node() const -> const Node* {
   return root_.get();
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::is_empty() const noexcept -> bool {
@@ -165,7 +165,7 @@ auto CompleteBinaryTree<T>::contains(const T& value) const -> bool {
   return false;
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::in_order_traversal(const visitor_type& visit) const -> void {
@@ -215,7 +215,7 @@ auto CompleteBinaryTree<T>::to_vector() const -> std::vector<T> {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <EqualityComparableTreeElement T>
 auto CompleteBinaryTree<T>::compute_height(const Node* node) const noexcept -> int {

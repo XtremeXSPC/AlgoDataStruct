@@ -19,7 +19,7 @@
 
 namespace ads::hash {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -73,7 +73,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::operator=(HashTableOpenAddressin
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -192,7 +192,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::emplace(const Key& key, Args&&..
   return slot->entry->value;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -248,7 +248,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::operator[](const Key& key) -> Va
   return slot->entry->value;
 }
 
-//===---------------------------- SEARCH OPERATIONS ----------------------------===//
+//===----- SEARCH OPERATIONS ---------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -270,7 +270,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::find(const Key& key) const -> co
   return slot ? &(slot->entry->value) : nullptr;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -301,7 +301,7 @@ void HashTableOpenAddressing<Key, Value, Hash>::clear() noexcept {
   deleted_count_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -339,7 +339,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::probing_strategy() const noexcep
   return strategy_;
 }
 
-//===------------------------ CONFIGURATION OPERATIONS -------------------------===//
+//===----- CONFIGURATION OPERATIONS --------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -360,7 +360,7 @@ void HashTableOpenAddressing<Key, Value, Hash>::set_max_load_factor(float mlf) {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HASHING METHODS -------------------------===//
+//===----- PRIVATE HASHING METHODS ---------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -397,7 +397,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::hash2(const Key& key, size_t cap
   return result;
 }
 
-//===----------------------------- PROBING METHODS -----------------------------===//
+//===----- PROBING METHODS -----------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -445,7 +445,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::next_power_of_two(size_t value) 
   return result;
 }
 
-//===-------------------------- SLOT FINDING METHODS ---------------------------===//
+//===----- SLOT FINDING METHODS ------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -534,7 +534,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::find_insert_slot(Slot* slots, si
   throw InvalidOperationException("Hash table is full");
 }
 
-//===-------------------------- REHASHING OPERATIONS ---------------------------===//
+//===----- REHASHING OPERATIONS ------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>

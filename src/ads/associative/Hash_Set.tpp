@@ -19,7 +19,7 @@
 
 namespace ads::associative {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename T, typename Hash>
 HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor, Hash hasher) :
@@ -62,7 +62,7 @@ auto HashSet<T, Hash>::operator=(HashSet&& other) noexcept -> HashSet& {
   return *this;
 }
 
-//===------------------------- MODIFICATION OPERATIONS -------------------------===//
+//===----- MODIFICATION OPERATIONS ---------------------------------------------===//
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -150,7 +150,7 @@ auto HashSet<T, Hash>::clear() noexcept -> void {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::contains(const T& value) const -> bool {
@@ -192,7 +192,7 @@ auto HashSet<T, Hash>::load_factor() const noexcept -> double {
   return static_cast<double>(size_) / static_cast<double>(buckets_.size());
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::begin() const -> iterator {
@@ -220,7 +220,7 @@ auto HashSet<T, Hash>::cend() const -> const_iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::bucket_index(const T& value) const -> size_t {
@@ -265,7 +265,7 @@ auto HashSet<T, Hash>::check_load_factor() -> void {
   rehash(bucket_count);
 }
 
-//===---------------------------- ITERATOR METHODS -----------------------------===//
+//===----- ITERATOR METHODS ----------------------------------------------------===//
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::iterator::operator*() const -> reference {

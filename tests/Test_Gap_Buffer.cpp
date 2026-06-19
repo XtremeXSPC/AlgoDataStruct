@@ -37,7 +37,7 @@ protected:
   GapBuffer<int> buf{1, 2, 3, 4, 5};
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(GapBufferTest, ConstructionFromInitializerList) {
   EXPECT_EQ(buf.size(), 5u);
@@ -54,7 +54,7 @@ TEST_F(GapBufferTest, DefaultConstructionIsEmpty) {
   EXPECT_EQ(g.cursor(), 0u);
 }
 
-//===----------------------------- INSERTION TESTS -----------------------------===//
+//===----- INSERTION TESTS -----------------------------------------------------===//
 
 TEST_F(GapBufferTest, InsertAtCursorAdvancesCursor) {
   GapBuffer<int> g;
@@ -98,7 +98,7 @@ TEST_F(GapBufferTest, GrowthAcrossManyInsertions) {
   EXPECT_EQ(g[100], 50);
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(GapBufferTest, EraseIsBackspace) {
   buf.move_cursor_to(3); // cursor between 3 and 4
@@ -132,7 +132,7 @@ TEST_F(GapBufferTest, Clear) {
   EXPECT_EQ(buf.cursor(), 0u);
 }
 
-//===------------------------------ CURSOR TESTS -------------------------------===//
+//===----- CURSOR TESTS --------------------------------------------------------===//
 
 TEST_F(GapBufferTest, MoveCursorToAndBounds) {
   buf.move_cursor_to(0);
@@ -166,7 +166,7 @@ TEST_F(GapBufferTest, ContentsStableUnderCursorMovement) {
   }
 }
 
-//===------------------------------ ACCESS TESTS -------------------------------===//
+//===----- ACCESS TESTS --------------------------------------------------------===//
 
 TEST_F(GapBufferTest, AtWithBoundsChecking) {
   EXPECT_EQ(buf.at(0), 1);
@@ -179,7 +179,7 @@ TEST_F(GapBufferTest, FrontBackOnEmptyThrow) {
   EXPECT_THROW(g.back(), ArrayUnderflowException);
 }
 
-//===----------------------------- ITERATION TESTS -----------------------------===//
+//===----- ITERATION TESTS -----------------------------------------------------===//
 
 TEST_F(GapBufferTest, IterationWithGapInMiddle) {
   buf.move_cursor_to(2); // place the gap in the middle
@@ -196,7 +196,7 @@ TEST_F(GapBufferTest, ConstIteration) {
   EXPECT_EQ(values, (std::vector<int>{1, 2, 3, 4, 5}));
 }
 
-//===---------------------------- COMPARISON TESTS -----------------------------===//
+//===----- COMPARISON TESTS ----------------------------------------------------===//
 
 TEST_F(GapBufferTest, EqualityAndThreeWay) {
   GapBuffer<int> same{1, 2, 3, 4, 5};
@@ -214,7 +214,7 @@ TEST_F(GapBufferTest, EqualityIndependentOfCursor) {
   EXPECT_TRUE(a == b);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(GapBufferTest, MoveConstruction) {
   GapBuffer<std::string> s;
@@ -237,7 +237,7 @@ TEST_F(GapBufferTest, SatisfiesRandomAccessSequence) {
   SUCCEED();
 }
 
-//===-------------------------- TEXT EDITOR SCENARIO ---------------------------===//
+//===----- TEXT EDITOR SCENARIO ------------------------------------------------===//
 
 TEST_F(GapBufferTest, TextEditorWorkflow) {
   GapBuffer<char> doc;

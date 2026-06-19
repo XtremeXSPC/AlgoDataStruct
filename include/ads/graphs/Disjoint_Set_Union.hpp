@@ -41,7 +41,7 @@ public:
  */
 class DisjointSetUnion {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs a disjoint set with a given number of elements.
@@ -74,7 +74,7 @@ public:
   DisjointSetUnion(const DisjointSetUnion&)                    = delete;
   auto operator=(const DisjointSetUnion&) -> DisjointSetUnion& = delete;
 
-  //===---------------------------- INITIALIZATION -----------------------------===//
+  //===----- INITIALIZATION ----------------------------------------------------===//
 
   /**
    * @brief Resets the structure with a new number of elements.
@@ -90,7 +90,7 @@ public:
    */
   [[nodiscard]] auto add_element() -> size_t;
 
-  //===---------------------------- FIND OPERATIONS ----------------------------===//
+  //===----- FIND OPERATIONS ---------------------------------------------------===//
 
   /**
    * @brief Finds the representative of the set containing element (with compression).
@@ -110,7 +110,7 @@ public:
    */
   [[nodiscard]] auto find(size_t element) const -> size_t;
 
-  //===--------------------------- UNION OPERATIONS ----------------------------===//
+  //===----- UNION OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Unites the sets containing two elements.
@@ -140,7 +140,7 @@ public:
    */
   [[nodiscard]] auto connected(size_t a, size_t b) const -> bool;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of elements.
@@ -162,7 +162,7 @@ private:
   size_t                            set_count_ = 0;
 };
 
-//===-------------------------- INLINE IMPLEMENTATION --------------------------===//
+//===----- INLINE IMPLEMENTATION -----------------------------------------------===//
 
 // Storage choice: DynamicArray keeps Union-Find's parent/rank tables contiguous.
 

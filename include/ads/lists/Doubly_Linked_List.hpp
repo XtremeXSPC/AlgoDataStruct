@@ -46,7 +46,7 @@ public:
   using value_type = T;
   using size_type  = typename List<T>::size_type;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
   /**
    * @brief Forward iterator for DoublyLinkedList.
    *
@@ -78,7 +78,7 @@ public:
     friend class DoublyLinkedList<T>;
   };
 
-  //===------------------------- CONST_ITERATOR CLASS --------------------------===//
+  //===----- CONST_ITERATOR CLASS ----------------------------------------------===//
   /**
    * @brief Constant bidirectional iterator for DoublyLinkedList.
    *
@@ -110,7 +110,7 @@ public:
     friend class DoublyLinkedList<T>;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty list.
@@ -193,7 +193,7 @@ public:
    */
   void push_back(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the first element from the list.
@@ -209,7 +209,7 @@ public:
    */
   void pop_back() override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the first element.
@@ -259,7 +259,7 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_type override;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Removes all elements from the list.

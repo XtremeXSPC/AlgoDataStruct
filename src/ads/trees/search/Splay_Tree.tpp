@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
+//===----- ITERATOR IMPLEMENTATION ---------------------------------------------===//
 
 template <OrderedTreeElement T>
 SplayTree<T>::iterator::iterator(Node* current) : current_(current) {
@@ -75,7 +75,7 @@ auto SplayTree<T>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <OrderedTreeElement T>
 SplayTree<T>::SplayTree() : root_(nullptr), size_(0) {
@@ -108,7 +108,7 @@ auto SplayTree<T>::operator=(SplayTree&& other) noexcept -> SplayTree<T>& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -170,7 +170,7 @@ auto SplayTree<T>::insert_impl(U&& value) -> bool {
   return true;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::remove(const T& value) -> bool {
@@ -228,7 +228,7 @@ void SplayTree<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::is_empty() const noexcept -> bool {
@@ -289,7 +289,7 @@ auto SplayTree<T>::find_max() const -> const T& {
   return root_->data;
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T>
 void SplayTree<T>::in_order_traversal(const visitor_type& visit) const {
@@ -384,7 +384,7 @@ auto SplayTree<T>::validate_properties() const -> bool {
   return validate_helper();
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::begin() -> iterator {
@@ -417,7 +417,7 @@ auto SplayTree<T>::cend() const -> iterator {
 }
 
 //=================================================================================//
-//===------------------------- STRUCTURAL (SPLAY) HELPERS ----------------------===//
+//===----- STRUCTURAL (SPLAY) HELPERS ------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::owning_link(Node* node) const -> std::unique_ptr<Node>& {
@@ -525,7 +525,7 @@ void SplayTree<T>::splay(Node* node) const {
   }
 }
 
-//===------------------------------ SEARCH HELPERS -----------------------------===//
+//===----- SEARCH HELPERS ------------------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::find_node(const T& value) const -> Node* {
@@ -558,7 +558,7 @@ auto SplayTree<T>::subtree_max(Node* node) noexcept -> Node* {
   return node;
 }
 
-//===--------------------------- ITERATIVE TREE HELPERS ------------------------===//
+//===----- ITERATIVE TREE HELPERS ----------------------------------------------===//
 
 template <OrderedTreeElement T>
 auto SplayTree<T>::height_helper(const Node* node) const noexcept -> int {

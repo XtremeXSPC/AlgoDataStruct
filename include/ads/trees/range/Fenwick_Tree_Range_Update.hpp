@@ -48,7 +48,7 @@ public:
   using size_type       = size_t;
   using difference_type = std::ptrdiff_t;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty range-update Fenwick tree.
@@ -119,7 +119,7 @@ public:
   FenwickTreeRangeUpdate(const FenwickTreeRangeUpdate&)                    = delete;
   auto operator=(const FenwickTreeRangeUpdate&) -> FenwickTreeRangeUpdate& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Rebuilds the tree from a vector of values.
@@ -168,7 +168,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the value at the given index.
@@ -194,7 +194,7 @@ public:
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Returns the least significant bit (LSB) of index.
@@ -236,7 +236,7 @@ private:
    */
   auto validate_range(size_t left, size_t right) const -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   arr::DynamicArray<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
   size_t                       size_ = 0; ///< Number of elements.

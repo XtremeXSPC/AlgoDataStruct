@@ -23,7 +23,7 @@ using namespace ads::graphs;
 
 namespace {
 
-//===------------------------------ DEMO HELPERS -------------------------------===//
+//===----- DEMO HELPERS --------------------------------------------------------===//
 
 auto print_path(const std::optional<ads::arrays::DynamicArray<size_t>>& path) -> void {
   if (!path.has_value()) {
@@ -40,7 +40,7 @@ auto print_path(const std::optional<ads::arrays::DynamicArray<size_t>>& path) ->
   cout << '\n';
 }
 
-//===----------------------------- ALGORITHM DEMOS -----------------------------===//
+//===----- ALGORITHM DEMOS -----------------------------------------------------===//
 
 auto demo_bellman_ford() -> void {
   ads::demo::print_section("Bellman-Ford");
@@ -181,7 +181,7 @@ auto demo_strongly_connected_components() -> void {
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"GRAPH ALGORITHMS - SPRINT 1/2", "Bellman-Ford, Prim, Kruskal, Floyd-Warshall, SCC, Topological Sort"});

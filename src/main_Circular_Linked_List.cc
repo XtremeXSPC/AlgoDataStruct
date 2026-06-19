@@ -26,7 +26,7 @@ using std::string;
 
 using namespace ads::lists;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print list contents.
 template <typename T>
@@ -43,7 +43,7 @@ void print_list(const CircularLinkedList<T>& list, const string& label) {
   cout << "] (circular: last -> first)\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_back, push_front, front, back operations.
 void demo_basic_operations() {
@@ -70,7 +70,7 @@ void demo_basic_operations() {
   ads::demo::print_success("Basic operations work correctly.");
 }
 
-//===------------------------- CIRCULAR BEHAVIOR DEMO --------------------------===//
+//===----- CIRCULAR BEHAVIOR DEMO ----------------------------------------------===//
 
 // Demonstrate circular behavior and rotation.
 void demo_circular_behavior() {
@@ -95,7 +95,7 @@ void demo_circular_behavior() {
   ads::demo::print_success("Circular behavior works correctly.");
 }
 
-//===---------------------------- ROUND-ROBIN DEMO -----------------------------===//
+//===----- ROUND-ROBIN DEMO ----------------------------------------------------===//
 
 // Demonstrate round-robin pattern using CircularLinkedList.
 void demo_round_robin() {
@@ -129,7 +129,7 @@ void demo_round_robin() {
   ads::demo::print_success("Round-robin pattern works correctly.");
 }
 
-//===------------------------ CONTAINS AND SEARCH DEMO -------------------------===//
+//===----- CONTAINS AND SEARCH DEMO --------------------------------------------===//
 
 // Demonstrate contains() method.
 void demo_search() {
@@ -151,7 +151,7 @@ void demo_search() {
   ads::demo::print_success("Search operations work correctly.");
 }
 
-//===--------------------------- REMOVAL OPERATIONS DEMO -----------------------===//
+//===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 void demo_removal() {
   ads::demo::print_section("Demo: Removal Operations");
@@ -179,7 +179,7 @@ void demo_removal() {
   ads::demo::print_success("Removal operations work correctly.");
 }
 
-//===--------------------------- EXCEPTION HANDLING DEMO -----------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 void demo_exception_handling() {
   ads::demo::print_section("Demo: Exception Handling");
@@ -216,7 +216,7 @@ void demo_exception_handling() {
   ads::demo::print_success("Exception handling works correctly.");
 }
 
-//===--------------------------- STRING TYPE DEMO ------------------------------===//
+//===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 void demo_string_type() {
   ads::demo::print_section("Demo: String Type Support");
@@ -238,7 +238,7 @@ void demo_string_type() {
   ads::demo::print_success("String type support works correctly.");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("CircularLinkedList Demo");

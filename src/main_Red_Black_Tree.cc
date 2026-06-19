@@ -31,7 +31,7 @@ using std::vector;
 
 using namespace ads::trees;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents.
 template <typename T>
@@ -48,7 +48,7 @@ void print_rbt(const RedBlackTree<T>& tree, const string& name) {
   cout << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
 void demo_basic_operations() {
@@ -82,7 +82,7 @@ void demo_basic_operations() {
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-//===----------------------- SEQUENTIAL INSERTIONS DEMO ------------------------===//
+//===----- SEQUENTIAL INSERTIONS DEMO ------------------------------------------===//
 
 // Demonstrates sequential insertions.
 void demo_sequential_insertions() {
@@ -108,7 +108,7 @@ void demo_sequential_insertions() {
   cout << "  Size: " << rbt_desc.size() << ", Height: " << rbt_desc.height() << "\n";
 }
 
-//===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
+//===----- SEARCH OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates search operations.
 void demo_search_operations() {
@@ -132,7 +132,7 @@ void demo_search_operations() {
   cout << "  contains(100): " << (rbt.contains(100) ? "found" : "not found") << '\n';
 }
 
-//===------------------------ PROPERTY VALIDATION DEMO -------------------------===//
+//===----- PROPERTY VALIDATION DEMO --------------------------------------------===//
 
 // Demonstrates validation of Red-Black Tree properties.
 void demo_property_validation() {
@@ -157,7 +157,7 @@ void demo_property_validation() {
   cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 }
 
-//===------------------------- RANDOM INSERTIONS DEMO --------------------------===//
+//===----- RANDOM INSERTIONS DEMO ----------------------------------------------===//
 
 // Demonstrates random insertions.
 void demo_random_insertions() {
@@ -195,7 +195,7 @@ void demo_random_insertions() {
   cout << "  All elements found: " << (found_count == 100 ? "yes" : "no") << '\n';
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -231,7 +231,7 @@ void demo_move_semantics() {
   print_rbt(rbt3, "rbt3 (should have rbt2's data)");
 }
 
-//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+//===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Demonstrates performance of insertions and searches.
 void demo_performance() {
@@ -267,7 +267,7 @@ void demo_performance() {
   cout << "  Search time: " << search_duration.count() << " ms\n";
 }
 
-//===-------------------------- CLEAR AND REUSE DEMO ---------------------------===//
+//===----- CLEAR AND REUSE DEMO ------------------------------------------------===//
 
 // Demonstrates clear and reuse.
 void demo_clear_reuse() {
@@ -293,7 +293,7 @@ void demo_clear_reuse() {
   cout << "  Properties valid: " << (rbt.validate_properties() ? "yes" : "no") << '\n';
 }
 
-//===----------------------------- EDGE CASES DEMO -----------------------------===//
+//===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Demonstrates edge cases.
 void demo_edge_cases() {
@@ -325,7 +325,7 @@ void demo_edge_cases() {
   cout << "After clear: size=" << rbt.size() << ", is_empty=" << rbt.is_empty() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

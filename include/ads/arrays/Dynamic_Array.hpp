@@ -60,7 +60,7 @@ public:
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty dynamic array with optional initial capacity.
@@ -120,7 +120,7 @@ public:
   DynamicArray(const DynamicArray&)                    = delete;
   auto operator=(const DynamicArray&) -> DynamicArray& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the end.
@@ -176,7 +176,7 @@ public:
    */
   auto insert(size_t index, T&& value) -> void requires InsertMoveArrayElement<T>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the last element.
@@ -224,7 +224,7 @@ public:
   template <std::input_iterator InputIt>
   auto assign(InputIt first, InputIt last) -> void requires RangeArrayElement<InputIt, T>;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses an element without bounds checking.
@@ -290,7 +290,7 @@ public:
    */
   auto data() const noexcept -> const T*;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the array is empty.
@@ -310,7 +310,7 @@ public:
    */
   [[nodiscard]] auto capacity() const noexcept -> size_t;
 
-  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+  //===----- CAPACITY OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Reserves capacity for at least n elements.
@@ -336,7 +336,7 @@ public:
    */
   auto resize(size_t new_size, const T& value) -> void requires CopyArrayElement<T>;
 
-  //===------------------------- ITERATOR OPERATIONS ---------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning of the array.
@@ -354,12 +354,12 @@ public:
   // (==, <=>) are inherited from ContainerFacade<DynamicArray<T>>.
 
 private:
-  //===------------------------- PRIVATE TYPE ALIASES --------------------------===//
+  //===----- PRIVATE TYPE ALIASES ----------------------------------------------===//
 
   /// Owning pointer to the raw element storage with a custom array deleter.
   using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
 
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Returns the maximum number of elements that can be allocated for T.
@@ -393,7 +393,7 @@ private:
    */
   auto reallocate(size_t new_capacity) -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   storage_ptr data_;     ///< Raw storage for elements.
   size_t      size_;     ///< Number of constructed elements.

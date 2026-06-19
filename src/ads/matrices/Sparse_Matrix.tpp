@@ -16,7 +16,7 @@
 
 namespace ads::matrices {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 // clang-format off
 template <MatrixValue Value>
@@ -82,7 +82,7 @@ auto SparseMatrix<Value>::from_dense(std::initializer_list<std::initializer_list
 
 // clang-format on
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <MatrixValue Value>
 auto SparseMatrix<Value>::row_count() const noexcept -> size_t {
@@ -109,7 +109,7 @@ auto SparseMatrix<Value>::is_square() const noexcept -> bool {
   return row_count_ == column_count_;
 }
 
-//===--------------------------- MUTATION OPERATIONS ---------------------------===//
+//===----- MUTATION OPERATIONS -------------------------------------------------===//
 
 template <MatrixValue Value>
 auto SparseMatrix<Value>::clear() noexcept -> void {
@@ -202,7 +202,7 @@ auto SparseMatrix<Value>::erase(size_t row, size_t column) -> bool {
   return true;
 }
 
-//===------------------------- EXTRACTION / VISIT API --------------------------===//
+//===----- EXTRACTION / VISIT API ----------------------------------------------===//
 
 template <MatrixValue Value>
 auto SparseMatrix<Value>::row_non_zero_count(size_t row) const -> size_t {
@@ -267,7 +267,7 @@ auto SparseMatrix<Value>::for_each_non_zero(Visitor&& visitor) const -> void {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <MatrixValue Value>
 auto SparseMatrix<Value>::is_zero_value(const Value& value) -> bool {

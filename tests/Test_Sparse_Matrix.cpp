@@ -21,7 +21,7 @@ using namespace ads::matrices;
 
 namespace {
 
-//===----------------------------- TEST UTILITIES ------------------------------===//
+//===----- TEST UTILITIES ------------------------------------------------------===//
 
 auto make_dense(std::initializer_list<std::initializer_list<int>> rows) -> ads::arrays::DynamicArray<ads::arrays::DynamicArray<int>> {
   ads::arrays::DynamicArray<ads::arrays::DynamicArray<int>> dense;
@@ -34,7 +34,7 @@ auto make_dense(std::initializer_list<std::initializer_list<int>> rows) -> ads::
 
 } // namespace
 
-//===--------------------------- CONSTRUCTION TESTS ----------------------------===//
+//===----- CONSTRUCTION TESTS --------------------------------------------------===//
 
 TEST(SparseMatrixTest, EmptyMatrixStartsWithZeroShapeAndNoEntries) {
   SparseMatrix<int> matrix;
@@ -114,7 +114,7 @@ TEST(SparseMatrixConstructionTest, ZeroTripletsAreIgnored) {
   EXPECT_TRUE(matrix.contains(1, 2));
 }
 
-//===--------------------------- DENSE CONVERSION TESTS ------------------------===//
+//===----- DENSE CONVERSION TESTS ----------------------------------------------===//
 
 TEST(SparseMatrixDenseTest, BuildsFromDenseDynamicArray) {
   const auto dense = make_dense({
@@ -141,7 +141,7 @@ TEST(SparseMatrixDenseTest, RejectsNonRectangularDenseMatrix) {
   EXPECT_THROW(static_cast<void>(SparseMatrix<int>::from_dense(dense)), SparseMatrixException);
 }
 
-//===----------------------------- ACCESS TESTS -------------------------------===//
+//===----- ACCESS TESTS --------------------------------------------------------===//
 
 TEST(SparseMatrixAccessTest, AtThrowsForStructuralZeros) {
   SparseMatrix<int> matrix(2, 3, {{0, 2, 8}});
@@ -159,7 +159,7 @@ TEST(SparseMatrixAccessTest, InvalidCoordinatesThrow) {
   EXPECT_THROW(matrix.erase(0, 7), SparseMatrixException);
 }
 
-//===---------------------------- MUTATION TESTS -------------------------------===//
+//===----- MUTATION TESTS ------------------------------------------------------===//
 
 TEST(SparseMatrixMutationTest, SetInsertsUpdatesAndErasesEntries) {
   SparseMatrix<int> matrix(3, 4);
@@ -193,7 +193,7 @@ TEST(SparseMatrixMutationTest, RowIterationRemainsColumnSortedAfterMutations) {
   EXPECT_EQ(visited, (std::vector<std::pair<size_t, int>>{{1, 3}, {3, 7}, {4, 8}}));
 }
 
-//===--------------------------- ITERATION / ROW TESTS -------------------------===//
+//===----- ITERATION / ROW TESTS -----------------------------------------------===//
 
 TEST(SparseMatrixIterationTest, EnumeratesNonZeroEntriesInRowMajorOrder) {
   SparseMatrix<int> matrix(
@@ -234,7 +234,7 @@ TEST(SparseMatrixRowTest, EntriesInRowAndRowCountMatch) {
   EXPECT_EQ(row_entries[1], (SparseMatrix<int>::Entry{2, 3, 8}));
 }
 
-//===------------------------------ UTILITY TESTS ------------------------------===//
+//===----- UTILITY TESTS -------------------------------------------------------===//
 
 TEST(SparseMatrixDenseTest, ToDenseReconstructsExplicitZeros) {
   SparseMatrix<int> matrix(

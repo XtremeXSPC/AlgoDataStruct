@@ -28,7 +28,7 @@ protected:
   TrieType trie;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(TrieTest, IsEmptyOnConstruction) {
   EXPECT_EQ(trie.size(), 0);
@@ -45,7 +45,7 @@ TEST_F(TrieTest, Clear) {
   EXPECT_TRUE(trie.is_empty());
 }
 
-//===----------------------------- INSERTION TESTS -----------------------------===//
+//===----- INSERTION TESTS -----------------------------------------------------===//
 
 TEST_F(TrieTest, InsertSingleWord) {
   trie.insert("hello");
@@ -91,7 +91,7 @@ TEST_F(TrieTest, InsertPrefixWords) {
   EXPECT_TRUE(trie.search("careful"));
 }
 
-//===----------------------------- ACCESSOR TESTS ------------------------------===//
+//===----- ACCESSOR TESTS ------------------------------------------------------===//
 
 TEST_F(TrieTest, ContainsWord) {
   trie.insert("hello");
@@ -156,7 +156,7 @@ TEST_F(TrieTest, MapBackedWordCollectionPreservesChildInsertionOrder) {
   EXPECT_EQ(trie.get_all_words_with_prefix("app"), (std::vector<std::string>{"app", "apple"}));
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(TrieTest, RemoveWord) {
   trie.insert("hello");
@@ -208,7 +208,7 @@ TEST_F(TrieTest, RemoveAll) {
   EXPECT_TRUE(trie.is_empty());
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(TrieTest, MoveConstructor) {
   trie.insert("hello");
@@ -259,7 +259,7 @@ TEST_F(TrieTest, MovedFromTrieCanBeReusedAfterMoveAssignment) {
   EXPECT_TRUE(other_trie.search("world"));
 }
 
-//===---------------------------- ADDITIONAL TESTS -----------------------------===//
+//===----- ADDITIONAL TESTS ----------------------------------------------------===//
 
 TEST_F(TrieTest, SingleCharacterWords) {
   trie.insert("a");
@@ -304,7 +304,7 @@ TEST_F(TrieTest, CaseSensitivity) {
   EXPECT_FALSE(trie.search("HELLO"));
 }
 
-//===--------------------------- AUTOCOMPLETE TESTS ----------------------------===//
+//===----- AUTOCOMPLETE TESTS --------------------------------------------------===//
 
 TEST_F(TrieTest, AutocompleteSuggestions) {
   trie.insert("app");
@@ -328,7 +328,7 @@ TEST_F(TrieTest, NoSuggestionsForUnknownPrefix) {
   EXPECT_TRUE(suggestions.empty());
 }
 
-//===--------------------------- LARGE DATASET TESTS ---------------------------===//
+//===----- LARGE DATASET TESTS -------------------------------------------------===//
 
 TEST_F(TrieTest, LargeDataset) {
   const int N = 1'000;
@@ -354,7 +354,7 @@ TEST_F(TrieTest, PrefixSearchPerformance) {
   EXPECT_EQ(words.size(), 100);
 }
 
-//===---------------------- COUNT WORDS WITH PREFIX TESTS ----------------------===//
+//===----- COUNT WORDS WITH PREFIX TESTS ---------------------------------------===//
 
 TEST_F(TrieTest, CountWordsWithPrefix) {
   trie.insert("car");
@@ -380,7 +380,7 @@ TEST_F(TrieTest, LongestCommonPrefix) {
   EXPECT_EQ(trie.longest_common_prefix(), "");
 }
 
-//===------------------------- ARRAY-BACKED TRIE TESTS ------------------------===//
+//===----- ARRAY-BACKED TRIE TESTS ---------------------------------------------===//
 
 TEST(TrieArrayTest, LowercaseOperationsUseArrayStorage) {
   TrieArray trie;

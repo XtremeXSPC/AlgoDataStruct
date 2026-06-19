@@ -52,7 +52,7 @@ public:
   using pointer         = T*;
   using const_pointer   = const T*;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty Fenwick tree.
@@ -124,7 +124,7 @@ public:
   FenwickTree(const FenwickTree&)                    = delete;
   auto operator=(const FenwickTree&) -> FenwickTree& = delete;
 
-  //===------------------------ MODIFICATION OPERATIONS ------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Rebuilds the tree from a vector of values.
@@ -183,7 +183,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the prefix sum in the range [0, index].
@@ -244,7 +244,7 @@ public:
   [[nodiscard]] auto lower_bound(const T& target_sum) const -> size_t;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Returns the least significant bit (LSB) of index.
@@ -271,7 +271,7 @@ private:
    */
   auto validate_range(size_t left, size_t right) const -> void;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   arr::DynamicArray<T> values_;   ///< Original values for value_at() and set().
   arr::DynamicArray<T> tree_;     ///< Internal Fenwick tree (1-based indexing).

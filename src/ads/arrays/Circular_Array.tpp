@@ -20,7 +20,7 @@ namespace ads::arrays {
 // The iterator and const_iterator types are aliases of IndexedIterator
 // (see Indexed_Iterator.hpp); their operations need no out-of-line definitions.
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ArrayElement T>
 CircularArray<T>::CircularArray(size_t initial_capacity) :
@@ -87,7 +87,7 @@ auto CircularArray<T>::operator=(CircularArray&& other) noexcept -> CircularArra
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <ArrayElement T>
 template <typename... Args>
@@ -141,7 +141,7 @@ auto CircularArray<T>::push_back(T&& value) -> void requires MoveArrayElement<T>
   emplace_back(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <ArrayElement T>
 auto CircularArray<T>::pop_front() -> void {
@@ -174,7 +174,7 @@ auto CircularArray<T>::clear() noexcept -> void {
   head_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ArrayElement T>
 auto CircularArray<T>::operator[](size_t index) -> T& {
@@ -234,7 +234,7 @@ auto CircularArray<T>::back() const -> const T& {
   return (*this)[size_ - 1];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <ArrayElement T>
 auto CircularArray<T>::is_empty() const noexcept -> bool {
@@ -251,7 +251,7 @@ auto CircularArray<T>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
-//===--------------------------- CAPACITY OPERATIONS ---------------------------===//
+//===----- CAPACITY OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T>
 auto CircularArray<T>::reserve(size_t new_capacity) -> void requires RelocatableArrayElement<T>
@@ -272,7 +272,7 @@ auto CircularArray<T>::shrink_to_fit() -> void requires RelocatableArrayElement<
   }
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T>
 auto CircularArray<T>::begin() noexcept -> iterator {
@@ -298,7 +298,7 @@ auto CircularArray<T>::end() const noexcept -> const_iterator {
 // provided by ContainerFacade<CircularArray<T>>; no out-of-line definitions needed.
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <ArrayElement T>
 auto CircularArray<T>::allocate(size_t capacity) -> storage_ptr {

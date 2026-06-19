@@ -16,7 +16,7 @@
 
 namespace ads::queues {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <QueueValue T>
 LinkedQueue<T>::LinkedQueue() noexcept : front_(nullptr), rear_(nullptr), size_(0) {
@@ -49,7 +49,7 @@ auto LinkedQueue<T>::operator=(LinkedQueue&& other) noexcept -> LinkedQueue<T>& 
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <QueueValue T>
 void LinkedQueue<T>::enqueue(const T& value) {
@@ -88,7 +88,7 @@ auto LinkedQueue<T>::emplace(Args&&... args) -> T& {
   return data_ref;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <QueueValue T>
 void LinkedQueue<T>::dequeue() {
@@ -118,7 +118,7 @@ void LinkedQueue<T>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <QueueValue T>
 auto LinkedQueue<T>::front() -> T& {
@@ -152,7 +152,7 @@ auto LinkedQueue<T>::rear() const -> const T& {
   return rear_->data;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <QueueValue T>
 auto LinkedQueue<T>::is_empty() const noexcept -> bool {

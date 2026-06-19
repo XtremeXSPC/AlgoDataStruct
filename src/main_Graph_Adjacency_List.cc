@@ -30,7 +30,7 @@ using std::vector;
 
 using namespace ads::graphs;
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates graph construction and basic properties.
 void demo_graph_construction() {
@@ -50,7 +50,7 @@ void demo_graph_construction() {
   cout << "Directed: " << g_directed.is_directed() << '\n';
 }
 
-//===----------------------- VERTEX AND EDGE OPERATIONS ------------------------===//
+//===----- VERTEX AND EDGE OPERATIONS ------------------------------------------===//
 
 // Test adding vertices.
 void demo_graph_add_vertices() {
@@ -147,7 +147,7 @@ void demo_graph_add_edges_directed() {
   cout << std::format("Has edge 3->1: {} (reverse)\n", graph.has_edge(v3, v1));
 }
 
-//===----------------------- NEIGHBORS AND REMOVAL DEMO ------------------------===//
+//===----- NEIGHBORS AND REMOVAL DEMO ------------------------------------------===//
 
 // Test getting neighbors.
 void demo_graph_neighbors() {
@@ -181,7 +181,7 @@ void demo_graph_neighbors() {
   }
 }
 
-//===------------------------- REMOVAL OPERATIONS DEMO -------------------------===//
+//===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 // Test removing edges.
 void demo_graph_remove_edge() {
@@ -207,7 +207,7 @@ void demo_graph_remove_edge() {
   cout << std::format("Has edge 1->0: {} (undirected)\n", graph.has_edge(v1, v0));
 }
 
-//===------------------------- REMOVAL OPERATIONS DEMO -------------------------===//
+//===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 // Test removing vertices.
 void demo_graph_bfs() {
@@ -245,7 +245,7 @@ void demo_graph_bfs() {
   ads::demo::print_sequence(bfs_result, "Traversal order: ");
 }
 
-//===------------------------- DEPTH-FIRST SEARCH DEMO -------------------------===//
+//===----- DEPTH-FIRST SEARCH DEMO ---------------------------------------------===//
 
 // Test depth-first search.
 void demo_graph_dfs() {
@@ -279,7 +279,7 @@ void demo_graph_dfs() {
   ads::demo::print_sequence(dfs_result, "Traversal order: ");
 }
 
-//===---------------------------- PATH FINDING DEMO ----------------------------===//
+//===----- PATH FINDING DEMO ---------------------------------------------------===//
 
 // Test path finding.
 void demo_graph_path_finding() {
@@ -336,7 +336,7 @@ void demo_graph_path_finding() {
   cout << std::format("Madrid connected to Berlin: {}\n", graph.is_connected(madrid, berlin));
 }
 
-//===------------------------ CONNECTED COMPONENTS DEMO ------------------------===//
+//===----- CONNECTED COMPONENTS DEMO -------------------------------------------===//
 
 // Test connected components.
 void demo_graph_connected_components() {
@@ -369,7 +369,7 @@ void demo_graph_connected_components() {
   }
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Test move semantics.
 void demo_graph_move_semantics() {
@@ -397,7 +397,7 @@ void demo_graph_move_semantics() {
   cout << "Graph3: " << graph3.num_vertices() << " vertices, " << graph3.num_edges() << " edges\n";
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Test exception handling.
 void demo_graph_exception_handling() {
@@ -429,7 +429,7 @@ void demo_graph_exception_handling() {
   }
 }
 
-//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+//===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Test performance on large graph.
 void demo_graph_large_performance() {
@@ -487,7 +487,7 @@ void demo_graph_large_performance() {
   cout << "Vertices visited: " << dfs_result.size() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("GRAPH ADJACENCY LIST - EXAMPLES FOR TESTING");

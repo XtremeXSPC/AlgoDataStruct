@@ -57,7 +57,7 @@ public:
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Default constructor. Value-initializes all elements.
@@ -116,7 +116,7 @@ public:
    */
   auto operator=(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) -> StaticArray& requires MoveAssignableArrayElement<T>;
 
-  //===------------------------ MODIFICATION OPERATIONS -------------------------===//
+  //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
    * @brief Fills the entire array with a given value.
@@ -132,7 +132,7 @@ public:
    */
   auto swap(StaticArray& other) noexcept(std::is_nothrow_swappable_v<T>) -> void requires SwappableArrayElement<T>;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses an element without bounds checking.
@@ -210,7 +210,7 @@ public:
    */
   auto data() const noexcept -> const T*;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of elements in the array.
@@ -233,7 +233,7 @@ public:
    */
   [[nodiscard]] static constexpr auto is_empty() noexcept -> bool { return false; }
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the beginning of the array.
@@ -258,13 +258,13 @@ public:
   // cbegin/cend, rbegin/rend, and crbegin/crend are inherited from
   // ContainerFacade<StaticArray<T, N>>.
 
-  //===------------------------- COMPARISON OPERATORS --------------------------===//
+  //===----- COMPARISON OPERATORS ----------------------------------------------===//
 
   // operator== and operator<=> (and the rewritten !=, <, >, <=, >=) are inherited
   // from ContainerFacade<StaticArray<T, N>>, constrained on the element type.
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   T data_[N]; ///< Fixed-size storage for elements.
 };

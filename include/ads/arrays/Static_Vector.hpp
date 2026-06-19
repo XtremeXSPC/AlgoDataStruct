@@ -63,7 +63,7 @@ public:
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty vector (size 0, capacity N).
@@ -113,7 +113,7 @@ public:
   StaticVector(const StaticVector&)                    = delete;
   auto operator=(const StaticVector&) -> StaticVector& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the end.
@@ -175,7 +175,7 @@ public:
    */
   auto insert(size_t index, T&& value) -> void requires InsertMoveArrayElement<T>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the last element.
@@ -215,7 +215,7 @@ public:
    */
   auto resize(size_t new_size, const T& value) -> void requires CopyArrayElement<T>;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Accesses an element without bounds checking.
@@ -293,7 +293,7 @@ public:
    */
   auto data() const noexcept -> const T*;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the vector is empty.
@@ -330,7 +330,7 @@ public:
    */
   [[nodiscard]] static constexpr auto max_size() noexcept -> size_t { return N; }
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning of the vector.
@@ -348,7 +348,7 @@ public:
   // (==, <=>) are inherited from ContainerFacade<StaticVector<T, N>>.
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   alignas(T) std::byte storage_[sizeof(T) * N]; ///< Raw inline storage for N elements.
   size_t size_;                                 ///< Number of constructed elements.

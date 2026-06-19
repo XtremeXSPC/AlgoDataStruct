@@ -16,7 +16,7 @@
 
 namespace ads::algorithms {
 
-//===--------------------------- INTERNAL UTILITIES ----------------------------===//
+//===----- INTERNAL UTILITIES --------------------------------------------------===//
 
 namespace string_algorithm_detail {
 
@@ -31,7 +31,7 @@ inline auto all_match_positions(size_t text_length) -> ads::arrays::DynamicArray
 
 } // namespace string_algorithm_detail
 
-//===----------------------- PATTERN MATCHING ALGORITHMS -----------------------===//
+//===----- PATTERN MATCHING ALGORITHMS -----------------------------------------===//
 
 auto compute_kmp_prefix_function(std::string_view pattern) -> ads::arrays::DynamicArray<size_t> {
   ads::arrays::DynamicArray<size_t> prefix(pattern.size(), 0U);

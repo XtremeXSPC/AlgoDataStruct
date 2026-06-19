@@ -32,7 +32,7 @@ using std::vector;
 
 using namespace ads::trees;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents via in-order traversal.
 template <typename T>
@@ -50,7 +50,7 @@ void print_avl_tree(const AVLTree<T>& tree, const string& name) {
   cout << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and traversal operations.
 void demo_basic_operations() {
@@ -92,7 +92,7 @@ void demo_basic_operations() {
   print_avl_tree(avl, "avl after duplicate attempt");
 }
 
-//===----------------------------- ROTATION DEMOS ------------------------------===//
+//===----- ROTATION DEMOS ------------------------------------------------------===//
 
 // Test Left-Left (LL) rotation.
 void demo_ll_rotation() {
@@ -198,7 +198,7 @@ void demo_rl_rotation() {
   cout << "  10  30\n\n";
 }
 
-//===------------------------- SEARCH OPERATIONS DEMO --------------------------===//
+//===----- SEARCH OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates search operations.
 void demo_search_operations() {
@@ -225,7 +225,7 @@ void demo_search_operations() {
   cout << "  Maximum: " << avl.find_max() << '\n';
 }
 
-//===---------------------------- REMOVE OPERATIONS ----------------------------===//
+//===----- REMOVE OPERATIONS ---------------------------------------------------===//
 
 // Demonstrates remove operations.
 void demo_remove_operations() {
@@ -266,7 +266,7 @@ void demo_remove_operations() {
   cout << "Still balanced: " << (avl.is_balanced() ? "Yes" : "No") << '\n';
 }
 
-//===------------------------------ ITERATOR DEMO ------------------------------===//
+//===----- ITERATOR DEMO -------------------------------------------------------===//
 
 // Demonstrates iterator functionality.
 void demo_iterator() {
@@ -286,7 +286,7 @@ void demo_iterator() {
   cout << '\n';
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -314,7 +314,7 @@ void demo_move_semantics() {
   cout << "avl2 size after move: " << avl2.size() << " (should be 0)\n";
 }
 
-//===-------------------------- SORTED SEQUENCE DEMO ---------------------------===//
+//===----- SORTED SEQUENCE DEMO ------------------------------------------------===//
 
 // Test with large sorted sequence (worst case for unbalanced BST).
 void demo_sorted_sequence() {
@@ -345,7 +345,7 @@ void demo_sorted_sequence() {
   cout << "This demonstrates why balancing is crucial!\n";
 }
 
-//===------------------------- PERFORMANCE COMPARISON --------------------------===//
+//===----- PERFORMANCE COMPARISON ----------------------------------------------===//
 
 // Performance test: AVL vs BST.
 void demo_performance() {
@@ -399,7 +399,7 @@ void demo_performance() {
   cout << "but AVL guarantees O(log n) even in the worst case.\n";
 }
 
-//===----------------------------- EDGE CASES DEMO -----------------------------===//
+//===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Test edge cases.
 void demo_edge_cases() {
@@ -440,7 +440,7 @@ void demo_edge_cases() {
   cout << "After clear: size=" << avl.size() << ", is_empty=" << avl.is_empty() << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("AVL TREE USAGE EXAMPLES");

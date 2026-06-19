@@ -17,7 +17,7 @@
 
 using namespace ads::trees;
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST(FenwickTreeRangeUpdateBasicTest, DefaultConstruction) {
   FenwickTreeRangeUpdate<int> tree;
@@ -86,7 +86,7 @@ TEST(FenwickTreeRangeUpdateBasicTest, BuildReplacesExistingValues) {
   }
 }
 
-//===----------------------------- RANGE ADD TESTS -----------------------------===//
+//===----- RANGE ADD TESTS -----------------------------------------------------===//
 
 TEST(FenwickTreeRangeUpdateTest, SingleRangeAdd) {
   FenwickTreeRangeUpdate<int> tree(5);
@@ -162,7 +162,7 @@ TEST(FenwickTreeRangeUpdateTest, NegativeDelta) {
   EXPECT_EQ(tree.point_query(4), 20);
 }
 
-//===--------------------------- RESET & CLEAR TESTS ---------------------------===//
+//===----- RESET & CLEAR TESTS -------------------------------------------------===//
 
 TEST(FenwickTreeRangeUpdateTest, ClearTree) {
   FenwickTreeRangeUpdate<int> tree(5);
@@ -186,7 +186,7 @@ TEST(FenwickTreeRangeUpdateTest, ResetTree) {
   }
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST(FenwickTreeRangeUpdateTest, MoveConstructor) {
   FenwickTreeRangeUpdate<int> tree(5);
@@ -211,7 +211,7 @@ TEST(FenwickTreeRangeUpdateTest, MoveAssignment) {
   EXPECT_EQ(assigned.point_query(2), 10);
 }
 
-//===----------------------------- EDGE CASE TESTS -----------------------------===//
+//===----- EDGE CASE TESTS -----------------------------------------------------===//
 
 TEST(FenwickTreeRangeUpdateEdgeCaseTest, SingleElement) {
   FenwickTreeRangeUpdate<int> tree(1);
@@ -243,7 +243,7 @@ TEST(FenwickTreeRangeUpdateEdgeCaseTest, LargeValues) {
   EXPECT_EQ(tree.point_query(2), 3'000'000'000LL);
 }
 
-//===-------------------------- ERROR HANDLING TESTS ---------------------------===//
+//===----- ERROR HANDLING TESTS ------------------------------------------------===//
 
 TEST(FenwickTreeRangeUpdateErrorTest, PointQueryOutOfRange) {
   FenwickTreeRangeUpdate<int> tree(3);

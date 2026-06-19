@@ -18,7 +18,7 @@
 
 namespace ads::probabilistic {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename Key, typename Hash>
 BloomFilter<Key, Hash>::BloomFilter(size_t bit_count, size_t hash_count, Hash hasher) :
@@ -52,7 +52,7 @@ auto BloomFilter<Key, Hash>::from_estimates(size_t expected_insertions, double f
   return BloomFilter(bit_count, hash_count, std::move(hasher));
 }
 
-//===----------------------------- CORE OPERATIONS -----------------------------===//
+//===----- CORE OPERATIONS -----------------------------------------------------===//
 
 template <typename Key, typename Hash>
 auto BloomFilter<Key, Hash>::insert(const Key& key) -> void {
@@ -101,7 +101,7 @@ auto BloomFilter<Key, Hash>::clear() noexcept -> void {
   set_bit_count_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename Key, typename Hash>
 auto BloomFilter<Key, Hash>::bit_count() const noexcept -> size_t {
@@ -140,7 +140,7 @@ auto BloomFilter<Key, Hash>::estimated_false_positive_rate() const noexcept -> d
   return std::pow(1.0 - std::exp((-k * n) / m), k);
 }
 
-//===----------------------------- PRIVATE HELPERS -----------------------------===//
+//===----- PRIVATE HELPERS -----------------------------------------------------===//
 
 template <typename Key, typename Hash>
 auto BloomFilter<Key, Hash>::mix_hash(std::uint64_t value) noexcept -> std::uint64_t {

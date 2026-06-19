@@ -19,7 +19,7 @@
 
 namespace ads::arrays {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <ArrayElement T>
 GapBuffer<T>::GapBuffer(size_t initial_capacity) :
@@ -85,7 +85,7 @@ auto GapBuffer<T>::operator=(GapBuffer&& other) noexcept -> GapBuffer& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <ArrayElement T>
 template <typename... Args>
@@ -111,7 +111,7 @@ auto GapBuffer<T>::insert(T&& value) -> void requires MoveArrayElement<T>
   emplace(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <ArrayElement T>
 auto GapBuffer<T>::erase() -> void {
@@ -145,7 +145,7 @@ auto GapBuffer<T>::clear() noexcept -> void {
   gap_end_   = capacity_;
 }
 
-//===---------------------------- CURSOR OPERATIONS ----------------------------===//
+//===----- CURSOR OPERATIONS ---------------------------------------------------===//
 
 template <ArrayElement T>
 auto GapBuffer<T>::cursor() const noexcept -> size_t {
@@ -189,7 +189,7 @@ auto GapBuffer<T>::retreat_cursor() -> void {
   --gap_end_;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <ArrayElement T>
 auto GapBuffer<T>::operator[](size_t index) -> T& {
@@ -249,7 +249,7 @@ auto GapBuffer<T>::back() const -> const T& {
   return (*this)[size() - 1];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <ArrayElement T>
 auto GapBuffer<T>::size() const noexcept -> size_t {
@@ -261,7 +261,7 @@ auto GapBuffer<T>::capacity() const noexcept -> size_t {
   return capacity_;
 }
 
-//===--------------------------- ITERATOR OPERATIONS ---------------------------===//
+//===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ArrayElement T>
 auto GapBuffer<T>::begin() noexcept -> iterator {
@@ -284,7 +284,7 @@ auto GapBuffer<T>::end() const noexcept -> const_iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <ArrayElement T>
 auto GapBuffer<T>::allocate(size_t capacity) -> storage_ptr {

@@ -24,7 +24,7 @@ protected:
   StaticQueue<int, 5> queue;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(StaticQueueTest, EmptyOnConstruction) {
   EXPECT_TRUE(queue.is_empty());
@@ -59,7 +59,7 @@ TEST_F(StaticQueueTest, EmplaceReturnsReference) {
   EXPECT_EQ(q.rear(), "zzzz");
 }
 
-//===------------------------------- FIFO TESTS --------------------------------===//
+//===----- FIFO TESTS ----------------------------------------------------------===//
 
 TEST_F(StaticQueueTest, DequeueReturnsFifoOrder) {
   for (int i = 0; i < 5; ++i) {
@@ -102,7 +102,7 @@ TEST_F(StaticQueueTest, Clear) {
   EXPECT_EQ(queue.size(), 0u);
 }
 
-//===--------------------------- POLYMORPHISM TESTS ----------------------------===//
+//===----- POLYMORPHISM TESTS --------------------------------------------------===//
 
 TEST_F(StaticQueueTest, UsableThroughQueueInterface) {
   queue.enqueue(10);
@@ -115,7 +115,7 @@ TEST_F(StaticQueueTest, UsableThroughQueueInterface) {
   EXPECT_EQ(base.front(), 20);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(StaticQueueTest, MoveConstructionLinearizesAndEmptiesSource) {
   for (int i = 0; i < 5; ++i) {

@@ -55,7 +55,7 @@ public:
   using Table       = hash::HashTableChaining<Key, Value, Hash>;
   using value_type  = std::pair<const Key, Value>;
 
-  //===---------------------------- ITERATOR CLASS -----------------------------===//
+  //===----- ITERATOR CLASS ----------------------------------------------------===//
 
   /**
    * @brief Forward iterator for traversing the hash map.
@@ -97,7 +97,7 @@ public:
     auto advance_to_next_bucket() -> void;
   };
 
-  //===------------------------- CONST_ITERATOR CLASS --------------------------===//
+  //===----- CONST_ITERATOR CLASS ----------------------------------------------===//
 
   /**
    * @brief Const forward iterator for traversing the hash map.
@@ -141,7 +141,7 @@ public:
     auto advance_to_next_bucket() -> void;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty hash map.
@@ -183,7 +183,7 @@ public:
   HashMap(const HashMap&)                    = delete;
   auto operator=(const HashMap&) -> HashMap& = delete;
 
-  //===---------------------------- ELEMENT ACCESS -----------------------------===//
+  //===----- ELEMENT ACCESS ----------------------------------------------------===//
 
   /**
    * @brief Access or insert element with given key.
@@ -212,7 +212,7 @@ public:
    */
   auto at(const Key& key) const -> const Value&;
 
-  //===------------------------- DICTIONARY INTERFACE ---------------------------===//
+  //===----- DICTIONARY INTERFACE ----------------------------------------------===//
 
   /**
    * @brief Inserts or updates a key-value pair (copy).
@@ -238,7 +238,7 @@ public:
   auto put(Key&& key, Value&& value) -> void
       requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts a key-value pair.
@@ -267,7 +267,7 @@ public:
   template <typename... Args>
   auto emplace(Args&&... args) -> std::pair<iterator, bool>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Erases element with given key.
@@ -301,7 +301,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the map is empty.
@@ -360,7 +360,7 @@ public:
   [[nodiscard]]
   auto count(const Key& key) const -> size_t;
 
-  //===-------------------------- CONVENIENCE METHODS --------------------------===//
+  //===----- CONVENIENCE METHODS -----------------------------------------------===//
 
   /**
    * @brief Returns vector of all keys.
@@ -384,7 +384,7 @@ public:
   [[nodiscard]] auto entries() const
       -> std::vector<std::pair<Key, Value>> requires std::copy_constructible<Key> && std::copy_constructible<Value>;
 
-  //===-------------------------- ITERATOR OPERATIONS --------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator to the first element.
@@ -432,7 +432,7 @@ private:
   // Internal hash table storing the key-value pairs.
   Table table_;
 
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Finds an entry in the underlying table (non-const).

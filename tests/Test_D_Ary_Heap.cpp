@@ -22,7 +22,7 @@ using namespace ads::heaps;
 
 namespace {
 
-//===----------------------------- TEST UTILITIES ------------------------------===//
+//===----- TEST UTILITIES ------------------------------------------------------===//
 
 struct MoveOnlyItem {
   int         priority;
@@ -48,7 +48,7 @@ protected:
   DAryHeap<int> heap;
 };
 
-//===--------------------------- CONSTRUCTION TESTS ----------------------------===//
+//===----- CONSTRUCTION TESTS --------------------------------------------------===//
 
 TEST_F(DAryHeapTest, IsEmptyOnConstruction) {
   EXPECT_TRUE(heap.is_empty());
@@ -68,7 +68,7 @@ TEST(DAryHeapConstructionTest, AcceptsCustomArityAndCapacity) {
   EXPECT_GE(heap.capacity(), 64U);
 }
 
-//===-------------------------- ORDERING / ACCESS TESTS ------------------------===//
+//===----- ORDERING / ACCESS TESTS ---------------------------------------------===//
 
 TEST_F(DAryHeapTest, InsertAndTopDefaultToMaxHeapSemantics) {
   heap.insert(10);
@@ -152,7 +152,7 @@ TEST(DAryHeapValueTest, SupportsMoveOnlyValues) {
   EXPECT_EQ(heap.extract_top().label, "ten");
 }
 
-//===------------------------ MUTATION / UTILITY TESTS -------------------------===//
+//===----- MUTATION / UTILITY TESTS --------------------------------------------===//
 
 TEST(DAryHeapMutationTest, UpdateKeyCanPromoteElement) {
   DAryHeap<int> heap(4);
@@ -211,7 +211,7 @@ TEST(DAryHeapUtilityTest, ReserveAndClearWorkWithHigherArity) {
   EXPECT_EQ(heap.size(), 0U);
 }
 
-//===--------------------------- STRUCTURE / MOVE TESTS ------------------------===//
+//===----- STRUCTURE / MOVE TESTS ----------------------------------------------===//
 
 TEST(DAryHeapStructureTest, LargeArityStillWorksForSmallHeap) {
   DAryHeap<int> heap(16);

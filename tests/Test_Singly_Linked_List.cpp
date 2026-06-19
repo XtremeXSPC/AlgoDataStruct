@@ -24,7 +24,7 @@ protected:
   SinglyLinkedList<int> list;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, IsEmptyOnConstruction) {
   EXPECT_EQ(list.size(), 0);
@@ -42,7 +42,7 @@ TEST_F(SinglyLinkedListTest, Clear) {
   EXPECT_THROW(list.front(), ListException);
 }
 
-//===--------------------------- MODIFICATION TESTS ----------------------------===//
+//===----- MODIFICATION TESTS --------------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, PushFront) {
   list.push_front(10);
@@ -117,7 +117,7 @@ TEST(SinglyLinkedListStringTest, Emplace) {
   EXPECT_EQ(str_list.back(), "!");
 }
 
-//===----------------------------- ACCESSOR TESTS ------------------------------===//
+//===----- ACCESSOR TESTS ------------------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, AccessOnEmptyThrows) {
   EXPECT_THROW(list.front(), ListException);
@@ -151,7 +151,7 @@ TEST_F(SinglyLinkedListTest, ConstCorrectness) {
   EXPECT_EQ(actual, expected);
 }
 
-//===---------------------------- ADDITIONAL TESTS -----------------------------===//
+//===----- ADDITIONAL TESTS ----------------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, Reverse) {
   list.push_back(1);
@@ -183,7 +183,7 @@ TEST_F(SinglyLinkedListTest, ReverseEdgeCases) {
   EXPECT_EQ(list.back(), 42);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, MoveSemantics) {
   list.push_back(10);
@@ -204,7 +204,7 @@ TEST_F(SinglyLinkedListTest, MoveSemantics) {
   EXPECT_EQ(list.back(), 20);
 }
 
-//===------------------------- ITERATOR FUNCTIONALITY --------------------------===//
+//===----- ITERATOR FUNCTIONALITY ----------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, IteratorTraversal) {
   for (int i = 1; i <= 5; ++i) {
@@ -232,7 +232,7 @@ TEST_F(SinglyLinkedListTest, RangeBasedFor) {
   EXPECT_EQ(sum, 60);
 }
 
-//===-------------------------- LARGE LIST OPERATIONS --------------------------===//
+//===----- LARGE LIST OPERATIONS -----------------------------------------------===//
 
 TEST_F(SinglyLinkedListTest, LargeListOperations) {
   const int N = 1'000;

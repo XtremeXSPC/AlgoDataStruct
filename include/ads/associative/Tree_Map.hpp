@@ -77,7 +77,7 @@ public:
   using mapped_type = Value;
   using value_type  = std::pair<const Key, Value>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty TreeMap.
@@ -113,7 +113,7 @@ public:
   TreeMap(const TreeMap&)                    = delete;
   auto operator=(const TreeMap&) -> TreeMap& = delete;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the map is empty.
@@ -134,7 +134,7 @@ public:
    */
   [[nodiscard]] auto contains(const Key& key) const -> bool;
 
-  //===---------------------------- ELEMENT ACCESS -----------------------------===//
+  //===----- ELEMENT ACCESS ----------------------------------------------------===//
 
   /**
    * @brief Access or insert element with given key.
@@ -174,7 +174,7 @@ public:
    */
   [[nodiscard]] auto find(const Key& key) const -> const Value*;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Inserts a key-value pair (copy).
@@ -231,7 +231,7 @@ public:
    */
   auto put(Key&& key, Value&& value) -> void requires MoveMapEntry<Key, Value>;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes an element with the given key.
@@ -245,7 +245,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===-------------------------- CONVENIENCE METHODS --------------------------===//
+  //===----- CONVENIENCE METHODS -----------------------------------------------===//
 
   /**
    * @brief Returns vector of all keys in sorted order.
@@ -263,7 +263,7 @@ public:
   [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>> requires CopyMapKey<Key> && CopyMapValue<Value>;
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Finds the Entry pointer for a given key.

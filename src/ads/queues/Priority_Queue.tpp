@@ -16,7 +16,7 @@
 
 namespace ads::queues {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <QueueValue T, typename Compare>
 PriorityQueue<T, Compare>::PriorityQueue(Compare comp) : heap_(), comp_(comp) {
@@ -56,7 +56,7 @@ auto PriorityQueue<T, Compare>::operator=(PriorityQueue&& other) noexcept(std::i
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::push(const T& value) -> void {
@@ -77,7 +77,7 @@ auto PriorityQueue<T, Compare>::emplace(Args&&... args) -> void {
   heapify_up(heap_.size() - 1);
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::pop() -> void {
@@ -102,7 +102,7 @@ auto PriorityQueue<T, Compare>::clear() noexcept -> void {
   heap_.clear();
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::top() -> T& {
@@ -120,7 +120,7 @@ auto PriorityQueue<T, Compare>::top() const -> const T& {
   return heap_[0];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::is_empty() const noexcept -> bool {
@@ -132,7 +132,7 @@ auto PriorityQueue<T, Compare>::size() const noexcept -> size_t {
   return heap_.size();
 }
 
-//===--------------------------- UTILITY OPERATIONS ----------------------------===//
+//===----- UTILITY OPERATIONS --------------------------------------------------===//
 
 template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::reserve(size_t capacity) -> void {
@@ -153,7 +153,7 @@ auto PriorityQueue<T, Compare>::sorted_elements() -> std::vector<T> {
   return result;
 }
 
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <QueueValue T, typename Compare>
 auto PriorityQueue<T, Compare>::heapify_up(size_t index) -> void {

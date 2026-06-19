@@ -27,7 +27,7 @@ using std::string;
 
 using namespace ads::arrays;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print array contents.
 template <typename T, size_t N>
@@ -40,7 +40,7 @@ void print_array(const StaticArray<T, N>& array, const string& label) {
   cout << "\n";
 }
 
-//===--------------------------- CONSTRUCTION DEMO -----------------------------===//
+//===----- CONSTRUCTION DEMO ---------------------------------------------------===//
 
 // Demonstrate various construction methods.
 void demo_construction() {
@@ -65,7 +65,7 @@ void demo_construction() {
   ads::demo::print_success("All construction methods work correctly.");
 }
 
-//===------------------------- ACCESS OPERATIONS DEMO --------------------------===//
+//===----- ACCESS OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrate access operations.
 void demo_access_operations() {
@@ -100,7 +100,7 @@ void demo_access_operations() {
   ads::demo::print_success("All access operations work correctly.");
 }
 
-//===----------------------------- ITERATION DEMO ------------------------------===//
+//===----- ITERATION DEMO ------------------------------------------------------===//
 
 // Demonstrate various iteration methods.
 void demo_iteration() {
@@ -136,7 +136,7 @@ void demo_iteration() {
   ads::demo::print_success("All iteration methods work correctly.");
 }
 
-//===--------------------------- COMPARISON DEMO -------------------------------===//
+//===----- COMPARISON DEMO -----------------------------------------------------===//
 
 void demo_comparison() {
   ads::demo::print_section("Demo: Comparison");
@@ -166,7 +166,7 @@ void demo_comparison() {
   ads::demo::print_success("All comparison operations work correctly.");
 }
 
-//===------------------------- UTILITY OPERATIONS DEMO -------------------------===//
+//===----- UTILITY OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrate utility operations like swap and fill.
 void demo_utility_operations() {
@@ -193,7 +193,7 @@ void demo_utility_operations() {
   ads::demo::print_success("All utility operations work correctly.");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrate exception handling for out-of-bounds access.
 void demo_exception_handling() {
@@ -213,7 +213,7 @@ void demo_exception_handling() {
   ads::demo::print_success("Exception handling works correctly.");
 }
 
-//===---------------------------- STRING TYPE DEMO -----------------------------===//
+//===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrate StaticArray with string type.
 void demo_string_type() {
@@ -234,7 +234,7 @@ void demo_string_type() {
   ads::demo::print_success("String type support works correctly.");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("StaticArray Demo");

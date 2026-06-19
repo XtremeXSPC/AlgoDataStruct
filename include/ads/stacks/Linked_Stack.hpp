@@ -43,7 +43,7 @@ private:
   struct Node;
 
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty stack.
@@ -77,7 +77,7 @@ public:
   LinkedStack(const LinkedStack&)                    = delete;
   auto operator=(const LinkedStack&) -> LinkedStack& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place on top of the stack.
@@ -103,7 +103,7 @@ public:
    */
   void push(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the top element from the stack.
@@ -118,7 +118,7 @@ public:
    */
   void clear() noexcept override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the top element.
@@ -136,7 +136,7 @@ public:
    */
   auto top() const -> const T& override;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the stack is empty.
@@ -153,7 +153,7 @@ public:
   [[nodiscard]] auto size() const noexcept -> size_t override;
 
 private:
-  //===------------------------ INTERNAL NODE STRUCTURE ------------------------===//
+  //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
 
   /**
    * @brief Internal node structure.
@@ -169,7 +169,7 @@ private:
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
   std::unique_ptr<Node> head_; ///< Pointer to the top node (owns the node).
   size_t                size_; ///< The current number of elements.
 };

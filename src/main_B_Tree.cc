@@ -32,7 +32,7 @@ using std::vector;
 
 using namespace ads::trees;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents.
 template <int MinDegree>
@@ -49,7 +49,7 @@ void print_btree(const BTree<int, MinDegree>& tree, const string& name) {
   cout << '\n';
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and traversal operations.
 void demo_basic_operations() {
@@ -86,7 +86,7 @@ void demo_basic_operations() {
   cout << (inserted ? "inserted" : "not inserted (correct behavior)") << '\n';
 }
 
-//===--------------------------- NODE SPLITTING DEMO ---------------------------===//
+//===----- NODE SPLITTING DEMO -------------------------------------------------===//
 
 // Demonstrates node splitting during insertions.
 void demo_node_splitting() {
@@ -112,7 +112,7 @@ void demo_node_splitting() {
   cout << "\nB-Tree properties maintained after all insertions: " << (btree.validate_properties() ? "yes" : "no") << '\n';
 }
 
-//===------------------------- DIFFERENT DEGREES DEMO --------------------------===//
+//===----- DIFFERENT DEGREES DEMO ----------------------------------------------===//
 
 // Demonstrates B-Trees with different minimum degrees.
 void demo_different_degrees() {
@@ -153,7 +153,7 @@ void demo_different_degrees() {
   cout << "\nAs t increases, height decreases but node count may vary.\n";
 }
 
-//===------------------------ SEARCH AND TRAVERSAL DEMO ------------------------===//
+//===----- SEARCH AND TRAVERSAL DEMO -------------------------------------------===//
 
 // Demonstrates search and traversal operations.
 void demo_search_traversal() {
@@ -179,7 +179,7 @@ void demo_search_traversal() {
   cout << "\nB-Tree properties valid: " << (btree.validate_properties() ? "yes" : "no") << '\n';
 }
 
-//===------------------------- RANDOM INSERTIONS DEMO --------------------------===//
+//===----- RANDOM INSERTIONS DEMO ----------------------------------------------===//
 
 // Demonstrates random insertions.
 void demo_random_insertions() {
@@ -217,7 +217,7 @@ void demo_random_insertions() {
   cout << "  All elements found: " << (found_count == 100 ? "yes" : "no") << '\n';
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -253,7 +253,7 @@ void demo_move_semantics() {
   print_btree(btree3, "btree3 (should have btree2's data)");
 }
 
-//===---------------------------- STRING TYPE DEMO -----------------------------===//
+//===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrates B-Tree with string type.
 void demo_string_type() {
@@ -279,7 +279,7 @@ void demo_string_type() {
   cout << "  search(\"orange\"): " << (btree.search("orange") ? "found" : "not found") << '\n';
 }
 
-//===---------------------------- PERFORMANCE DEMO -----------------------------===//
+//===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Demonstrates performance with large datasets.
 void demo_performance() {
@@ -315,7 +315,7 @@ void demo_performance() {
   cout << "  Search time: " << search_duration.count() << " ms\n";
 }
 
-//===-------------------------- CLEAR AND REUSE DEMO ---------------------------===//
+//===----- CLEAR AND REUSE DEMO ------------------------------------------------===//
 
 // Demonstrates clearing the tree and reusing it.
 void demo_clear_reuse() {
@@ -341,7 +341,7 @@ void demo_clear_reuse() {
   cout << "  Properties valid: " << (btree.validate_properties() ? "yes" : "no") << '\n';
 }
 
-//===------------------------- HEIGHT COMPARISON DEMO --------------------------===//
+//===----- HEIGHT COMPARISON DEMO ----------------------------------------------===//
 
 // Demonstrates height comparison for different minimum degrees.
 void demo_height_comparison() {
@@ -368,7 +368,7 @@ void demo_height_comparison() {
   cout << "which means fewer disk accesses in database applications.\n";
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

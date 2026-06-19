@@ -28,7 +28,7 @@ using std::vector;
 
 using ads::trees::FenwickTree;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Print the current state of the Fenwick tree.
 template <typename T>
@@ -52,7 +52,7 @@ void print_tree_state(const FenwickTree<T>& tree, const string& label) {
   cout << "\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates building the tree and performing queries.
 void demo_build_and_queries() {
@@ -66,7 +66,7 @@ void demo_build_and_queries() {
   cout << "Sum [1..3]: " << tree.range_sum(1, 3) << "\n";
 }
 
-//===------------------------- UPDATE OPERATIONS DEMO --------------------------===//
+//===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates point updates (additions).
 void demo_updates() {
@@ -84,7 +84,7 @@ void demo_updates() {
   cout << "Sum [0..2]: " << tree.range_sum(0, 2) << "\n";
 }
 
-//===--------------------------- SET OPERATIONS DEMO ---------------------------===//
+//===----- SET OPERATIONS DEMO -------------------------------------------------===//
 
 // Demonstrates setting values at specific indices.
 void demo_set_operations() {
@@ -98,7 +98,7 @@ void demo_set_operations() {
   print_tree_state(tree, "After set");
 }
 
-//===------------------------ RESET & CLEAR OPERATIONS -------------------------===//
+//===----- RESET & CLEAR OPERATIONS --------------------------------------------===//
 
 // Demonstrates resetting and clearing the tree.
 void demo_reset_clear() {
@@ -112,7 +112,7 @@ void demo_reset_clear() {
   print_tree_state(tree, "After clear");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling for invalid operations.
 void demo_exceptions() {
@@ -133,7 +133,7 @@ void demo_exceptions() {
   }
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

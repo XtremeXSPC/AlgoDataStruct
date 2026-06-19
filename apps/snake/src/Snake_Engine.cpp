@@ -16,7 +16,7 @@
 
 namespace ads::apps::snake {
 
-//===------------------------- SNAKE ENGINE LIFECYCLE --------------------------===//
+//===----- SNAKE ENGINE LIFECYCLE ----------------------------------------------===//
 
 // Constructor initializes the engine with a given seed for reproducibility.
 SnakeEngine::SnakeEngine(std::uint32_t seed) :
@@ -63,7 +63,7 @@ auto SnakeEngine::reset() -> void {
   reset(seed_);
 }
 
-//===------------------------------ GAME CONTROL -------------------------------===//
+//===----- GAME CONTROL --------------------------------------------------------===//
 
 auto SnakeEngine::set_direction(Direction direction) -> void {
   if (!is_opposite(direction_, direction)) {
@@ -131,7 +131,7 @@ auto SnakeEngine::step() -> bool {
   return alive_;
 }
 
-//===-------------------------------- ACCESSORS --------------------------------===//
+//===----- ACCESSORS -----------------------------------------------------------===//
 
 auto SnakeEngine::direction() const noexcept -> Direction {
   return direction_;
@@ -173,7 +173,7 @@ auto SnakeEngine::deltas() const noexcept -> const ads::arrays::DynamicArray<Cel
   return deltas_;
 }
 
-//===-------------------------------- RENDERING --------------------------------===//
+//===----- RENDERING -----------------------------------------------------------===//
 
 auto SnakeEngine::render_board() const -> Board {
   Board board;
@@ -243,7 +243,7 @@ auto SnakeEngine::is_consistent() const -> bool {
   return true;
 }
 
-//===--------------------------- INTERNAL UTILITIES ----------------------------===//
+//===----- INTERNAL UTILITIES --------------------------------------------------===//
 
 auto SnakeEngine::is_opposite(Direction lhs, Direction rhs) noexcept -> bool {
   using enum Direction;

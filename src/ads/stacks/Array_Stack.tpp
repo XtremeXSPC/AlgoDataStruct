@@ -16,7 +16,7 @@
 
 namespace ads::stacks {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <StackValue T>
 ArrayStack<T>::ArrayStack(size_t initial_capacity) :
@@ -52,7 +52,7 @@ auto ArrayStack<T>::operator=(ArrayStack&& other) noexcept -> ArrayStack<T>& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <StackValue T>
 template <typename... Args>
@@ -78,7 +78,7 @@ void ArrayStack<T>::push(T&& value) {
   emplace(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <StackValue T>
 void ArrayStack<T>::pop() {
@@ -113,7 +113,7 @@ void ArrayStack<T>::clear() noexcept {
   }
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <StackValue T>
 auto ArrayStack<T>::top() -> T& {
@@ -131,7 +131,7 @@ auto ArrayStack<T>::top() const -> const T& {
   return data_[size_ - 1];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <StackValue T>
 auto ArrayStack<T>::is_empty() const noexcept -> bool {
@@ -143,7 +143,7 @@ auto ArrayStack<T>::size() const noexcept -> size_t {
   return size_;
 }
 
-//===--------------------------- CAPACITY MANAGEMENT ---------------------------===//
+//===----- CAPACITY MANAGEMENT -------------------------------------------------===//
 
 template <StackValue T>
 void ArrayStack<T>::reserve(size_t n) {
@@ -171,7 +171,7 @@ void ArrayStack<T>::grow() {
   reallocate(new_capacity);
 }
 
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <StackValue T>
 auto ArrayStack<T>::allocate(size_t capacity) -> storage_ptr {

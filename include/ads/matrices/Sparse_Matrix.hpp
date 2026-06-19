@@ -50,7 +50,7 @@ namespace ads::matrices {
 template <MatrixValue Value>
 class SparseMatrix {
 public:
-  //===------------------------------ ENTRY TYPE -------------------------------===//
+  //===----- ENTRY TYPE --------------------------------------------------------===//
 
   using value_type        = Value;
   using size_type         = size_t;
@@ -70,7 +70,7 @@ public:
 
   using entry_list_type = ads::arrays::DynamicArray<Entry>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty sparse matrix with a fixed shape.
@@ -127,7 +127,7 @@ public:
   SparseMatrix(const SparseMatrix&)                    = delete;
   auto operator=(const SparseMatrix&) -> SparseMatrix& = delete;
 
-  //===-------------------------- FACTORY OPERATIONS ---------------------------===//
+  //===----- FACTORY OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Builds a sparse matrix from a dense `DynamicArray` matrix.
@@ -148,7 +148,7 @@ public:
   [[nodiscard]] static auto from_dense(std::initializer_list<std::initializer_list<Value>> dense) -> SparseMatrix
       requires CopyMatrixValue<Value>;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Returns the number of rows.
@@ -180,7 +180,7 @@ public:
    */
   [[nodiscard]] auto is_square() const noexcept -> bool;
 
-  //===-------------------------- MUTATION OPERATIONS --------------------------===//
+  //===----- MUTATION OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Clears all stored non-zero entries but preserves the shape.
@@ -252,7 +252,7 @@ public:
    */
   auto erase(size_type row, size_type column) -> bool;
 
-  //===---------------------------- EXTRACTION API -----------------------------===//
+  //===----- EXTRACTION API ----------------------------------------------------===//
 
   /**
    * @brief Returns the number of non-zero entries in one row.
@@ -304,7 +304,7 @@ public:
   auto for_each_non_zero(Visitor&& visitor) const -> void;
 
 private:
-  //===--------------------------- INTERNAL STORAGE ----------------------------===//
+  //===----- INTERNAL STORAGE --------------------------------------------------===//
 
   size_type                            row_count_;
   size_type                            column_count_;
@@ -312,7 +312,7 @@ private:
   ads::arrays::DynamicArray<size_type> column_indices_;
   ads::arrays::DynamicArray<Value>     values_;
 
-  //===------------------------------ HELPER API -------------------------------===//
+  //===----- HELPER API --------------------------------------------------------===//
 
   [[nodiscard]] static auto is_zero_value(const Value& value) -> bool;
   [[nodiscard]] static auto entry_less(const Entry& lhs, const Entry& rhs) -> bool;

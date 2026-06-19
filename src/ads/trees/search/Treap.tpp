@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===---------------------------- ITERATOR METHODS -----------------------------===//
+//===----- ITERATOR METHODS ----------------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::iterator::iterator(const iterator& other) : stack_(other.stack_.begin(), other.stack_.end()), current_(other.current_) {
@@ -86,7 +86,7 @@ auto Treap<T, Priority>::iterator::operator==(const iterator& other) const -> bo
   return current_ == other.current_;
 }
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::Treap(std::uint64_t seed) : root_(nullptr), size_(0), random_state_(seed == 0 ? kDefaultSeed : seed) {
@@ -114,7 +114,7 @@ auto Treap<T, Priority>::operator=(Treap&& other) noexcept -> Treap& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -150,7 +150,7 @@ auto Treap<T, Priority>::emplace_with_priority(const Priority& priority, Args&&.
   return insert_with_priority_impl(root_, T(std::forward<Args>(args)...), priority);
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::remove(const T& value) -> bool {
@@ -175,7 +175,7 @@ auto Treap<T, Priority>::clear() noexcept -> void {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::is_empty() const noexcept -> bool {
@@ -219,7 +219,7 @@ auto Treap<T, Priority>::priority_of(const T& value) const -> const Priority* {
   return node ? &node->priority : nullptr;
 }
 
-//===---------------------------- TRAVERSAL METHODS ----------------------------===//
+//===----- TRAVERSAL METHODS ---------------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::in_order_traversal(const visitor_type& visit) const -> void {
@@ -337,7 +337,7 @@ auto Treap<T, Priority>::validate_properties() const -> bool {
   return counted == size_;
 }
 
-//===----------------------------- ITERATOR ACCESS -----------------------------===//
+//===----- ITERATOR ACCESS -----------------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::begin() -> iterator {
@@ -370,7 +370,7 @@ auto Treap<T, Priority>::cend() const -> iterator {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 template <typename U>

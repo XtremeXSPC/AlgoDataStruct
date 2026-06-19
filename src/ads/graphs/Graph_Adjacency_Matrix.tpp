@@ -16,7 +16,7 @@
 
 namespace ads::graphs {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(bool is_directed) :
@@ -57,7 +57,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatri
   return *this;
 }
 
-//===---------------------------- VERTEX OPERATIONS ----------------------------===//
+//===----- VERTEX OPERATIONS ---------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> size_t {
@@ -97,7 +97,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::num_vertices() const noexcept
   return vertices_.size();
 }
 
-//===----------------------------- EDGE OPERATIONS -----------------------------===//
+//===----- EDGE OPERATIONS -----------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_edge(size_t from, size_t to, EdgeWeight weight) -> void {
@@ -151,7 +151,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::num_edges() const noexcept ->
   return num_edges_;
 }
 
-//===-------------------------- NAVIGATION OPERATIONS --------------------------===//
+//===----- NAVIGATION OPERATIONS -----------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id) const -> std::vector<size_t> {
@@ -207,7 +207,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::degree(size_t vertex_id) cons
   return deg;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_directed() const noexcept -> bool {
@@ -219,7 +219,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_empty() const noexcept -> 
   return vertices_.is_empty();
 }
 
-//===----------------------------- CLEAR OPERATION -----------------------------===//
+//===----- CLEAR OPERATION -----------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::clear() -> void {
@@ -228,7 +228,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::clear() -> void {
   num_edges_ = 0;
 }
 
-//===-------------------------- TRAVERSAL ALGORITHMS ---------------------------===//
+//===----- TRAVERSAL ALGORITHMS ------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::bfs(size_t start_vertex) const -> std::vector<size_t> {
@@ -377,7 +377,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::connected_components() const 
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {

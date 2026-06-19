@@ -63,7 +63,7 @@ protected:
   BTreeType<int> tree; // B-Tree with minimum degree 3 (max 5 keys per node).
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(BTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0);
@@ -81,7 +81,7 @@ TEST_F(BTreeTest, Clear) {
   EXPECT_TRUE(tree.is_empty());
 }
 
-//===----------------------------- INSERTION TESTS -----------------------------===//
+//===----- INSERTION TESTS -----------------------------------------------------===//
 
 TEST_F(BTreeTest, InsertSingleElement) {
   tree.insert(50);
@@ -118,7 +118,7 @@ TEST_F(BTreeTest, InsertDuplicateRejected) {
   EXPECT_EQ(tree.size(), 1);
 }
 
-//===------------------------------ SEARCH TESTS -------------------------------===//
+//===----- SEARCH TESTS --------------------------------------------------------===//
 
 TEST_F(BTreeTest, ContainsElement) {
   tree.insert(10);
@@ -152,7 +152,7 @@ TEST_F(BTreeTest, FindMinMaxOnEmptyThrows) {
   EXPECT_THROW([[maybe_unused]] auto val = tree.find_max(), EmptyTreeException);
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(BTreeTest, RemoveFromLeaf) {
   tree.insert(10);
@@ -218,7 +218,7 @@ TEST_F(BTreeTest, RemoveAll) {
   EXPECT_TRUE(tree.validate_properties());
 }
 
-//===----------------------------- TRAVERSAL TESTS -----------------------------===//
+//===----- TRAVERSAL TESTS -----------------------------------------------------===//
 
 TEST_F(BTreeTest, InOrderTraversal) {
   tree.insert(50);
@@ -236,7 +236,7 @@ TEST_F(BTreeTest, InOrderTraversal) {
   EXPECT_EQ(result, expected);
 }
 
-//===------------------------------ ITERATOR TESTS ------------------------------===//
+//===----- ITERATOR TESTS ------------------------------------------------------===//
 
 TEST_F(BTreeTest, IteratorTraversal) {
   tree.insert(50);
@@ -250,7 +250,7 @@ TEST_F(BTreeTest, IteratorTraversal) {
   EXPECT_EQ(actual, expected);
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(BTreeTest, MoveConstructor) {
   tree.insert(50);
@@ -276,7 +276,7 @@ TEST_F(BTreeTest, MoveAssignment) {
   EXPECT_EQ(other_tree.size(), 3);
 }
 
-//===--------------------------- LARGE DATASET TESTS ---------------------------===//
+//===----- LARGE DATASET TESTS -------------------------------------------------===//
 
 TEST_F(BTreeTest, LargeDatasetInsert) {
   const int N = 1'000;
@@ -430,7 +430,7 @@ TEST(BTreeDeletionTest, RandomizedOperationsMatchStdSet) {
   }
 }
 
-//===------------------------- DEGREE VARIATION TESTS --------------------------===//
+//===----- DEGREE VARIATION TESTS ----------------------------------------------===//
 
 TEST(BTreeDegreeTest, MinimumDegree2) {
   BTreeType<int, 2> tree; // Minimum degree 2 (2-3-4 tree behavior).
@@ -457,7 +457,7 @@ TEST(BTreeDegreeTest, LargerDegree) {
   EXPECT_LE(tree.height(), 3);
 }
 
-//===---------------------------- CUSTOM TYPE TESTS ----------------------------===//
+//===----- CUSTOM TYPE TESTS ---------------------------------------------------===//
 
 TEST(BTreeStringTest, StringKeys) {
   BTreeType<std::string> tree;

@@ -34,7 +34,7 @@ using std::vector;
 
 using namespace ads::graphs;
 
-//===------------------------------ MATRIX DEMOS -------------------------------===//
+//===----- MATRIX DEMOS --------------------------------------------------------===//
 
 // Demonstrates graph construction and basic properties.
 void demo_matrix_construction() {
@@ -86,7 +86,7 @@ void demo_matrix_operations() {
   cout << '\n';
 }
 
-//===---------------------------- MATRIX TRAVERSAL -----------------------------===//
+//===----- MATRIX TRAVERSAL ----------------------------------------------------===//
 
 // Demonstrates BFS and DFS traversals.
 void demo_matrix_traversal() {
@@ -122,7 +122,7 @@ void demo_matrix_traversal() {
   }
 }
 
-//===----------------------- MATRIX CONNECTED COMPONENTS -----------------------===//
+//===----- MATRIX CONNECTED COMPONENTS -----------------------------------------===//
 
 // Test connected components.
 void demo_matrix_connected_components() {
@@ -149,7 +149,7 @@ void demo_matrix_connected_components() {
   }
 }
 
-//===------------------------- PERFORMANCE COMPARISON --------------------------===//
+//===----- PERFORMANCE COMPARISON ----------------------------------------------===//
 
 // Measure edge lookup time.
 template <typename GraphType>
@@ -268,7 +268,7 @@ void compare_performance() {
   cout << "  - List:   Better for memory efficiency and neighbor iteration\n";
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("GRAPH ADJACENCY MATRIX - EXAMPLES TESTS");

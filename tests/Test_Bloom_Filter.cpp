@@ -19,7 +19,7 @@ using namespace ads::probabilistic;
 
 namespace {
 
-//===----------------------------- TEST UTILITIES ------------------------------===//
+//===----- TEST UTILITIES ------------------------------------------------------===//
 
 struct IdentityHash {
   auto operator()(int value) const noexcept -> size_t { return static_cast<size_t>(value); }
@@ -27,7 +27,7 @@ struct IdentityHash {
 
 } // namespace
 
-//===----------------------------- BASIC BEHAVIOR ------------------------------===//
+//===----- BASIC BEHAVIOR ------------------------------------------------------===//
 
 TEST(BloomFilterTest, InsertedElementsAreAlwaysReportedAsPresent) {
   BloomFilter<int, IdentityHash> filter(128, 1, IdentityHash{});
@@ -58,7 +58,7 @@ TEST(BloomFilterTest, ClearResetsBitsAndStatistics) {
   EXPECT_FALSE(filter.might_contain(1));
 }
 
-//===--------------------------- COMPOSITION TESTS -----------------------------===//
+//===----- COMPOSITION TESTS ---------------------------------------------------===//
 
 TEST(BloomFilterTest, MergeCombinesCompatibleFilters) {
   BloomFilter<std::string> left(256, 3);
@@ -81,7 +81,7 @@ TEST(BloomFilterTest, MergeRejectsIncompatibleLayouts) {
   EXPECT_THROW(left.merge(right), BloomFilterException);
 }
 
-//===------------------------ CONFIGURATION / ERROR TESTS ----------------------===//
+//===----- CONFIGURATION / ERROR TESTS -----------------------------------------===//
 
 TEST(BloomFilterFactoryTest, BuildsFromCapacityEstimates) {
   auto filter = BloomFilter<std::string>::from_estimates(200, 0.01);

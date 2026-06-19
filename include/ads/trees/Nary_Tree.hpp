@@ -52,7 +52,7 @@ namespace arr = ads::arrays;
 template <EqualityComparableTreeElement T>
 class NaryTree {
 public:
-  //===---------------------------- NODE STRUCTURE -----------------------------===//
+  //===----- NODE STRUCTURE ----------------------------------------------------===//
   /**
    * @brief A node in the tree, exposed as a non-owning handle.
    *
@@ -99,7 +99,7 @@ public:
   using size_type    = size_t;
   using visitor_type = std::function<void(const T&)>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty tree (no root).
@@ -129,7 +129,7 @@ public:
   NaryTree(const NaryTree&)                    = delete;
   auto operator=(const NaryTree&) -> NaryTree& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Creates the root from a value (copy).
@@ -181,7 +181,7 @@ public:
   template <typename... Args>
   auto emplace_child(Node* parent, Args&&... args) -> Node*;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes all elements from the tree.
@@ -189,14 +189,14 @@ public:
    */
   void clear() noexcept;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /// @brief Returns the root node, or nullptr if empty.
   [[nodiscard]] auto root() noexcept -> Node*;
   /// @brief Returns the root node, or nullptr if empty.
   [[nodiscard]] auto root() const noexcept -> const Node*;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /// @brief Checks if the tree is empty.
   [[nodiscard]] auto is_empty() const noexcept -> bool;
@@ -217,7 +217,7 @@ public:
    */
   [[nodiscard]] auto contains(const T& value) const -> bool;
 
-  //===------------------------- TRAVERSAL OPERATIONS --------------------------===//
+  //===----- TRAVERSAL OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Pre-order traversal (node, then children left-to-right).
@@ -238,7 +238,7 @@ public:
   void level_order_traversal(const visitor_type& visit) const;
 
 private:
-  //===------------------------- PRIVATE HELPER METHODS ------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   template <typename U>
   auto set_root_impl(U&& value) -> Node*;
@@ -246,7 +246,7 @@ private:
   template <typename U>
   auto add_child_impl(Node* parent, U&& value) -> Node*;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   std::unique_ptr<Node> root_; ///< Owning root of the tree.
   size_t                size_; ///< Number of nodes in the tree.

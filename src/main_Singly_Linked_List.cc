@@ -26,7 +26,7 @@ using std::to_string;
 
 using namespace ads::lists;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print the list contents.
 template <typename T>
@@ -38,7 +38,7 @@ void print_list(const SinglyLinkedList<T>& list, const string& label) {
   cout << '\n';
 }
 
-//===----------------------------- DEMO FUNCTIONS ------------------------------===//
+//===----- DEMO FUNCTIONS ------------------------------------------------------===//
 
 // Demonstrates basic push/pop operations.
 void demo_basics() {
@@ -59,7 +59,7 @@ void demo_basics() {
   print_list(list, "After pop_front + pop_back");
 }
 
-//===------------------------ EMPLACE AND REVERSE DEMO -------------------------===//
+//===----- EMPLACE AND REVERSE DEMO --------------------------------------------===//
 
 // Demonstrates emplace operations and reverse.
 void demo_emplace_and_reverse() {
@@ -75,7 +75,7 @@ void demo_emplace_and_reverse() {
   print_list(words, "After reverse");
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
 void demo_move_semantics() {
@@ -97,7 +97,7 @@ void demo_move_semantics() {
   print_list(assigned, "Moved (assignment)");
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
 void demo_exceptions() {
@@ -111,7 +111,7 @@ void demo_exceptions() {
   }
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("SINGLY LINKED LIST - COMPREHENSIVE DEMO");

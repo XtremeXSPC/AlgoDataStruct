@@ -22,7 +22,7 @@
 #include <limits>
 #include <stdexcept>
 
-//===-------------------- SORTING ALGORITHM IMPLEMENTATIONS --------------------===//
+//===----- SORTING ALGORITHM IMPLEMENTATIONS -----------------------------------===//
 
 namespace ads::algorithms {
 
@@ -417,7 +417,7 @@ auto merge_force_collapse(ads::arrays::DynamicArray<Run<Iter>>& runs, Compare& c
 
 } // namespace detail
 
-//===------------------------------- BUBBLE SORT -------------------------------===//
+//===----- BUBBLE SORT ---------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -449,7 +449,7 @@ auto bubble_sort(Iter first, Iter last, Compare comp) -> void {
   }
 }
 
-//===----------------------------- SELECTION SORT ------------------------------===//
+//===----- SELECTION SORT ------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -470,7 +470,7 @@ auto selection_sort(Iter first, Iter last, Compare comp) -> void {
   }
 }
 
-//===----------------------------- INSERTION SORT ------------------------------===//
+//===----- INSERTION SORT ------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -495,7 +495,7 @@ auto insertion_sort(Iter first, Iter last, Compare comp) -> void {
   }
 }
 
-//===------------------------------- SHELL SORT --------------------------------===//
+//===----- SHELL SORT ----------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -547,7 +547,7 @@ auto shell_sort(Iter first, Iter last, Compare comp) -> void {
   }
 }
 
-//===------------------------------- MERGE SORT --------------------------------===//
+//===----- MERGE SORT ----------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -580,7 +580,7 @@ auto merge_sort(Iter first, Iter last, Compare comp) -> void {
   detail::merge_sort_forward_impl(first, last, comp, buffer);
 }
 
-//===------------------------------- QUICK SORT --------------------------------===//
+//===----- QUICK SORT ----------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -594,7 +594,7 @@ auto quick_sort(Iter first, Iter last, Compare comp) -> void {
   detail::quick_sort_impl(first, last, comp, depth_limit);
 }
 
-//===-------------------------------- HEAP SORT --------------------------------===//
+//===----- HEAP SORT -----------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -614,7 +614,7 @@ auto heap_sort(Iter first, Iter last, Compare comp) -> void {
   }
 }
 
-//===-------------------------------- TIM SORT ---------------------------------===//
+//===----- TIM SORT ------------------------------------------------------------===//
 
 template <std::random_access_iterator Iter, typename Compare>
 requires std::sortable<Iter, Compare>
@@ -654,7 +654,7 @@ auto tim_sort(Iter first, Iter last, Compare comp) -> void {
   detail::merge_force_collapse(runs, comp, buffer);
 }
 
-//===------------------------------ COUNTING SORT ------------------------------===//
+//===----- COUNTING SORT -------------------------------------------------------===//
 
 template <std::random_access_iterator Iter>
 requires std::integral<std::iter_value_t<Iter>>
@@ -718,7 +718,7 @@ auto counting_sort(Iter first, Iter last, std::iter_value_t<Iter> min_value, std
   }
 }
 
-//===------------------------------- RADIX SORT --------------------------------===//
+//===----- RADIX SORT ----------------------------------------------------------===//
 
 template <std::random_access_iterator Iter>
 requires std::integral<std::iter_value_t<Iter>>
@@ -761,7 +761,7 @@ auto radix_sort(Iter first, Iter last) -> void {
   }
 }
 
-//===------------------------------- BUCKET SORT -------------------------------===//
+//===----- BUCKET SORT ---------------------------------------------------------===//
 
 template <std::random_access_iterator Iter>
 requires std::floating_point<std::iter_value_t<Iter>>

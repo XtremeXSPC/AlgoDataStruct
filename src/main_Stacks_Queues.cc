@@ -33,7 +33,7 @@ using std::vector;
 using namespace ads::queues;
 using namespace ads::stacks;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to demonstrate polymorphic usage.
 template <typename T>
@@ -65,7 +65,7 @@ void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
   }
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
 template <typename T>
@@ -98,7 +98,7 @@ void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
   }
 }
 
-//===------------------------- PERFORMANCE COMPARISON --------------------------===//
+//===----- PERFORMANCE COMPARISON ----------------------------------------------===//
 
 // Performance comparison function.
 void performance_comparison() {
@@ -166,7 +166,7 @@ void performance_comparison() {
   }
 }
 
-//===----------------------- EMPLACE FUNCTIONALITY DEMO ------------------------===//
+//===----- EMPLACE FUNCTIONALITY DEMO ------------------------------------------===//
 
 // Test emplace functionality with complex types.
 void demo_emplace_functionality() {
@@ -191,7 +191,7 @@ void demo_emplace_functionality() {
   queue.emplace("Diana", 28);
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

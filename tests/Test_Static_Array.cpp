@@ -24,7 +24,7 @@ protected:
   StaticArray<int, 5> array{1, 2, 3, 4, 5};
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(StaticArrayTest, SizeIsFixed) {
   EXPECT_EQ(array.size(), 5u);

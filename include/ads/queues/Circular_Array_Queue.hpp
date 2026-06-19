@@ -45,7 +45,7 @@ namespace ads::queues {
 template <QueueValue T>
 class CircularArrayQueue : public Queue<T> {
 public:
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty queue with optional initial capacity.
@@ -80,7 +80,7 @@ public:
   CircularArrayQueue(const CircularArrayQueue&)                    = delete;
   auto operator=(const CircularArrayQueue&) -> CircularArrayQueue& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the rear of the queue.
@@ -109,7 +109,7 @@ public:
    */
   void enqueue(T&& value) override;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the element at the front of the queue.
@@ -125,7 +125,7 @@ public:
    */
   void clear() noexcept override;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the front element.
@@ -159,7 +159,7 @@ public:
    */
   auto rear() const -> const T& override;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the queue is empty.
@@ -175,7 +175,7 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_t override;
 
-  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+  //===----- CAPACITY OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns the current capacity of the internal array.
@@ -201,7 +201,7 @@ public:
   void shrink_to_fit();
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Calculates the next index in the circular buffer.
@@ -253,7 +253,7 @@ private:
   /// Allocates uninitialized storage for capacity elements; throws on overflow.
   static auto allocate(size_t capacity) -> storage_ptr;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   storage_ptr data_;     ///< The dynamic array holding queue elements.
   size_t      front_;    ///< Index of the front element.

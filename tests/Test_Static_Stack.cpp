@@ -24,7 +24,7 @@ protected:
   StaticStack<int, 5> stack;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(StaticStackTest, EmptyOnConstruction) {
   EXPECT_TRUE(stack.is_empty());
@@ -59,7 +59,7 @@ TEST_F(StaticStackTest, EmplaceReturnsReference) {
   EXPECT_EQ(s.top(), "aaaaa");
 }
 
-//===------------------------------ REMOVAL TESTS ------------------------------===//
+//===----- REMOVAL TESTS -------------------------------------------------------===//
 
 TEST_F(StaticStackTest, PopReturnsToLifoOrder) {
   stack.push(1);
@@ -88,7 +88,7 @@ TEST_F(StaticStackTest, Clear) {
   EXPECT_EQ(stack.size(), 0u);
 }
 
-//===--------------------------- POLYMORPHISM TESTS ----------------------------===//
+//===----- POLYMORPHISM TESTS --------------------------------------------------===//
 
 TEST_F(StaticStackTest, UsableThroughStackInterface) {
   stack.push(10);
@@ -101,7 +101,7 @@ TEST_F(StaticStackTest, UsableThroughStackInterface) {
   EXPECT_FALSE(base.is_empty());
 }
 
-//===-------------------------- MOVE SEMANTICS TESTS ---------------------------===//
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
 
 TEST_F(StaticStackTest, MoveConstructionLeavesSourceEmpty) {
   StaticStack<std::string, 4> s;

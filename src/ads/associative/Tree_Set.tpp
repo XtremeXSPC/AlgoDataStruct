@@ -17,7 +17,7 @@
 
 namespace ads::associative {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename T>
 TreeSet<T>::TreeSet(std::initializer_list<T> values) requires std::copy_constructible<T>
@@ -27,7 +27,7 @@ TreeSet<T>::TreeSet(std::initializer_list<T> values) requires std::copy_construc
   }
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <typename T>
 auto TreeSet<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
@@ -48,7 +48,7 @@ auto TreeSet<T>::emplace(Args&&... args) -> bool requires std::constructible_fro
   return insert(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <typename T>
 auto TreeSet<T>::erase(const T& value) -> bool {
@@ -60,7 +60,7 @@ auto TreeSet<T>::clear() noexcept -> void {
   tree_.clear();
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename T>
 auto TreeSet<T>::contains(const T& value) const -> bool {
@@ -87,7 +87,7 @@ auto TreeSet<T>::max() const -> const T& {
   return tree_.find_max();
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <typename T>
 auto TreeSet<T>::to_vector() const -> std::vector<T> requires std::copy_constructible<T>

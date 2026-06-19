@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===--------------------------- NODE IMPLEMENTATION ---------------------------===//
+//===----- NODE IMPLEMENTATION -------------------------------------------------===//
 
 template <bool UseMap>
 Trie<UseMap>::TrieNode::TrieNode() : is_end_of_word(false) {
@@ -33,7 +33,7 @@ auto Trie<UseMap>::TrieNode::has_children() const -> bool {
   }
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <bool UseMap>
 Trie<UseMap>::Trie() : root_(std::make_unique<TrieNode>()), word_count_(0) {
@@ -54,7 +54,7 @@ auto Trie<UseMap>::operator=(Trie&& other) noexcept -> Trie& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <bool UseMap>
 void Trie<UseMap>::insert(const std::string& word) {
@@ -79,7 +79,7 @@ void Trie<UseMap>::insert(const std::string& word) {
   }
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <bool UseMap>
 void Trie<UseMap>::clear() {
@@ -147,7 +147,7 @@ auto Trie<UseMap>::remove(const std::string& word) -> bool {
   return true;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <bool UseMap>
 auto Trie<UseMap>::is_empty() const -> bool {
@@ -279,7 +279,7 @@ auto Trie<UseMap>::search(const std::string& word) const -> bool {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <bool UseMap>
 auto Trie<UseMap>::char_to_index(char c) -> int {

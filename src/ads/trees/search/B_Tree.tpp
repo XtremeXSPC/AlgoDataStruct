@@ -16,7 +16,7 @@
 
 namespace ads::trees {
 
-//===--------------------------- NODE IMPLEMENTATION ---------------------------===//
+//===----- NODE IMPLEMENTATION -------------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -26,7 +26,7 @@ BTree<T, MinDegree>::Node::Node(bool leaf) :
     is_leaf(leaf) {
 }
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -50,7 +50,7 @@ auto BTree<T, MinDegree>::operator=(BTree&& other) noexcept -> BTree& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -101,7 +101,7 @@ auto BTree<T, MinDegree>::insert_impl(U&& key) -> bool {
   return inserted;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -136,7 +136,7 @@ void BTree<T, MinDegree>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -196,7 +196,7 @@ auto BTree<T, MinDegree>::search(const T& key) const -> bool {
   return search_helper(root_.get(), key);
 }
 
-//===----------------------- B-TREE SPECIFIC OPERATIONS ------------------------===//
+//===----- B-TREE SPECIFIC OPERATIONS ------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -233,7 +233,7 @@ auto BTree<T, MinDegree>::validate_properties() const -> bool {
   return validate_helper(root_.get(), 1, MAX_KEYS, 0, nullptr, nullptr, leaf_level);
 }
 
-//===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
+//===----- TRAVERSAL OPERATIONS ------------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -242,7 +242,7 @@ void BTree<T, MinDegree>::in_order_traversal(visitor_type visit) const {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
@@ -334,7 +334,7 @@ auto BTree<T, MinDegree>::insert_non_full(Node* node, U&& key) -> bool {
   }
 }
 
-//===----------------------------- REMOVAL HELPERS -----------------------------===//
+//===----- REMOVAL HELPERS -----------------------------------------------------===//
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>

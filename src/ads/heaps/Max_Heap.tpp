@@ -16,7 +16,7 @@
 
 namespace ads::heaps {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename T>
 MaxHeap<T>::MaxHeap(size_t initial_capacity) : data_(initial_capacity) {
@@ -48,7 +48,7 @@ auto MaxHeap<T>::operator=(MaxHeap&& other) noexcept -> MaxHeap& {
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::insert(const T& value) -> void {
@@ -70,7 +70,7 @@ auto MaxHeap<T>::emplace(Args&&... args) -> T& {
   return data_[final_index];
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::top() -> T& {
@@ -88,7 +88,7 @@ auto MaxHeap<T>::top() const -> const T& {
   return data_[0];
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::extract_max() -> T {
@@ -112,7 +112,7 @@ auto MaxHeap<T>::extract_max() -> T {
   return max_value;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::is_empty() const noexcept -> bool {
@@ -134,7 +134,7 @@ auto MaxHeap<T>::clear() noexcept -> void {
   data_.clear();
 }
 
-//===--------------------------- ADVANCED OPERATIONS ---------------------------===//
+//===----- ADVANCED OPERATIONS -------------------------------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::increase_key(size_t index, const T& new_value) -> void {
@@ -151,7 +151,7 @@ auto MaxHeap<T>::increase_key(size_t index, const T& new_value) -> void {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HELPER METHODS --------------------------===//
+//===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename T>
 auto MaxHeap<T>::heapify_up(size_t index) -> size_t {

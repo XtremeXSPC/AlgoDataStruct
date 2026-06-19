@@ -24,7 +24,7 @@ using namespace ads::heaps;
 
 namespace {
 
-//===------------------------------- HEAP DEMOS --------------------------------===//
+//===----- HEAP DEMOS ----------------------------------------------------------===//
 
 auto demo_max_d_ary_heap() -> void {
   ads::demo::print_section("4-ary heap (max semantics)");
@@ -61,7 +61,7 @@ auto demo_min_d_ary_heap() -> void {
 
 } // namespace
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header({"D-ARY HEAP DEMO", "Configurable heap arity with max/min semantics"});

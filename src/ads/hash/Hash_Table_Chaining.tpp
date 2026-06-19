@@ -18,7 +18,7 @@
 
 namespace ads::hash {
 
-//===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
+//===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -63,7 +63,7 @@ auto HashTableChaining<Key, Value, Hash>::operator=(HashTableChaining&& other) n
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -144,7 +144,7 @@ auto HashTableChaining<Key, Value, Hash>::emplace(const Key& key, Args&&... args
   return entry.second;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -192,7 +192,7 @@ auto HashTableChaining<Key, Value, Hash>::operator[](const Key& key) -> Value& r
   return it->second;
 }
 
-//===---------------------------- SEARCH OPERATIONS ----------------------------===//
+//===----- SEARCH OPERATIONS ---------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -225,7 +225,7 @@ auto HashTableChaining<Key, Value, Hash>::find(const Key& key) const -> const Va
   return nullptr;
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -250,7 +250,7 @@ void HashTableChaining<Key, Value, Hash>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -282,7 +282,7 @@ auto HashTableChaining<Key, Value, Hash>::max_load_factor() const noexcept -> fl
   return max_load_factor_;
 }
 
-//===------------------------ CONFIGURATION OPERATIONS -------------------------===//
+//===----- CONFIGURATION OPERATIONS --------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -303,7 +303,7 @@ void HashTableChaining<Key, Value, Hash>::reserve(size_t new_capacity) {
 }
 
 //=================================================================================//
-//===------------------------- PRIVATE HASHING METHODS -------------------------===//
+//===----- PRIVATE HASHING METHODS ---------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -311,7 +311,7 @@ auto HashTableChaining<Key, Value, Hash>::hash(const Key& key) const -> size_t {
   return hasher_(key) % capacity_;
 }
 
-//===-------------------------- BUCKET SEARCH METHODS --------------------------===//
+//===----- BUCKET SEARCH METHODS -----------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
@@ -335,7 +335,7 @@ auto HashTableChaining<Key, Value, Hash>::find_in_bucket(const Bucket& bucket, c
   return bucket.end();
 }
 
-//===-------------------------- REHASHING OPERATIONS ---------------------------===//
+//===----- REHASHING OPERATIONS ------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>

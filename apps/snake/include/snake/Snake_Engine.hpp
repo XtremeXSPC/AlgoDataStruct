@@ -223,7 +223,7 @@ public:
   [[nodiscard]] auto deltas() const noexcept -> const ads::arrays::DynamicArray<CellDelta>&;
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
   ads::arrays::CircularArray<Position>         snake_;      ///< Snake body segments from head to tail.
   ads::arrays::DynamicArray<TickSnapshot>      replay_log_; ///< Replay history of game ticks.
   ads::arrays::DynamicArray<CellDelta>         deltas_;     ///< Cell changes from the most recent tick.
@@ -239,7 +239,7 @@ private:
   std::size_t   tick_      = 0;
   std::uint32_t seed_      = kDefaultSeed;
 
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /** @brief Returns whether two directions are opposite. */
   [[nodiscard]] static auto is_opposite(Direction lhs, Direction rhs) noexcept -> bool;

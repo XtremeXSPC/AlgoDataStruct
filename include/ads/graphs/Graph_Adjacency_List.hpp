@@ -124,7 +124,7 @@ public:
     auto operator=(const Vertex&) -> Vertex& = delete;
   };
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty graph.
@@ -166,7 +166,7 @@ public:
    */
   ~GraphAdjacencyList() = default;
 
-  //===--------------------------- VERTEX OPERATIONS ---------------------------===//
+  //===----- VERTEX OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Adds a vertex to the graph.
@@ -217,7 +217,7 @@ public:
    */
   [[nodiscard]] auto num_vertices() const noexcept -> size_t;
 
-  //===---------------------------- EDGE OPERATIONS ----------------------------===//
+  //===----- EDGE OPERATIONS ---------------------------------------------------===//
 
   /**
    * @brief Adds an edge to the graph.
@@ -266,7 +266,7 @@ public:
    */
   [[nodiscard]] auto num_edges() const noexcept -> size_t;
 
-  //===------------------------- NAVIGATION OPERATIONS -------------------------===//
+  //===----- NAVIGATION OPERATIONS ---------------------------------------------===//
 
   /**
    * @brief Gets the list of neighbor vertex IDs.
@@ -306,7 +306,7 @@ public:
    */
   [[nodiscard]] auto degree(size_t vertex_id) const -> size_t;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the graph is directed.
@@ -322,7 +322,7 @@ public:
    */
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
-  //===---------------------------- CLEAR OPERATION ----------------------------===//
+  //===----- CLEAR OPERATION ---------------------------------------------------===//
 
   /**
    * @brief Removes all vertices and edges from the graph.
@@ -330,7 +330,7 @@ public:
    */
   auto clear() -> void;
 
-  //===------------------------- TRAVERSAL ALGORITHMS --------------------------===//
+  //===----- TRAVERSAL ALGORITHMS ----------------------------------------------===//
 
   /**
    * @brief Performs breadth-first search from a starting vertex.
@@ -379,7 +379,7 @@ public:
   [[nodiscard]] auto connected_components() const -> std::vector<std::vector<size_t>>;
 
 private:
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   ads::arrays::DynamicArray<Vertex> vertices_;    ///< Dynamic array of all vertices.
   bool                              is_directed_; ///< True if graph is directed.
@@ -388,7 +388,7 @@ private:
   static constexpr size_t kNoParent = std::numeric_limits<size_t>::max(); ///< Sentinel for path reconstruction.
 
   //===============================================================================//
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Validates a vertex ID.

@@ -23,7 +23,7 @@ protected:
   GraphAdjacencyList<int> graph;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(GraphAdjacencyListTest, IsEmptyOnConstruction) {
   EXPECT_TRUE(graph.is_empty());
@@ -53,7 +53,7 @@ TEST(GraphAdjacencyListStringTest, AddVertexMovesData) {
   EXPECT_EQ(graph.get_vertex_data(id), "Rome");
 }
 
-//===------------------------------- EDGE TESTS --------------------------------===//
+//===----- EDGE TESTS ----------------------------------------------------------===//
 
 TEST_F(GraphAdjacencyListTest, UndirectedEdgesAreStoredSymmetrically) {
   graph.add_vertex(0);
@@ -98,7 +98,7 @@ TEST_F(GraphAdjacencyListTest, RemoveUndirectedEdgeRemovesReverseEdge) {
   EXPECT_FALSE(graph.has_edge(1, 0));
 }
 
-//===----------------------------- TRAVERSAL TESTS -----------------------------===//
+//===----- TRAVERSAL TESTS -----------------------------------------------------===//
 
 TEST_F(GraphAdjacencyListTest, BfsVisitsVerticesByLevel) {
   for (int value = 0; value < 6; ++value) {
@@ -185,7 +185,7 @@ TEST_F(GraphAdjacencyListTest, ConnectedComponentsGroupsUndirectedGraph) {
   EXPECT_EQ(components[2], (std::vector<size_t>{5}));
 }
 
-//===------------------------------- ERROR TESTS -------------------------------===//
+//===----- ERROR TESTS ---------------------------------------------------------===//
 
 TEST_F(GraphAdjacencyListTest, InvalidVerticesThrow) {
   graph.add_vertex(0);
@@ -195,7 +195,7 @@ TEST_F(GraphAdjacencyListTest, InvalidVerticesThrow) {
   EXPECT_THROW(graph.get_vertex_data(1), GraphException);
 }
 
-//===------------------------------- MOVE TESTS --------------------------------===//
+//===----- MOVE TESTS ----------------------------------------------------------===//
 
 TEST_F(GraphAdjacencyListTest, MoveSemanticsTransferStorage) {
   graph.add_vertex(0);

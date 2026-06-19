@@ -27,7 +27,7 @@ using std::string;
 
 using namespace ads::arrays;
 
-//===---------------------------- HELPER FUNCTIONS -----------------------------===//
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print array contents.
 template <typename T>
@@ -44,7 +44,7 @@ void print_array(const DynamicArray<T>& array, const string& label) {
   cout << "\n";
 }
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_back, front, back operations.
 void demo_basic_operations() {
@@ -64,7 +64,7 @@ void demo_basic_operations() {
   cout << "Back element: " << array.back() << "\n";
 }
 
-//===-------------------------- INSERT & ERASE DEMO ----------------------------===//
+//===----- INSERT & ERASE DEMO -------------------------------------------------===//
 
 // Demonstrate insert and erase operations.
 void demo_insert_erase() {
@@ -85,7 +85,7 @@ void demo_insert_erase() {
   print_array(array, "After erase");
 }
 
-//===------------------------- RESIZE & RESERVE DEMO ---------------------------===//
+//===----- RESIZE & RESERVE DEMO -----------------------------------------------===//
 
 // Demonstrate resize and reserve operations.
 void demo_resize_reserve() {
@@ -107,7 +107,7 @@ void demo_resize_reserve() {
   print_array(array, "After shrink_to_fit");
 }
 
-//===------------------------- EMPLACE & ITERATOR DEMO -------------------------===//
+//===----- EMPLACE & ITERATOR DEMO ---------------------------------------------===//
 
 // Demonstrate emplace and iterator functionality.
 void demo_emplace_iterators() {
@@ -131,7 +131,7 @@ void demo_emplace_iterators() {
   }
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrate move semantics.
 void demo_move_semantics() {
@@ -148,7 +148,7 @@ void demo_move_semantics() {
   print_array(source, "Source after move");
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   try {

@@ -32,7 +32,7 @@ using std::vector;
 
 using namespace ads::heaps;
 
-//===-------------------------- BASIC OPERATIONS DEMO --------------------------===//
+//===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Min Heap basic operations.
 void demo_min_heap_basic() {
@@ -62,7 +62,7 @@ void demo_min_heap_basic() {
   cout << std::format("Heap is now empty: {}\n", heap.is_empty());
 }
 
-//===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
+//===----- CONSTRUCTION FROM VECTOR DEMO ---------------------------------------===//
 
 // Min Heap construction from vector.
 void demo_min_heap_from_vector() {
@@ -86,7 +86,7 @@ void demo_min_heap_from_vector() {
   cout << '\n';
 }
 
-//===--------------------------- MOVE SEMANTICS DEMO ---------------------------===//
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Min Heap move semantics.
 void demo_min_heap_move_semantics() {
@@ -115,7 +115,7 @@ void demo_min_heap_move_semantics() {
   cout << "Heap2 size after move: " << heap2.size() << '\n';
 }
 
-//===------------------------- EMPLACE OPERATIONS DEMO -------------------------===//
+//===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Min Heap emplace operations.
 void demo_min_heap_emplace() {
@@ -137,7 +137,7 @@ void demo_min_heap_emplace() {
   }
 }
 
-//===------------------------- EXCEPTION HANDLING DEMO -------------------------===//
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Min Heap exception handling.
 void demo_min_heap_exception_handling() {
@@ -160,7 +160,7 @@ void demo_min_heap_exception_handling() {
   }
 }
 
-//===--------------------------- LARGE DATASET DEMO ----------------------------===//
+//===----- LARGE DATASET DEMO --------------------------------------------------===//
 
 // Min Heap large dataset test.
 void demo_min_heap_large() {
@@ -188,7 +188,7 @@ void demo_min_heap_large() {
   cout << "Size after clear: " << heap.size() << '\n';
 }
 
-//===----------------------------- MAX HEAP DEMOS ------------------------------===//
+//===----- MAX HEAP DEMOS ------------------------------------------------------===//
 
 // Max Heap basic operations.
 void demo_max_heap_basic() {
@@ -218,7 +218,7 @@ void demo_max_heap_basic() {
   cout << std::format("Heap is now empty: {}\n", heap.is_empty());
 }
 
-//===---------------------- CONSTRUCTION FROM VECTOR DEMO ----------------------===//
+//===----- CONSTRUCTION FROM VECTOR DEMO ---------------------------------------===//
 
 // Max Heap construction from vector.
 void demo_max_heap_from_vector() {
@@ -242,7 +242,7 @@ void demo_max_heap_from_vector() {
   cout << '\n';
 }
 
-//===------------------------ HEAPSORT APPLICATION DEMO ------------------------===//
+//===----- HEAPSORT APPLICATION DEMO -------------------------------------------===//
 
 // Max Heap heapsort application.
 void demo_max_heap_heapsort() {
@@ -271,7 +271,7 @@ void demo_max_heap_heapsort() {
   cout << '\n';
 }
 
-//===-------------------------- HEAP COMPARISON DEMO ---------------------------===//
+//===----- HEAP COMPARISON DEMO ------------------------------------------------===//
 
 // Compare Min Heap and Max Heap.
 void demo_heap_comparison() {
@@ -304,7 +304,7 @@ void demo_heap_comparison() {
   cout << '\n';
 }
 
-//===------------------------------ MAIN FUNCTION ------------------------------===//
+//===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
   ads::demo::print_header("MIN HEAP AND MAX HEAP - COMPREHENSIVE DEMO");

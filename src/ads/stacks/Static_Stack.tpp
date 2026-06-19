@@ -17,7 +17,7 @@
 
 namespace ads::stacks {
 
-//===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
+//===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <StackValue T, size_t N>
 requires(N > 0)
@@ -55,7 +55,7 @@ auto StaticStack<T, N>::operator=(StaticStack&& other) noexcept(std::is_nothrow_
   return *this;
 }
 
-//===-------------------------- INSERTION OPERATIONS ---------------------------===//
+//===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <StackValue T, size_t N>
 requires(N > 0)
@@ -83,7 +83,7 @@ void StaticStack<T, N>::push(T&& value) {
   emplace(std::move(value));
 }
 
-//===--------------------------- REMOVAL OPERATIONS ----------------------------===//
+//===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <StackValue T, size_t N>
 requires(N > 0)
@@ -106,7 +106,7 @@ void StaticStack<T, N>::clear() noexcept {
   size_ = 0;
 }
 
-//===---------------------------- ACCESS OPERATIONS ----------------------------===//
+//===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
 template <StackValue T, size_t N>
 requires(N > 0)
@@ -126,7 +126,7 @@ auto StaticStack<T, N>::top() const -> const T& {
   return data()[size_ - 1];
 }
 
-//===---------------------------- QUERY OPERATIONS -----------------------------===//
+//===----- QUERY OPERATIONS ----------------------------------------------------===//
 
 template <StackValue T, size_t N>
 requires(N > 0)

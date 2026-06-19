@@ -54,7 +54,7 @@ public:
   using pointer         = T*;
   using const_pointer   = const T*;
 
-  //===----------------------------- ITERATOR TYPES ----------------------------===//
+  //===----- ITERATOR TYPES ----------------------------------------------------===//
 
   // The logical (wrap-around) iteration order is provided by IndexedIterator, which
   // dereferences through this container's operator[]. See Indexed_Iterator.hpp.
@@ -63,7 +63,7 @@ public:
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
+  //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
    * @brief Constructs an empty deque with optional initial capacity.
@@ -98,7 +98,7 @@ public:
   CircularArrayDeque(const CircularArrayDeque&)                    = delete;
   auto operator=(const CircularArrayDeque&) -> CircularArrayDeque& = delete;
 
-  //===------------------------- INSERTION OPERATIONS --------------------------===//
+  //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
   /**
    * @brief Constructs an element in-place at the front of the deque.
@@ -148,7 +148,7 @@ public:
    */
   auto push_back(T&& value) -> void;
 
-  //===-------------------------- REMOVAL OPERATIONS ---------------------------===//
+  //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
    * @brief Removes the element at the front of the deque.
@@ -170,7 +170,7 @@ public:
    */
   auto clear() noexcept -> void;
 
-  //===--------------------------- ACCESS OPERATIONS ---------------------------===//
+  //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
   /**
    * @brief Returns a reference to the front element.
@@ -230,7 +230,7 @@ public:
    */
   auto at(size_t index) const -> const T&;
 
-  //===--------------------------- QUERY OPERATIONS ----------------------------===//
+  //===----- QUERY OPERATIONS --------------------------------------------------===//
 
   /**
    * @brief Checks if the deque is empty.
@@ -250,7 +250,7 @@ public:
    */
   [[nodiscard]] auto capacity() const noexcept -> size_t;
 
-  //===-------------------------- CAPACITY OPERATIONS --------------------------===//
+  //===----- CAPACITY OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Reserves capacity for at least n elements.
@@ -263,7 +263,7 @@ public:
    */
   auto shrink_to_fit() -> void;
 
-  //===------------------------- ITERATOR OPERATIONS ---------------------------===//
+  //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
   /**
    * @brief Returns an iterator/const_iterator to the beginning of the deque.
@@ -281,7 +281,7 @@ public:
   // (==, <=>) are inherited from ContainerFacade<CircularArrayDeque<T>>.
 
 private:
-  //===------------------------ PRIVATE HELPER METHODS -------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
    * @brief Calculates the next index in the circular buffer.
@@ -345,7 +345,7 @@ private:
   /// Allocates uninitialized storage for capacity elements; throws on overflow.
   static auto allocate(size_t capacity) -> storage_ptr;
 
-  //===----------------------------- DATA MEMBERS ------------------------------===//
+  //===----- DATA MEMBERS ------------------------------------------------------===//
 
   storage_ptr data_;     ///< The dynamic array holding deque elements.
   size_t      front_;    ///< Index of the front element.

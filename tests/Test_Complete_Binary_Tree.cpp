@@ -24,7 +24,7 @@ protected:
   CompleteBinaryTree<int> tree;
 };
 
-//===---------------------------- BASIC STATE TESTS ----------------------------===//
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
 
 TEST_F(CompleteBinaryTreeTest, IsEmptyOnConstruction) {
   EXPECT_EQ(tree.size(), 0u);

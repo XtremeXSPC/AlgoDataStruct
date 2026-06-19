@@ -33,7 +33,7 @@ public:
   using std::logic_error::logic_error;
 };
 
-//===---------------------------- SEARCH PRIMITIVES ----------------------------===//
+//===----- SEARCH PRIMITIVES ---------------------------------------------------===//
 
 /**
  * @brief Computes the prefix-function table used by KMP.
