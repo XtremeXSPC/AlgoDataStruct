@@ -39,7 +39,7 @@ void demo_priority_queue_basic() {
 
   PriorityQueue<int> pq;
 
-  cout << std::format("Empty queue created. empty(): {}\n", pq.empty());
+  cout << std::format("Empty queue created. empty(): {}\n", pq.is_empty());
   cout << "Size: " << pq.size() << '\n';
 
   cout << "\nPushing elements: 5, 3, 7, 1, 9, 2\n";
@@ -54,12 +54,12 @@ void demo_priority_queue_basic() {
   cout << "Top (max): " << pq.top() << '\n';
 
   cout << "\nExtracting all elements (should be sorted descending for max-heap):\n";
-  while (!pq.empty()) {
+  while (!pq.is_empty()) {
     cout << pq.top() << ' ';
     pq.pop();
   }
   cout << '\n';
-  cout << std::format("Queue is now empty: {}\n", pq.empty());
+  cout << std::format("Queue is now empty: {}\n", pq.is_empty());
 }
 
 //===----------------------------- MIN HEAP DEMOS ------------------------------===//
@@ -81,7 +81,7 @@ void demo_priority_queue_min_heap() {
   cout << "Top (min): " << min_pq.top() << '\n';
 
   cout << "\nExtracting all elements (should be sorted ascending for min-heap):\n";
-  while (!min_pq.empty()) {
+  while (!min_pq.is_empty()) {
     cout << min_pq.top() << ' ';
     min_pq.pop();
   }
@@ -106,7 +106,7 @@ void demo_priority_queue_from_vector() {
   cout << "Top (max): " << pq.top() << '\n';
 
   cout << "Extracting all elements:\n";
-  while (!pq.empty()) {
+  while (!pq.is_empty()) {
     cout << pq.top() << ' ';
     pq.pop();
   }
@@ -125,7 +125,7 @@ void demo_priority_queue_initializer_list() {
   cout << "Size: " << pq.size() << ", Top: " << pq.top() << '\n';
 
   cout << "All elements: ";
-  while (!pq.empty()) {
+  while (!pq.is_empty()) {
     cout << pq.top() << ' ';
     pq.pop();
   }
@@ -179,7 +179,7 @@ void demo_priority_queue_emplace() {
   cout << "Top: " << pq.top() << '\n';
 
   cout << "All strings in priority order:\n";
-  while (!pq.empty()) {
+  while (!pq.is_empty()) {
     cout << pq.top() << '\n';
     pq.pop();
   }
@@ -227,7 +227,7 @@ void demo_priority_queue_sorted_elements() {
   }
   cout << '\n';
 
-  cout << std::format("Queue is now empty: {}\n", pq.empty());
+  cout << std::format("Queue is now empty: {}\n", pq.is_empty());
 }
 
 //===---------------------------- APPLICATION DEMOS ----------------------------===//
@@ -263,7 +263,7 @@ void demo_task_scheduling() {
 
   cout << "Tasks in execution order (by priority):\n";
   int task_number = 1;
-  while (!task_queue.empty()) {
+  while (!task_queue.is_empty()) {
     const Task& task = task_queue.top();
     cout << task_number << ". [Priority " << task.priority << "] " << task.name << '\n';
     ++task_number;
@@ -301,7 +301,7 @@ void demo_event_simulation() {
   event_queue.emplace("Request received", 0.5);
 
   cout << "Events in chronological order:\n";
-  while (!event_queue.empty()) {
+  while (!event_queue.is_empty()) {
     const Event& event = event_queue.top();
     cout << "[t=" << event.timestamp << "s] " << event.name << '\n';
     event_queue.pop();
@@ -373,7 +373,7 @@ void demo_priority_queue_large() {
   start = std::chrono::high_resolution_clock::now();
 
   int count = 0;
-  while (!pq.empty()) {
+  while (!pq.is_empty()) {
     pq.pop();
     ++count;
   }
