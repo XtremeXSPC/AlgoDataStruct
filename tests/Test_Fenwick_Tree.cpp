@@ -10,7 +10,7 @@
 //===---------------------------------------------------------------------------===//
 
 #include "../include/ads/arrays/Dynamic_Array.hpp"
-#include "../include/ads/trees/Fenwick_Tree.hpp"
+#include "../include/ads/trees/range/Fenwick_Tree.hpp"
 
 #include <gtest/gtest.h>
 
@@ -29,7 +29,7 @@ TEST(FenwickTreeBasicTest, DefaultConstruction) {
   FenwickTree<int> fenwick;
   EXPECT_EQ(fenwick.size(), 0);
   EXPECT_TRUE(fenwick.is_empty());
-  EXPECT_TRUE(fenwick.empty());
+  EXPECT_TRUE(fenwick.is_empty());
   EXPECT_EQ(fenwick.total_sum(), 0);
 }
 

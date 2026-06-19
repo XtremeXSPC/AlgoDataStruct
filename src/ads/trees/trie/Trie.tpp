@@ -12,7 +12,7 @@
 //===---------------------------------------------------------------------------===//
 
 #pragma once
-#include "../../../include/ads/trees/Trie.hpp"
+#include "../../../../include/ads/trees/trie/Trie.hpp"
 
 namespace ads::trees {
 

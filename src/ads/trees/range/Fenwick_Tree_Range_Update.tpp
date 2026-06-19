@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "../../../include/ads/trees/Fenwick_Tree_Range_Update.hpp"
+#include "../../../../include/ads/trees/range/Fenwick_Tree_Range_Update.hpp"
 
 namespace ads::trees {
 
@@ -83,7 +83,7 @@ template <std::input_iterator InputIt>
 auto FenwickTreeRangeUpdate<T>::build(InputIt first, InputIt last) -> void
     requires std::constructible_from<T, std::iter_reference_t<InputIt>>
 {
-  ads::arrays::DynamicArray<T> differences;
+  arr::DynamicArray<T> differences;
   T                            previous{};
   bool                         has_previous = false;
 
@@ -147,11 +147,6 @@ auto FenwickTreeRangeUpdate<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
-template <FenwickElement T>
-auto FenwickTreeRangeUpdate<T>::empty() const noexcept -> bool {
-  return is_empty();
-}
-
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
@@ -170,7 +165,7 @@ auto FenwickTreeRangeUpdate<T>::add_internal(size_t index, const T& delta) -> vo
 }
 
 template <FenwickElement T>
-auto FenwickTreeRangeUpdate<T>::build_from_differences(const ads::arrays::DynamicArray<T>& differences) -> void {
+auto FenwickTreeRangeUpdate<T>::build_from_differences(const arr::DynamicArray<T>& differences) -> void {
   size_ = differences.size();
   tree_.assign(size_ + 1, T{});
 

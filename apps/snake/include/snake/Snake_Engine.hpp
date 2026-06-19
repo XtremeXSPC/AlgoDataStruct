@@ -21,7 +21,7 @@
 #include "ads/arrays/Dynamic_Array.hpp"
 #include "ads/arrays/Static_Array.hpp"
 #include "ads/associative/Hash_Map.hpp"
-#include "ads/trees/AVL_Tree.hpp"
+#include "ads/trees/search/AVL_Tree.hpp"
 
 #include <cstddef>
 #include <cstdint>

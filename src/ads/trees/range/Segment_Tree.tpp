@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "../../../include/ads/trees/Segment_Tree.hpp"
+#include "../../../../include/ads/trees/range/Segment_Tree.hpp"
 
 namespace ads::trees {
 
@@ -366,12 +366,6 @@ constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::is_empt
   return size_ == 0;
 }
 
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::empty() const noexcept -> bool {
-  return is_empty();
-}
-
 //===---------------------------- ITERATOR ACCESS ------------------------------===//
 
 template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
@@ -384,42 +378,6 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::end() const noexcept -> const_iterator {
   return values_.cend();
-}
-
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::cbegin() const noexcept -> const_iterator {
-  return values_.cbegin();
-}
-
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::cend() const noexcept -> const_iterator {
-  return values_.cend();
-}
-
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::rbegin() const noexcept -> const_reverse_iterator {
-  return values_.crbegin();
-}
-
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::rend() const noexcept -> const_reverse_iterator {
-  return values_.crend();
-}
-
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crbegin() const noexcept -> const_reverse_iterator {
-  return values_.crbegin();
-}
-
-template <typename Value, typename Node, typename Combine, typename Identity, typename LeafBuilder>
-requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-constexpr auto SegmentTree<Value, Node, Combine, Identity, LeafBuilder>::crend() const noexcept -> const_reverse_iterator {
-  return values_.crend();
 }
 
 //===--------------------------- FUNCTOR ACCESSORS -----------------------------===//

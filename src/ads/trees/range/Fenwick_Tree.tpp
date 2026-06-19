@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "../../../include/ads/trees/Fenwick_Tree.hpp"
+#include "../../../../include/ads/trees/range/Fenwick_Tree.hpp"
 
 namespace ads::trees {
 
@@ -173,11 +173,6 @@ auto FenwickTree<T>::size() const noexcept -> size_t {
 template <FenwickElement T>
 auto FenwickTree<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
-}
-
-template <FenwickElement T>
-auto FenwickTree<T>::empty() const noexcept -> bool {
-  return is_empty();
 }
 
 template <FenwickElement T>

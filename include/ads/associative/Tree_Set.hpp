@@ -16,7 +16,7 @@
 #ifndef TREE_SET_HPP
 #define TREE_SET_HPP
 
-#include "../trees/AVL_Tree.hpp"
+#include "../trees/search/AVL_Tree.hpp"
 
 #include <concepts>
 #include <cstddef>

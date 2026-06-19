@@ -11,7 +11,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Treap.hpp"
+#include "../include/ads/trees/search/Treap.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <iostream>

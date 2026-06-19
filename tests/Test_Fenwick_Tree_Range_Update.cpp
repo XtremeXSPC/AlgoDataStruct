@@ -9,7 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Fenwick_Tree_Range_Update.hpp"
+#include "../include/ads/trees/range/Fenwick_Tree_Range_Update.hpp"
 
 #include <gtest/gtest.h>
 
@@ -29,7 +29,7 @@ TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromSize) {
   FenwickTreeRangeUpdate<int> tree(5);
   EXPECT_EQ(tree.size(), 5);
   EXPECT_FALSE(tree.is_empty());
-  EXPECT_FALSE(tree.empty());
+  EXPECT_FALSE(tree.is_empty());
 
   for (size_t i = 0; i < 5; ++i) {
     EXPECT_EQ(tree.point_query(i), 0);

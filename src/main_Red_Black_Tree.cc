@@ -1,6 +1,6 @@
 //===---------------------------------------------------------------------------===//
 /**
- * @file main_Red_Black_Tree.cc
+ * @file main_RedBlackTree.cc
  * @author Costantino Lombardi
  * @brief Comprehensive demo program for Red-Black Tree implementation.
  * @version 1.0
@@ -13,7 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Red_Black_Tree.hpp"
+#include "../include/ads/trees/search/Red_Black_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <algorithm>
@@ -35,7 +35,7 @@ using namespace ads::trees;
 
 // Helper function to print tree contents.
 template <typename T>
-void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
+void print_rbt(const RedBlackTree<T>& tree, const string& name) {
   cout << "Red-Black Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
 
   if (tree.is_empty()) {
@@ -54,7 +54,7 @@ void print_rbt(const Red_Black_Tree<T>& tree, const string& name) {
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
 
   cout << "Creating empty Red-Black Tree...\n";
   cout << "  Size: " << rbt.size() << ", Empty: " << (rbt.is_empty() ? "yes" : "no") << "\n";
@@ -90,7 +90,7 @@ void demo_sequential_insertions() {
 
   cout << "Red-Black Trees maintain balance even with sequential insertions.\n\n";
 
-  Red_Black_Tree<int> rbt_asc;
+  RedBlackTree<int> rbt_asc;
 
   cout << "Inserting 1 to 15 in ascending order:\n";
   for (int i = 1; i <= 15; ++i) {
@@ -99,7 +99,7 @@ void demo_sequential_insertions() {
   cout << "  Size: " << rbt_asc.size() << ", Height: " << rbt_asc.height() << "\n";
   cout << "  (A regular BST would have height 15, RBT keeps it balanced)\n";
 
-  Red_Black_Tree<int> rbt_desc;
+  RedBlackTree<int> rbt_desc;
 
   cout << "\nInserting 15 to 1 in descending order:\n";
   for (int i = 15; i >= 1; --i) {
@@ -114,7 +114,7 @@ void demo_sequential_insertions() {
 void demo_search_operations() {
   ads::demo::print_section("Demo: Search Operations");
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
 
   // Build a tree.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
@@ -138,7 +138,7 @@ void demo_search_operations() {
 void demo_property_validation() {
   ads::demo::print_section("Demo: RB-Tree Properties Validation");
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
 
   // Insert random values.
   vector<int> values = {41, 38, 31, 12, 19, 8, 50, 45, 60, 55, 70};
@@ -163,7 +163,7 @@ void demo_property_validation() {
 void demo_random_insertions() {
   ads::demo::print_section("Demo: Random Insertions");
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
 
   // Generate and shuffle values.
   vector<int> values;
@@ -201,7 +201,7 @@ void demo_random_insertions() {
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
-  Red_Black_Tree<int> rbt1;
+  RedBlackTree<int> rbt1;
   for (int i = 1; i <= 10; ++i) {
     rbt1.insert(i);
   }
@@ -210,14 +210,14 @@ void demo_move_semantics() {
   print_rbt(rbt1, "rbt1");
 
   // Move constructor.
-  Red_Black_Tree<int> rbt2 = std::move(rbt1);
+  RedBlackTree<int> rbt2 = std::move(rbt1);
 
   cout << "\nAfter move construction:\n";
   print_rbt(rbt1, "rbt1 (should be empty)");
   print_rbt(rbt2, "rbt2 (should have the data)");
 
   // Move assignment.
-  Red_Black_Tree<int> rbt3;
+  RedBlackTree<int> rbt3;
   rbt3.insert(100);
   rbt3.insert(200);
 
@@ -243,7 +243,7 @@ void demo_performance() {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
   for (int i = 1; i <= N; ++i) {
     rbt.insert(i);
   }
@@ -273,7 +273,7 @@ void demo_performance() {
 void demo_clear_reuse() {
   ads::demo::print_section("Demo: Clear and Reuse");
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
 
   for (int i = 1; i <= 20; ++i) {
     rbt.insert(i);
@@ -299,7 +299,7 @@ void demo_clear_reuse() {
 void demo_edge_cases() {
   ads::demo::print_section("Demo: Edge Cases");
 
-  Red_Black_Tree<int> rbt;
+  RedBlackTree<int> rbt;
 
   // Test operations on empty tree.
   cout << "Testing operations on empty tree:\n";

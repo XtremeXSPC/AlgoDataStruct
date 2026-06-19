@@ -20,21 +20,32 @@
 #ifndef TREES_HPP
 #define TREES_HPP
 
-#include "AVL_Tree.hpp"
-#include "B_Tree.hpp"
-#include "Binary_Search_Tree.hpp"
-#include "Binary_Tree_Exception.hpp"
+// Ordered search trees.
+#include "search/AVL_Tree.hpp"
+#include "search/B_Tree.hpp"
+#include "search/Binary_Search_Tree.hpp"
+#include "search/Red_Black_Tree.hpp"
+#include "search/Splay_Tree.hpp"
+#include "search/Treap.hpp"
+
+// Array-backed range-query structures.
+#include "range/Fenwick_Tree.hpp"
+#include "range/Fenwick_Tree_Range_Update.hpp"
+#include "range/Lazy_Segment_Tree.hpp"
+#include "range/Segment_Tree.hpp"
+
+// Digital (prefix) trees.
+#include "trie/Trie.hpp"
+
+// Structural trees.
 #include "Complete_Binary_Tree.hpp"
-#include "Fenwick_Tree.hpp"
-#include "Fenwick_Tree_Exception.hpp"
-#include "Fenwick_Tree_Range_Update.hpp"
-#include "Lazy_Segment_Tree.hpp"
-#include "Red_Black_Tree.hpp"
-#include "Segment_Tree.hpp"
-#include "Segment_Tree_Exception.hpp"
-#include "Treap.hpp"
+#include "Nary_Tree.hpp"
+
+// Shared concepts and exceptions.
 #include "Tree_Concepts.hpp"
-#include "Trie.hpp"
+#include "exceptions/Binary_Tree_Exception.hpp"
+#include "exceptions/Fenwick_Tree_Exception.hpp"
+#include "exceptions/Segment_Tree_Exception.hpp"
 
 #endif // TREES_HPP
 

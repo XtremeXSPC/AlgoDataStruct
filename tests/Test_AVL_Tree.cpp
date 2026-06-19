@@ -9,7 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/AVL_Tree.hpp"
+#include "../include/ads/trees/search/AVL_Tree.hpp"
 
 #include <gtest/gtest.h>
 

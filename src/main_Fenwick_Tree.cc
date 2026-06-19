@@ -13,7 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Fenwick_Tree.hpp"
+#include "../include/ads/trees/range/Fenwick_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <iostream>

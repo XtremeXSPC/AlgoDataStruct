@@ -9,7 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "../include/ads/trees/search/Binary_Search_Tree.hpp"
 
 #include <gtest/gtest.h>
 

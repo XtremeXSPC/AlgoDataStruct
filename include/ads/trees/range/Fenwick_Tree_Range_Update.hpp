@@ -17,7 +17,7 @@
 #define FENWICK_TREE_RANGE_UPDATE_HPP
 
 #include "Fenwick_Tree.hpp"
-#include "Fenwick_Tree_Exception.hpp"
+#include "../exceptions/Fenwick_Tree_Exception.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -26,6 +26,8 @@
 #include <vector>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 /**
  * @brief Fenwick Tree variant supporting range updates and point queries.
@@ -191,13 +193,6 @@ public:
    */
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
-  /**
-   * @brief Alias for is_empty() for STL-style compatibility.
-   * @return true if empty, false otherwise.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] auto empty() const noexcept -> bool;
-
 private:
   //===------------------------ PRIVATE HELPER METHODS -------------------------===//
 
@@ -219,7 +214,7 @@ private:
    * @brief Builds the internal BIT from a zero-based difference array.
    * @param differences Difference array derived from source values.
    */
-  auto build_from_differences(const ads::arrays::DynamicArray<T>& differences) -> void;
+  auto build_from_differences(const arr::DynamicArray<T>& differences) -> void;
 
   /**
    * @brief Computes prefix sum up to index in the internal BIT.
@@ -243,14 +238,14 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  ads::arrays::DynamicArray<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
+  arr::DynamicArray<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
   size_t                       size_ = 0; ///< Number of elements.
 };
 
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Fenwick_Tree_Range_Update.tpp"
+#include "../../../../src/ads/trees/range/Fenwick_Tree_Range_Update.tpp"
 
 #endif // FENWICK_TREE_RANGE_UPDATE_HPP
 

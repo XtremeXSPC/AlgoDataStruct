@@ -12,18 +12,18 @@
 //===---------------------------------------------------------------------------===//
 
 #pragma once
-#include "../../../include/ads/trees/Red_Black_Tree.hpp"
+#include "../../../../include/ads/trees/search/Red_Black_Tree.hpp"
 
 namespace ads::trees {
 
 //===------------------------- ITERATOR IMPLEMENTATION -------------------------===//
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::iterator::iterator(Node* root) : current_(leftmost(root)) {
+RedBlackTree<T>::iterator::iterator(Node* root) : current_(leftmost(root)) {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::leftmost(Node* node) noexcept -> Node* {
+auto RedBlackTree<T>::iterator::leftmost(Node* node) noexcept -> Node* {
   while (node && node->left) {
     node = node->left.get();
   }
@@ -31,7 +31,7 @@ auto Red_Black_Tree<T>::iterator::leftmost(Node* node) noexcept -> Node* {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::successor(Node* node) noexcept -> Node* {
+auto RedBlackTree<T>::iterator::successor(Node* node) noexcept -> Node* {
   if (!node) {
     return nullptr;
   }
@@ -48,42 +48,42 @@ auto Red_Black_Tree<T>::iterator::successor(Node* node) noexcept -> Node* {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::operator*() const -> reference {
+auto RedBlackTree<T>::iterator::operator*() const -> reference {
   return current_->data;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::operator->() const -> pointer {
+auto RedBlackTree<T>::iterator::operator->() const -> pointer {
   return &current_->data;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::operator++() -> iterator& {
+auto RedBlackTree<T>::iterator::operator++() -> iterator& {
   current_ = successor(current_);
   return *this;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::operator++(int) -> iterator {
+auto RedBlackTree<T>::iterator::operator++(int) -> iterator {
   iterator previous = *this;
   ++(*this);
   return previous;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::iterator::operator==(const iterator& other) const -> bool {
+auto RedBlackTree<T>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
 //===--------------------------- NODE IMPLEMENTATION ---------------------------===//
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::Node::Node(const T& val, Color col, Node* par) requires std::copy_constructible<T>
+RedBlackTree<T>::Node::Node(const T& val, Color col, Node* par) requires std::copy_constructible<T>
     : data(val), color(col), left(nullptr), right(nullptr), parent(par) {
 }
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::Node::Node(T&& val, Color col, Node* par) :
+RedBlackTree<T>::Node::Node(T&& val, Color col, Node* par) :
     data(std::move(val)),
     color(col),
     left(nullptr),
@@ -94,11 +94,11 @@ Red_Black_Tree<T>::Node::Node(T&& val, Color col, Node* par) :
 //===----------------------- CONSTRUCTORS AND ASSIGNMENT -----------------------===//
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::Red_Black_Tree() : root_(nullptr), size_(0) {
+RedBlackTree<T>::RedBlackTree() : root_(nullptr), size_(0) {
 }
 
 template <OrderedTreeElement T>
-Red_Black_Tree<T>::Red_Black_Tree(Red_Black_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
+RedBlackTree<T>::RedBlackTree(RedBlackTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
   if (root_) {
     root_->parent = nullptr;
@@ -106,7 +106,7 @@ Red_Black_Tree<T>::Red_Black_Tree(Red_Black_Tree&& other) noexcept : root_(std::
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_Tree& {
+auto RedBlackTree<T>::operator=(RedBlackTree&& other) noexcept -> RedBlackTree& {
   if (this != &other) {
     root_       = std::move(other.root_);
     size_       = other.size_;
@@ -121,7 +121,7 @@ auto Red_Black_Tree<T>::operator=(Red_Black_Tree&& other) noexcept -> Red_Black_
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
+auto RedBlackTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   auto [new_node, inserted] = insert_helper(root_, value, nullptr);
 
@@ -133,7 +133,7 @@ auto Red_Black_Tree<T>::insert(const T& value) -> bool requires std::copy_constr
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::insert(T&& value) -> bool {
+auto RedBlackTree<T>::insert(T&& value) -> bool {
   auto [new_node, inserted] = insert_helper(root_, std::move(value), nullptr);
 
   if (inserted) {
@@ -145,13 +145,13 @@ auto Red_Black_Tree<T>::insert(T&& value) -> bool {
 
 template <OrderedTreeElement T>
 template <typename... Args>
-auto Red_Black_Tree<T>::emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>
+auto RedBlackTree<T>::emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>
 {
   return insert(T(std::forward<Args>(args)...));
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::remove(const T& value) -> bool {
+auto RedBlackTree<T>::remove(const T& value) -> bool {
   Node* target = find_node(value);
   if (target == nullptr) {
     return false;
@@ -227,7 +227,7 @@ auto Red_Black_Tree<T>::remove(const T& value) -> bool {
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::clear() noexcept {
+void RedBlackTree<T>::clear() noexcept {
   root_.reset();
   size_ = 0;
 }
@@ -235,27 +235,27 @@ void Red_Black_Tree<T>::clear() noexcept {
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::is_empty() const noexcept -> bool {
+auto RedBlackTree<T>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::size() const noexcept -> size_t {
+auto RedBlackTree<T>::size() const noexcept -> size_t {
   return size_;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::height() const noexcept -> int {
+auto RedBlackTree<T>::height() const noexcept -> int {
   return height_helper(root_.get());
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::contains(const T& value) const -> bool {
+auto RedBlackTree<T>::contains(const T& value) const -> bool {
   return find_node(value) != nullptr;
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::find_min() const -> const T& {
+auto RedBlackTree<T>::find_min() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Red-Black Tree is empty");
   }
@@ -268,7 +268,7 @@ auto Red_Black_Tree<T>::find_min() const -> const T& {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::find_max() const -> const T& {
+auto RedBlackTree<T>::find_max() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Red-Black Tree is empty");
   }
@@ -283,12 +283,12 @@ auto Red_Black_Tree<T>::find_max() const -> const T& {
 //===------------------- RED-BLACK TREE SPECIFIC OPERATIONS -------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::black_height() const -> int {
+auto RedBlackTree<T>::black_height() const -> int {
   return black_height_helper(root_.get());
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::validate_properties() const -> bool {
+auto RedBlackTree<T>::validate_properties() const -> bool {
   if (!root_) {
     return true; // Empty tree is valid
   }
@@ -305,24 +305,24 @@ auto Red_Black_Tree<T>::validate_properties() const -> bool {
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
+void RedBlackTree<T>::in_order_traversal(const visitor_type& visit) const {
   for (auto it = cbegin(); it != cend(); ++it) {
     visit(*it);
   }
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const {
+void RedBlackTree<T>::pre_order_traversal(const visitor_type& visit) const {
   pre_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const {
+void RedBlackTree<T>::post_order_traversal(const visitor_type& visit) const {
   post_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const {
+void RedBlackTree<T>::level_order_traversal(const visitor_type& visit) const {
   if (!root_) {
     return;
   }
@@ -348,32 +348,32 @@ void Red_Black_Tree<T>::level_order_traversal(const std::function<void(const T&)
 //===--------------------------- ITERATOR OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::begin() -> iterator {
+auto RedBlackTree<T>::begin() -> iterator {
   return iterator(root_.get());
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::begin() const -> iterator {
+auto RedBlackTree<T>::begin() const -> iterator {
   return iterator(root_.get());
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::end() -> iterator {
+auto RedBlackTree<T>::end() -> iterator {
   return iterator();
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::end() const -> iterator {
+auto RedBlackTree<T>::end() const -> iterator {
   return iterator();
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::cbegin() const -> iterator {
+auto RedBlackTree<T>::cbegin() const -> iterator {
   return begin();
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::cend() const -> iterator {
+auto RedBlackTree<T>::cend() const -> iterator {
   return end();
 }
 
@@ -381,12 +381,12 @@ auto Red_Black_Tree<T>::cend() const -> iterator {
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::get_color(const Node* node) -> Color {
+auto RedBlackTree<T>::get_color(const Node* node) -> Color {
   return (node == nullptr) ? Color::Black : node->color;
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::set_color(Node* node, Color color) {
+void RedBlackTree<T>::set_color(Node* node, Color color) {
   if (node != nullptr) {
     node->color = color;
   }
@@ -395,7 +395,7 @@ void Red_Black_Tree<T>::set_color(Node* node, Color color) {
 //===--------------------------- ROTATION OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_ptr<Node> {
+auto RedBlackTree<T>::rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_ptr<Node> {
   auto  y_ptr = std::move(x_ptr->right);
   Node* x     = x_ptr.get();
   Node* y     = y_ptr.get();
@@ -417,7 +417,7 @@ auto Red_Black_Tree<T>::rotate_left(std::unique_ptr<Node> x_ptr) -> std::unique_
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique_ptr<Node> {
+auto RedBlackTree<T>::rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique_ptr<Node> {
   auto  x_ptr = std::move(y_ptr->left);
   Node* y     = y_ptr.get();
   Node* x     = x_ptr.get();
@@ -441,7 +441,7 @@ auto Red_Black_Tree<T>::rotate_right(std::unique_ptr<Node> y_ptr) -> std::unique
 //===---------------------------- INSERTION HELPERS ----------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::insert_fixup(Node* node) {
+void RedBlackTree<T>::insert_fixup(Node* node) {
   // Continue until we reach root or parent is black.
   while (node != root_.get() && get_color(node->parent) == Color::Red) {
     Node* parent      = node->parent;
@@ -526,7 +526,7 @@ void Red_Black_Tree<T>::insert_fixup(Node* node) {
 
 template <OrderedTreeElement T>
 template <typename U>
-auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value, Node* parent) -> std::pair<Node*, bool> {
+auto RedBlackTree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value, Node* parent) -> std::pair<Node*, bool> {
   if (!node) {
     node = std::make_unique<Node>(std::forward<U>(value), Color::Red, parent);
     size_++;
@@ -546,7 +546,7 @@ auto Red_Black_Tree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value, No
 //===----------------------------- REMOVAL HELPERS -----------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::find_node(const T& value) const -> Node* {
+auto RedBlackTree<T>::find_node(const T& value) const -> Node* {
   Node* current = root_.get();
   while (current) {
     if (value < current->data) {
@@ -561,7 +561,7 @@ auto Red_Black_Tree<T>::find_node(const T& value) const -> Node* {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::owning_link(Node* node) -> std::unique_ptr<Node>& {
+auto RedBlackTree<T>::owning_link(Node* node) -> std::unique_ptr<Node>& {
   if (node->parent == nullptr) {
     return root_;
   }
@@ -572,7 +572,7 @@ auto Red_Black_Tree<T>::owning_link(Node* node) -> std::unique_ptr<Node>& {
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::rotate_left_at(Node* node) {
+void RedBlackTree<T>::rotate_left_at(Node* node) {
   Node* parent = node->parent;
   auto& link   = owning_link(node);
   link         = rotate_left(std::move(link));
@@ -580,7 +580,7 @@ void Red_Black_Tree<T>::rotate_left_at(Node* node) {
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::rotate_right_at(Node* node) {
+void RedBlackTree<T>::rotate_right_at(Node* node) {
   Node* parent = node->parent;
   auto& link   = owning_link(node);
   link         = rotate_right(std::move(link));
@@ -588,7 +588,7 @@ void Red_Black_Tree<T>::rotate_right_at(Node* node) {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::detach_min_node(std::unique_ptr<Node>& subtree, Node*& replacement, Node*& replacement_parent)
+auto RedBlackTree<T>::detach_min_node(std::unique_ptr<Node>& subtree, Node*& replacement, Node*& replacement_parent)
     -> std::unique_ptr<Node> {
   if (!subtree->left) {
     Node* parent = subtree->parent;
@@ -610,7 +610,7 @@ auto Red_Black_Tree<T>::detach_min_node(std::unique_ptr<Node>& subtree, Node*& r
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::delete_fixup(Node* node, Node* parent, bool node_is_left_child) {
+void RedBlackTree<T>::delete_fixup(Node* node, Node* parent, bool node_is_left_child) {
   while (node != root_.get() && get_color(node) == Color::Black) {
     if (parent == nullptr) {
       break;
@@ -688,7 +688,7 @@ void Red_Black_Tree<T>::delete_fixup(Node* node, Node* parent, bool node_is_left
 //===----------------------------- SEARCH HELPERS ------------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::find_min_node(Node* node) -> Node* {
+auto RedBlackTree<T>::find_min_node(Node* node) -> Node* {
   while (node && node->left) {
     node = node->left.get();
   }
@@ -698,7 +698,7 @@ auto Red_Black_Tree<T>::find_min_node(Node* node) -> Node* {
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void RedBlackTree<T>::pre_order_helper(const Node* node, const visitor_type& visit) const {
   if (node) {
     visit(node->data);
     pre_order_helper(node->left.get(), visit);
@@ -707,7 +707,7 @@ void Red_Black_Tree<T>::pre_order_helper(const Node* node, const std::function<v
 }
 
 template <OrderedTreeElement T>
-void Red_Black_Tree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void RedBlackTree<T>::post_order_helper(const Node* node, const visitor_type& visit) const {
   if (node) {
     post_order_helper(node->left.get(), visit);
     post_order_helper(node->right.get(), visit);
@@ -718,7 +718,7 @@ void Red_Black_Tree<T>::post_order_helper(const Node* node, const std::function<
 //===--------------------------- HEIGHT/VALIDATION -----------------------------===//
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::height_helper(const Node* node) const noexcept -> int {
+auto RedBlackTree<T>::height_helper(const Node* node) const noexcept -> int {
   if (!node) {
     return -1;
   }
@@ -726,7 +726,7 @@ auto Red_Black_Tree<T>::height_helper(const Node* node) const noexcept -> int {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::black_height_helper(const Node* node) const -> int {
+auto RedBlackTree<T>::black_height_helper(const Node* node) const -> int {
   if (!node) {
     return 0; // NIL is black.
   }
@@ -735,7 +735,7 @@ auto Red_Black_Tree<T>::black_height_helper(const Node* node) const -> int {
 }
 
 template <OrderedTreeElement T>
-auto Red_Black_Tree<T>::validate_helper(const Node* node, const T* lower_bound, const T* upper_bound) const -> int {
+auto RedBlackTree<T>::validate_helper(const Node* node, const T* lower_bound, const T* upper_bound) const -> int {
   if (!node) {
     return 0; // NIL leaves are black.
   }

@@ -10,8 +10,8 @@
 //===---------------------------------------------------------------------------===//
 
 #include "../include/ads/arrays/Dynamic_Array.hpp"
-#include "../include/ads/trees/Lazy_Segment_Tree.hpp"
-#include "../include/ads/trees/Segment_Tree.hpp"
+#include "../include/ads/trees/range/Lazy_Segment_Tree.hpp"
+#include "../include/ads/trees/range/Segment_Tree.hpp"
 
 #include <gtest/gtest.h>
 
@@ -99,7 +99,7 @@ TEST(SegmentTreeBasicTest, DefaultConstruction) {
   SegmentTree<int> segment;
   EXPECT_EQ(segment.size(), 0);
   EXPECT_TRUE(segment.is_empty());
-  EXPECT_TRUE(segment.empty());
+  EXPECT_TRUE(segment.is_empty());
   EXPECT_EQ(segment.total(), 0);
   EXPECT_EQ(segment.total_sum(), 0);
 }
@@ -429,7 +429,7 @@ TEST(LazySegmentTreeBasicTest, DefaultConstruction) {
   LazySegmentTree<int> segment;
   EXPECT_EQ(segment.size(), 0);
   EXPECT_TRUE(segment.is_empty());
-  EXPECT_TRUE(segment.empty());
+  EXPECT_TRUE(segment.is_empty());
 }
 
 TEST(LazySegmentTreeBasicTest, ConstructionFromSize) {

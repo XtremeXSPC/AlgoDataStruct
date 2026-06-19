@@ -16,8 +16,8 @@
 #ifndef TRIE_HPP
 #define TRIE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "../stacks/Array_Stack.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../../stacks/Array_Stack.hpp"
 
 #include <algorithm>
 #include <array>
@@ -29,6 +29,8 @@
 #include <vector>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 /**
  * @brief Trie (Prefix Tree) data structure.
@@ -231,7 +233,7 @@ private:
     };
 
     // DynamicArray supports arbitrary characters while keeping ownership move-only.
-    std::conditional_t<UseMap, ads::arrays::DynamicArray<ChildEntry>, std::array<std::unique_ptr<TrieNode>, 26>> children;
+    std::conditional_t<UseMap, arr::DynamicArray<ChildEntry>, std::array<std::unique_ptr<TrieNode>, 26>> children;
 
     bool is_end_of_word; ///< True if this node marks end of a word.
 
@@ -309,7 +311,7 @@ using TrieArray = Trie<false>; ///< Trie with array storage (lowercase a-z only)
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Trie.tpp"
+#include "../../../../src/ads/trees/trie/Trie.tpp"
 
 #endif // TRIE_HPP
 

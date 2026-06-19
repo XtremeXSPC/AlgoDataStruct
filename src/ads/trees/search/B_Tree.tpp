@@ -12,7 +12,7 @@
 //===---------------------------------------------------------------------------===//
 
 #pragma once
-#include "../../../include/ads/trees/B_Tree.hpp"
+#include "../../../../include/ads/trees/search/B_Tree.hpp"
 
 namespace ads::trees {
 
@@ -20,7 +20,7 @@ namespace ads::trees {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-B_Tree<T, MinDegree>::Node::Node(bool leaf) :
+BTree<T, MinDegree>::Node::Node(bool leaf) :
     keys(static_cast<size_t>(MAX_KEYS)),
     children(leaf ? 0U : static_cast<size_t>(MAX_KEYS) + 1U),
     is_leaf(leaf) {
@@ -30,18 +30,18 @@ B_Tree<T, MinDegree>::Node::Node(bool leaf) :
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-B_Tree<T, MinDegree>::B_Tree() : root_(nullptr), size_(0) {
+BTree<T, MinDegree>::BTree() : root_(nullptr), size_(0) {
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-B_Tree<T, MinDegree>::B_Tree(B_Tree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
+BTree<T, MinDegree>::BTree(BTree&& other) noexcept : root_(std::move(other.root_)), size_(other.size_) {
   other.size_ = 0;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::operator=(B_Tree&& other) noexcept -> B_Tree& {
+auto BTree<T, MinDegree>::operator=(BTree&& other) noexcept -> BTree& {
   if (this != &other) {
     root_       = std::move(other.root_);
     size_       = other.size_;
@@ -54,14 +54,14 @@ auto B_Tree<T, MinDegree>::operator=(B_Tree&& other) noexcept -> B_Tree& {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::insert(const T& key) -> bool requires std::copy_constructible<T>
+auto BTree<T, MinDegree>::insert(const T& key) -> bool requires std::copy_constructible<T>
 {
   return insert_impl(key);
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::insert(T&& key) -> bool requires std::move_constructible<T>
+auto BTree<T, MinDegree>::insert(T&& key) -> bool requires std::move_constructible<T>
 {
   return insert_impl(std::move(key));
 }
@@ -69,7 +69,7 @@ auto B_Tree<T, MinDegree>::insert(T&& key) -> bool requires std::move_constructi
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
 template <typename... Args>
-auto B_Tree<T, MinDegree>::emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>
+auto BTree<T, MinDegree>::emplace(Args&&... args) -> bool requires std::constructible_from<T, Args...>
 {
   return insert(T(std::forward<Args>(args)...));
 }
@@ -77,7 +77,7 @@ auto B_Tree<T, MinDegree>::emplace(Args&&... args) -> bool requires std::constru
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
 template <typename U>
-auto B_Tree<T, MinDegree>::insert_impl(U&& key) -> bool {
+auto BTree<T, MinDegree>::insert_impl(U&& key) -> bool {
   if (!root_) {
     root_ = std::make_unique<Node>(true);
     root_->keys.push_back(std::forward<U>(key));
@@ -105,7 +105,7 @@ auto B_Tree<T, MinDegree>::insert_impl(U&& key) -> bool {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::remove(const T& key) -> bool {
+auto BTree<T, MinDegree>::remove(const T& key) -> bool {
   if (!root_) {
     return false;
   }
@@ -131,7 +131,7 @@ auto B_Tree<T, MinDegree>::remove(const T& key) -> bool {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::clear() {
+void BTree<T, MinDegree>::clear() noexcept {
   root_.reset();
   size_ = 0;
 }
@@ -140,31 +140,31 @@ void B_Tree<T, MinDegree>::clear() {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::is_empty() const -> bool {
+auto BTree<T, MinDegree>::is_empty() const noexcept -> bool {
   return size_ == 0;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::size() const -> size_t {
+auto BTree<T, MinDegree>::size() const noexcept -> size_t {
   return size_;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::height() const -> int {
+auto BTree<T, MinDegree>::height() const noexcept -> int {
   return height_helper(root_.get());
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::contains(const T& key) const -> bool {
+auto BTree<T, MinDegree>::contains(const T& key) const -> bool {
   return search(key);
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::find_min() const -> const T& {
+auto BTree<T, MinDegree>::find_min() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("B-Tree is empty");
   }
@@ -178,7 +178,7 @@ auto B_Tree<T, MinDegree>::find_min() const -> const T& {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::find_max() const -> const T& {
+auto BTree<T, MinDegree>::find_max() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("B-Tree is empty");
   }
@@ -192,7 +192,7 @@ auto B_Tree<T, MinDegree>::find_max() const -> const T& {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::search(const T& key) const -> bool {
+auto BTree<T, MinDegree>::search(const T& key) const -> bool {
   return search_helper(root_.get(), key);
 }
 
@@ -200,31 +200,31 @@ auto B_Tree<T, MinDegree>::search(const T& key) const -> bool {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-constexpr auto B_Tree<T, MinDegree>::get_min_degree() -> int {
+constexpr auto BTree<T, MinDegree>::get_min_degree() -> int {
   return t;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-constexpr auto B_Tree<T, MinDegree>::get_max_keys() -> int {
+constexpr auto BTree<T, MinDegree>::get_max_keys() -> int {
   return MAX_KEYS;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-constexpr auto B_Tree<T, MinDegree>::get_min_keys() -> int {
+constexpr auto BTree<T, MinDegree>::get_min_keys() -> int {
   return MIN_KEYS;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::count_nodes() const -> size_t {
+auto BTree<T, MinDegree>::count_nodes() const -> size_t {
   return count_nodes_helper(root_.get());
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::validate_properties() const -> bool {
+auto BTree<T, MinDegree>::validate_properties() const -> bool {
   if (!root_) {
     return true;
   }
@@ -237,7 +237,7 @@ auto B_Tree<T, MinDegree>::validate_properties() const -> bool {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::in_order_traversal(std::function<void(const T&)> visit) const {
+void BTree<T, MinDegree>::in_order_traversal(visitor_type visit) const {
   in_order_helper(root_.get(), visit);
 }
 
@@ -246,7 +246,7 @@ void B_Tree<T, MinDegree>::in_order_traversal(std::function<void(const T&)> visi
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::split_child(Node* parent, int index) {
+void BTree<T, MinDegree>::split_child(Node* parent, int index) {
   Node* full_child = parent->children[index].get();
   auto  new_child  = std::make_unique<Node>(full_child->is_leaf);
 
@@ -287,7 +287,7 @@ void B_Tree<T, MinDegree>::split_child(Node* parent, int index) {
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
 template <typename U>
-auto B_Tree<T, MinDegree>::insert_non_full(Node* node, U&& key) -> bool {
+auto BTree<T, MinDegree>::insert_non_full(Node* node, U&& key) -> bool {
   int i = node->n - 1;
 
   if (node->is_leaf) {
@@ -338,7 +338,7 @@ auto B_Tree<T, MinDegree>::insert_non_full(Node* node, U&& key) -> bool {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::find_key_index(const Node* node, const T& key) const -> int {
+auto BTree<T, MinDegree>::find_key_index(const Node* node, const T& key) const -> int {
   int index = 0;
   while (index < node->n && node->keys[index] < key) {
     ++index;
@@ -348,7 +348,7 @@ auto B_Tree<T, MinDegree>::find_key_index(const Node* node, const T& key) const 
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::remove_from_node(Node* node, const T& key) -> bool {
+auto BTree<T, MinDegree>::remove_from_node(Node* node, const T& key) -> bool {
   int index = find_key_index(node, key);
 
   if (index < node->n && key == node->keys[index]) {
@@ -374,14 +374,14 @@ auto B_Tree<T, MinDegree>::remove_from_node(Node* node, const T& key) -> bool {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::remove_from_leaf(Node* node, int index) {
+void BTree<T, MinDegree>::remove_from_leaf(Node* node, int index) {
   node->keys.erase(static_cast<size_t>(index));
   --node->n;
 }
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::remove_key_at(Node* node, int index) {
+void BTree<T, MinDegree>::remove_key_at(Node* node, int index) {
   if (node->is_leaf) {
     remove_from_leaf(node, index);
   } else {
@@ -391,7 +391,7 @@ void B_Tree<T, MinDegree>::remove_key_at(Node* node, int index) {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::remove_from_internal(Node* node, int index) {
+void BTree<T, MinDegree>::remove_from_internal(Node* node, int index) {
   if (node->children[index]->n >= t) {
     node->keys[index] = extract_predecessor(node->children[index].get());
     return;
@@ -409,7 +409,7 @@ void B_Tree<T, MinDegree>::remove_from_internal(Node* node, int index) {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::extract_predecessor(Node* node) -> T {
+auto BTree<T, MinDegree>::extract_predecessor(Node* node) -> T {
   if (node->is_leaf) {
     T predecessor = std::move(node->keys[node->n - 1]);
     node->keys.pop_back();
@@ -430,7 +430,7 @@ auto B_Tree<T, MinDegree>::extract_predecessor(Node* node) -> T {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::extract_successor(Node* node) -> T {
+auto BTree<T, MinDegree>::extract_successor(Node* node) -> T {
   if (node->is_leaf) {
     T successor = std::move(node->keys[0]);
     node->keys.erase(0);
@@ -448,7 +448,7 @@ auto B_Tree<T, MinDegree>::extract_successor(Node* node) -> T {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::fill_child(Node* node, int index) {
+void BTree<T, MinDegree>::fill_child(Node* node, int index) {
   if (index > 0 && node->children[index - 1]->n >= t) {
     borrow_from_previous(node, index);
     return;
@@ -468,7 +468,7 @@ void B_Tree<T, MinDegree>::fill_child(Node* node, int index) {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::borrow_from_previous(Node* node, int index) {
+void BTree<T, MinDegree>::borrow_from_previous(Node* node, int index) {
   Node* child   = node->children[index].get();
   Node* sibling = node->children[index - 1].get();
 
@@ -487,7 +487,7 @@ void B_Tree<T, MinDegree>::borrow_from_previous(Node* node, int index) {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::borrow_from_next(Node* node, int index) {
+void BTree<T, MinDegree>::borrow_from_next(Node* node, int index) {
   Node* child   = node->children[index].get();
   Node* sibling = node->children[index + 1].get();
 
@@ -506,7 +506,7 @@ void B_Tree<T, MinDegree>::borrow_from_next(Node* node, int index) {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::merge_children(Node* node, int index) {
+void BTree<T, MinDegree>::merge_children(Node* node, int index) {
   Node* child   = node->children[index].get();
   Node* sibling = node->children[index + 1].get();
 
@@ -529,7 +529,7 @@ void B_Tree<T, MinDegree>::merge_children(Node* node, int index) {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::search_helper(const Node* node, const T& key) const -> bool {
+auto BTree<T, MinDegree>::search_helper(const Node* node, const T& key) const -> bool {
   if (!node) {
     return false;
   }
@@ -556,7 +556,7 @@ auto B_Tree<T, MinDegree>::search_helper(const Node* node, const T& key) const -
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::height_helper(const Node* node) const -> int {
+auto BTree<T, MinDegree>::height_helper(const Node* node) const -> int {
   if (!node) {
     return -1;
   }
@@ -568,7 +568,7 @@ auto B_Tree<T, MinDegree>::height_helper(const Node* node) const -> int {
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::count_nodes_helper(const Node* node) const -> size_t {
+auto BTree<T, MinDegree>::count_nodes_helper(const Node* node) const -> size_t {
   if (!node) {
     return 0;
   }
@@ -584,7 +584,7 @@ auto B_Tree<T, MinDegree>::count_nodes_helper(const Node* node) const -> size_t 
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-void B_Tree<T, MinDegree>::in_order_helper(const Node* node, std::function<void(const T&)> visit) const {
+void BTree<T, MinDegree>::in_order_helper(const Node* node, visitor_type visit) const {
   if (!node) {
     return;
   }
@@ -606,7 +606,7 @@ void B_Tree<T, MinDegree>::in_order_helper(const Node* node, std::function<void(
 
 template <OrderedTreeElement T, int MinDegree>
 requires ValidBTreeDegree<MinDegree>
-auto B_Tree<T, MinDegree>::validate_helper(
+auto BTree<T, MinDegree>::validate_helper(
     const Node* node, int min_keys, int max_keys, int level, const T* lower_bound, const T* upper_bound, int& leaf_level) const -> bool {
   if (!node) {
     return true;

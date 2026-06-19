@@ -9,7 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/B_Tree.hpp"
+#include "../include/ads/trees/search/B_Tree.hpp"
 
 #include <gtest/gtest.h>
 
@@ -22,7 +22,7 @@
 using namespace ads::trees;
 
 template <typename T, int Degree = 3>
-using BTreeType = B_Tree<T, Degree>;
+using BTreeType = BTree<T, Degree>;
 
 namespace {
 

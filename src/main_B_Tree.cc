@@ -1,6 +1,6 @@
 //===---------------------------------------------------------------------------===//
 /**
- * @file main_B_Tree.cc
+ * @file main_BTree.cc
  * @author Costantino Lombardi
  * @brief Comprehensive demo program for B-Tree implementation.
  * @version 1.0
@@ -13,7 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/B_Tree.hpp"
+#include "../include/ads/trees/search/B_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <algorithm>
@@ -36,7 +36,7 @@ using namespace ads::trees;
 
 // Helper function to print tree contents.
 template <int MinDegree>
-void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
+void print_btree(const BTree<int, MinDegree>& tree, const string& name) {
   cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << ", nodes: " << tree.count_nodes() << "):\n";
 
   if (tree.is_empty()) {
@@ -55,7 +55,7 @@ void print_btree(const B_Tree<int, MinDegree>& tree, const string& name) {
 void demo_basic_operations() {
   ads::demo::print_section("Demo: Basic Operations");
 
-  B_Tree<int, 3> btree; // Minimum degree t=3 (2-5 keys per node).
+  BTree<int, 3> btree; // Minimum degree t=3 (2-5 keys per node).
 
   cout << "Creating empty B-Tree with minimum degree t=3...\n";
   cout << "  Size: " << btree.size() << ", Empty: " << (btree.is_empty() ? "yes" : "no") << "\n";
@@ -95,7 +95,7 @@ void demo_node_splitting() {
   cout << "B-Trees split nodes when they become full.\n";
   cout << "With t=2, each node can hold 1-3 keys.\n\n";
 
-  B_Tree<int, 2> btree; // t=2: 2-3-4 tree behavior (1-3 keys per node).
+  BTree<int, 2> btree; // t=2: 2-3-4 tree behavior (1-3 keys per node).
 
   cout << "Inserting 1 to 10 sequentially (observing height changes):\n";
   for (int i = 1; i <= 10; ++i) {
@@ -123,28 +123,28 @@ void demo_different_degrees() {
   const int N = 50;
 
   // t=2: 2-3-4 tree
-  B_Tree<int, 2> btree2;
+  BTree<int, 2> btree2;
   for (int i = 1; i <= N; ++i) {
     btree2.insert(i);
   }
   cout << "t=2 (2-3-4 tree): height=" << btree2.height() << ", nodes=" << btree2.count_nodes() << '\n';
 
   // t=3
-  B_Tree<int, 3> btree3;
+  BTree<int, 3> btree3;
   for (int i = 1; i <= N; ++i) {
     btree3.insert(i);
   }
   cout << "t=3:             height=" << btree3.height() << ", nodes=" << btree3.count_nodes() << '\n';
 
   // t=5
-  B_Tree<int, 5> btree5;
+  BTree<int, 5> btree5;
   for (int i = 1; i <= N; ++i) {
     btree5.insert(i);
   }
   cout << "t=5:             height=" << btree5.height() << ", nodes=" << btree5.count_nodes() << '\n';
 
   // t=10
-  B_Tree<int, 10> btree10;
+  BTree<int, 10> btree10;
   for (int i = 1; i <= N; ++i) {
     btree10.insert(i);
   }
@@ -159,7 +159,7 @@ void demo_different_degrees() {
 void demo_search_traversal() {
   ads::demo::print_section("Demo: Search and Traversal");
 
-  B_Tree<int, 3> btree;
+  BTree<int, 3> btree;
 
   // Insert in random order.
   vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
@@ -185,7 +185,7 @@ void demo_search_traversal() {
 void demo_random_insertions() {
   ads::demo::print_section("Demo: Random Insertions");
 
-  B_Tree<int, 3> btree;
+  BTree<int, 3> btree;
 
   // Generate and shuffle values.
   vector<int> values;
@@ -223,7 +223,7 @@ void demo_random_insertions() {
 void demo_move_semantics() {
   ads::demo::print_section("Demo: Move Semantics");
 
-  B_Tree<int, 3> btree1;
+  BTree<int, 3> btree1;
   for (int i = 1; i <= 20; ++i) {
     btree1.insert(i);
   }
@@ -232,14 +232,14 @@ void demo_move_semantics() {
   print_btree(btree1, "btree1");
 
   // Move constructor.
-  B_Tree<int, 3> btree2 = std::move(btree1);
+  BTree<int, 3> btree2 = std::move(btree1);
 
   cout << "\nAfter move construction:\n";
   print_btree(btree1, "btree1 (should be empty)");
   print_btree(btree2, "btree2 (should have the data)");
 
   // Move assignment.
-  B_Tree<int, 3> btree3;
+  BTree<int, 3> btree3;
   btree3.insert(100);
   btree3.insert(200);
 
@@ -259,7 +259,7 @@ void demo_move_semantics() {
 void demo_string_type() {
   ads::demo::print_section("Demo: String Type Support");
 
-  B_Tree<string, 3> btree;
+  BTree<string, 3> btree;
 
   vector<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon"};
 
@@ -291,7 +291,7 @@ void demo_performance() {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  B_Tree<int, 5> btree;
+  BTree<int, 5> btree;
   for (int i = 1; i <= N; ++i) {
     btree.insert(i);
   }
@@ -321,7 +321,7 @@ void demo_performance() {
 void demo_clear_reuse() {
   ads::demo::print_section("Demo: Clear and Reuse");
 
-  B_Tree<int, 3> btree;
+  BTree<int, 3> btree;
 
   for (int i = 1; i <= 20; ++i) {
     btree.insert(i);
@@ -349,9 +349,9 @@ void demo_height_comparison() {
 
   const int N = 1'000;
 
-  B_Tree<int, 2>  btree2;
-  B_Tree<int, 5>  btree5;
-  B_Tree<int, 10> btree10;
+  BTree<int, 2>  btree2;
+  BTree<int, 5>  btree5;
+  BTree<int, 10> btree10;
 
   for (int i = 1; i <= N; ++i) {
     btree2.insert(i);

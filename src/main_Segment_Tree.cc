@@ -13,7 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Segment_Tree.hpp"
+#include "../include/ads/trees/range/Segment_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <algorithm>

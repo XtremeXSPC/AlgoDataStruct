@@ -9,7 +9,7 @@
  */
 //===--------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Red_Black_Tree.hpp"
+#include "../include/ads/trees/search/Red_Black_Tree.hpp"
 
 #include <gtest/gtest.h>
 
@@ -25,7 +25,7 @@
 using namespace ads::trees;
 
 template <typename T>
-using RedBlackTreeType = Red_Black_Tree<T>;
+using RedBlackTreeType = RedBlackTree<T>;
 
 namespace {
 

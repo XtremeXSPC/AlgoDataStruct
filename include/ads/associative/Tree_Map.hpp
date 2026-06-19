@@ -16,7 +16,7 @@
 #ifndef TREE_MAP_HPP
 #define TREE_MAP_HPP
 
-#include "../trees/AVL_Tree.hpp"
+#include "../trees/search/AVL_Tree.hpp"
 #include "Associative_Concepts.hpp"
 #include "Dictionary.hpp"
 #include "Tree_Map_Exception.hpp"

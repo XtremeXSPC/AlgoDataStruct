@@ -15,14 +15,14 @@
  * expectations that would fail if any single rotation were applied in the
  * wrong order or omitted.
  *
- * @NOTE on deletion: Red_Black_Tree<T>::remove now executes an actual RB delete
+ * @NOTE on deletion: RedBlackTree<T>::remove now executes an actual RB delete
  * path with fixup logic. The final adversarial case below therefore checks the
  * post-delete structure produced by the current deterministic implementation,
  * rather than assuming a rebuild from the retained values.
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Red_Black_Tree.hpp"
+#include "../include/ads/trees/search/Red_Black_Tree.hpp"
 
 #include <gtest/gtest.h>
 
@@ -34,14 +34,14 @@ using namespace ads::trees;
 namespace {
 
 // Collects in-order values for structural verification.
-auto in_order(const Red_Black_Tree<int>& tree) -> std::vector<int> {
+auto in_order(const RedBlackTree<int>& tree) -> std::vector<int> {
   std::vector<int> out;
   tree.in_order_traversal([&](const int& v) { out.push_back(v); });
   return out;
 }
 
 // Collects pre-order values so tests can pin the root / rotation shape.
-auto pre_order(const Red_Black_Tree<int>& tree) -> std::vector<int> {
+auto pre_order(const RedBlackTree<int>& tree) -> std::vector<int> {
   std::vector<int> out;
   tree.pre_order_traversal([&](const int& v) { out.push_back(v); });
   return out;
@@ -49,7 +49,7 @@ auto pre_order(const Red_Black_Tree<int>& tree) -> std::vector<int> {
 
 // Inserts each value and asserts every RB invariant after every insert.
 // Catches implementations that produce a valid tree only at the final step.
-void insert_and_validate_incrementally(Red_Black_Tree<int>& tree, std::initializer_list<int> values) {
+void insert_and_validate_incrementally(RedBlackTree<int>& tree, std::initializer_list<int> values) {
   size_t expected_size = tree.size();
   for (int v : values) {
     ASSERT_TRUE(tree.insert(v)) << "duplicate insert of " << v;
@@ -82,7 +82,7 @@ void insert_and_validate_incrementally(Red_Black_Tree<int>& tree, std::initializ
 // or one that forgets to re-blacken the root.
 //===---------------------------------------------------------------------------===//
 TEST(RedBlackAdversarial, Adv1_Case1PropagatesToRootRotation) {
-  Red_Black_Tree<int> tree;
+  RedBlackTree<int> tree;
   insert_and_validate_incrementally(tree, {30, 20, 40, 10, 5, 3, 2, 1});
 
   EXPECT_EQ(tree.size(), 8u);
@@ -115,7 +115,7 @@ TEST(RedBlackAdversarial, Adv1_Case1PropagatesToRootRotation) {
 // but an RB violation (red-red edge). validate_properties() catches it.
 //===---------------------------------------------------------------------------===//
 TEST(RedBlackAdversarial, Adv2_LR_DoubleRotation_AtRoot) {
-  Red_Black_Tree<int> tree;
+  RedBlackTree<int> tree;
   insert_and_validate_incrementally(tree, {20, 10, 15});
 
   EXPECT_TRUE(tree.validate_properties());
@@ -141,7 +141,7 @@ TEST(RedBlackAdversarial, Adv2_LR_DoubleRotation_AtRoot) {
 // Exercises the symmetric branch at Red_Black_Tree.tpp:329-362.
 //===---------------------------------------------------------------------------===//
 TEST(RedBlackAdversarial, Adv3_RL_DoubleRotation_AtRoot) {
-  Red_Black_Tree<int> tree;
+  RedBlackTree<int> tree;
   insert_and_validate_incrementally(tree, {10, 20, 15});
 
   EXPECT_TRUE(tree.validate_properties());
@@ -177,7 +177,7 @@ TEST(RedBlackAdversarial, Adv3_RL_DoubleRotation_AtRoot) {
 //                 5(R)  7(R)
 //===---------------------------------------------------------------------------===//
 TEST(RedBlackAdversarial, Adv4_MonotoneAscendingMixedFixups) {
-  Red_Black_Tree<int> tree;
+  RedBlackTree<int> tree;
   insert_and_validate_incrementally(tree, {1, 2, 3, 4, 5, 6, 7});
 
   EXPECT_TRUE(tree.validate_properties());
@@ -219,7 +219,7 @@ TEST(RedBlackAdversarial, Adv4_MonotoneAscendingMixedFixups) {
 //   25(R) 30(R)
 //===---------------------------------------------------------------------------===//
 TEST(RedBlackAdversarial, Adv5_LR_AtNonRootGrandparent) {
-  Red_Black_Tree<int> tree;
+  RedBlackTree<int> tree;
   insert_and_validate_incrementally(tree, {50, 30, 70, 25, 27});
 
   EXPECT_TRUE(tree.validate_properties());
@@ -258,7 +258,7 @@ TEST(RedBlackAdversarial, Adv5_LR_AtNonRootGrandparent) {
 //  3(R)  7(R)    20(R)
 //===---------------------------------------------------------------------------===//
 TEST(RedBlackAdversarial, Adv6_DeleteRootTwoChildren_RebuildCorrectness) {
-  Red_Black_Tree<int> tree;
+  RedBlackTree<int> tree;
   insert_and_validate_incrementally(tree, {10, 5, 15, 3, 7, 12, 20});
 
   ASSERT_EQ(tree.size(), 7u);

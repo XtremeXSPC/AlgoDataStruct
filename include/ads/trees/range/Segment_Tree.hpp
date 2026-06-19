@@ -16,8 +16,9 @@
 #ifndef SEGMENT_TREE_HPP
 #define SEGMENT_TREE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "Segment_Tree_Exception.hpp"
+#include "../../../support/Container_Facade.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../exceptions/Segment_Tree_Exception.hpp"
 
 #include <algorithm>
 #include <concepts>
@@ -30,6 +31,10 @@
 #include <vector>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
+
+using ads::support::ContainerFacade;
 
 namespace detail {
 
@@ -144,7 +149,7 @@ template <
     typename Identity    = detail::DefaultIdentity<Node>,
     typename LeafBuilder = detail::DefaultLeafBuilder<Value, Node>>
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
-class SegmentTree {
+class SegmentTree : public ContainerFacade<SegmentTree<Value, Node, Combine, Identity, LeafBuilder>> {
 public:
   //===--------------------------- TYPE ALIASES --------------------------------===//
 
@@ -162,8 +167,8 @@ public:
   /**
    * @brief Const iterator for traversing the original values.
    */
-  using const_iterator         = typename ads::arrays::DynamicArray<Value>::const_iterator;
-  using const_reverse_iterator = typename ads::arrays::DynamicArray<Value>::const_reverse_iterator;
+  using const_iterator         = typename arr::DynamicArray<Value>::const_iterator;
+  using const_reverse_iterator = typename arr::DynamicArray<Value>::const_reverse_iterator;
 
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
@@ -467,13 +472,6 @@ public:
    */
   [[nodiscard]] constexpr auto is_empty() const noexcept -> bool;
 
-  /**
-   * @brief Alias for is_empty() for STL compatibility.
-   * @return true if empty, false otherwise.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto empty() const noexcept -> bool;
-
   //===--------------------------- ITERATOR ACCESS -----------------------------===//
 
   /**
@@ -489,48 +487,6 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] constexpr auto end() const noexcept -> const_iterator;
-
-  /**
-   * @brief Returns a const iterator to the first value.
-   * @return Const iterator to the beginning.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto cbegin() const noexcept -> const_iterator;
-
-  /**
-   * @brief Returns a const iterator past the last value.
-   * @return Const iterator to the end.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto cend() const noexcept -> const_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator to the last value.
-   * @return Const reverse iterator to the reverse beginning.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto rbegin() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator before the first value.
-   * @return Const reverse iterator to the reverse end.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto rend() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator to the last value.
-   * @return Const reverse iterator to the reverse beginning.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto crbegin() const noexcept -> const_reverse_iterator;
-
-  /**
-   * @brief Returns a const reverse iterator before the first value.
-   * @return Const reverse iterator to the reverse end.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto crend() const noexcept -> const_reverse_iterator;
 
   //===-------------------------- FUNCTOR ACCESSORS ----------------------------===//
 
@@ -591,15 +547,15 @@ private:
   Combine                              combine_{};      ///< Functor to combine two nodes.
   Identity                             identity_{};     ///< Functor to get the identity node.
   LeafBuilder                          leaf_builder_{}; ///< Functor to build leaf nodes from values.
-  ads::arrays::DynamicArray<Value>     values_{};       ///< Original values for point access.
-  ads::arrays::DynamicArray<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
+  arr::DynamicArray<Value>     values_{};       ///< Original values for point access.
+  arr::DynamicArray<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
   size_type                            size_ = 0;       ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Segment_Tree.tpp"
+#include "../../../../src/ads/trees/range/Segment_Tree.tpp"
 
 #endif // SEGMENT_TREE_HPP
 

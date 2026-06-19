@@ -12,7 +12,7 @@
 //===---------------------------------------------------------------------------===//
 
 #pragma once
-#include "../../../include/ads/trees/Binary_Search_Tree.hpp"
+#include "../../../../include/ads/trees/search/Binary_Search_Tree.hpp"
 
 namespace ads::trees {
 
@@ -203,22 +203,22 @@ auto BinarySearchTree<T>::find_max() const -> const T& {
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
+void BinarySearchTree<T>::in_order_traversal(const visitor_type& visit) const {
   in_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const {
+void BinarySearchTree<T>::pre_order_traversal(const visitor_type& visit) const {
   pre_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const {
+void BinarySearchTree<T>::post_order_traversal(const visitor_type& visit) const {
   post_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const {
+void BinarySearchTree<T>::level_order_traversal(const visitor_type& visit) const {
   if (!root_) {
     return;
   }
@@ -294,7 +294,7 @@ auto BinarySearchTree<T>::validate_properties() const -> bool {
   };
 
   size_t                                     counted = 0;
-  ads::arrays::DynamicArray<ValidationFrame> stack;
+  arr::DynamicArray<ValidationFrame> stack;
   stack.push_back(ValidationFrame{root_.get(), nullptr, nullptr});
 
   while (!stack.is_empty()) {
@@ -477,7 +477,7 @@ auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int 
   };
 
   int                                    max_depth = -1;
-  ads::arrays::DynamicArray<HeightFrame> stack;
+  arr::DynamicArray<HeightFrame> stack;
   stack.push_back(HeightFrame{node, 0});
 
   while (!stack.is_empty()) {
@@ -499,8 +499,8 @@ auto BinarySearchTree<T>::height_helper(const Node* node) const noexcept -> int 
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
-  ads::arrays::DynamicArray<const Node*> stack;
+void BinarySearchTree<T>::in_order_helper(const Node* node, const visitor_type& visit) const {
+  arr::DynamicArray<const Node*> stack;
   const Node*                            current = node;
 
   while (current || !stack.is_empty()) {
@@ -517,12 +517,12 @@ void BinarySearchTree<T>::in_order_helper(const Node* node, const std::function<
 }
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void BinarySearchTree<T>::pre_order_helper(const Node* node, const visitor_type& visit) const {
   if (!node) {
     return;
   }
 
-  ads::arrays::DynamicArray<const Node*> stack;
+  arr::DynamicArray<const Node*> stack;
   stack.push_back(node);
 
   while (!stack.is_empty()) {
@@ -541,7 +541,7 @@ void BinarySearchTree<T>::pre_order_helper(const Node* node, const std::function
 }
 
 template <OrderedTreeElement T>
-void BinarySearchTree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void BinarySearchTree<T>::post_order_helper(const Node* node, const visitor_type& visit) const {
   if (!node) {
     return;
   }
@@ -551,7 +551,7 @@ void BinarySearchTree<T>::post_order_helper(const Node* node, const std::functio
     bool        visited;
   };
 
-  ads::arrays::DynamicArray<PostOrderFrame> stack;
+  arr::DynamicArray<PostOrderFrame> stack;
   stack.push_back(PostOrderFrame{node, false});
 
   while (!stack.is_empty()) {

@@ -12,19 +12,17 @@
 //===---------------------------------------------------------------------------===//
 
 #pragma once
-#include "../../../include/ads/trees/Treap.hpp"
+#include "../../../../include/ads/trees/search/Treap.hpp"
 
 namespace ads::trees {
 
 //===---------------------------- ITERATOR METHODS -----------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::iterator::iterator(const iterator& other) : stack_(other.stack_.begin(), other.stack_.end()), current_(other.current_) {
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::iterator::operator=(const iterator& other) -> iterator& {
   if (this != &other) {
     stack_.assign(other.stack_.begin(), other.stack_.end());
@@ -33,8 +31,7 @@ auto Treap<T, Priority>::iterator::operator=(const iterator& other) -> iterator&
   return *this;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::iterator::iterator(Node* root) : current_(nullptr) {
   push_left(root);
   if (!stack_.is_empty()) {
@@ -43,8 +40,7 @@ Treap<T, Priority>::iterator::iterator(Node* root) : current_(nullptr) {
   }
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 void Treap<T, Priority>::iterator::push_left(Node* node) {
   while (node) {
     stack_.push_back(node);
@@ -52,20 +48,17 @@ void Treap<T, Priority>::iterator::push_left(Node* node) {
   }
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::iterator::operator*() const -> reference {
   return current_->data;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::iterator::operator->() const -> pointer {
   return &current_->data;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::iterator::operator++() -> iterator& {
   if (current_->right) {
     push_left(current_->right.get());
@@ -81,41 +74,35 @@ auto Treap<T, Priority>::iterator::operator++() -> iterator& {
   return *this;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::iterator::operator++(int) -> iterator {
   iterator temp = *this;
   ++(*this);
   return temp;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::iterator::operator==(const iterator& other) const -> bool {
   return current_ == other.current_;
 }
 
 //===------------------ CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT -------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::Treap(std::uint64_t seed) : root_(nullptr), size_(0), random_state_(seed == 0 ? kDefaultSeed : seed) {
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::Treap(Treap&& other) noexcept : root_(std::move(other.root_)), size_(other.size_), random_state_(other.random_state_) {
   other.size_ = 0;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 Treap<T, Priority>::~Treap() {
   clear();
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::operator=(Treap&& other) noexcept -> Treap& {
   if (this != &other) {
     clear();
@@ -129,41 +116,35 @@ auto Treap<T, Priority>::operator=(Treap&& other) noexcept -> Treap& {
 
 //===-------------------------- INSERTION OPERATIONS ---------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   return insert_with_priority(value, next_priority());
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::insert(T&& value) -> bool {
   return insert_with_priority(std::move(value), next_priority());
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 template <typename... Args>
 auto Treap<T, Priority>::emplace(Args&&... args) -> bool {
   return insert_with_priority(T(std::forward<Args>(args)...), next_priority());
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::insert_with_priority(const T& value, const Priority& priority) -> bool requires std::copy_constructible<T>
 {
   return insert_with_priority_impl(root_, value, priority);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::insert_with_priority(T&& value, const Priority& priority) -> bool {
   return insert_with_priority_impl(root_, std::move(value), priority);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 template <typename... Args>
 auto Treap<T, Priority>::emplace_with_priority(const Priority& priority, Args&&... args) -> bool {
   return insert_with_priority_impl(root_, T(std::forward<Args>(args)...), priority);
@@ -171,14 +152,12 @@ auto Treap<T, Priority>::emplace_with_priority(const Priority& priority, Args&&.
 
 //===--------------------------- REMOVAL OPERATIONS ----------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::remove(const T& value) -> bool {
   return remove_impl(root_, value);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::clear() noexcept -> void {
   // Iteratively dismantle the tree to avoid deep recursive destruction paths.
   while (root_) {
@@ -198,32 +177,27 @@ auto Treap<T, Priority>::clear() noexcept -> void {
 
 //===---------------------------- QUERY OPERATIONS -----------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::is_empty() const noexcept -> bool {
   return root_ == nullptr;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::size() const noexcept -> size_t {
   return size_;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::height() const noexcept -> int {
   return height_helper(root_.get());
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::contains(const T& value) const -> bool {
   return find_node(root_.get(), value) != nullptr;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::find_min() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Cannot find minimum in empty treap");
@@ -231,8 +205,7 @@ auto Treap<T, Priority>::find_min() const -> const T& {
   return find_min_node(root_.get())->data;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::find_max() const -> const T& {
   if (is_empty()) {
     throw EmptyTreeException("Cannot find maximum in empty treap");
@@ -240,8 +213,7 @@ auto Treap<T, Priority>::find_max() const -> const T& {
   return find_max_node(root_.get())->data;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::priority_of(const T& value) const -> const Priority* {
   Node* node = find_node(root_.get(), value);
   return node ? &node->priority : nullptr;
@@ -249,27 +221,23 @@ auto Treap<T, Priority>::priority_of(const T& value) const -> const Priority* {
 
 //===---------------------------- TRAVERSAL METHODS ----------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::in_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::in_order_traversal(const visitor_type& visit) const -> void {
   in_order_helper(root_.get(), visit);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::pre_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::pre_order_traversal(const visitor_type& visit) const -> void {
   pre_order_helper(root_.get(), visit);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::post_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::post_order_traversal(const visitor_type& visit) const -> void {
   post_order_helper(root_.get(), visit);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::level_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::level_order_traversal(const visitor_type& visit) const -> void {
   if (!root_) {
     return;
   }
@@ -291,8 +259,7 @@ auto Treap<T, Priority>::level_order_traversal(const std::function<void(const T&
   }
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::successor(const T& value) const -> const T* {
   Node* current   = root_.get();
   Node* successor = nullptr;
@@ -309,8 +276,7 @@ auto Treap<T, Priority>::successor(const T& value) const -> const T* {
   return successor ? &successor->data : nullptr;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::predecessor(const T& value) const -> const T* {
   Node* current     = root_.get();
   Node* predecessor = nullptr;
@@ -327,8 +293,7 @@ auto Treap<T, Priority>::predecessor(const T& value) const -> const T* {
   return predecessor ? &predecessor->data : nullptr;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::validate_properties() const -> bool {
   if (!root_) {
     return size_ == 0;
@@ -342,7 +307,7 @@ auto Treap<T, Priority>::validate_properties() const -> bool {
   };
 
   size_t                                     counted = 0;
-  ads::arrays::DynamicArray<ValidationFrame> stack;
+  arr::DynamicArray<ValidationFrame> stack;
   stack.push_back({root_.get(), nullptr, nullptr, nullptr});
 
   while (!stack.is_empty()) {
@@ -374,38 +339,32 @@ auto Treap<T, Priority>::validate_properties() const -> bool {
 
 //===----------------------------- ITERATOR ACCESS -----------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::begin() -> iterator {
   return iterator(root_.get());
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::begin() const -> iterator {
   return iterator(root_.get());
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::end() -> iterator {
   return iterator();
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::end() const -> iterator {
   return iterator();
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::cbegin() const -> iterator {
   return begin();
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::cend() const -> iterator {
   return end();
 }
@@ -413,8 +372,7 @@ auto Treap<T, Priority>::cend() const -> iterator {
 //=================================================================================//
 //===------------------------- PRIVATE HELPER METHODS --------------------------===//
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 template <typename U>
 auto Treap<T, Priority>::insert_with_priority_impl(std::unique_ptr<Node>& node, U&& value, const Priority& priority) -> bool {
   if (!node) {
@@ -442,8 +400,7 @@ auto Treap<T, Priority>::insert_with_priority_impl(std::unique_ptr<Node>& node, 
   return false;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::remove_impl(std::unique_ptr<Node>& node, const T& value) -> bool {
   if (!node) {
     return false;
@@ -481,8 +438,7 @@ auto Treap<T, Priority>::remove_impl(std::unique_ptr<Node>& node, const T& value
   return true;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::rotate_left(std::unique_ptr<Node>& node) -> void {
   auto new_root  = std::move(node->right);
   node->right    = std::move(new_root->left);
@@ -490,8 +446,7 @@ auto Treap<T, Priority>::rotate_left(std::unique_ptr<Node>& node) -> void {
   node           = std::move(new_root);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::rotate_right(std::unique_ptr<Node>& node) -> void {
   auto new_root   = std::move(node->left);
   node->left      = std::move(new_root->right);
@@ -499,8 +454,7 @@ auto Treap<T, Priority>::rotate_right(std::unique_ptr<Node>& node) -> void {
   node            = std::move(new_root);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::next_priority() -> Priority {
   random_state_ ^= random_state_ << 7;
   random_state_ ^= random_state_ >> 9;
@@ -508,8 +462,7 @@ auto Treap<T, Priority>::next_priority() -> Priority {
   return static_cast<Priority>(random_state_);
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::find_node(Node* node, const T& value) const -> Node* {
   while (node) {
     if (value < node->data) {
@@ -523,8 +476,7 @@ auto Treap<T, Priority>::find_node(Node* node, const T& value) const -> Node* {
   return nullptr;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::find_min_node(Node* node) const -> Node* {
   while (node->left) {
     node = node->left.get();
@@ -532,8 +484,7 @@ auto Treap<T, Priority>::find_min_node(Node* node) const -> Node* {
   return node;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::find_max_node(Node* node) const -> Node* {
   while (node->right) {
     node = node->right.get();
@@ -541,8 +492,7 @@ auto Treap<T, Priority>::find_max_node(Node* node) const -> Node* {
   return node;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::height_helper(const Node* node) const noexcept -> int {
   if (!node) {
     return -1;
@@ -554,7 +504,7 @@ auto Treap<T, Priority>::height_helper(const Node* node) const noexcept -> int {
   };
 
   int                                    max_depth = -1;
-  ads::arrays::DynamicArray<HeightFrame> stack;
+  arr::DynamicArray<HeightFrame> stack;
   stack.push_back({node, 0});
 
   while (!stack.is_empty()) {
@@ -573,10 +523,9 @@ auto Treap<T, Priority>::height_helper(const Node* node) const noexcept -> int {
   return max_depth;
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const -> void {
-  ads::arrays::DynamicArray<const Node*> stack;
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::in_order_helper(const Node* node, const visitor_type& visit) const -> void {
+  arr::DynamicArray<const Node*> stack;
   const Node*                            current = node;
 
   while (current || !stack.is_empty()) {
@@ -592,14 +541,13 @@ auto Treap<T, Priority>::in_order_helper(const Node* node, const std::function<v
   }
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const -> void {
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::pre_order_helper(const Node* node, const visitor_type& visit) const -> void {
   if (!node) {
     return;
   }
 
-  ads::arrays::DynamicArray<const Node*> stack;
+  arr::DynamicArray<const Node*> stack;
   stack.push_back(node);
 
   while (!stack.is_empty()) {
@@ -616,9 +564,8 @@ auto Treap<T, Priority>::pre_order_helper(const Node* node, const std::function<
   }
 }
 
-template <OrderedTreeElement T, typename Priority>
-requires std::totally_ordered<Priority>
-auto Treap<T, Priority>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const -> void {
+template <OrderedTreeElement T, std::totally_ordered Priority>
+auto Treap<T, Priority>::post_order_helper(const Node* node, const visitor_type& visit) const -> void {
   if (!node) {
     return;
   }
@@ -628,7 +575,7 @@ auto Treap<T, Priority>::post_order_helper(const Node* node, const std::function
     bool        visited;
   };
 
-  ads::arrays::DynamicArray<PostOrderFrame> stack;
+  arr::DynamicArray<PostOrderFrame> stack;
   stack.push_back({node, false});
 
   while (!stack.is_empty()) {

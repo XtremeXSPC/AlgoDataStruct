@@ -16,10 +16,10 @@
 #ifndef TREAP_HPP
 #define TREAP_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "../queues/Linked_Queue.hpp"
-#include "Binary_Tree_Exception.hpp"
-#include "Tree_Concepts.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../../queues/Linked_Queue.hpp"
+#include "../Tree_Concepts.hpp"
+#include "../exceptions/Binary_Tree_Exception.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -30,6 +30,8 @@
 #include <utility>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 /**
  * @brief A randomized binary search tree that also satisfies a heap invariant on priorities.
@@ -48,14 +50,14 @@ namespace ads::trees {
  * @tparam T Stored value type.
  * @tparam Priority Numeric priority type.
  */
-template <OrderedTreeElement T, typename Priority = std::uint32_t>
-requires std::totally_ordered<Priority>
+template <OrderedTreeElement T, std::totally_ordered Priority = std::uint32_t>
 class Treap {
 private:
   struct Node;
 
 public:
   using value_type    = T;
+  using visitor_type  = std::function<void(const T&)>;
   using priority_type = Priority;
   using size_type     = size_t;
 
@@ -84,8 +86,8 @@ public:
   private:
     friend class Treap<T, Priority>;
 
-    ads::arrays::DynamicArray<Node*> stack_;
-    Node*                            current_ = nullptr;
+    arr::DynamicArray<Node*> stack_;
+    Node*                    current_ = nullptr;
 
     explicit iterator(Node* root);
     void push_left(Node* node);
@@ -252,25 +254,25 @@ public:
    * @brief Traverses the treap in sorted order.
    * @param visit Callback invoked for each value.
    */
-  auto in_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto in_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Traverses the treap in root-left-right order.
    * @param visit Callback invoked for each value.
    */
-  auto pre_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto pre_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Traverses the treap in left-right-root order.
    * @param visit Callback invoked for each value.
    */
-  auto post_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto post_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Traverses the treap level by level.
    * @param visit Callback invoked for each value.
    */
-  auto level_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto level_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Returns the successor of a given value.
@@ -364,14 +366,14 @@ private:
   auto find_min_node(Node* node) const -> Node*;
   auto find_max_node(Node* node) const -> Node*;
   auto height_helper(const Node* node) const noexcept -> int;
-  auto in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const -> void;
-  auto pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const -> void;
-  auto post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const -> void;
+  auto in_order_helper(const Node* node, const visitor_type& visit) const -> void;
+  auto pre_order_helper(const Node* node, const visitor_type& visit) const -> void;
+  auto post_order_helper(const Node* node, const visitor_type& visit) const -> void;
 };
 
 } // namespace ads::trees
 
-#include "../../../src/ads/trees/Treap.tpp"
+#include "../../../../src/ads/trees/search/Treap.tpp"
 
 #endif // TREAP_HPP
 

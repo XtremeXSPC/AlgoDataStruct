@@ -13,7 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Trie.hpp"
+#include "../include/ads/trees/trie/Trie.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <chrono>

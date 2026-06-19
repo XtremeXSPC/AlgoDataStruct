@@ -16,9 +16,9 @@
 #ifndef B_TREE_HPP
 #define B_TREE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "Binary_Tree_Exception.hpp"
-#include "Tree_Concepts.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../Tree_Concepts.hpp"
+#include "../exceptions/Binary_Tree_Exception.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -27,6 +27,8 @@
 #include <utility>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 /**
  * @brief B-Tree implementation
@@ -69,28 +71,30 @@ namespace ads::trees {
  */
 template <OrderedTreeElement T, int MinDegree = 3>
 requires ValidBTreeDegree<MinDegree>
-class B_Tree {
+class BTree {
 public:
+  using visitor_type = std::function<void(const T&)>;
+
   //===----------------- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------===//
 
   /**
    * @brief Construct empty B-Tree.
    * @complexity Time O(1), Space O(1)
    */
-  B_Tree();
+  BTree();
 
   /**
    * @brief Destructor (automatic via unique_ptr).
    * @complexity Time O(n), Space O(1)
    */
-  ~B_Tree() = default;
+  ~BTree() = default;
 
   /**
    * @brief Move constructor.
    * @param other The tree from which to move resources.
    * @complexity Time O(1), Space O(1)
    */
-  B_Tree(B_Tree&& other) noexcept;
+  BTree(BTree&& other) noexcept;
 
   /**
    * @brief Move assignment operator.
@@ -98,11 +102,11 @@ public:
    * @return A reference to this instance.
    * @complexity Time O(n), Space O(1)
    */
-  auto operator=(B_Tree&& other) noexcept -> B_Tree&;
+  auto operator=(BTree&& other) noexcept -> BTree&;
 
   // Copy constructor and assignment are disabled (move-only type).
-  B_Tree(const B_Tree&)                    = delete;
-  auto operator=(const B_Tree&) -> B_Tree& = delete;
+  BTree(const BTree&)                    = delete;
+  auto operator=(const BTree&) -> BTree& = delete;
 
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
@@ -150,7 +154,7 @@ public:
    * @brief Clear all keys.
    * @complexity O(n), Space O(1)
    */
-  void clear();
+  void clear() noexcept;
 
   //===--------------------------- QUERY OPERATIONS ----------------------------===//
 
@@ -159,21 +163,21 @@ public:
    * @return true if the tree contains no elements.
    * @complexity O(1)
    */
-  [[nodiscard]] auto is_empty() const -> bool;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Get number of keys in tree.
    * @return Number of keys in the tree.
    * @complexity O(1)
    */
-  [[nodiscard]] auto size() const -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_t;
 
   /**
    * @brief Get height of tree.
    * @return Height (all leaves at same level).
    * @complexity O(log_t n)
    */
-  [[nodiscard]] auto height() const -> int;
+  [[nodiscard]] auto height() const noexcept -> int;
 
   /**
    * @brief Alias for search.
@@ -253,7 +257,7 @@ public:
    * @param visit Function to call for each key.
    * @complexity O(n), Space O(h)
    */
-  void in_order_traversal(std::function<void(const T&)> visit) const;
+  void in_order_traversal(visitor_type visit) const;
 
 private:
   //====------------------------------ CONSTANTS -------------------------------===//
@@ -272,8 +276,8 @@ private:
    * @brief Internal node structure.
    */
   struct Node {
-    ads::arrays::DynamicArray<T>                     keys;     // Sorted keys.
-    ads::arrays::DynamicArray<std::unique_ptr<Node>> children; // Child pointers.
+    arr::DynamicArray<T>                     keys;     // Sorted keys.
+    arr::DynamicArray<std::unique_ptr<Node>> children; // Child pointers.
 
     bool is_leaf; // True if leaf node.
     int  n = 0;   // Current number of keys.
@@ -414,7 +418,7 @@ private:
    */
   [[nodiscard]] auto count_nodes_helper(const Node* node) const -> size_t;
 
-  void in_order_helper(const Node* node, std::function<void(const T&)> visit) const;
+  void in_order_helper(const Node* node, visitor_type visit) const;
 
   /**
    * @brief Validate B-Tree properties.
@@ -436,7 +440,7 @@ private:
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/B_Tree.tpp"
+#include "../../../../src/ads/trees/search/B_Tree.tpp"
 
 #endif // B_TREE_HPP
 

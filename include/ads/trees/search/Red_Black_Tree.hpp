@@ -16,10 +16,10 @@
 #ifndef RED_BLACK_TREE_HPP
 #define RED_BLACK_TREE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "../queues/Linked_Queue.hpp"
-#include "Binary_Tree_Exception.hpp"
-#include "Tree_Concepts.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../../queues/Linked_Queue.hpp"
+#include "../Tree_Concepts.hpp"
+#include "../exceptions/Binary_Tree_Exception.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -71,13 +71,14 @@ enum class Color : std::uint8_t { Red, Black };
  *   - Space:  O(n) with 1 bit per node for color
  */
 template <OrderedTreeElement T>
-class Red_Black_Tree {
+class RedBlackTree {
 private:
   struct Node;
 
 public:
-  using value_type = T;
-  using size_type  = size_t;
+  using value_type   = T;
+  using visitor_type = std::function<void(const T&)>;
+  using size_type    = size_t;
 
   //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
@@ -103,7 +104,7 @@ public:
     auto operator==(const iterator& other) const -> bool;
 
   private:
-    friend class Red_Black_Tree<T>;
+    friend class RedBlackTree<T>;
 
     Node* current_ = nullptr;
 
@@ -119,20 +120,20 @@ public:
    * @brief Construct empty Red-Black Tree.
    * @complexity Time O(1), Space O(1)
    */
-  Red_Black_Tree();
+  RedBlackTree();
 
   /**
    * @brief Destructor (automatic via unique_ptr).
    * @complexity Time O(n), Space O(1)
    */
-  ~Red_Black_Tree() = default;
+  ~RedBlackTree() = default;
 
   /**
    * @brief Move constructor.
    * @param other The tree from which to move resources.
    * @complexity Time O(1), Space O(1)
    */
-  Red_Black_Tree(Red_Black_Tree&& other) noexcept;
+  RedBlackTree(RedBlackTree&& other) noexcept;
 
   /**
    * @brief Move assignment operator.
@@ -140,11 +141,11 @@ public:
    * @return A reference to this instance.
    * @complexity Time O(n), Space O(1)
    */
-  auto operator=(Red_Black_Tree&& other) noexcept -> Red_Black_Tree&;
+  auto operator=(RedBlackTree&& other) noexcept -> RedBlackTree&;
 
   // Copy constructor and assignment are disabled (move-only type).
-  Red_Black_Tree(const Red_Black_Tree&)                    = delete;
-  auto operator=(const Red_Black_Tree&) -> Red_Black_Tree& = delete;
+  RedBlackTree(const RedBlackTree&)                    = delete;
+  auto operator=(const RedBlackTree&) -> RedBlackTree& = delete;
 
   //===------------------------- INSERTION OPERATIONS --------------------------===//
 
@@ -264,28 +265,28 @@ public:
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(h)
    */
-  void in_order_traversal(const std::function<void(const T&)>& visit) const;
+  void in_order_traversal(const visitor_type& visit) const;
 
   /**
    * @brief Pre-order traversal.
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(h)
    */
-  void pre_order_traversal(const std::function<void(const T&)>& visit) const;
+  void pre_order_traversal(const visitor_type& visit) const;
 
   /**
    * @brief Post-order traversal.
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(h)
    */
-  void post_order_traversal(const std::function<void(const T&)>& visit) const;
+  void post_order_traversal(const visitor_type& visit) const;
 
   /**
    * @brief Level-order traversal.
    * @param visit Function to call for each element.
    * @complexity O(n), Space O(n)
    */
-  void level_order_traversal(const std::function<void(const T&)>& visit) const;
+  void level_order_traversal(const visitor_type& visit) const;
 
   //===-------------------------- ITERATOR OPERATIONS --------------------------===//
 
@@ -478,14 +479,14 @@ private:
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
-  void pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
+  void pre_order_helper(const Node* node, const visitor_type& visit) const;
 
   /**
    * @brief Post-order traversal helper.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
-  void post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
+  void post_order_helper(const Node* node, const visitor_type& visit) const;
 
   //===-------------------------- HEIGHT/VALIDATION ----------------------------===//
 
@@ -519,7 +520,7 @@ private:
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Red_Black_Tree.tpp"
+#include "../../../../src/ads/trees/search/Red_Black_Tree.tpp"
 
 #endif // RED_BLACK_TREE_HPP
 

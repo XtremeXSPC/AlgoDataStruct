@@ -12,7 +12,7 @@
 //===---------------------------------------------------------------------------===//
 
 #pragma once
-#include "../../../include/ads/trees/AVL_Tree.hpp"
+#include "../../../../include/ads/trees/search/AVL_Tree.hpp"
 
 namespace ads::trees {
 
@@ -228,22 +228,22 @@ auto AVLTree<T>::find_max() const -> const T& {
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <OrderedTreeElement T>
-void AVLTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::in_order_traversal(const visitor_type& visit) const {
   in_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void AVLTree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::pre_order_traversal(const visitor_type& visit) const {
   pre_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void AVLTree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::post_order_traversal(const visitor_type& visit) const {
   post_order_helper(root_.get(), visit);
 }
 
 template <OrderedTreeElement T>
-void AVLTree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::level_order_traversal(const visitor_type& visit) const {
   if (!root_) {
     return;
   }
@@ -619,7 +619,7 @@ auto AVLTree<T>::find_max_node(Node* node) const -> Node* {
 //===---------------------------- TRAVERSAL HELPERS ----------------------------===//
 
 template <OrderedTreeElement T>
-void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::in_order_helper(const Node* node, const visitor_type& visit) const {
   if (!node) {
     return;
   }
@@ -630,7 +630,7 @@ void AVLTree<T>::in_order_helper(const Node* node, const std::function<void(cons
 }
 
 template <OrderedTreeElement T>
-void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::pre_order_helper(const Node* node, const visitor_type& visit) const {
   if (!node) {
     return;
   }
@@ -641,7 +641,7 @@ void AVLTree<T>::pre_order_helper(const Node* node, const std::function<void(con
 }
 
 template <OrderedTreeElement T>
-void AVLTree<T>::post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const {
+void AVLTree<T>::post_order_helper(const Node* node, const visitor_type& visit) const {
   if (!node) {
     return;
   }

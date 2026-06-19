@@ -16,8 +16,8 @@
 #ifndef LAZY_SEGMENT_TREE_HPP
 #define LAZY_SEGMENT_TREE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "Segment_Tree_Exception.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../exceptions/Segment_Tree_Exception.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -30,6 +30,8 @@
 #include <vector>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 namespace detail {
 
@@ -355,13 +357,6 @@ public:
    */
   [[nodiscard]] constexpr auto is_empty() const noexcept -> bool;
 
-  /**
-   * @brief Alias for is_empty() for STL compatibility.
-   * @return true if empty, false otherwise.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] constexpr auto empty() const noexcept -> bool;
-
 private:
   //===----------------------------- INTERNAL NODE -----------------------------===//
 
@@ -383,12 +378,12 @@ private:
    * @brief Builds the tree from input values.
    * @param values Values used only during construction/rebuild.
    */
-  constexpr auto build_tree(const ads::arrays::DynamicArray<Value>& values) -> void;
+  constexpr auto build_tree(const arr::DynamicArray<Value>& values) -> void;
 
   /**
    * @brief Recursively builds tree nodes.
    */
-  constexpr auto build_node(size_type v, size_type tl, size_type tr, const ads::arrays::DynamicArray<Value>& values) -> void;
+  constexpr auto build_node(size_type v, size_type tl, size_type tr, const arr::DynamicArray<Value>& values) -> void;
 
   /**
    * @brief Pushes lazy tag down to children.
@@ -436,14 +431,14 @@ private:
   Apply                                       apply_{};    ///< Functor to apply a tag to a node.
   Compose                                     compose_{};  ///< Functor to compose two tags.
   Identity                                    identity_{}; ///< Functor to get the identity node.
-  mutable ads::arrays::DynamicArray<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
+  mutable arr::DynamicArray<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
   size_type                                   size_ = 0;   ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Lazy_Segment_Tree.tpp"
+#include "../../../../src/ads/trees/range/Lazy_Segment_Tree.tpp"
 
 #endif // LAZY_SEGMENT_TREE_HPP
 

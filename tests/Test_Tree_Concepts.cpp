@@ -9,12 +9,12 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/AVL_Tree.hpp"
-#include "../include/ads/trees/B_Tree.hpp"
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "../include/ads/trees/search/AVL_Tree.hpp"
+#include "../include/ads/trees/search/B_Tree.hpp"
+#include "../include/ads/trees/search/Binary_Search_Tree.hpp"
 #include "../include/ads/trees/Complete_Binary_Tree.hpp"
-#include "../include/ads/trees/Fenwick_Tree.hpp"
-#include "../include/ads/trees/Red_Black_Tree.hpp"
+#include "../include/ads/trees/range/Fenwick_Tree.hpp"
+#include "../include/ads/trees/search/Red_Black_Tree.hpp"
 #include "../include/ads/trees/Tree_Concepts.hpp"
 
 #include <gtest/gtest.h>
@@ -72,9 +72,9 @@ template <typename T> concept CanInstantiateBinarySearchTree = requires { typena
 
 template <typename T> concept CanInstantiateAVLTree = requires { typename AVLTree<T>; };
 
-template <typename T> concept CanInstantiateRedBlackTree = requires { typename Red_Black_Tree<T>; };
+template <typename T> concept CanInstantiateRedBlackTree = requires { typename RedBlackTree<T>; };
 
-template <typename T, int Degree> concept CanInstantiateBTree = requires { typename B_Tree<T, Degree>; };
+template <typename T, int Degree> concept CanInstantiateBTree = requires { typename BTree<T, Degree>; };
 
 template <typename T> concept CanInstantiateCompleteBinaryTree = requires { typename CompleteBinaryTree<T>; };
 
@@ -104,12 +104,12 @@ static_assert(requires(AVLTree<LessAndEqualComparable>& tree, const LessAndEqual
   tree.contains(value);
 });
 
-static_assert(requires(Red_Black_Tree<LessAndEqualComparable>& tree, const LessAndEqualComparable& value) {
+static_assert(requires(RedBlackTree<LessAndEqualComparable>& tree, const LessAndEqualComparable& value) {
   tree.insert(value);
   tree.contains(value);
 });
 
-static_assert(requires(B_Tree<LessAndEqualComparable, 3>& tree, const LessAndEqualComparable& value) {
+static_assert(requires(BTree<LessAndEqualComparable, 3>& tree, const LessAndEqualComparable& value) {
   tree.insert(value);
   tree.contains(value);
 });
@@ -126,27 +126,27 @@ static_assert(requires(FenwickTree<int>& tree) {
 
 static_assert(OrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);
 static_assert(OrderedSearchTree<AVLTree<LessAndEqualComparable>, LessAndEqualComparable>);
-static_assert(OrderedSearchTree<Red_Black_Tree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(OrderedSearchTree<RedBlackTree<LessAndEqualComparable>, LessAndEqualComparable>);
 
 static_assert(std::forward_iterator<BinarySearchTree<LessAndEqualComparable>::iterator>);
 static_assert(std::forward_iterator<AVLTree<LessAndEqualComparable>::iterator>);
-static_assert(std::forward_iterator<Red_Black_Tree<LessAndEqualComparable>::iterator>);
+static_assert(std::forward_iterator<RedBlackTree<LessAndEqualComparable>::iterator>);
 
 static_assert(ValidatableOrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);
 static_assert(ValidatableOrderedSearchTree<AVLTree<LessAndEqualComparable>, LessAndEqualComparable>);
-static_assert(ValidatableOrderedSearchTree<Red_Black_Tree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(ValidatableOrderedSearchTree<RedBlackTree<LessAndEqualComparable>, LessAndEqualComparable>);
 
 static_assert(CopyInsertableOrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);
 static_assert(CopyInsertableOrderedSearchTree<AVLTree<LessAndEqualComparable>, LessAndEqualComparable>);
-static_assert(CopyInsertableOrderedSearchTree<Red_Black_Tree<LessAndEqualComparable>, LessAndEqualComparable>);
+static_assert(CopyInsertableOrderedSearchTree<RedBlackTree<LessAndEqualComparable>, LessAndEqualComparable>);
 
 static_assert(OrderedSearchTree<BinarySearchTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
 static_assert(OrderedSearchTree<AVLTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
-static_assert(OrderedSearchTree<Red_Black_Tree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+static_assert(OrderedSearchTree<RedBlackTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
 
 static_assert(!CopyInsertableOrderedSearchTree<BinarySearchTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
 static_assert(!CopyInsertableOrderedSearchTree<AVLTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
-static_assert(!CopyInsertableOrderedSearchTree<Red_Black_Tree<MoveOnlyOrdered>, MoveOnlyOrdered>);
+static_assert(!CopyInsertableOrderedSearchTree<RedBlackTree<MoveOnlyOrdered>, MoveOnlyOrdered>);
 
 static_assert(!CanInstantiateBinarySearchTree<OnlyEqualityComparable>);
 static_assert(!CanInstantiateAVLTree<OnlyEqualityComparable>);

@@ -17,8 +17,8 @@
 #define COMPLETE_BINARY_TREE_HPP
 
 #include "../queues/Linked_Queue.hpp"
-#include "Binary_Tree_Exception.hpp"
 #include "Tree_Concepts.hpp"
+#include "exceptions/Binary_Tree_Exception.hpp"
 
 #include <algorithm>
 #include <bit>
@@ -51,6 +51,8 @@ namespace ads::trees {
 template <EqualityComparableTreeElement T>
 class CompleteBinaryTree {
 public:
+  using visitor_type = std::function<void(const T&)>;
+
   //===---------------------------- NODE STRUCTURE -----------------------------===//
 
   /**
@@ -208,28 +210,28 @@ public:
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  auto in_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto in_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Performs a pre-order traversal (root, left, right).
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  auto pre_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto pre_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Performs a post-order traversal (left, right, root).
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  auto post_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto post_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Performs a level-order (breadth-first) traversal.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(n)
    */
-  auto level_order_traversal(const std::function<void(const T&)>& visit) const -> void;
+  auto level_order_traversal(const visitor_type& visit) const -> void;
 
   /**
    * @brief Collects all elements in level-order into a vector.
@@ -263,21 +265,21 @@ private:
    * @param node Current node.
    * @param visit Function to call for each element.
    */
-  auto in_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void;
+  auto in_order_impl(const Node* node, const visitor_type& visit) const -> void;
 
   /**
    * @brief Pre-order traversal implementation.
    * @param node Current node.
    * @param visit Function to call for each element.
    */
-  auto pre_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void;
+  auto pre_order_impl(const Node* node, const visitor_type& visit) const -> void;
 
   /**
    * @brief Post-order traversal implementation.
    * @param node Current node.
    * @param visit Function to call for each element.
    */
-  auto post_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void;
+  auto post_order_impl(const Node* node, const visitor_type& visit) const -> void;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 

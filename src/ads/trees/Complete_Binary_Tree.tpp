@@ -168,22 +168,22 @@ auto CompleteBinaryTree<T>::contains(const T& value) const -> bool {
 //===-------------------------- TRAVERSAL OPERATIONS ---------------------------===//
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::in_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::in_order_traversal(const visitor_type& visit) const -> void {
   in_order_impl(root_.get(), visit);
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::pre_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::pre_order_traversal(const visitor_type& visit) const -> void {
   pre_order_impl(root_.get(), visit);
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::post_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::post_order_traversal(const visitor_type& visit) const -> void {
   post_order_impl(root_.get(), visit);
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::level_order_traversal(const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::level_order_traversal(const visitor_type& visit) const -> void {
   if (is_empty()) {
     return;
   }
@@ -245,7 +245,7 @@ auto CompleteBinaryTree<T>::node_at_heap_index(size_t index) noexcept -> Node* {
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::in_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::in_order_impl(const Node* node, const visitor_type& visit) const -> void {
   if (node == nullptr) {
     return;
   }
@@ -255,7 +255,7 @@ auto CompleteBinaryTree<T>::in_order_impl(const Node* node, const std::function<
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::pre_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::pre_order_impl(const Node* node, const visitor_type& visit) const -> void {
   if (node == nullptr) {
     return;
   }
@@ -265,7 +265,7 @@ auto CompleteBinaryTree<T>::pre_order_impl(const Node* node, const std::function
 }
 
 template <EqualityComparableTreeElement T>
-auto CompleteBinaryTree<T>::post_order_impl(const Node* node, const std::function<void(const T&)>& visit) const -> void {
+auto CompleteBinaryTree<T>::post_order_impl(const Node* node, const visitor_type& visit) const -> void {
   if (node == nullptr) {
     return;
   }

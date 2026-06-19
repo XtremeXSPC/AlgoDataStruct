@@ -16,10 +16,10 @@
 #ifndef BINARY_SEARCH_TREE_HPP
 #define BINARY_SEARCH_TREE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "../queues/Linked_Queue.hpp"
-#include "Binary_Tree_Exception.hpp"
-#include "Tree_Concepts.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../../queues/Linked_Queue.hpp"
+#include "../Tree_Concepts.hpp"
+#include "../exceptions/Binary_Tree_Exception.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -29,6 +29,8 @@
 #include <utility>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 /**
  * @brief An implementation of a Binary Search Tree.
@@ -58,8 +60,9 @@ private:
   struct Node;
 
 public:
-  using value_type = T;
-  using size_type  = size_t;
+  using value_type   = T;
+  using visitor_type = std::function<void(const T&)>;
+  using size_type    = size_t;
 
   //===---------------------------- ITERATOR CLASS -----------------------------===//
   /**
@@ -93,8 +96,8 @@ public:
     friend class BinarySearchTree<T>;
 
     // DynamicArray keeps forward-iterator copies independent for postfix traversal.
-    ads::arrays::DynamicArray<Node*> stack_;
-    Node*                            current_ = nullptr;
+    arr::DynamicArray<Node*> stack_;
+    Node*                    current_ = nullptr;
 
     // Private constructor used by begin() to initialize the iterator.
     explicit iterator(Node* root);
@@ -239,28 +242,28 @@ public:
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void in_order_traversal(const std::function<void(const T&)>& visit) const;
+  void in_order_traversal(const visitor_type& visit) const;
 
   /**
    * @brief Performs a pre-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void pre_order_traversal(const std::function<void(const T&)>& visit) const;
+  void pre_order_traversal(const visitor_type& visit) const;
 
   /**
    * @brief Performs a post-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(h)
    */
-  void post_order_traversal(const std::function<void(const T&)>& visit) const;
+  void post_order_traversal(const visitor_type& visit) const;
 
   /**
    * @brief Performs a level-order traversal of the tree.
    * @param visit Function to call for each element.
    * @complexity Time O(n), Space O(n)
    */
-  void level_order_traversal(const std::function<void(const T&)>& visit) const;
+  void level_order_traversal(const visitor_type& visit) const;
 
   //===----------------- ADDITIONAL BST-SPECIFIC FUNCTIONALITY -----------------===//
 
@@ -420,21 +423,21 @@ private:
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
-  void in_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
+  void in_order_helper(const Node* node, const visitor_type& visit) const;
 
   /**
    * @brief Iterative helper for pre-order traversal.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
-  void pre_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
+  void pre_order_helper(const Node* node, const visitor_type& visit) const;
 
   /**
    * @brief Iterative helper for post-order traversal.
    * @param node Current node being visited.
    * @param visit Function to call for each node's value.
    */
-  void post_order_helper(const Node* node, const std::function<void(const T&)>& visit) const;
+  void post_order_helper(const Node* node, const visitor_type& visit) const;
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
@@ -445,7 +448,7 @@ private:
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Binary_Search_Tree.tpp"
+#include "../../../../src/ads/trees/search/Binary_Search_Tree.tpp"
 
 #endif // BINARY_SEARCH_TREE_HPP
 

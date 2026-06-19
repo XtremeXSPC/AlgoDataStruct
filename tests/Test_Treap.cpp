@@ -9,7 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/Treap.hpp"
+#include "../include/ads/trees/search/Treap.hpp"
 
 #include <gtest/gtest.h>
 

@@ -13,8 +13,8 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "../include/ads/trees/AVL_Tree.hpp"
-#include "../include/ads/trees/Binary_Search_Tree.hpp"
+#include "../include/ads/trees/search/AVL_Tree.hpp"
+#include "../include/ads/trees/search/Binary_Search_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <chrono>

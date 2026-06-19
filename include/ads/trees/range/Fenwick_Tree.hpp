@@ -16,9 +16,9 @@
 #ifndef FENWICK_TREE_HPP
 #define FENWICK_TREE_HPP
 
-#include "../arrays/Dynamic_Array.hpp"
-#include "Fenwick_Tree_Exception.hpp"
-#include "Tree_Concepts.hpp"
+#include "../../arrays/Dynamic_Array.hpp"
+#include "../exceptions/Fenwick_Tree_Exception.hpp"
+#include "../Tree_Concepts.hpp"
 
 #include <bit>
 #include <cstddef>
@@ -28,6 +28,8 @@
 #include <vector>
 
 namespace ads::trees {
+
+namespace arr = ads::arrays;
 
 /**
  * @brief Fenwick Tree (Binary Indexed Tree) for efficient prefix and range sums.
@@ -233,13 +235,6 @@ public:
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
-   * @brief Alias for is_empty() for STL-style compatibility.
-   * @return true if empty, false otherwise.
-   * @complexity Time O(1), Space O(1)
-   */
-  [[nodiscard]] auto empty() const noexcept -> bool;
-
-  /**
    * @brief Finds the smallest index where prefix_sum(index) >= target_sum.
    * @param target_sum The target sum to search for.
    * @return The smallest index satisfying the condition, or size() if not found.
@@ -278,15 +273,15 @@ private:
 
   //===----------------------------- DATA MEMBERS ------------------------------===//
 
-  ads::arrays::DynamicArray<T> values_;   ///< Original values for value_at() and set().
-  ads::arrays::DynamicArray<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
+  arr::DynamicArray<T> values_;   ///< Original values for value_at() and set().
+  arr::DynamicArray<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
   size_t                       size_ = 0; ///< Number of elements.
 };
 
 } // namespace ads::trees
 
 // Include the implementation file for templates.
-#include "../../../src/ads/trees/Fenwick_Tree.tpp"
+#include "../../../../src/ads/trees/range/Fenwick_Tree.tpp"
 
 #endif // FENWICK_TREE_HPP
 
