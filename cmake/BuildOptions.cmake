@@ -2,8 +2,8 @@
 # ----------------------------- Shared Build Options ------------------------------ #
 # ================================================================================= #
 #
-# INTERFACE target with the compiler/linker flags shared by every first-party
-# target: warnings, per-config code generation and sanitizer wiring in one place.
+# INTERFACE target with the compiler/linker flags shared by every first-party target:
+# warnings, per-config code generation and sanitizer wiring in one place.
 #   Usage: target_link_libraries(my_target PRIVATE ads_build_options)
 #
 # Hardening macros (_GLIBCXX_DEBUG, _LIBCPP_HARDENING_MODE) are NOT here: they
