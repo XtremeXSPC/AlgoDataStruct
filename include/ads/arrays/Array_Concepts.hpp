@@ -34,28 +34,6 @@ namespace ads::arrays {
 
 namespace sup = ads::support;
 
-/**
- * @brief Concepts describing the container-level interface of array structures.
- * @details Whereas the concepts above constrain the element type, these constrain
- *          the container type itself. They document and enforce the shared public
- *          surface that every array structure exposes, allowing generic algorithms
- *          and tests to be written once against the interface rather than against
- *          each concrete container.
- */
-
-template <typename C> concept SizedContainer = requires(const C container) {
-  { container.size() } -> std::convertible_to<size_t>;
-  { container.is_empty() } -> std::convertible_to<bool>;
-};
-
-template <typename C> concept RandomAccessSequence =
-    SizedContainer<C> && std::ranges::random_access_range<C> && requires(C c, const C cc, size_t i) {
-      typename C::value_type;
-      { c[i] } -> std::same_as<typename C::value_type&>;
-      { cc[i] } -> std::same_as<const typename C::value_type&>;
-      { c.at(i) } -> std::same_as<typename C::value_type&>;
-    };
-
 template <typename T> concept ArrayElement = sup::NonReferenceDestructible<T>;
 
 template <typename T> concept RelocatableArrayElement = ArrayElement<T> && (sup::Movable<T> || sup::Copyable<T>);
@@ -95,6 +73,28 @@ template <typename T> concept StaticMoveArrayElement = sup::DefaultInitializable
 template <typename T> concept SwappableArrayElement = ArrayElement<T> && sup::Swappable<T>;
 
 template <size_t N> concept ValidStaticArrayExtent = (N > 0);
+
+/**
+ * @brief Concepts describing the container-level interface of array structures.
+ * @details Whereas the concepts above constrain the element type, these constrain
+ *          the container type itself. They document and enforce the shared public
+ *          surface that every array structure exposes, allowing generic algorithms
+ *          and tests to be written once against the interface rather than against
+ *          each concrete container.
+ */
+
+template <typename C> concept SizedContainer = requires(const C container) {
+  { container.size() } -> std::convertible_to<size_t>;
+  { container.is_empty() } -> std::convertible_to<bool>;
+};
+
+template <typename C> concept RandomAccessSequence =
+    SizedContainer<C> && std::ranges::random_access_range<C> && requires(C c, const C cc, size_t i) {
+      typename C::value_type;
+      { c[i] } -> std::same_as<typename C::value_type&>;
+      { cc[i] } -> std::same_as<const typename C::value_type&>;
+      { c.at(i) } -> std::same_as<typename C::value_type&>;
+    };
 
 } // namespace ads::arrays
 
