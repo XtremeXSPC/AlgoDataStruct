@@ -21,17 +21,21 @@
 
 #include <iterator>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace ads::lists {
 
 /**
- * @brief A singly linked circular list implementation.
+ * @brief A singly linked list with a circular logical interface.
  *
- * @details This class implements a circular linked list where the last node
- *          points back to the first node. Unlike a standard singly linked list,
- *          there is no nullptr termination - the list forms a continuous ring.
- *          Useful for round-robin scheduling, circular buffers, and games.
+ * @details Internally the nodes form a linear, nullptr-terminated owning chain:
+ *          each node owns its successor via std::unique_ptr and the tail's
+ *          successor is null. The circular behavior is provided by the operations
+ *          and the iterators, which loop back to the head after visiting size()
+ *          elements rather than by physically linking the tail to the head. This
+ *          keeps ownership a simple RAII chain while still serving round-robin
+ *          scheduling, circular buffers, and turn-based games.
  *
  * @tparam T The type of data to store in the list.
  */
@@ -62,7 +66,7 @@ public:
 
     iterator() = default;
 
-    iterator(Node* node, size_type remaining, CircularLinkedList<T>* list) : node_(node), remaining_(remaining), list_(list) {}
+    iterator(Node* node, size_type remaining) : node_(node), remaining_(remaining) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -71,9 +75,8 @@ public:
     auto operator==(const iterator& other) const -> bool;
 
   private:
-    Node*                  node_      = nullptr;
-    size_type              remaining_ = 0;
-    CircularLinkedList<T>* list_      = nullptr;
+    Node*     node_      = nullptr;
+    size_type remaining_ = 0;
     friend class CircularLinkedList<T>;
   };
 
@@ -92,12 +95,9 @@ public:
 
     const_iterator() = default;
 
-    const_iterator(const Node* node, size_type remaining, const CircularLinkedList<T>* list) :
-        node_(node),
-        remaining_(remaining),
-        list_(list) {}
+    const_iterator(const Node* node, size_type remaining) : node_(node), remaining_(remaining) {}
 
-    const_iterator(const iterator& it) : node_(it.node_), remaining_(it.remaining_), list_(it.list_) {}
+    const_iterator(const iterator& it) : node_(it.node_), remaining_(it.remaining_) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -106,9 +106,8 @@ public:
     auto operator==(const const_iterator& other) const -> bool;
 
   private:
-    const Node*                  node_      = nullptr;
-    size_type                    remaining_ = 0;
-    const CircularLinkedList<T>* list_      = nullptr;
+    const Node* node_      = nullptr;
+    size_type   remaining_ = 0;
     friend class CircularLinkedList<T>;
   };
 
@@ -155,6 +154,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
+  requires EmplaceListElement<T, Args...>
   auto emplace_front(Args&&... args) -> T&;
 
   /**
@@ -169,7 +169,7 @@ public:
    * @param value The value to insert.
    * @complexity Time O(1), Space O(1)
    */
-  auto push_front(T&& value) -> void;
+  auto push_front(T&& value) -> void requires MoveListElement<T>;
 
   /**
    * @brief Constructs an element in-place at the back of the list.
@@ -179,6 +179,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
+  requires EmplaceListElement<T, Args...>
   auto emplace_back(Args&&... args) -> T&;
 
   /**
@@ -193,7 +194,7 @@ public:
    * @param value The value to insert.
    * @complexity Time O(1), Space O(1)
    */
-  auto push_back(T&& value) -> void;
+  auto push_back(T&& value) -> void requires MoveListElement<T>;
 
   //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
@@ -274,6 +275,13 @@ public:
   auto rotate() -> void;
 
   /**
+   * @brief Reverses the order of elements in the list.
+   * @complexity Time O(n), Space O(1)
+   * @note Modifies pointers, does not copy data.
+   */
+  auto reverse() noexcept -> void;
+
+  /**
    * @brief Searches for an element in the circular list.
    * @param value The value to search for.
    * @return true if found, false otherwise.
@@ -283,23 +291,47 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator/const_iterator to the beginning of the list.
-   */
-  auto begin() -> iterator;
-  auto begin() const -> const_iterator;
+  /// @brief Returns an iterator to the first element.
+  auto begin() noexcept -> iterator;
+
+  /// @brief Returns a const iterator to the first element.
+  auto begin() const noexcept -> const_iterator;
+
+  /// @brief Returns an iterator to one past the last element.
+  auto end() noexcept -> iterator;
+
+  /// @brief Returns a const iterator to one past the last element.
+  auto end() const noexcept -> const_iterator;
+
+  /// @brief Returns a const iterator to the first element.
+  auto cbegin() const noexcept -> const_iterator;
+
+  /// @brief Returns a const iterator to one past the last element.
+  auto cend() const noexcept -> const_iterator;
+
+  //===----- COMPARISON OPERATORS ----------------------------------------------===//
 
   /**
-   * @brief Returns an iterator/const_iterator to the end of the list.
+   * @brief Equality: two lists are equal when they have the same size and
+   *        element-wise equal values. operator!= is synthesized by the compiler.
+   * @complexity Time O(n), Space O(1)
    */
-  auto end() -> iterator;
-  auto end() const -> const_iterator;
-
-  /**
-   * @brief Returns a const iterator to the beginning/end of the list.
-   */
-  auto cbegin() const -> const_iterator;
-  auto cend() const -> const_iterator;
+  friend auto operator==(const CircularLinkedList& lhs, const CircularLinkedList& rhs) -> bool requires EqualityComparableListElement<T>
+  {
+    if (lhs.size_ != rhs.size_) {
+      return false;
+    }
+    const Node* a = lhs.head_.get();
+    const Node* b = rhs.head_.get();
+    while (a != nullptr) {
+      if (!(a->data == b->data)) {
+        return false;
+      }
+      a = a->next.get();
+      b = b->next.get();
+    }
+    return true;
+  }
 
 private:
   //===----- INTERNAL NODE -----------------------------------------------------===//
@@ -315,6 +347,7 @@ private:
     std::unique_ptr<Node> next;
 
     template <typename... Args>
+    requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
   };
 

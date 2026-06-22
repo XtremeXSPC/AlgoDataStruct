@@ -110,6 +110,9 @@ public:
     friend class DoublyLinkedList<T>;
   };
 
+  using reverse_iterator       = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
@@ -153,6 +156,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
+  requires EmplaceListElement<T, Args...>
   auto emplace_front(Args&&... args) -> T&;
 
   /**
@@ -177,6 +181,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
+  requires EmplaceListElement<T, Args...>
   auto emplace_back(Args&&... args) -> T&;
 
   /**
@@ -259,6 +264,14 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_type override;
 
+  /**
+   * @brief Checks whether a value exists in the list.
+   * @param value The value to search for.
+   * @return true if found, false otherwise.
+   * @complexity Time O(n), Space O(1)
+   */
+  [[nodiscard]] auto contains(const T& value) const -> bool;
+
   //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
@@ -285,7 +298,7 @@ public:
    * @complexity Time O(1), Space O(1)
    * @note Undefined behavior if pos does not belong to this list.
    */
-  auto insert(iterator pos, T&& value);
+  auto insert(iterator pos, T&& value) requires MoveListElement<T>;
 
   /**
    * @brief Removes the element at the given iterator position.
@@ -306,47 +319,65 @@ public:
 
   //====------------------------- ITERATOR OPERATIONS -------------------------====//
 
-  /**
-   * @brief Returns an iterator to the beginning of the list.
-   * @return Iterator to the first element
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns an iterator to the first element.
   auto begin() noexcept -> iterator;
 
-  /**
-   * @brief Returns an iterator to the end of the list.
-   * @return Iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns an iterator to one past the last element.
   auto end() noexcept -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the beginning of the list.
-   * @return Const iterator to the first element
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns a const iterator to the first element.
   auto begin() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns a const iterator to the end of the list.
-   * @return Const iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns a const iterator to one past the last element.
   auto end() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns a const iterator to the beginning of the list.
-   * @return Const iterator to the first element
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns a const iterator to the first element.
   auto cbegin() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns a const iterator to the end of the list.
-   * @return Const iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns a const iterator to one past the last element.
   auto cend() const noexcept -> const_iterator;
+
+  /// @brief Returns a reverse iterator to the last element (reverse begin).
+  auto rbegin() noexcept -> reverse_iterator;
+
+  /// @brief Returns a reverse iterator to one before the first element (reverse end).
+  auto rend() noexcept -> reverse_iterator;
+
+  /// @brief Returns a const reverse iterator to the last element.
+  auto rbegin() const noexcept -> const_reverse_iterator;
+
+  /// @brief Returns a const reverse iterator to one before the first element.
+  auto rend() const noexcept -> const_reverse_iterator;
+
+  /// @brief Returns a const reverse iterator to the last element.
+  auto crbegin() const noexcept -> const_reverse_iterator;
+
+  /// @brief Returns a const reverse iterator to one before the first element.
+  auto crend() const noexcept -> const_reverse_iterator;
+
+  //===----- COMPARISON OPERATORS ----------------------------------------------===//
+
+  /**
+   * @brief Equality: two lists are equal when they have the same size and
+   *        element-wise equal values. operator!= is synthesized by the compiler.
+   * @complexity Time O(n), Space O(1)
+   */
+  friend auto operator==(const DoublyLinkedList& lhs, const DoublyLinkedList& rhs) -> bool requires EqualityComparableListElement<T>
+  {
+    if (lhs.size_ != rhs.size_) {
+      return false;
+    }
+    const Node* a = lhs.head_.get();
+    const Node* b = rhs.head_.get();
+    while (a != nullptr) {
+      if (!(a->data == b->data)) {
+        return false;
+      }
+      a = a->next.get();
+      b = b->next.get();
+    }
+    return true;
+  }
 
 private:
   //====---------------------------- INTERNAL NODE ----------------------------====//

@@ -219,4 +219,85 @@ TEST_F(CircularLinkedListTest, SingleElementOperations) {
   EXPECT_FALSE(list.contains(0));
 }
 
+//===----- REVERSE TESTS -------------------------------------------------------===//
+
+TEST_F(CircularLinkedListTest, Reverse) {
+  for (int i = 1; i <= 4; ++i) {
+    list.push_back(i); // 1 2 3 4
+  }
+  list.reverse(); // 4 3 2 1
+  EXPECT_EQ(list.front(), 4);
+  EXPECT_EQ(list.back(), 1);
+
+  std::vector<int> actual;
+  for (int v : list) {
+    actual.push_back(v);
+  }
+  EXPECT_EQ(actual, (std::vector<int>{4, 3, 2, 1}));
+}
+
+TEST_F(CircularLinkedListTest, ReverseEdgeCases) {
+  list.reverse(); // empty
+  EXPECT_TRUE(list.is_empty());
+
+  list.push_back(7);
+  list.reverse(); // single element
+  EXPECT_EQ(list.size(), 1u);
+  EXPECT_EQ(list.front(), 7);
+  EXPECT_EQ(list.back(), 7);
+}
+
+//===----- EQUALITY TESTS ------------------------------------------------------===//
+
+TEST_F(CircularLinkedListTest, EqualityOperator) {
+  CircularLinkedList<int> other;
+  EXPECT_TRUE(list == other); // both empty
+
+  for (int i = 1; i <= 3; ++i) {
+    list.push_back(i);
+    other.push_back(i);
+  }
+  EXPECT_TRUE(list == other);
+  EXPECT_FALSE(list != other);
+
+  other.push_back(4);
+  EXPECT_TRUE(list != other); // different size
+
+  list.push_back(9);
+  EXPECT_TRUE(list != other); // same size, differing element
+}
+
+//===----- CONCEPT CONFORMANCE -------------------------------------------------===//
+
+static_assert(std::forward_iterator<CircularLinkedList<int>::iterator>);
+static_assert(std::forward_iterator<CircularLinkedList<int>::const_iterator>);
+
+//===----- MOVE-ONLY PAYLOAD TESTS ---------------------------------------------===//
+
+// Move-only, non-copyable payload to exercise the move-only push/emplace paths.
+struct CllMoveOnly {
+  int value     = 0;
+  CllMoveOnly() = default;
+
+  explicit CllMoveOnly(int v) : value(v) {}
+
+  CllMoveOnly(CllMoveOnly&&) noexcept            = default;
+  CllMoveOnly& operator=(CllMoveOnly&&) noexcept = default;
+  CllMoveOnly(const CllMoveOnly&)                = delete;
+  CllMoveOnly& operator=(const CllMoveOnly&)     = delete;
+
+  auto operator==(const CllMoveOnly& o) const -> bool { return value == o.value; }
+};
+
+TEST(CircularLinkedListMoveOnly, HoldsMoveOnlyValues) {
+  CircularLinkedList<CllMoveOnly> mo;
+  mo.push_back(CllMoveOnly(1));
+  mo.emplace_back(2);
+  mo.push_front(CllMoveOnly(0));
+  EXPECT_EQ(mo.size(), 3u);
+  EXPECT_EQ(mo.front().value, 0);
+  EXPECT_EQ(mo.back().value, 2);
+  EXPECT_TRUE(mo.contains(CllMoveOnly(1)));
+}
+
 //===---------------------------------------------------------------------------===//

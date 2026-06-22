@@ -253,4 +253,71 @@ TEST_F(SinglyLinkedListTest, LargeListOperations) {
   EXPECT_TRUE(list.is_empty());
 }
 
+//===----- SEARCH TESTS --------------------------------------------------------===//
+
+TEST_F(SinglyLinkedListTest, Contains) {
+  for (int i = 0; i < 5; ++i) {
+    list.push_back(i);
+  }
+  EXPECT_TRUE(list.contains(0));
+  EXPECT_TRUE(list.contains(4));
+  EXPECT_FALSE(list.contains(5));
+
+  SinglyLinkedList<int> empty;
+  EXPECT_FALSE(empty.contains(0));
+}
+
+//===----- EQUALITY TESTS ------------------------------------------------------===//
+
+TEST_F(SinglyLinkedListTest, EqualityOperator) {
+  SinglyLinkedList<int> other;
+  EXPECT_TRUE(list == other); // both empty
+
+  for (int i = 1; i <= 3; ++i) {
+    list.push_back(i);
+    other.push_back(i);
+  }
+  EXPECT_TRUE(list == other);
+  EXPECT_FALSE(list != other);
+
+  other.push_back(4);
+  EXPECT_TRUE(list != other); // different size
+
+  list.push_back(9);
+  EXPECT_TRUE(list != other); // same size, differing element
+}
+
+//===----- CONCEPT CONFORMANCE -------------------------------------------------===//
+
+static_assert(std::forward_iterator<SinglyLinkedList<int>::iterator>);
+static_assert(std::forward_iterator<SinglyLinkedList<int>::const_iterator>);
+
+//===----- MOVE-ONLY PAYLOAD TESTS ---------------------------------------------===//
+
+// Move-only, non-copyable payload to exercise the move-only push/emplace paths.
+struct SllMoveOnly {
+  int value     = 0;
+  SllMoveOnly() = default;
+
+  explicit SllMoveOnly(int v) : value(v) {}
+
+  SllMoveOnly(SllMoveOnly&&) noexcept            = default;
+  SllMoveOnly& operator=(SllMoveOnly&&) noexcept = default;
+  SllMoveOnly(const SllMoveOnly&)                = delete;
+  SllMoveOnly& operator=(const SllMoveOnly&)     = delete;
+
+  auto operator==(const SllMoveOnly& o) const -> bool { return value == o.value; }
+};
+
+TEST(SinglyLinkedListMoveOnly, HoldsMoveOnlyValues) {
+  SinglyLinkedList<SllMoveOnly> mo;
+  mo.push_back(SllMoveOnly(1));
+  mo.emplace_back(2);
+  mo.push_front(SllMoveOnly(0));
+  EXPECT_EQ(mo.size(), 3u);
+  EXPECT_EQ(mo.front().value, 0);
+  EXPECT_EQ(mo.back().value, 2);
+  EXPECT_TRUE(mo.contains(SllMoveOnly(1)));
+}
+
 //===---------------------------------------------------------------------------===//

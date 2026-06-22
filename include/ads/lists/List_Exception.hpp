@@ -13,8 +13,8 @@
 
 #pragma once
 
-#ifndef ADS_EXCEPTION_HPP
-#define ADS_EXCEPTION_HPP
+#ifndef LIST_EXCEPTION_HPP
+#define LIST_EXCEPTION_HPP
 
 #include <stdexcept>
 
@@ -33,6 +33,6 @@ public:
 
 } // namespace ads::lists
 
-#endif // ADS_EXCEPTION_HPP
+#endif // LIST_EXCEPTION_HPP
 
 //===---------------------------------------------------------------------------===//

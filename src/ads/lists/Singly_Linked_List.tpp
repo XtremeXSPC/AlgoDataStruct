@@ -107,6 +107,7 @@ auto SinglyLinkedList<T>::operator=(SinglyLinkedList&& other) noexcept -> Singly
 
 template <ListElement T>
 template <typename... Args>
+requires EmplaceListElement<T, Args...>
 auto SinglyLinkedList<T>::emplace_front(Args&&... args) -> T& {
   auto new_node  = std::make_unique<Node>(std::forward<Args>(args)...);
   T&   ref       = new_node->data;
@@ -123,32 +124,22 @@ auto SinglyLinkedList<T>::emplace_front(Args&&... args) -> T& {
 
 template <ListElement T>
 auto SinglyLinkedList<T>::push_front(const T& value) -> void {
-  auto new_node  = std::make_unique<Node>(value);
-  new_node->next = std::move(head_);
-  head_          = std::move(new_node);
-
-  if (size_ == 0) {
-    tail_ = head_.get();
+  if constexpr (CopyListElement<T>) {
+    emplace_front(value);
+  } else {
+    // Keep the polymorphic List<T> interface instantiable for move-only payloads.
+    throw ListException("push_front copy requires copy-constructible values");
   }
-
-  ++size_;
 }
 
 template <ListElement T>
 auto SinglyLinkedList<T>::push_front(T&& value) -> void {
-  auto new_node  = std::make_unique<Node>(std::move(value));
-  new_node->next = std::move(head_);
-  head_          = std::move(new_node);
-
-  if (size_ == 0) {
-    tail_ = head_.get();
-  }
-
-  ++size_;
+  emplace_front(std::move(value));
 }
 
 template <ListElement T>
 template <typename... Args>
+requires EmplaceListElement<T, Args...>
 auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
   auto new_node = std::make_unique<Node>(std::forward<Args>(args)...);
   T&   ref      = new_node->data;
@@ -167,32 +158,17 @@ auto SinglyLinkedList<T>::emplace_back(Args&&... args) -> T& {
 
 template <ListElement T>
 auto SinglyLinkedList<T>::push_back(const T& value) -> void {
-  auto new_node = std::make_unique<Node>(value);
-
-  if (is_empty()) {
-    head_ = std::move(new_node);
-    tail_ = head_.get();
+  if constexpr (CopyListElement<T>) {
+    emplace_back(value);
   } else {
-    tail_->next = std::move(new_node);
-    tail_       = tail_->next.get();
+    // Keep the polymorphic List<T> interface instantiable for move-only payloads.
+    throw ListException("push_back copy requires copy-constructible values");
   }
-
-  ++size_;
 }
 
 template <ListElement T>
 auto SinglyLinkedList<T>::push_back(T&& value) -> void {
-  auto new_node = std::make_unique<Node>(std::move(value));
-
-  if (is_empty()) {
-    head_ = std::move(new_node);
-    tail_ = head_.get();
-  } else {
-    tail_->next = std::move(new_node);
-    tail_       = tail_->next.get();
-  }
-
-  ++size_;
+  emplace_back(std::move(value));
 }
 
 //===----- REMOVAL OPERATIONS --------------------------------------------------===//
@@ -275,8 +251,18 @@ auto SinglyLinkedList<T>::is_empty() const noexcept -> bool {
 }
 
 template <ListElement T>
-auto SinglyLinkedList<T>::size() const noexcept -> typename SinglyLinkedList<T>::size_type {
+auto SinglyLinkedList<T>::size() const noexcept -> size_type {
   return size_;
+}
+
+template <ListElement T>
+auto SinglyLinkedList<T>::contains(const T& value) const -> bool {
+  for (const Node* current = head_.get(); current != nullptr; current = current->next.get()) {
+    if (current->data == value) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //===----- MODIFICATION OPERATIONS ---------------------------------------------===//
@@ -314,33 +300,33 @@ auto SinglyLinkedList<T>::reverse() noexcept -> void {
 //===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ListElement T>
-auto SinglyLinkedList<T>::begin() -> iterator {
-  return iterator(head_.get(), this);
+auto SinglyLinkedList<T>::begin() noexcept -> iterator {
+  return iterator(head_.get());
 }
 
 template <ListElement T>
-auto SinglyLinkedList<T>::begin() const -> const_iterator {
-  return const_iterator(head_.get(), this);
+auto SinglyLinkedList<T>::begin() const noexcept -> const_iterator {
+  return const_iterator(head_.get());
 }
 
 template <ListElement T>
-auto SinglyLinkedList<T>::end() -> iterator {
-  return iterator(nullptr, this);
+auto SinglyLinkedList<T>::end() noexcept -> iterator {
+  return iterator(nullptr);
 }
 
 template <ListElement T>
-auto SinglyLinkedList<T>::end() const -> const_iterator {
-  return const_iterator(nullptr, this);
+auto SinglyLinkedList<T>::end() const noexcept -> const_iterator {
+  return const_iterator(nullptr);
 }
 
 template <ListElement T>
-auto SinglyLinkedList<T>::cbegin() const -> const_iterator {
-  return const_iterator(head_.get(), this);
+auto SinglyLinkedList<T>::cbegin() const noexcept -> const_iterator {
+  return const_iterator(head_.get());
 }
 
 template <ListElement T>
-auto SinglyLinkedList<T>::cend() const -> const_iterator {
-  return const_iterator(nullptr, this);
+auto SinglyLinkedList<T>::cend() const noexcept -> const_iterator {
+  return const_iterator(nullptr);
 }
 
 } // namespace ads::lists

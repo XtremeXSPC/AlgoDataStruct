@@ -268,4 +268,93 @@ TEST_F(DoublyLinkedListTest, MoveSemantics) {
   EXPECT_EQ(list.back(), 20);
 }
 
+//===----- SEARCH TESTS --------------------------------------------------------===//
+
+TEST_F(DoublyLinkedListTest, Contains) {
+  for (int i = 0; i < 5; ++i) {
+    list.push_back(i);
+  }
+  EXPECT_TRUE(list.contains(2));
+  EXPECT_TRUE(list.contains(0));
+  EXPECT_TRUE(list.contains(4));
+  EXPECT_FALSE(list.contains(99));
+
+  DoublyLinkedList<int> empty;
+  EXPECT_FALSE(empty.contains(0));
+}
+
+//===----- EQUALITY TESTS ------------------------------------------------------===//
+
+TEST_F(DoublyLinkedListTest, EqualityOperator) {
+  DoublyLinkedList<int> other;
+  EXPECT_TRUE(list == other); // both empty
+
+  for (int i = 1; i <= 3; ++i) {
+    list.push_back(i);
+    other.push_back(i);
+  }
+  EXPECT_TRUE(list == other);
+  EXPECT_FALSE(list != other);
+
+  other.push_back(4);
+  EXPECT_TRUE(list != other); // different size
+
+  list.push_back(9);
+  EXPECT_TRUE(list != other); // same size, differing element
+}
+
+//===----- REVERSE ITERATION TESTS ---------------------------------------------===//
+
+TEST_F(DoublyLinkedListTest, ReverseIteration) {
+  for (int i = 0; i < 5; ++i) {
+    list.push_back(i); // 0 1 2 3 4
+  }
+
+  std::vector<int> rev;
+  for (auto it = list.rbegin(); it != list.rend(); ++it) {
+    rev.push_back(*it);
+  }
+  EXPECT_EQ(rev, (std::vector<int>{4, 3, 2, 1, 0}));
+
+  const auto&      clist = list;
+  std::vector<int> crev;
+  for (auto it = clist.crbegin(); it != clist.crend(); ++it) {
+    crev.push_back(*it);
+  }
+  EXPECT_EQ(crev, (std::vector<int>{4, 3, 2, 1, 0}));
+}
+
+//===----- CONCEPT CONFORMANCE -------------------------------------------------===//
+
+static_assert(std::bidirectional_iterator<DoublyLinkedList<int>::iterator>);
+static_assert(std::bidirectional_iterator<DoublyLinkedList<int>::const_iterator>);
+
+//===----- MOVE-ONLY PAYLOAD TESTS ---------------------------------------------===//
+
+// Move-only, non-copyable payload to exercise the move-only push/emplace paths.
+struct DllMoveOnly {
+  int value     = 0;
+  DllMoveOnly() = default;
+
+  explicit DllMoveOnly(int v) : value(v) {}
+
+  DllMoveOnly(DllMoveOnly&&) noexcept            = default;
+  DllMoveOnly& operator=(DllMoveOnly&&) noexcept = default;
+  DllMoveOnly(const DllMoveOnly&)                = delete;
+  DllMoveOnly& operator=(const DllMoveOnly&)     = delete;
+
+  auto operator==(const DllMoveOnly& o) const -> bool { return value == o.value; }
+};
+
+TEST(DoublyLinkedListMoveOnly, HoldsMoveOnlyValues) {
+  DoublyLinkedList<DllMoveOnly> mo;
+  mo.push_back(DllMoveOnly(1));
+  mo.emplace_front(0);
+  mo.emplace_back(2);
+  EXPECT_EQ(mo.size(), 3u);
+  EXPECT_EQ(mo.front().value, 0);
+  EXPECT_EQ(mo.back().value, 2);
+  EXPECT_TRUE(mo.contains(DllMoveOnly(1)));
+}
+
 //===---------------------------------------------------------------------------===//

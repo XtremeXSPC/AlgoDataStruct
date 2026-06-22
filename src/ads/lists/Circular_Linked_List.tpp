@@ -128,6 +128,7 @@ auto CircularLinkedList<T>::operator=(CircularLinkedList&& other) noexcept -> Ci
 
 template <ListElement T>
 template <typename... Args>
+requires EmplaceListElement<T, Args...>
 auto CircularLinkedList<T>::emplace_front(Args&&... args) -> T& {
   auto  new_node = std::make_unique<Node>(std::forward<Args>(args)...);
   Node* node_ptr = new_node.get();
@@ -145,16 +146,22 @@ auto CircularLinkedList<T>::emplace_front(Args&&... args) -> T& {
 
 template <ListElement T>
 auto CircularLinkedList<T>::push_front(const T& value) -> void {
-  emplace_front(value);
+  if constexpr (CopyListElement<T>) {
+    emplace_front(value);
+  } else {
+    throw ListException("push_front copy requires copy-constructible values");
+  }
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::push_front(T&& value) -> void {
+auto CircularLinkedList<T>::push_front(T&& value) -> void requires MoveListElement<T>
+{
   emplace_front(std::move(value));
 }
 
 template <ListElement T>
 template <typename... Args>
+requires EmplaceListElement<T, Args...>
 auto CircularLinkedList<T>::emplace_back(Args&&... args) -> T& {
   auto  new_node = std::make_unique<Node>(std::forward<Args>(args)...);
   Node* node_ptr = new_node.get();
@@ -173,11 +180,16 @@ auto CircularLinkedList<T>::emplace_back(Args&&... args) -> T& {
 
 template <ListElement T>
 auto CircularLinkedList<T>::push_back(const T& value) -> void {
-  emplace_back(value);
+  if constexpr (CopyListElement<T>) {
+    emplace_back(value);
+  } else {
+    throw ListException("push_back copy requires copy-constructible values");
+  }
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::push_back(T&& value) -> void {
+auto CircularLinkedList<T>::push_back(T&& value) -> void requires MoveListElement<T>
+{
   emplace_back(std::move(value));
 }
 
@@ -275,7 +287,7 @@ auto CircularLinkedList<T>::is_empty() const noexcept -> bool {
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::size() const noexcept -> typename CircularLinkedList<T>::size_type {
+auto CircularLinkedList<T>::size() const noexcept -> size_type {
   return size_;
 }
 
@@ -292,6 +304,26 @@ auto CircularLinkedList<T>::rotate() -> void {
   old_head->next.reset();
   tail_->next = std::move(old_head);
   tail_       = tail_->next.get();
+}
+
+template <ListElement T>
+auto CircularLinkedList<T>::reverse() noexcept -> void {
+  if (size_ <= 1) {
+    return; // Nothing to reverse.
+  }
+
+  std::unique_ptr<Node> prev    = nullptr;
+  std::unique_ptr<Node> current = std::move(head_);
+  tail_                         = current.get(); // The old head becomes the new tail.
+
+  while (current) {
+    std::unique_ptr<Node> next = std::move(current->next);
+    current->next              = std::move(prev);
+    prev                       = std::move(current);
+    current                    = std::move(next);
+  }
+
+  head_ = std::move(prev);
 }
 
 template <ListElement T>
@@ -314,38 +346,38 @@ auto CircularLinkedList<T>::contains(const T& value) const -> bool {
 //===----- ITERATOR OPERATIONS -------------------------------------------------===//
 
 template <ListElement T>
-auto CircularLinkedList<T>::begin() -> iterator {
+auto CircularLinkedList<T>::begin() noexcept -> iterator {
   if (is_empty()) {
     return end();
   }
-  return iterator(head_.get(), size_, this);
+  return iterator(head_.get(), size_);
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::end() -> iterator {
-  return iterator(nullptr, 0, this);
+auto CircularLinkedList<T>::end() noexcept -> iterator {
+  return iterator(nullptr, 0);
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::begin() const -> const_iterator {
+auto CircularLinkedList<T>::begin() const noexcept -> const_iterator {
   if (is_empty()) {
     return end();
   }
-  return const_iterator(head_.get(), size_, this);
+  return const_iterator(head_.get(), size_);
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::end() const -> const_iterator {
-  return const_iterator(nullptr, 0, this);
+auto CircularLinkedList<T>::end() const noexcept -> const_iterator {
+  return const_iterator(nullptr, 0);
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::cbegin() const -> const_iterator {
+auto CircularLinkedList<T>::cbegin() const noexcept -> const_iterator {
   return begin();
 }
 
 template <ListElement T>
-auto CircularLinkedList<T>::cend() const -> const_iterator {
+auto CircularLinkedList<T>::cend() const noexcept -> const_iterator {
   return end();
 }
 

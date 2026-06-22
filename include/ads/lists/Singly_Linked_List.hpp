@@ -21,6 +21,7 @@
 
 #include <iterator>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace ads::lists {
@@ -61,7 +62,7 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
-    iterator(Node* ptr = nullptr, SinglyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
+    explicit iterator(Node* ptr = nullptr) : node_ptr_(ptr) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -71,8 +72,7 @@ public:
     auto operator==(const iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
-    Node*                node_ptr_;
-    SinglyLinkedList<T>* list_ptr_;
+    Node* node_ptr_;
     friend class SinglyLinkedList<T>;
   };
 
@@ -91,7 +91,7 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
-    const_iterator(const Node* ptr = nullptr, const SinglyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
+    explicit const_iterator(const Node* ptr = nullptr) : node_ptr_(ptr) {}
 
     auto operator*() const -> reference;
     auto operator->() const -> pointer;
@@ -101,8 +101,7 @@ public:
     auto operator==(const const_iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
-    const Node*                node_ptr_;
-    const SinglyLinkedList<T>* list_ptr_;
+    const Node* node_ptr_;
     friend class SinglyLinkedList<T>;
   };
 
@@ -150,6 +149,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
+  requires EmplaceListElement<T, Args...>
   auto emplace_front(Args&&... args) -> T&;
 
   /**
@@ -174,6 +174,7 @@ public:
    * @complexity Time O(1), Space O(1)
    */
   template <typename... Args>
+  requires EmplaceListElement<T, Args...>
   auto emplace_back(Args&&... args) -> T&;
 
   /**
@@ -257,6 +258,14 @@ public:
    */
   [[nodiscard]] auto size() const noexcept -> size_type override;
 
+  /**
+   * @brief Checks whether a value exists in the list.
+   * @param value The value to search for.
+   * @return true if found, false otherwise.
+   * @complexity Time O(n), Space O(1)
+   */
+  [[nodiscard]] auto contains(const T& value) const -> bool;
+
   //===----- MODIFICATION OPERATIONS -------------------------------------------===//
 
   /**
@@ -274,47 +283,47 @@ public:
 
   //====------------------------- ITERATOR OPERATIONS -------------------------====//
 
-  /**
-   * @brief Returns an iterator to the beginning of the list.
-   * @return Iterator to the first element
-   * @complexity Time O(1), Space O(1)
-   */
-  auto begin() -> iterator;
+  /// @brief Returns an iterator to the first element.
+  auto begin() noexcept -> iterator;
+
+  /// @brief Returns a const iterator to the first element.
+  auto begin() const noexcept -> const_iterator;
+
+  /// @brief Returns an iterator to one past the last element.
+  auto end() noexcept -> iterator;
+
+  /// @brief Returns a const iterator to one past the last element.
+  auto end() const noexcept -> const_iterator;
+
+  /// @brief Returns a const iterator to the first element.
+  auto cbegin() const noexcept -> const_iterator;
+
+  /// @brief Returns a const iterator to one past the last element.
+  auto cend() const noexcept -> const_iterator;
+
+  //===----- COMPARISON OPERATORS ----------------------------------------------===//
 
   /**
-   * @brief Returns a const iterator to the beginning of the list.
-   * @return Const iterator to the first element
-   * @complexity Time O(1), Space O(1)
+   * @brief Equality: two lists are equal when they have the same size and
+   *        element-wise equal values. operator!= is synthesized by the compiler.
+   * @complexity Time O(n), Space O(1)
    */
-  auto begin() const -> const_iterator;
-
-  /**
-   * @brief Returns an iterator to the end of the list.
-   * @return Iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
-  auto end() -> iterator;
-
-  /**
-   * @brief Returns a const iterator to the end of the list.
-   * @return Const iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
-  auto end() const -> const_iterator;
-
-  /**
-   * @brief Returns a const iterator to the beginning of the list.
-   * @return Const iterator to the first element
-   * @complexity Time O(1), Space O(1)
-   */
-  auto cbegin() const -> const_iterator;
-
-  /**
-   * @brief Returns a const iterator to the end of the list.
-   * @return Const iterator to one past the last element
-   * @complexity Time O(1), Space O(1)
-   */
-  auto cend() const -> const_iterator;
+  friend auto operator==(const SinglyLinkedList& lhs, const SinglyLinkedList& rhs) -> bool requires EqualityComparableListElement<T>
+  {
+    if (lhs.size_ != rhs.size_) {
+      return false;
+    }
+    const Node* a = lhs.head_.get();
+    const Node* b = rhs.head_.get();
+    while (a != nullptr) {
+      if (!(a->data == b->data)) {
+        return false;
+      }
+      a = a->next.get();
+      b = b->next.get();
+    }
+    return true;
+  }
 
 private:
   //====---------------------------- INTERNAL NODE ----------------------------====//
@@ -329,6 +338,7 @@ private:
     std::unique_ptr<Node> next;
 
     template <typename... Args>
+    requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...), next(nullptr) {}
   };
 
