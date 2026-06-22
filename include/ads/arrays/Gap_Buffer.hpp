@@ -271,16 +271,16 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator/const_iterator to the beginning.
-   */
+  /// @brief Returns an iterator to the beginning of the buffer.
   auto begin() noexcept -> iterator;
+
+  /// @brief Returns a const iterator to the beginning of the buffer.
   auto begin() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns an iterator/const_iterator to the end.
-   */
+  /// @brief Returns an iterator to the end of the buffer.
   auto end() noexcept -> iterator;
+
+  /// @brief Returns a const iterator to the end of the buffer.
   auto end() const noexcept -> const_iterator;
 
 private:

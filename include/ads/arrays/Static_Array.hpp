@@ -235,24 +235,16 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator to the beginning of the array.
-   */
+  /// @brief Returns an iterator to the beginning of the array.
   auto begin() noexcept -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the beginning of the array.
-   */
+  /// @brief Returns a const iterator to the beginning of the array.
   auto begin() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns an iterator to the end of the array.
-   */
+  /// @brief Returns an iterator to the end of the array.
   auto end() noexcept -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the end of the array.
-   */
+  /// @brief Returns a const iterator to the end of the array.
   auto end() const noexcept -> const_iterator;
 
   // cbegin/cend, rbegin/rend, and crbegin/crend are inherited from

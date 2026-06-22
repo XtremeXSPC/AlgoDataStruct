@@ -210,16 +210,10 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator to the beginning of the view.
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns an iterator to the beginning of the view.
   constexpr auto begin() const noexcept -> iterator { return data_; }
 
-  /**
-   * @brief Returns an iterator to the end of the view.
-   * @complexity Time O(1), Space O(1)
-   */
+  /// @brief Returns an iterator to the end of the view.
   constexpr auto end() const noexcept -> iterator { return data_ + size_; }
 
 private:
