@@ -42,6 +42,10 @@ struct MoveOnlyItem {
 
 } // namespace
 
+static_assert(MoveHeapValue<MoveOnlyItem>);
+static_assert(!CopyHeapValue<MoveOnlyItem>);
+static_assert(EmplaceHeapValue<MoveOnlyItem, int, std::string>);
+
 // Test fixture for default-arity heap behavior.
 class DAryHeapTest : public ::testing::Test {
 protected:

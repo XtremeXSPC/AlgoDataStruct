@@ -22,15 +22,23 @@ namespace ads::heaps {
 
 namespace sup = ads::support;
 
-template <typename T> concept HeapValue = sup::NonReferenceDestructible<T>;
+template <typename T>
+concept HeapValue = sup::NonReferenceDestructible<T>;
 
-template <typename T> concept CopyHeapValue = HeapValue<T> && sup::Copyable<T>;
+template <typename T>
+concept CopyHeapValue = HeapValue<T> && sup::Copyable<T>;
 
-template <typename T> concept MoveHeapValue = HeapValue<T> && sup::Movable<T>;
+template <typename T>
+concept MoveHeapValue = HeapValue<T> && sup::Movable<T>;
 
-template <typename T, typename... Args> concept EmplaceHeapValue = HeapValue<T> && sup::ConstructibleFrom<T, Args...>;
+template <typename T>
+concept OrderedHeapValue = HeapValue<T> && sup::OrderedValue<T>;
 
-template <typename InputIt, typename T> concept HeapRangeValue = HeapValue<T> && sup::InputConstructibleFor<InputIt, T>;
+template <typename T, typename... Args>
+concept EmplaceHeapValue = HeapValue<T> && sup::ConstructibleFrom<T, Args...>;
+
+template <typename InputIt, typename T>
+concept HeapRangeValue = HeapValue<T> && sup::InputConstructibleFor<InputIt, T>;
 
 } // namespace ads::heaps
 

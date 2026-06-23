@@ -17,10 +17,11 @@
 #define MAX_HEAP_HPP
 
 #include "../arrays/Dynamic_Array.hpp"
+#include "Heap_Concepts.hpp"
 #include "Heap_Exception.hpp"
 
-#include <algorithm>
 #include <concepts>
+#include <initializer_list>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -30,9 +31,9 @@ namespace ads::heaps {
 /**
  * @brief A binary max heap implemented using an array.
  *
- * @details This class implements a binary max heap where the parent node
- *          is always greater than or equal to its children. The heap is
- *          stored in a dynamic array with the following properties:
+ * @details This class implements a binary max heap where the parent node is always
+ *          greater than or equal to its children. The heap is stored in a dynamic
+ *          array with the following properties:
  *          - Root at index 0
  *          - For node at index i:
  *            - Parent at (i-1)/2
@@ -43,9 +44,12 @@ namespace ads::heaps {
  *
  * @tparam T The type of elements stored in the heap (must be comparable).
  */
-template <typename T>
+template <OrderedHeapValue T>
 class MaxHeap {
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
@@ -53,7 +57,7 @@ public:
    * @param initial_capacity Initial capacity of the heap.
    * @complexity Time O(1), Space O(n) where n is initial_capacity
    */
-  explicit MaxHeap(size_t initial_capacity = kInitialCapacity);
+  explicit MaxHeap(size_type initial_capacity = kInitialCapacity);
 
   /**
    * @brief Constructs a heap from a vector (heapify in O(n)).
@@ -72,7 +76,15 @@ public:
    * @note Uses bottom-up heapify for O(n) construction.
    */
   template <std::input_iterator InputIt>
-  explicit MaxHeap(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>;
+  explicit MaxHeap(InputIt first, InputIt last) requires HeapRangeValue<InputIt, T>;
+
+  /**
+   * @brief Constructs a heap from an initializer list (heapify in O(n)).
+   * @param values Initializer list of elements to heapify.
+   * @complexity Time O(n), Space O(n)
+   * @note Uses bottom-up heapify for O(n) construction.
+   */
+  MaxHeap(std::initializer_list<T> values);
 
   /**
    * @brief Move constructor.
@@ -107,7 +119,7 @@ public:
    * @complexity Time O(log n) amortized, Space O(1)
    * @note May trigger reallocation if capacity is exceeded.
    */
-  auto insert(const T& value) -> void;
+  auto insert(const T& value) -> void requires CopyHeapValue<T>;
 
   /**
    * @brief Inserts an element into the heap (move version).
@@ -115,7 +127,7 @@ public:
    * @complexity Time O(log n) amortized, Space O(1)
    * @note May trigger reallocation if capacity is exceeded.
    */
-  auto insert(T&& value) -> void;
+  auto insert(T&& value) -> void requires MoveHeapValue<T>;
 
   /**
    * @brief Constructs an element in-place in the heap.
@@ -126,7 +138,7 @@ public:
    * @note May trigger reallocation if capacity is exceeded.
    */
   template <typename... Args>
-  auto emplace(Args&&... args) -> T&;
+  auto emplace(Args&&... args) -> T& requires EmplaceHeapValue<T, Args...>;
 
   //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
@@ -170,14 +182,21 @@ public:
    * @return The number of elements.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Returns the current capacity of the heap.
    * @return The capacity.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto capacity() const noexcept -> size_t;
+  [[nodiscard]] auto capacity() const noexcept -> size_type;
+
+  /**
+   * @brief Reserves storage for at least the specified number of elements.
+   * @param new_capacity Minimum desired capacity.
+   * @complexity Time O(n) if reallocation occurs, Space O(n)
+   */
+  auto reserve(size_type new_capacity) -> void;
 
   /**
    * @brief Removes all elements from the heap.
@@ -194,16 +213,9 @@ public:
    * @throws HeapException if index is out of bounds or new_value <= old_value.
    * @complexity Time O(log n), Space O(1)
    */
-  auto increase_key(size_t index, const T& new_value) -> void;
+  auto increase_key(size_type index, const T& new_value) -> void;
 
 private:
-  //===----- DATA MEMBERS ------------------------------------------------------===//
-
-  ads::arrays::DynamicArray<T> data_; ///< Contiguous heap storage.
-
-  static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity.
-
-  //===============================================================================//
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
@@ -226,6 +238,19 @@ private:
    * @complexity Time O(n), Space O(1)
    */
   auto build_heap() -> void;
+
+  /**
+   * @brief Throws HeapException if the heap is empty.
+   * @param operation Name of the calling operation, used in the message.
+   */
+  auto validate_non_empty(const char* operation) const -> void;
+
+  /**
+   * @brief Throws HeapException if the index is out of bounds.
+   * @param index Index to validate.
+   * @param operation Name of the calling operation, used in the message.
+   */
+  auto validate_index(size_type index, const char* operation) const -> void;
 
   //===----- INDEX CALCULATION METHODS -----------------------------------------===//
 
@@ -253,6 +278,12 @@ private:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
+
+  //===----- DATA MEMBERS ------------------------------------------------------===//
+
+  ads::arrays::DynamicArray<T> data_; ///< Contiguous heap storage.
+
+  static constexpr size_t kInitialCapacity = 16; ///< Default initial capacity.
 };
 
 } // namespace ads::heaps

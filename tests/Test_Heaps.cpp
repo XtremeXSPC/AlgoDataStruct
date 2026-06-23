@@ -15,10 +15,42 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <compare>
 #include <string>
 #include <vector>
 
 using namespace ads::heaps;
+
+namespace {
+
+// Move-only and totally-ordered payload to exercise the move-only insert/emplace
+// paths under the OrderedHeapValue constraint.
+struct MoveOnlyOrdered {
+  int value = 0;
+
+  MoveOnlyOrdered() = default;
+
+  explicit MoveOnlyOrdered(int v) : value(v) {}
+
+  MoveOnlyOrdered(MoveOnlyOrdered&&) noexcept            = default;
+  MoveOnlyOrdered& operator=(MoveOnlyOrdered&&) noexcept = default;
+  MoveOnlyOrdered(const MoveOnlyOrdered&)                = delete;
+  MoveOnlyOrdered& operator=(const MoveOnlyOrdered&)     = delete;
+
+  auto operator<=>(const MoveOnlyOrdered&) const = default;
+};
+
+// A type with no ordering, used to verify OrderedHeapValue rejection.
+struct NotOrdered {};
+
+} // namespace
+
+static_assert(OrderedHeapValue<int>);
+static_assert(OrderedHeapValue<std::string>);
+static_assert(!OrderedHeapValue<NotOrdered>);
+static_assert(CopyHeapValue<int>);
+static_assert(MoveHeapValue<MoveOnlyOrdered>);
+static_assert(!CopyHeapValue<MoveOnlyOrdered>);
 
 // Test fixture for MinHeap.
 class MinHeapTest : public ::testing::Test {
@@ -324,6 +356,97 @@ TEST(HeapComparisonTest, MinMaxHeapWithSameData) {
 
   EXPECT_EQ(min_heap.top(), 1);
   EXPECT_EQ(max_heap.top(), 9);
+}
+
+//===----- SYMMETRY: INITIALIZER LIST, RESERVE ---------------------------------===//
+
+TEST(MinHeapConstruction, InitializerListHeapifies) {
+  MinHeap<int> heap({50, 30, 40, 10, 20});
+
+  EXPECT_EQ(heap.size(), 5u);
+  EXPECT_EQ(heap.top(), 10);
+}
+
+TEST(MaxHeapConstruction, InitializerListHeapifies) {
+  MaxHeap<int> heap({10, 30, 20, 50, 40});
+
+  EXPECT_EQ(heap.size(), 5u);
+  EXPECT_EQ(heap.top(), 50);
+}
+
+TEST(MinHeapCapacity, ReserveGrowsCapacity) {
+  MinHeap<int> heap;
+  heap.reserve(256);
+
+  EXPECT_GE(heap.capacity(), 256u);
+  EXPECT_TRUE(heap.is_empty());
+}
+
+TEST(MaxHeapCapacity, ReserveGrowsCapacity) {
+  MaxHeap<int> heap;
+  heap.reserve(256);
+
+  EXPECT_GE(heap.capacity(), 256u);
+  EXPECT_TRUE(heap.is_empty());
+}
+
+//===----- ADVANCED KEY ERROR PATHS --------------------------------------------===//
+
+TEST(MinHeapAdvanced, DecreaseKeyRejectsInvalidIndex) {
+  MinHeap<int> heap;
+  heap.insert(10);
+
+  EXPECT_THROW(heap.decrease_key(5, 1), HeapException);
+}
+
+TEST(MinHeapAdvanced, DecreaseKeyRejectsNonDecrease) {
+  MinHeap<int> heap;
+  heap.insert(10);
+  heap.insert(20);
+
+  // new_value >= current at the index is rejected.
+  EXPECT_THROW(heap.decrease_key(0, 99), HeapException);
+}
+
+TEST(MaxHeapAdvanced, IncreaseKeyRejectsInvalidIndex) {
+  MaxHeap<int> heap;
+  heap.insert(10);
+
+  EXPECT_THROW(heap.increase_key(5, 99), HeapException);
+}
+
+TEST(MaxHeapAdvanced, IncreaseKeyRejectsNonIncrease) {
+  MaxHeap<int> heap;
+  heap.insert(20);
+  heap.insert(10);
+
+  // new_value <= current at the index is rejected.
+  EXPECT_THROW(heap.increase_key(0, 1), HeapException);
+}
+
+//===----- MOVE-ONLY PAYLOAD TESTS ---------------------------------------------===//
+
+TEST(MinHeapMoveOnly, HoldsMoveOnlyValues) {
+  MinHeap<MoveOnlyOrdered> heap;
+  heap.emplace(30);
+  heap.insert(MoveOnlyOrdered(10));
+  heap.emplace(20);
+
+  EXPECT_EQ(heap.size(), 3u);
+  EXPECT_EQ(heap.top().value, 10);
+  EXPECT_EQ(heap.extract_min().value, 10);
+  EXPECT_EQ(heap.extract_min().value, 20);
+}
+
+TEST(MaxHeapMoveOnly, HoldsMoveOnlyValues) {
+  MaxHeap<MoveOnlyOrdered> heap;
+  heap.emplace(30);
+  heap.insert(MoveOnlyOrdered(10));
+  heap.emplace(20);
+
+  EXPECT_EQ(heap.size(), 3u);
+  EXPECT_EQ(heap.top().value, 30);
+  EXPECT_EQ(heap.extract_max().value, 30);
 }
 
 //===---------------------------------------------------------------------------===//

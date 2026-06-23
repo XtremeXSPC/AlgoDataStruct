@@ -14,33 +14,40 @@
 #pragma once
 #include "../../../include/ads/heaps/Max_Heap.hpp"
 
+#include <string>
+
 namespace ads::heaps {
 
 //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
-template <typename T>
-MaxHeap<T>::MaxHeap(size_t initial_capacity) : data_(initial_capacity) {
+template <OrderedHeapValue T>
+MaxHeap<T>::MaxHeap(size_type initial_capacity) : data_(initial_capacity) {
 }
 
-template <typename T>
+template <OrderedHeapValue T>
 MaxHeap<T>::MaxHeap(const std::vector<T>& elements) : data_(elements.begin(), elements.end()) {
   build_heap();
 }
 
-template <typename T>
+template <OrderedHeapValue T>
 template <std::input_iterator InputIt>
-MaxHeap<T>::MaxHeap(InputIt first, InputIt last) requires std::constructible_from<T, std::iter_reference_t<InputIt>>
+MaxHeap<T>::MaxHeap(InputIt first, InputIt last) requires HeapRangeValue<InputIt, T>
     : data_(first, last) {
   build_heap();
 }
 
-template <typename T>
+template <OrderedHeapValue T>
+MaxHeap<T>::MaxHeap(std::initializer_list<T> values) : data_(values) {
+  build_heap();
+}
+
+template <OrderedHeapValue T>
 MaxHeap<T>::MaxHeap(MaxHeap&& other) noexcept = default;
 
-template <typename T>
+template <OrderedHeapValue T>
 MaxHeap<T>::~MaxHeap() = default;
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::operator=(MaxHeap&& other) noexcept -> MaxHeap& {
   if (this != &other) {
     data_ = std::move(other.data_);
@@ -50,21 +57,24 @@ auto MaxHeap<T>::operator=(MaxHeap&& other) noexcept -> MaxHeap& {
 
 //===----- INSERTION OPERATIONS ------------------------------------------------===//
 
-template <typename T>
-auto MaxHeap<T>::insert(const T& value) -> void {
+template <OrderedHeapValue T>
+auto MaxHeap<T>::insert(const T& value) -> void requires CopyHeapValue<T>
+{
   data_.push_back(value);
   heapify_up(data_.size() - 1);
 }
 
-template <typename T>
-auto MaxHeap<T>::insert(T&& value) -> void {
+template <OrderedHeapValue T>
+auto MaxHeap<T>::insert(T&& value) -> void requires MoveHeapValue<T>
+{
   data_.push_back(std::move(value));
   heapify_up(data_.size() - 1);
 }
 
-template <typename T>
+template <OrderedHeapValue T>
 template <typename... Args>
-auto MaxHeap<T>::emplace(Args&&... args) -> T& {
+auto MaxHeap<T>::emplace(Args&&... args) -> T& requires EmplaceHeapValue<T, Args...>
+{
   data_.emplace_back(std::forward<Args>(args)...);
   const size_t final_index = heapify_up(data_.size() - 1);
   return data_[final_index];
@@ -72,29 +82,23 @@ auto MaxHeap<T>::emplace(Args&&... args) -> T& {
 
 //===----- ACCESS OPERATIONS ---------------------------------------------------===//
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::top() -> T& {
-  if (is_empty()) {
-    throw HeapException("top() called on empty MaxHeap");
-  }
+  validate_non_empty("top()");
   return data_[0];
 }
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::top() const -> const T& {
-  if (is_empty()) {
-    throw HeapException("top() called on empty MaxHeap");
-  }
+  validate_non_empty("top()");
   return data_[0];
 }
 
 //===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::extract_max() -> T {
-  if (is_empty()) {
-    throw HeapException("extract_max() called on empty MaxHeap");
-  }
+  validate_non_empty("extract_max()");
 
   T max_value = std::move(data_[0]);
 
@@ -114,33 +118,36 @@ auto MaxHeap<T>::extract_max() -> T {
 
 //===----- QUERY OPERATIONS ----------------------------------------------------===//
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::is_empty() const noexcept -> bool {
   return data_.is_empty();
 }
 
-template <typename T>
-auto MaxHeap<T>::size() const noexcept -> size_t {
+template <OrderedHeapValue T>
+auto MaxHeap<T>::size() const noexcept -> size_type {
   return data_.size();
 }
 
-template <typename T>
-auto MaxHeap<T>::capacity() const noexcept -> size_t {
+template <OrderedHeapValue T>
+auto MaxHeap<T>::capacity() const noexcept -> size_type {
   return data_.capacity();
 }
 
-template <typename T>
+template <OrderedHeapValue T>
+auto MaxHeap<T>::reserve(size_type new_capacity) -> void {
+  data_.reserve(new_capacity);
+}
+
+template <OrderedHeapValue T>
 auto MaxHeap<T>::clear() noexcept -> void {
   data_.clear();
 }
 
 //===----- ADVANCED OPERATIONS -------------------------------------------------===//
 
-template <typename T>
-auto MaxHeap<T>::increase_key(size_t index, const T& new_value) -> void {
-  if (index >= data_.size()) {
-    throw HeapException("increase_key() called with invalid index");
-  }
+template <OrderedHeapValue T>
+auto MaxHeap<T>::increase_key(size_type index, const T& new_value) -> void {
+  validate_index(index, "increase_key()");
 
   if (new_value <= data_[index]) {
     throw HeapException("increase_key() called with new_value <= current value");
@@ -153,7 +160,7 @@ auto MaxHeap<T>::increase_key(size_t index, const T& new_value) -> void {
 //=================================================================================//
 //===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::heapify_up(size_t index) -> size_t {
   while (index > 0) {
     size_t parent_idx = parent(index);
@@ -169,7 +176,7 @@ auto MaxHeap<T>::heapify_up(size_t index) -> size_t {
   return index;
 }
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::heapify_down(size_t index) -> void {
   const size_t heap_size = data_.size();
 
@@ -196,7 +203,7 @@ auto MaxHeap<T>::heapify_down(size_t index) -> void {
   }
 }
 
-template <typename T>
+template <OrderedHeapValue T>
 auto MaxHeap<T>::build_heap() -> void {
   if (data_.size() <= 1) {
     return;
@@ -205,6 +212,20 @@ auto MaxHeap<T>::build_heap() -> void {
   // Counting down with size_t avoids signed overflow on large heaps.
   for (size_t i = data_.size() / 2; i > 0; --i) {
     heapify_down(i - 1);
+  }
+}
+
+template <OrderedHeapValue T>
+auto MaxHeap<T>::validate_non_empty(const char* operation) const -> void {
+  if (is_empty()) {
+    throw HeapException(std::string(operation) + " called on empty MaxHeap");
+  }
+}
+
+template <OrderedHeapValue T>
+auto MaxHeap<T>::validate_index(size_type index, const char* operation) const -> void {
+  if (index >= data_.size()) {
+    throw HeapException(std::string(operation) + " called with invalid index");
   }
 }
 

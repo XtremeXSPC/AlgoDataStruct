@@ -21,14 +21,14 @@ namespace ads::heaps {
 //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <HeapValue T, typename Compare>
-DAryHeap<T, Compare>::DAryHeap(size_t arity, size_t initial_capacity, Compare comp) :
+DAryHeap<T, Compare>::DAryHeap(size_type arity, size_type initial_capacity, Compare comp) :
     data_(initial_capacity),
     arity_(validate_arity(arity)),
     comp_(std::move(comp)) {
 }
 
 template <HeapValue T, typename Compare>
-DAryHeap<T, Compare>::DAryHeap(const std::vector<T>& elements, size_t arity, Compare comp) :
+DAryHeap<T, Compare>::DAryHeap(const std::vector<T>& elements, size_type arity, Compare comp) :
     data_(elements.begin(), elements.end()),
     arity_(validate_arity(arity)),
     comp_(std::move(comp)) {
@@ -37,13 +37,13 @@ DAryHeap<T, Compare>::DAryHeap(const std::vector<T>& elements, size_t arity, Com
 
 template <HeapValue T, typename Compare>
 template <std::input_iterator InputIt>
-DAryHeap<T, Compare>::DAryHeap(InputIt first, InputIt last, size_t arity, Compare comp) requires HeapRangeValue<InputIt, T>
+DAryHeap<T, Compare>::DAryHeap(InputIt first, InputIt last, size_type arity, Compare comp) requires HeapRangeValue<InputIt, T>
     : data_(first, last), arity_(validate_arity(arity)), comp_(std::move(comp)) {
   build_heap();
 }
 
 template <HeapValue T, typename Compare>
-DAryHeap<T, Compare>::DAryHeap(std::initializer_list<T> init, size_t arity, Compare comp) :
+DAryHeap<T, Compare>::DAryHeap(std::initializer_list<T> init, size_type arity, Compare comp) :
     data_(init),
     arity_(validate_arity(arity)),
     comp_(std::move(comp)) {
@@ -66,20 +66,23 @@ auto DAryHeap<T, Compare>::operator=(DAryHeap&& other) noexcept(std::is_nothrow_
 //===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::insert(const T& value) -> void {
+auto DAryHeap<T, Compare>::insert(const T& value) -> void requires CopyHeapValue<T>
+{
   data_.push_back(value);
   heapify_up(data_.size() - 1);
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::insert(T&& value) -> void {
+auto DAryHeap<T, Compare>::insert(T&& value) -> void requires MoveHeapValue<T>
+{
   data_.push_back(std::move(value));
   heapify_up(data_.size() - 1);
 }
 
 template <HeapValue T, typename Compare>
 template <typename... Args>
-auto DAryHeap<T, Compare>::emplace(Args&&... args) -> T& {
+auto DAryHeap<T, Compare>::emplace(Args&&... args) -> T& requires EmplaceHeapValue<T, Args...>
+{
   data_.emplace_back(std::forward<Args>(args)...);
   const size_t final_index = heapify_up(data_.size() - 1);
   return data_[final_index];
@@ -118,7 +121,8 @@ auto DAryHeap<T, Compare>::extract_top() -> T {
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::update_key(size_t index, const T& new_value) -> void {
+auto DAryHeap<T, Compare>::update_key(size_type index, const T& new_value) -> void requires CopyHeapValue<T>
+{
   validate_index(index, "update_key()");
 
   data_[index] = new_value;
@@ -130,7 +134,8 @@ auto DAryHeap<T, Compare>::update_key(size_t index, const T& new_value) -> void 
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::update_key(size_t index, T&& new_value) -> void {
+auto DAryHeap<T, Compare>::update_key(size_type index, T&& new_value) -> void requires MoveHeapValue<T>
+{
   validate_index(index, "update_key()");
 
   data_[index] = std::move(new_value);
@@ -154,22 +159,22 @@ auto DAryHeap<T, Compare>::is_empty() const noexcept -> bool {
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::size() const noexcept -> size_t {
+auto DAryHeap<T, Compare>::size() const noexcept -> size_type {
   return data_.size();
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::capacity() const noexcept -> size_t {
+auto DAryHeap<T, Compare>::capacity() const noexcept -> size_type {
   return data_.capacity();
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::arity() const noexcept -> size_t {
+auto DAryHeap<T, Compare>::arity() const noexcept -> size_type {
   return arity_;
 }
 
 template <HeapValue T, typename Compare>
-auto DAryHeap<T, Compare>::reserve(size_t new_capacity) -> void {
+auto DAryHeap<T, Compare>::reserve(size_type new_capacity) -> void {
   data_.reserve(new_capacity);
 }
 

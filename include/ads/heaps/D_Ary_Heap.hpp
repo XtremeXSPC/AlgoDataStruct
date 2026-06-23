@@ -52,6 +52,9 @@ namespace ads::heaps {
 template <HeapValue T, typename Compare = std::less<T>>
 class DAryHeap {
 public:
+  using value_type = T;
+  using size_type  = size_t;
+
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
@@ -62,7 +65,8 @@ public:
    * @throws HeapException if arity < 2.
    * @complexity Time O(1), Space O(initial_capacity)
    */
-  explicit DAryHeap(size_t arity = kDefaultArity, size_t initial_capacity = kInitialCapacity, Compare comp = Compare{});
+  explicit DAryHeap(
+      size_type arity = kDefaultArity, size_type initial_capacity = kInitialCapacity, Compare comp = Compare{});
 
   /**
    * @brief Constructs a heap from a vector using bottom-up heapify.
@@ -72,7 +76,7 @@ public:
    * @throws HeapException if arity < 2.
    * @complexity Time O(n), Space O(n)
    */
-  explicit DAryHeap(const std::vector<T>& elements, size_t arity = kDefaultArity, Compare comp = Compare{});
+  explicit DAryHeap(const std::vector<T>& elements, size_type arity = kDefaultArity, Compare comp = Compare{});
 
   /**
    * @brief Constructs a heap from an iterator range using bottom-up heapify.
@@ -85,7 +89,8 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  DAryHeap(InputIt first, InputIt last, size_t arity = kDefaultArity, Compare comp = Compare{}) requires HeapRangeValue<InputIt, T>;
+  DAryHeap(InputIt first, InputIt last, size_type arity = kDefaultArity, Compare comp = Compare{})
+    requires HeapRangeValue<InputIt, T>;
 
   /**
    * @brief Constructs a heap from an initializer list using bottom-up heapify.
@@ -95,7 +100,7 @@ public:
    * @throws HeapException if arity < 2.
    * @complexity Time O(n), Space O(n)
    */
-  DAryHeap(std::initializer_list<T> init, size_t arity = kDefaultArity, Compare comp = Compare{});
+  DAryHeap(std::initializer_list<T> init, size_type arity = kDefaultArity, Compare comp = Compare{});
 
   /**
    * @brief Move constructor.
@@ -128,14 +133,16 @@ public:
    * @param value Value to insert.
    * @complexity Time O(log_d n) amortized, Space O(1)
    */
-  auto insert(const T& value) -> void;
+  auto insert(const T& value) -> void
+    requires CopyHeapValue<T>;
 
   /**
    * @brief Inserts an element into the heap using move semantics.
    * @param value Value to insert.
    * @complexity Time O(log_d n) amortized, Space O(1)
    */
-  auto insert(T&& value) -> void;
+  auto insert(T&& value) -> void
+    requires MoveHeapValue<T>;
 
   /**
    * @brief Constructs an element in-place inside the heap.
@@ -145,7 +152,8 @@ public:
    * @complexity Time O(log_d n) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace(Args&&... args) -> T&;
+  auto emplace(Args&&... args) -> T&
+    requires EmplaceHeapValue<T, Args...>;
 
   //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
@@ -182,7 +190,8 @@ public:
    * @throws HeapException if index is out of bounds.
    * @complexity Time O(log_d n), Space O(1)
    */
-  auto update_key(size_t index, const T& new_value) -> void;
+  auto update_key(size_type index, const T& new_value) -> void
+    requires CopyHeapValue<T>;
 
   /**
    * @brief Replaces the value stored at an index using move semantics and restores heap order.
@@ -191,7 +200,8 @@ public:
    * @throws HeapException if index is out of bounds.
    * @complexity Time O(log_d n), Space O(1)
    */
-  auto update_key(size_t index, T&& new_value) -> void;
+  auto update_key(size_type index, T&& new_value) -> void
+    requires MoveHeapValue<T>;
 
   /**
    * @brief Removes all elements from the heap.
@@ -213,36 +223,31 @@ public:
    * @return Element count.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Returns the current storage capacity.
    * @return Internal array capacity.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto capacity() const noexcept -> size_t;
+  [[nodiscard]] auto capacity() const noexcept -> size_type;
 
   /**
    * @brief Returns the configured arity.
    * @return Number of children per node.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto arity() const noexcept -> size_t;
+  [[nodiscard]] auto arity() const noexcept -> size_type;
 
   /**
    * @brief Reserves storage for at least the specified number of elements.
    * @param new_capacity Minimum desired capacity.
    * @complexity Time O(n) if reallocation occurs, Space O(n)
    */
-  auto reserve(size_t new_capacity) -> void;
+  auto reserve(size_type new_capacity) -> void;
 
 private:
-  ads::arrays::DynamicArray<T> data_;
-  size_t                       arity_;
-  Compare                      comp_;
-
-  static constexpr size_t kDefaultArity    = 2;
-  static constexpr size_t kInitialCapacity = 16;
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   [[nodiscard]] auto has_higher_priority(const T& lhs, const T& rhs) const -> bool;
   [[nodiscard]] auto parent(size_t index) const noexcept -> size_t;
@@ -254,6 +259,15 @@ private:
   auto        validate_non_empty(const char* operation) const -> void;
   auto        validate_index(size_t index, const char* operation) const -> void;
   static auto validate_arity(size_t arity) -> size_t;
+
+  //===----- DATA MEMBERS ------------------------------------------------------===//
+
+  ads::arrays::DynamicArray<T> data_;
+  size_t                       arity_;
+  Compare                      comp_;
+
+  static constexpr size_t kDefaultArity    = 2;
+  static constexpr size_t kInitialCapacity = 16;
 };
 
 template <typename T>
