@@ -469,4 +469,69 @@ TEST(HashTableStringKeyTest, OpenAddressingWithStringKeys) {
   EXPECT_EQ(table.at("cherry"), 3);
 }
 
+//===----- TYPE ALIAS AND PARITY TESTS -----------------------------------------===//
+
+static_assert(std::same_as<HashTableChaining<int, std::string>::key_type, int>);
+static_assert(std::same_as<HashTableChaining<int, std::string>::mapped_type, std::string>);
+static_assert(std::same_as<HashTableChaining<int, std::string>::value_type, std::pair<const int, std::string>>);
+static_assert(std::same_as<HashTableOpenAddressing<int, std::string>::key_type, int>);
+static_assert(std::same_as<HashTableOpenAddressing<int, std::string>::mapped_type, std::string>);
+static_assert(std::same_as<HashTableOpenAddressing<int, std::string>::value_type, std::pair<const int, std::string>>);
+
+TEST(HashTableChainingApiTest, CountReturnsZeroOrOne) {
+  HashTableChaining<int, std::string> table;
+  table.insert(1, "one");
+  EXPECT_EQ(table.count(1), 1U);
+  EXPECT_EQ(table.count(2), 0U);
+}
+
+TEST(HashTableOpenAddressingApiTest, CountReturnsZeroOrOne) {
+  HashTableOpenAddressing<int, std::string> table;
+  table.insert(1, "one");
+  EXPECT_EQ(table.count(1), 1U);
+  EXPECT_EQ(table.count(2), 0U);
+}
+
+TEST(HashTableChainingApiTest, InsertReturnsTrueOnNewFalseOnUpdate) {
+  HashTableChaining<int, std::string> table;
+  EXPECT_TRUE(table.insert(1, "one"));
+  EXPECT_FALSE(table.insert(1, "ONE"));
+  EXPECT_EQ(table.at(1), "ONE");
+}
+
+TEST(HashTableOpenAddressingApiTest, InsertReturnsTrueOnNewFalseOnUpdate) {
+  HashTableOpenAddressing<int, std::string> table;
+  EXPECT_TRUE(table.insert(1, "one"));
+  EXPECT_FALSE(table.insert(1, "ONE"));
+  EXPECT_EQ(table.at(1), "ONE");
+}
+
+TEST(HashTableChainingApiTest, InitializerListConstructor) {
+  HashTableChaining<int, std::string> table{{1, "one"}, {2, "two"}, {3, "three"}};
+  EXPECT_EQ(table.size(), 3U);
+  EXPECT_EQ(table.at(1), "one");
+  EXPECT_EQ(table.at(3), "three");
+}
+
+TEST(HashTableOpenAddressingApiTest, InitializerListConstructor) {
+  HashTableOpenAddressing<int, std::string> table{{1, "one"}, {2, "two"}, {3, "three"}};
+  EXPECT_EQ(table.size(), 3U);
+  EXPECT_EQ(table.at(1), "one");
+  EXPECT_EQ(table.at(3), "three");
+}
+
+TEST(HashTableChainingApiTest, RangeConstructor) {
+  const std::vector<std::pair<int, std::string>> entries{{1, "one"}, {2, "two"}};
+  HashTableChaining<int, std::string>            table(entries.begin(), entries.end());
+  EXPECT_EQ(table.size(), 2U);
+  EXPECT_EQ(table.at(2), "two");
+}
+
+TEST(HashTableOpenAddressingApiTest, RangeConstructor) {
+  const std::vector<std::pair<int, std::string>> entries{{1, "one"}, {2, "two"}};
+  HashTableOpenAddressing<int, std::string>      table(entries.begin(), entries.end());
+  EXPECT_EQ(table.size(), 2U);
+  EXPECT_EQ(table.at(2), "two");
+}
+
 //===---------------------------------------------------------------------------===//

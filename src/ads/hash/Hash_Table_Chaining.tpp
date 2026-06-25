@@ -22,7 +22,7 @@ namespace ads::hash {
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-HashTableChaining<Key, Value, Hash>::HashTableChaining(size_t initial_capacity, float max_load_factor, Hash hasher) :
+HashTableChaining<Key, Value, Hash>::HashTableChaining(size_type initial_capacity, float max_load_factor, Hash hasher) :
     buckets_(),
     capacity_(std::max<size_t>(initial_capacity, 1)),
     size_(0),
@@ -63,11 +63,32 @@ auto HashTableChaining<Key, Value, Hash>::operator=(HashTableChaining&& other) n
   return *this;
 }
 
+template <CopyHashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+HashTableChaining<Key, Value, Hash>::HashTableChaining(
+    std::initializer_list<std::pair<Key, Value>> entries, float max_load_factor, Hash hasher) requires CopyHashEntry<Key, Value>
+    : HashTableChaining(kInitialCapacity, max_load_factor, std::move(hasher)) {
+  for (const auto& [key, value] : entries) {
+    insert(key, value);
+  }
+}
+
+template <CopyHashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+template <std::input_iterator InputIt>
+HashTableChaining<Key, Value, Hash>::HashTableChaining(InputIt first, InputIt last, float max_load_factor, Hash hasher)
+    requires CopyHashEntry<Key, Value>
+    : HashTableChaining(kInitialCapacity, max_load_factor, std::move(hasher)) {
+  for (auto it = first; it != last; ++it) {
+    insert(it->first, it->second);
+  }
+}
+
 //===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-void HashTableChaining<Key, Value, Hash>::insert(const Key& key, const Value& value) requires CopyHashEntry<Key, Value>
+auto HashTableChaining<Key, Value, Hash>::insert(const Key& key, const Value& value) -> bool requires CopyHashEntry<Key, Value>
 {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
@@ -75,18 +96,19 @@ void HashTableChaining<Key, Value, Hash>::insert(const Key& key, const Value& va
   if (it != buckets_[bucket_idx].end()) {
     // Existing keys are updated before any resize so references stay valid.
     it->second = value;
-    return;
+    return false;
   }
 
   ensure_capacity_for_insert();
   bucket_idx = hash(key);
   buckets_[bucket_idx].emplace_back(key, value);
   ++size_;
+  return true;
 }
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-void HashTableChaining<Key, Value, Hash>::insert(const Key& key, Value&& value) requires CopyKeyMoveHashEntry<Key, Value>
+auto HashTableChaining<Key, Value, Hash>::insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveHashEntry<Key, Value>
 {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
@@ -94,18 +116,19 @@ void HashTableChaining<Key, Value, Hash>::insert(const Key& key, Value&& value) 
   if (it != buckets_[bucket_idx].end()) {
     // The key is preserved while the mapped value adopts the caller's resource.
     it->second = std::move(value);
-    return;
+    return false;
   }
 
   ensure_capacity_for_insert();
   bucket_idx = hash(key);
   buckets_[bucket_idx].emplace_back(key, std::move(value));
   ++size_;
+  return true;
 }
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-void HashTableChaining<Key, Value, Hash>::insert(Key&& key, Value&& value) requires MoveHashEntry<Key, Value>
+auto HashTableChaining<Key, Value, Hash>::insert(Key&& key, Value&& value) -> bool requires MoveHashEntry<Key, Value>
 {
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
@@ -113,13 +136,14 @@ void HashTableChaining<Key, Value, Hash>::insert(Key&& key, Value&& value) requi
   if (it != buckets_[bucket_idx].end()) {
     // Keep the stored key stable; only the mapped value changes on duplicate insert.
     it->second = std::move(value);
-    return;
+    return false;
   }
 
   ensure_capacity_for_insert();
   bucket_idx = hash(key);
   buckets_[bucket_idx].emplace_back(std::move(key), std::move(value));
   ++size_;
+  return true;
 }
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
@@ -225,6 +249,13 @@ auto HashTableChaining<Key, Value, Hash>::find(const Key& key) const -> const Va
   return nullptr;
 }
 
+template <CopyHashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+auto HashTableChaining<Key, Value, Hash>::count(const Key& key) const -> size_type {
+  size_t bucket_idx = hash(key);
+  return find_in_bucket(buckets_[bucket_idx], key) != buckets_[bucket_idx].end() ? 1 : 0;
+}
+
 //===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
@@ -254,13 +285,13 @@ void HashTableChaining<Key, Value, Hash>::clear() noexcept {
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-auto HashTableChaining<Key, Value, Hash>::size() const noexcept -> size_t {
+auto HashTableChaining<Key, Value, Hash>::size() const noexcept -> size_type {
   return size_;
 }
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-auto HashTableChaining<Key, Value, Hash>::capacity() const noexcept -> size_t {
+auto HashTableChaining<Key, Value, Hash>::capacity() const noexcept -> size_type {
   return capacity_;
 }
 
@@ -296,7 +327,7 @@ void HashTableChaining<Key, Value, Hash>::set_max_load_factor(float mlf) {
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-void HashTableChaining<Key, Value, Hash>::reserve(size_t new_capacity) {
+void HashTableChaining<Key, Value, Hash>::reserve(size_type new_capacity) {
   if (new_capacity > capacity_) {
     rehash(new_capacity);
   }

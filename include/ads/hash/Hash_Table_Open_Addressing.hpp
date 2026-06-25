@@ -23,6 +23,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <initializer_list>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -61,6 +63,11 @@ template <HashKey Key, HashValue Value, typename Hash = std::hash<Key>>
 requires HashFor<Hash, Key>
 class HashTableOpenAddressing {
 public:
+  using key_type    = Key;
+  using mapped_type = Value;
+  using value_type  = std::pair<const Key, Value>;
+  using size_type   = size_t;
+
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
@@ -74,7 +81,7 @@ public:
    * @throws InvalidOperationException if max_load_factor is not in (0, 1).
    */
   explicit HashTableOpenAddressing(
-      size_t          initial_capacity = kInitialCapacity,
+      size_type       initial_capacity = kInitialCapacity,
       ProbingStrategy strategy         = ProbingStrategy::LINEAR,
       float           max_load_factor  = kDefaultMaxLoadFactor,
       Hash            hasher           = Hash{});
@@ -103,6 +110,38 @@ public:
   // Copy constructor and assignment are disabled (move-only type).
   HashTableOpenAddressing(const HashTableOpenAddressing&)                    = delete;
   auto operator=(const HashTableOpenAddressing&) -> HashTableOpenAddressing& = delete;
+
+  /**
+   * @brief Constructs a table from an initializer list of key-value pairs.
+   * @param entries Key-value pairs to insert.
+   * @param strategy Probing strategy to use (default: LINEAR).
+   * @param max_load_factor Maximum load factor before rehashing (default: 0.5).
+   * @param hasher Hash functor used to map keys to slots.
+   * @complexity Time O(n) average, Space O(n)
+   */
+  HashTableOpenAddressing(
+      std::initializer_list<std::pair<Key, Value>> entries,
+      ProbingStrategy                              strategy        = ProbingStrategy::LINEAR,
+      float                                        max_load_factor = kDefaultMaxLoadFactor,
+      Hash                                         hasher          = Hash{}) requires CopyHashEntry<Key, Value>;
+
+  /**
+   * @brief Constructs a table from an iterator range of key-value pairs.
+   * @tparam InputIt Input iterator type yielding key-value pairs.
+   * @param first Iterator to the first pair.
+   * @param last Iterator past the last pair.
+   * @param strategy Probing strategy to use (default: LINEAR).
+   * @param max_load_factor Maximum load factor before rehashing (default: 0.5).
+   * @param hasher Hash functor used to map keys to slots.
+   * @complexity Time O(n) average, Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  HashTableOpenAddressing(
+      InputIt         first,
+      InputIt         last,
+      ProbingStrategy strategy        = ProbingStrategy::LINEAR,
+      float           max_load_factor = kDefaultMaxLoadFactor,
+      Hash            hasher          = Hash{}) requires CopyHashEntry<Key, Value>;
 
   //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
@@ -200,6 +239,14 @@ public:
    */
   [[nodiscard]] auto find(const Key& key) const -> const Value*;
 
+  /**
+   * @brief Counts the occurrences of a key (0 or 1 for a unique-key table).
+   * @param key The key to search for.
+   * @return 1 if the key exists, 0 otherwise.
+   * @complexity Time O(1) average, O(n) worst case.
+   */
+  [[nodiscard]] auto count(const Key& key) const -> size_type;
+
   //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
   /**
@@ -224,14 +271,14 @@ public:
    * @return Number of key-value pairs (excludes tombstones).
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Returns the number of slots in the table.
    * @return Capacity of the hash table.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto capacity() const noexcept -> size_t;
+  [[nodiscard]] auto capacity() const noexcept -> size_type;
 
   /**
    * @brief Checks if the table is empty.
@@ -271,7 +318,7 @@ public:
    *          to preserve full probe coverage.
    * @complexity Time O(n) if rehashing occurs, Space O(n)
    */
-  void reserve(size_t new_capacity);
+  void reserve(size_type new_capacity);
 
   /**
    * @brief Sets the maximum load factor.
@@ -284,14 +331,10 @@ public:
 private:
   //===----- INTERNAL STRUCTURES -----------------------------------------------===//
 
-  /**
-   * @brief State of a slot in the hash table.
-   */
+  ///@brief State of a slot in the hash table.
   enum class SlotState : std::uint8_t { EMPTY, OCCUPIED, DELETED };
 
-  /**
-   * @brief Entry in the hash table.
-   */
+  ///@brief Entry in the hash table.
   struct Entry {
     Key   key;
     Value value;
@@ -309,9 +352,7 @@ private:
     explicit Entry(const Key& k, Args&&... args) : key(k), value(std::forward<Args>(args)...) {}
   };
 
-  /**
-   * @brief A slot can be empty, occupied, or deleted (tombstone).
-   */
+  ///@brief A slot can be empty, occupied, or deleted (tombstone).
   struct Slot {
     std::optional<Entry> entry;
     SlotState            state;
@@ -319,7 +360,6 @@ private:
     Slot() : entry(std::nullopt), state(SlotState::EMPTY) {}
   };
 
-  //===============================================================================//
   //===----- PRIVATE HASHING METHODS -------------------------------------------===//
 
   /**
@@ -429,6 +469,12 @@ private:
   auto find_insert_slot(Slot* slots, size_t slot_count, const Key& key) const -> Slot*;
 
   //===----- REHASHING OPERATIONS ----------------------------------------------===//
+
+  /**
+   * @brief Allocates the initial slot array on first use of an empty table.
+   * @complexity Time O(n) if allocation occurs, Space O(n)
+   */
+  void ensure_initialized();
 
   /**
    * @brief Rehashes the table to a new capacity.

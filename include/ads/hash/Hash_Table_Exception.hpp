@@ -46,19 +46,6 @@ public:
 };
 
 /**
- * @brief Exception thrown when attempting operations on an empty table.
- *
- * @details This exception is thrown when trying to perform operations
- *          that require at least one element in an empty hash table.
- */
-class EmptyTableException : public HashTableException {
-public:
-  using HashTableException::HashTableException;
-
-  EmptyTableException() : HashTableException("Operation on empty hash table") {}
-};
-
-/**
  * @brief Exception thrown when an invalid operation is attempted.
  *
  * @details This exception covers various invalid operations such as

@@ -24,7 +24,7 @@ namespace ads::hash {
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 HashTableOpenAddressing<Key, Value, Hash>::HashTableOpenAddressing(
-    size_t initial_capacity, ProbingStrategy strategy, float max_load_factor, Hash hasher) :
+    size_type initial_capacity, ProbingStrategy strategy, float max_load_factor, Hash hasher) :
     table_(std::make_unique<Slot[]>(normalize_capacity(initial_capacity, strategy))),
     capacity_(normalize_capacity(initial_capacity, strategy)),
     size_(0),
@@ -73,15 +73,35 @@ auto HashTableOpenAddressing<Key, Value, Hash>::operator=(HashTableOpenAddressin
   return *this;
 }
 
+template <HashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+HashTableOpenAddressing<Key, Value, Hash>::HashTableOpenAddressing(
+    std::initializer_list<std::pair<Key, Value>> entries, ProbingStrategy strategy, float max_load_factor, Hash hasher)
+    requires CopyHashEntry<Key, Value>
+    : HashTableOpenAddressing(kInitialCapacity, strategy, max_load_factor, std::move(hasher)) {
+  for (const auto& [key, value] : entries) {
+    insert(key, value);
+  }
+}
+
+template <HashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+template <std::input_iterator InputIt>
+HashTableOpenAddressing<Key, Value, Hash>::HashTableOpenAddressing(
+    InputIt first, InputIt last, ProbingStrategy strategy, float max_load_factor, Hash hasher) requires CopyHashEntry<Key, Value>
+    : HashTableOpenAddressing(kInitialCapacity, strategy, max_load_factor, std::move(hasher)) {
+  for (auto it = first; it != last; ++it) {
+    insert(it->first, it->second);
+  }
+}
+
 //===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableOpenAddressing<Key, Value, Hash>::insert(const Key& key, const Value& value) -> bool requires CopyHashEntry<Key, Value>
 {
-  if (capacity_ == 0) {
-    rehash(kInitialCapacity);
-  }
+  ensure_initialized();
 
   Slot* slot = find_insert_slot(key);
 
@@ -107,9 +127,7 @@ template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableOpenAddressing<Key, Value, Hash>::insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveHashEntry<Key, Value>
 {
-  if (capacity_ == 0) {
-    rehash(kInitialCapacity);
-  }
+  ensure_initialized();
 
   Slot* slot = find_insert_slot(key);
 
@@ -135,9 +153,7 @@ template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableOpenAddressing<Key, Value, Hash>::insert(Key&& key, Value&& value) -> bool requires MoveHashEntry<Key, Value>
 {
-  if (capacity_ == 0) {
-    rehash(kInitialCapacity);
-  }
+  ensure_initialized();
 
   // Keep a reference for hashing and equality checks until the key is stored.
   const Key& key_ref = key;
@@ -167,9 +183,7 @@ template <typename... Args>
 auto HashTableOpenAddressing<Key, Value, Hash>::emplace(const Key& key, Args&&... args)
     -> Value& requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>
 {
-  if (capacity_ == 0) {
-    rehash(kInitialCapacity);
-  }
+  ensure_initialized();
 
   Slot* slot = find_insert_slot(key);
 
@@ -222,9 +236,7 @@ template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableOpenAddressing<Key, Value, Hash>::operator[](const Key& key) -> Value& requires CopyHashKey<Key> && DefaultHashValue<Value>
 {
-  if (capacity_ == 0) {
-    rehash(kInitialCapacity);
-  }
+  ensure_initialized();
 
   Slot* slot = find_insert_slot(key);
 
@@ -270,6 +282,12 @@ auto HashTableOpenAddressing<Key, Value, Hash>::find(const Key& key) const -> co
   return slot ? &(slot->entry->value) : nullptr;
 }
 
+template <HashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+auto HashTableOpenAddressing<Key, Value, Hash>::count(const Key& key) const -> size_type {
+  return find_slot(key) != nullptr ? 1 : 0;
+}
+
 //===----- REMOVAL OPERATIONS --------------------------------------------------===//
 
 template <HashKey Key, HashValue Value, typename Hash>
@@ -305,13 +323,13 @@ void HashTableOpenAddressing<Key, Value, Hash>::clear() noexcept {
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-auto HashTableOpenAddressing<Key, Value, Hash>::size() const noexcept -> size_t {
+auto HashTableOpenAddressing<Key, Value, Hash>::size() const noexcept -> size_type {
   return size_;
 }
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-auto HashTableOpenAddressing<Key, Value, Hash>::capacity() const noexcept -> size_t {
+auto HashTableOpenAddressing<Key, Value, Hash>::capacity() const noexcept -> size_type {
   return capacity_;
 }
 
@@ -343,7 +361,7 @@ auto HashTableOpenAddressing<Key, Value, Hash>::probing_strategy() const noexcep
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
-void HashTableOpenAddressing<Key, Value, Hash>::reserve(size_t new_capacity) {
+void HashTableOpenAddressing<Key, Value, Hash>::reserve(size_type new_capacity) {
   if (new_capacity > capacity_) {
     rehash(new_capacity);
   }
@@ -535,6 +553,14 @@ auto HashTableOpenAddressing<Key, Value, Hash>::find_insert_slot(Slot* slots, si
 }
 
 //===----- REHASHING OPERATIONS ------------------------------------------------===//
+
+template <HashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+void HashTableOpenAddressing<Key, Value, Hash>::ensure_initialized() {
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
+}
 
 template <HashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>

@@ -24,6 +24,8 @@
 #include <concepts>
 #include <cstddef>
 #include <functional>
+#include <initializer_list>
+#include <iterator>
 #include <utility>
 
 // Forward declaration for HashMap friend
@@ -59,6 +61,11 @@ template <CopyHashKey Key, HashValue Value, typename Hash = std::hash<Key>>
 requires HashFor<Hash, Key>
 class HashTableChaining {
 public:
+  using key_type    = Key;
+  using mapped_type = Value;
+  using value_type  = std::pair<const Key, Value>;
+  using size_type   = size_t;
+
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
   /**
@@ -70,7 +77,7 @@ public:
    * @throws InvalidOperationException if max_load_factor <= 0.
    */
   explicit HashTableChaining(
-      size_t initial_capacity = kInitialCapacity, float max_load_factor = kDefaultMaxLoadFactor, Hash hasher = Hash{});
+      size_type initial_capacity = kInitialCapacity, float max_load_factor = kDefaultMaxLoadFactor, Hash hasher = Hash{});
 
   /**
    * @brief Move constructor.
@@ -91,11 +98,35 @@ public:
    * @return A reference to this instance.
    * @complexity Time O(1), Space O(1)
    */
-  HashTableChaining& operator=(HashTableChaining&& other) noexcept;
+  auto operator=(HashTableChaining&& other) noexcept -> HashTableChaining&;
 
   // Copy constructor and assignment are disabled (move-only type).
-  HashTableChaining(const HashTableChaining&)            = delete;
-  HashTableChaining& operator=(const HashTableChaining&) = delete;
+  HashTableChaining(const HashTableChaining&)                    = delete;
+  auto operator=(const HashTableChaining&) -> HashTableChaining& = delete;
+
+  /**
+   * @brief Constructs a hash table from an initializer list of key-value pairs.
+   * @param entries Key-value pairs to insert.
+   * @param max_load_factor Maximum load factor before rehashing (default: 0.75).
+   * @param hasher Hash functor used to map keys to buckets.
+   * @complexity Time O(n) average, Space O(n)
+   */
+  HashTableChaining(
+      std::initializer_list<std::pair<Key, Value>> entries, float max_load_factor = kDefaultMaxLoadFactor, Hash hasher = Hash{})
+      requires CopyHashEntry<Key, Value>;
+
+  /**
+   * @brief Constructs a hash table from an iterator range of key-value pairs.
+   * @tparam InputIt Input iterator type yielding key-value pairs.
+   * @param first Iterator to the first pair.
+   * @param last Iterator past the last pair.
+   * @param max_load_factor Maximum load factor before rehashing (default: 0.75).
+   * @param hasher Hash functor used to map keys to buckets.
+   * @complexity Time O(n) average, Space O(n)
+   */
+  template <std::input_iterator InputIt>
+  HashTableChaining(InputIt first, InputIt last, float max_load_factor = kDefaultMaxLoadFactor, Hash hasher = Hash{})
+      requires CopyHashEntry<Key, Value>;
 
   //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
@@ -103,26 +134,29 @@ public:
    * @brief Inserts or updates a key-value pair.
    * @param key The key to insert.
    * @param value The value to associate with the key.
+   * @return true if inserted, false if updated existing key.
    * @details If the key already exists, its value is updated.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(const Key& key, const Value& value) requires CopyHashEntry<Key, Value>;
+  auto insert(const Key& key, const Value& value) -> bool requires CopyHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
    * @param key The key to insert.
    * @param value The value to move into the table.
+   * @return true if inserted, false if updated existing key.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(const Key& key, Value&& value) requires CopyKeyMoveHashEntry<Key, Value>;
+  auto insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move version).
    * @param key The key to insert.
    * @param value The value to move into the table.
+   * @return true if inserted, false if updated existing key.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  void insert(Key&& key, Value&& value) requires MoveHashEntry<Key, Value>;
+  auto insert(Key&& key, Value&& value) -> bool requires MoveHashEntry<Key, Value>;
 
   /**
    * @brief Constructs a value in-place for the given key.
@@ -133,7 +167,7 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   template <typename... Args>
-  Value& emplace(const Key& key, Args&&... args) requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>;
+  auto emplace(const Key& key, Args&&... args) -> Value& requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>;
 
   //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
@@ -144,7 +178,7 @@ public:
    * @throws KeyNotFoundException if the key doesn't exist.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  Value& at(const Key& key);
+  auto at(const Key& key) -> Value&;
 
   /**
    * @brief Accesses value by key with bounds checking (const version).
@@ -153,7 +187,7 @@ public:
    * @throws KeyNotFoundException if the key doesn't exist.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  const Value& at(const Key& key) const;
+  auto at(const Key& key) const -> const Value&;
 
   /**
    * @brief Accesses value by key, inserting default if not found.
@@ -162,7 +196,7 @@ public:
    * @details If the key doesn't exist, inserts default-constructed value.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  Value& operator[](const Key& key) requires CopyHashKey<Key> && DefaultHashValue<Value>;
+  auto operator[](const Key& key) -> Value& requires CopyHashKey<Key> && DefaultHashValue<Value>;
 
   //===----- SEARCH OPERATIONS -------------------------------------------------===//
 
@@ -172,7 +206,7 @@ public:
    * @return true if the key exists, false otherwise.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  [[nodiscard]] bool contains(const Key& key) const;
+  [[nodiscard]] auto contains(const Key& key) const -> bool;
 
   /**
    * @brief Finds a value by key.
@@ -180,7 +214,7 @@ public:
    * @return Pointer to the value if found, nullptr otherwise.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  [[nodiscard]] Value* find(const Key& key);
+  [[nodiscard]] auto find(const Key& key) -> Value*;
 
   /**
    * @brief Finds a value by key (const version).
@@ -188,7 +222,15 @@ public:
    * @return Const pointer to the value if found, nullptr otherwise.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  [[nodiscard]] const Value* find(const Key& key) const;
+  [[nodiscard]] auto find(const Key& key) const -> const Value*;
+
+  /**
+   * @brief Counts the occurrences of a key (0 or 1 for a unique-key table).
+   * @param key The key to search for.
+   * @return 1 if the key exists, 0 otherwise.
+   * @complexity Time O(1) average, O(n) worst case.
+   */
+  [[nodiscard]] auto count(const Key& key) const -> size_type;
 
   //===----- REMOVAL OPERATIONS ------------------------------------------------===//
 
@@ -198,7 +240,7 @@ public:
    * @return true if the key was found and removed, false otherwise.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  bool erase(const Key& key);
+  auto erase(const Key& key) -> bool;
 
   /**
    * @brief Removes all entries from the table.
@@ -213,35 +255,35 @@ public:
    * @return Number of key-value pairs.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] size_t size() const noexcept;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Returns the number of buckets.
    * @return Capacity of the hash table.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] size_t capacity() const noexcept;
+  [[nodiscard]] auto capacity() const noexcept -> size_type;
 
   /**
    * @brief Checks if the table is empty.
    * @return true if size is 0, false otherwise.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] bool is_empty() const noexcept;
+  [[nodiscard]] auto is_empty() const noexcept -> bool;
 
   /**
    * @brief Returns the current load factor.
    * @return size / capacity ratio.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] float load_factor() const noexcept;
+  [[nodiscard]] auto load_factor() const noexcept -> float;
 
   /**
    * @brief Returns the maximum load factor threshold.
    * @return Maximum allowed load factor before rehashing.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] float max_load_factor() const noexcept;
+  [[nodiscard]] auto max_load_factor() const noexcept -> float;
 
   //===----- CONFIGURATION OPERATIONS ------------------------------------------===//
 
@@ -259,7 +301,7 @@ public:
    * @details Forces a rehash if new_capacity > current capacity.
    * @complexity Time O(n) if rehashing occurs, Space O(n)
    */
-  void reserve(size_t new_capacity);
+  void reserve(size_type new_capacity);
 
 private:
   //===----- INTERNAL STRUCTURES -----------------------------------------------===//
@@ -268,17 +310,12 @@ private:
   template <typename, typename, typename>
   friend class ::ads::associative::HashMap;
 
-  /**
-   * @brief Entries keep immutable keys to preserve hash-table invariants.
-   */
+  ///@brief Entries keep immutable keys to preserve hash-table invariants.
   using Entry = std::pair<const Key, Value>;
 
-  /**
-   * @brief A bucket is a list of entries.
-   */
+  ///@brief A bucket is a list of entries.
   using Bucket = ads::lists::DoublyLinkedList<Entry>;
 
-  //===============================================================================//
   //===----- PRIVATE HASHING METHODS -------------------------------------------===//
 
   /**
@@ -287,7 +324,7 @@ private:
    * @return Bucket index for the key.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] size_t hash(const Key& key) const;
+  [[nodiscard]] auto hash(const Key& key) const -> size_t;
 
   //===----- BUCKET SEARCH METHODS ---------------------------------------------===//
 
