@@ -17,6 +17,7 @@
 #ifndef HASH_MAP_HPP
 #define HASH_MAP_HPP
 
+#include "../hash/Hash_Concepts.hpp"
 #include "../hash/Hash_Table_Chaining.hpp"
 #include "Dictionary.hpp"
 
@@ -54,6 +55,7 @@ public:
   using mapped_type = Value;
   using Table       = hash::HashTableChaining<Key, Value, Hash>;
   using value_type  = std::pair<const Key, Value>;
+  using size_type   = size_t;
 
   //===----- ITERATOR CLASS ----------------------------------------------------===//
 
@@ -158,8 +160,7 @@ public:
    * @param init Initializer list of key-value pairs.
    * @complexity Time O(n) average, Space O(n)
    */
-  HashMap(std::initializer_list<value_type> init)
-      requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
+  HashMap(std::initializer_list<value_type> init) requires hash::CopyHashEntry<Key, Value>;
 
   /**
    * @brief Move constructor
@@ -219,24 +220,21 @@ public:
    * @param key The key to insert.
    * @param value The value to associate with the key.
    */
-  auto put(const Key& key, const Value& value) -> void
-      requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>;
+  auto put(const Key& key, const Value& value) -> void requires hash::CopyHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair with a copied key and moved value.
    * @param key The key to insert.
    * @param value The value to move into the map.
    */
-  auto put(const Key& key, Value&& value) -> void
-      requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto put(const Key& key, Value&& value) -> void requires hash::CopyKeyMoveHashEntry<Key, Value>;
 
   /**
    * @brief Inserts or updates a key-value pair (move).
    * @param key The key to insert.
    * @param value The value to associate with the key.
    */
-  auto put(Key&& key, Value&& value) -> void
-      requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>;
+  auto put(Key&& key, Value&& value) -> void requires hash::MoveHashEntry<Key, Value>;
 
   //===----- INSERTION OPERATIONS ----------------------------------------------===//
 
@@ -246,8 +244,7 @@ public:
    * @return Pair of iterator to element and bool indicating insertion.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(const value_type& pair) -> std::pair<iterator, bool> requires std::copy_constructible<Key> && std::copy_constructible<Value>
-                                                                            && std::assignable_from<Value&, const Value&>;
+  auto insert(const value_type& pair) -> std::pair<iterator, bool> requires hash::CopyHashEntry<Key, Value>;
 
   /**
    * @brief Inserts a key-value pair (move).
@@ -255,8 +252,7 @@ public:
    * @return Pair of iterator to element and bool indicating insertion.
    * @complexity Time O(1) average, O(n) worst case.
    */
-  auto insert(value_type&& pair) -> std::pair<iterator, bool> requires std::copy_constructible<Key> && std::move_constructible<Value>
-                                                                       && std::assignable_from<Value&, Value>;
+  auto insert(value_type&& pair) -> std::pair<iterator, bool> requires hash::CopyKeyMoveHashEntry<Key, Value>;
 
   /**
    * @brief Constructs element in-place.
@@ -315,7 +311,7 @@ public:
    * @return Number of key-value pairs.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Returns the current load factor.
@@ -358,7 +354,7 @@ public:
    * @complexity Time O(1) average, O(n) worst case.
    */
   [[nodiscard]]
-  auto count(const Key& key) const -> size_t;
+  auto count(const Key& key) const -> size_type;
 
   //===----- CONVENIENCE METHODS -----------------------------------------------===//
 

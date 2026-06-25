@@ -175,7 +175,12 @@ auto HashSet<T, Hash>::is_empty() const noexcept -> bool {
 }
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::size() const noexcept -> size_t {
+auto HashSet<T, Hash>::count(const T& value) const -> size_type {
+  return contains(value) ? 1 : 0;
+}
+
+template <typename T, typename Hash>
+auto HashSet<T, Hash>::size() const noexcept -> size_type {
   return size_;
 }
 

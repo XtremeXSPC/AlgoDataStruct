@@ -35,13 +35,28 @@ auto TreeMap<Key, Value>::empty() const noexcept -> bool {
 }
 
 template <MapKey Key, MapValue Value>
-auto TreeMap<Key, Value>::size() const noexcept -> size_t {
+auto TreeMap<Key, Value>::size() const noexcept -> size_type {
   return tree_.size();
 }
 
 template <MapKey Key, MapValue Value>
 auto TreeMap<Key, Value>::contains(const Key& key) const -> bool {
   return find_entry(key) != nullptr;
+}
+
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::count(const Key& key) const -> size_type {
+  return find_entry(key) != nullptr ? 1 : 0;
+}
+
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::min() const -> const Key& {
+  return tree_.find_min().key;
+}
+
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::max() const -> const Key& {
+  return tree_.find_max().key;
 }
 
 //===----- ELEMENT ACCESS ------------------------------------------------------===//
@@ -212,6 +227,11 @@ auto TreeMap<Key, Value>::entries() const -> std::vector<std::pair<Key, Value>> 
 
   tree_.in_order_traversal([&result](const Entry& entry) { result.emplace_back(entry.key, entry.value); });
   return result;
+}
+
+template <MapKey Key, MapValue Value>
+auto TreeMap<Key, Value>::for_each(const std::function<void(const Key&, const Value&)>& visit) const -> void {
+  tree_.in_order_traversal([&visit](const Entry& entry) { visit(entry.key, entry.value); });
 }
 
 //=================================================================================//

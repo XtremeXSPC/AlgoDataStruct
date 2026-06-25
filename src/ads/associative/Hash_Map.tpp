@@ -161,8 +161,7 @@ HashMap<Key, Value, Hash>::HashMap(size_t initial_capacity, float max_load_facto
 
 // Constructor from initializer list.
 template <typename Key, typename Value, typename Hash>
-HashMap<Key, Value, Hash>::HashMap(std::initializer_list<value_type> init)
-    requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+HashMap<Key, Value, Hash>::HashMap(std::initializer_list<value_type> init) requires hash::CopyHashEntry<Key, Value>
     : table_() {
   for (const auto& pair : init) {
     table_.insert(pair.first, pair.second);
@@ -203,22 +202,19 @@ auto HashMap<Key, Value, Hash>::at(const Key& key) const -> const Value& {
 //===----- DICTIONARY INTERFACE ------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::put(const Key& key, const Value& value) -> void
-    requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+auto HashMap<Key, Value, Hash>::put(const Key& key, const Value& value) -> void requires hash::CopyHashEntry<Key, Value>
 {
   table_.insert(key, value);
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::put(const Key& key, Value&& value) -> void
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+auto HashMap<Key, Value, Hash>::put(const Key& key, Value&& value) -> void requires hash::CopyKeyMoveHashEntry<Key, Value>
 {
   table_.insert(key, std::move(value));
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void
-    requires std::move_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void requires hash::MoveHashEntry<Key, Value>
 {
   table_.insert(std::move(key), std::move(value));
 }
@@ -226,25 +222,25 @@ auto HashMap<Key, Value, Hash>::put(Key&& key, Value&& value) -> void
 //===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::insert(const value_type& pair) -> std::pair<iterator, bool>
-    requires std::copy_constructible<Key> && std::copy_constructible<Value> && std::assignable_from<Value&, const Value&>
+auto HashMap<Key, Value, Hash>::insert(const value_type& pair) -> std::pair<iterator, bool> requires hash::CopyHashEntry<Key, Value>
 {
-  bool inserted = !table_.contains(pair.first);
+  // std::unordered_map semantics: an existing key is left untouched.
+  if (auto it = find(pair.first); it != end()) {
+    return {it, false};
+  }
   table_.insert(pair.first, pair.second);
-
-  auto it = find(pair.first);
-  return {it, inserted};
+  return {find(pair.first), true};
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::insert(value_type&& pair) -> std::pair<iterator, bool>
-    requires std::copy_constructible<Key> && std::move_constructible<Value> && std::assignable_from<Value&, Value>
+auto HashMap<Key, Value, Hash>::insert(value_type&& pair) -> std::pair<iterator, bool> requires hash::CopyKeyMoveHashEntry<Key, Value>
 {
-  bool inserted = !table_.contains(pair.first);
+  // std::unordered_map semantics: an existing key is left untouched (value not moved-from).
+  if (auto it = find(pair.first); it != end()) {
+    return {it, false};
+  }
   table_.insert(pair.first, std::move(pair.second));
-
-  auto it = find(pair.first);
-  return {it, inserted};
+  return {find(pair.first), true};
 }
 
 template <typename Key, typename Value, typename Hash>
@@ -302,7 +298,7 @@ auto HashMap<Key, Value, Hash>::empty() const noexcept -> bool {
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::size() const noexcept -> size_t {
+auto HashMap<Key, Value, Hash>::size() const noexcept -> size_type {
   return table_.size();
 }
 
@@ -345,7 +341,7 @@ auto HashMap<Key, Value, Hash>::contains(const Key& key) const -> bool {
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::count(const Key& key) const -> size_t {
+auto HashMap<Key, Value, Hash>::count(const Key& key) const -> size_type {
   return table_.contains(key) ? 1 : 0;
 }
 

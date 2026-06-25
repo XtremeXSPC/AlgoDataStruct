@@ -249,6 +249,29 @@ TEST(HashMapEraseTest, ConstIteratorEraseReturnsNextIterator) {
   EXPECT_EQ(next, map.begin());
 }
 
+TEST(HashMapInsertTest, InsertDoesNotOverwriteExistingKey) {
+  ads::associative::HashMap<int, std::string> map;
+
+  auto [it_new, inserted] = map.insert({1, "one"});
+  EXPECT_TRUE(inserted);
+  EXPECT_EQ(it_new->second, "one");
+
+  // Re-inserting an existing key must be a no-op that reports false.
+  auto [it_dup, replaced] = map.insert({1, "ONE"});
+  EXPECT_FALSE(replaced);
+  EXPECT_EQ(it_dup->second, "one");
+  EXPECT_EQ(map.at(1), "one");
+  EXPECT_EQ(map.size(), 1U);
+
+  // emplace shares the same no-overwrite contract.
+  EXPECT_FALSE(map.emplace(1, "1!").second);
+  EXPECT_EQ(map.at(1), "one");
+
+  // put remains the insert-or-assign path.
+  map.put(1, "uno");
+  EXPECT_EQ(map.at(1), "uno");
+}
+
 //===----- OPEN ADDRESSING TESTS -----------------------------------------------===//
 
 class HashTableOpenAddressingTest : public ::testing::Test {

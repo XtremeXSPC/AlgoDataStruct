@@ -9,6 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/associative/Set.hpp"
 #include "../include/ads/associative/Tree_Set.hpp"
 
 #include <gtest/gtest.h>
@@ -19,6 +20,9 @@
 #include <vector>
 
 using namespace ads::associative;
+
+static_assert(Set<TreeSet<int>, int>);
+static_assert(CopyInsertSet<TreeSet<std::string>, std::string>);
 
 namespace {
 
@@ -73,6 +77,15 @@ TEST_F(TreeSetTest, InsertDuplicateReturnsFalse) {
   EXPECT_TRUE(set.insert(10));
   EXPECT_FALSE(set.insert(10));
   EXPECT_EQ(set.size(), 1u);
+}
+
+TEST_F(TreeSetTest, CountReturnsZeroOrOne) {
+  set.insert(10);
+  set.insert(20);
+
+  EXPECT_EQ(set.count(10), 1u);
+  EXPECT_EQ(set.count(20), 1u);
+  EXPECT_EQ(set.count(30), 0u);
 }
 
 TEST_F(TreeSetTest, EraseOperation) {

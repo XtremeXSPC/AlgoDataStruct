@@ -127,6 +127,41 @@ TEST_F(TreeMapTest, OperatorBracketInsertsDefault) {
   EXPECT_EQ(map.at(7), "seven");
 }
 
+TEST_F(TreeMapTest, CountReturnsZeroOrOne) {
+  map.put(1, "one");
+  map.put(2, "two");
+
+  EXPECT_EQ(map.count(1), 1u);
+  EXPECT_EQ(map.count(2), 1u);
+  EXPECT_EQ(map.count(3), 0u);
+}
+
+TEST_F(TreeMapTest, MinAndMaxReturnExtremeKeys) {
+  map.put(50, "x");
+  map.put(10, "y");
+  map.put(30, "z");
+
+  EXPECT_EQ(map.min(), 10);
+  EXPECT_EQ(map.max(), 50);
+}
+
+TEST_F(TreeMapTest, MinThrowsWhenEmpty) {
+  EXPECT_THROW(map.min(), ads::trees::EmptyTreeException);
+  EXPECT_THROW(map.max(), ads::trees::EmptyTreeException);
+}
+
+TEST_F(TreeMapTest, ForEachVisitsInKeyOrder) {
+  map.put(3, "c");
+  map.put(1, "a");
+  map.put(2, "b");
+
+  std::vector<std::pair<int, std::string>> seen;
+  map.for_each([&seen](const int& key, const std::string& value) { seen.emplace_back(key, value); });
+
+  std::vector<std::pair<int, std::string>> expected{{1, "a"}, {2, "b"}, {3, "c"}};
+  EXPECT_EQ(seen, expected);
+}
+
 TEST_F(TreeMapTest, KeysAreOrdered) {
   map.put(3, "c");
   map.put(1, "a");

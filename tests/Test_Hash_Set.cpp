@@ -10,13 +10,20 @@
 //===---------------------------------------------------------------------------===//
 
 #include "../include/ads/associative/Hash_Set.hpp"
+#include "../include/ads/associative/Set.hpp"
 
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 using namespace ads::associative;
+
+static_assert(Set<HashSet<int>, int>);
+static_assert(CopyInsertSet<HashSet<std::string>, std::string>);
+static_assert(Set<HashSet<std::unique_ptr<int>>, std::unique_ptr<int>>);
+static_assert(!CopyInsertSet<HashSet<std::unique_ptr<int>>, std::unique_ptr<int>>);
 
 namespace {
 
@@ -75,6 +82,15 @@ TEST_F(HashSetTest, InsertDuplicateReturnsFalse) {
   EXPECT_TRUE(set.insert(10));
   EXPECT_FALSE(set.insert(10));
   EXPECT_EQ(set.size(), 1u);
+}
+
+TEST_F(HashSetTest, CountReturnsZeroOrOne) {
+  set.insert(10);
+  set.insert(20);
+
+  EXPECT_EQ(set.count(10), 1u);
+  EXPECT_EQ(set.count(20), 1u);
+  EXPECT_EQ(set.count(30), 0u);
 }
 
 TEST_F(HashSetTest, EraseOperation) {

@@ -22,6 +22,7 @@
 #include "Tree_Map_Exception.hpp"
 
 #include <concepts>
+#include <functional>
 #include <initializer_list>
 #include <utility>
 #include <vector>
@@ -76,6 +77,7 @@ public:
   using key_type    = Key;
   using mapped_type = Value;
   using value_type  = std::pair<const Key, Value>;
+  using size_type   = size_t;
 
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
@@ -125,7 +127,7 @@ public:
    * @brief Returns the number of elements in the map.
    * @return The current size.
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Checks if a key exists in the map.
@@ -133,6 +135,27 @@ public:
    * @return true if found, false otherwise.
    */
   [[nodiscard]] auto contains(const Key& key) const -> bool;
+
+  /**
+   * @brief Counts entries with the given key (0 or 1, no duplicates allowed).
+   * @param key The key to count.
+   * @return 1 if the key exists, 0 otherwise.
+   */
+  [[nodiscard]] auto count(const Key& key) const -> size_type;
+
+  /**
+   * @brief Returns the smallest key in the map.
+   * @return Const reference to the minimum key.
+   * @throws ads::trees::EmptyTreeException if the map is empty.
+   */
+  [[nodiscard]] auto min() const -> const Key&;
+
+  /**
+   * @brief Returns the largest key in the map.
+   * @return Const reference to the maximum key.
+   * @throws ads::trees::EmptyTreeException if the map is empty.
+   */
+  [[nodiscard]] auto max() const -> const Key&;
 
   //===----- ELEMENT ACCESS ----------------------------------------------------===//
 
@@ -261,6 +284,13 @@ public:
    * @brief Returns vector of all key-value pairs ordered by key.
    */
   [[nodiscard]] auto entries() const -> std::vector<std::pair<Key, Value>> requires CopyMapKey<Key> && CopyMapValue<Value>;
+
+  /**
+   * @brief Applies a visitor to each key-value pair in ascending key order.
+   * @param visit Function invoked with (key, value) for every entry.
+   * @complexity Time O(n), Space O(h)
+   */
+  auto for_each(const std::function<void(const Key&, const Value&)>& visit) const -> void;
 
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//

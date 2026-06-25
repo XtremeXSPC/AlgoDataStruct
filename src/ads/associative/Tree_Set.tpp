@@ -68,12 +68,17 @@ auto TreeSet<T>::contains(const T& value) const -> bool {
 }
 
 template <typename T>
+auto TreeSet<T>::count(const T& value) const -> size_type {
+  return tree_.contains(value) ? 1 : 0;
+}
+
+template <typename T>
 auto TreeSet<T>::is_empty() const noexcept -> bool {
   return tree_.is_empty();
 }
 
 template <typename T>
-auto TreeSet<T>::size() const noexcept -> size_t {
+auto TreeSet<T>::size() const noexcept -> size_type {
   return tree_.size();
 }
 

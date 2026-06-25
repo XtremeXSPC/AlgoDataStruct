@@ -179,6 +179,14 @@ public:
   [[nodiscard]] auto contains(const T& value) const -> bool;
 
   /**
+   * @brief Counts elements equal to a value (0 or 1, no duplicates allowed).
+   * @param value The value to count.
+   * @return 1 if the value exists, 0 otherwise.
+   * @complexity Time O(1) average, Space O(1)
+   */
+  [[nodiscard]] auto count(const T& value) const -> size_type;
+
+  /**
    * @brief Checks if the set is empty.
    * @return true if empty, false otherwise.
    * @complexity Time O(1), Space O(1)
@@ -190,7 +198,7 @@ public:
    * @return The current size.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto size() const noexcept -> size_t;
+  [[nodiscard]] auto size() const noexcept -> size_type;
 
   /**
    * @brief Returns the number of buckets.
