@@ -73,10 +73,10 @@ public:
     using BucketIterator = typename BucketType::const_iterator;
 
     const HashSet<T, Hash>* set_        = nullptr;
-    size_t                  bucket_idx_ = 0;
+    size_type               bucket_idx_ = 0;
     BucketIterator          list_it_;
 
-    iterator(const HashSet<T, Hash>* set, size_t bucket_idx, BucketIterator list_it) :
+    iterator(const HashSet<T, Hash>* set, size_type bucket_idx, BucketIterator list_it) :
         set_(set),
         bucket_idx_(bucket_idx),
         list_it_(list_it) {}
@@ -96,7 +96,7 @@ public:
    * @complexity Time O(n), Space O(n)
    * @throws ads::hash::InvalidOperationException if max_load_factor <= 0.
    */
-  explicit HashSet(size_t initial_capacity = 16, double max_load_factor = 0.75, Hash hasher = Hash{});
+  explicit HashSet(size_type initial_capacity = 16, double max_load_factor = 0.75, Hash hasher = Hash{});
 
   /**
    * @brief Constructs a hash set from an initializer list.
@@ -204,7 +204,7 @@ public:
    * @brief Returns the number of buckets.
    * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] auto bucket_count() const noexcept -> size_t;
+  [[nodiscard]] auto bucket_count() const noexcept -> size_type;
 
   /**
    * @brief Returns the current load factor.
@@ -246,13 +246,13 @@ private:
    * @param value The value to hash.
    * @return The bucket index.
    */
-  auto bucket_index(const T& value) const -> size_t;
+  auto bucket_index(const T& value) const -> size_type;
 
   /**
    * @brief Rehashes the table to a new bucket count.
    * @param new_bucket_count The new number of buckets.
    */
-  auto rehash(size_t new_bucket_count) -> void;
+  auto rehash(size_type new_bucket_count) -> void;
 
   /**
    * @brief Rehashes before a new insertion would exceed the load factor.
@@ -261,10 +261,11 @@ private:
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
-  ads::arrays::DynamicArray<ads::lists::DoublyLinkedList<T>> buckets_;         ///< Buckets for separate chaining.
-  size_t                                                     size_;            ///< Number of elements in the set.
-  double                                                     max_load_factor_; ///< Load factor threshold.
-  Hash                                                       hasher_;          ///< Hash function object.
+  ads::arrays::DynamicArray<ads::lists::DoublyLinkedList<T>> buckets_; ///< Buckets for separate chaining.
+
+  size_type size_;            ///< Number of elements in the set.
+  double    max_load_factor_; ///< Load factor threshold.
+  Hash      hasher_;          ///< Hash function object.
 };
 
 } // namespace ads::associative

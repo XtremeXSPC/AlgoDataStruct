@@ -85,7 +85,7 @@ public:
     using BucketIterator = typename Table::Bucket::iterator;
 
     HashMap*       map_;        ///< Pointer to the hash map being iterated.
-    size_t         bucket_idx_; ///< Current bucket index.
+    size_type      bucket_idx_; ///< Current bucket index.
     BucketIterator list_it_;    ///< Iterator within the current bucket's list.
 
     /**
@@ -94,7 +94,7 @@ public:
      * @param bucket_idx Current bucket index.
      * @param list_it Iterator within the bucket's list.
      */
-    iterator(HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
+    iterator(HashMap* map, size_type bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -129,7 +129,7 @@ public:
     using BucketIterator = typename Table::Bucket::const_iterator;
 
     const HashMap* map_;
-    size_t         bucket_idx_;
+    size_type      bucket_idx_;
     BucketIterator list_it_;
 
     /**
@@ -138,7 +138,10 @@ public:
      * @param bucket_idx Current bucket index.
      * @param list_it Iterator within the bucket's list.
      */
-    const_iterator(const HashMap* map, size_t bucket_idx, BucketIterator list_it) : map_(map), bucket_idx_(bucket_idx), list_it_(list_it) {}
+    const_iterator(const HashMap* map, size_type bucket_idx, BucketIterator list_it) :
+        map_(map),
+        bucket_idx_(bucket_idx),
+        list_it_(list_it) {}
 
     auto advance_to_next_bucket() -> void;
   };
@@ -153,7 +156,7 @@ public:
    * @complexity Time O(n) to allocate buckets, Space O(n)
    * @throws ads::hash::InvalidOperationException if max_load_factor <= 0.
    */
-  explicit HashMap(size_t initial_capacity = 16, float max_load_factor = 0.75f, Hash hasher = Hash{});
+  explicit HashMap(size_type initial_capacity = 16, float max_load_factor = 0.75f, Hash hasher = Hash{});
 
   /**
    * @brief Constructs a hash map from an initializer list.
@@ -436,7 +439,7 @@ private:
    * @return Bucket index and iterator to entry (or end of bucket if not found).
    * @complexity Time O(1) average, O(n) worst case
    */
-  auto find_in_table(const Key& key) -> std::pair<size_t, typename Table::Bucket::iterator>;
+  auto find_in_table(const Key& key) -> std::pair<size_type, typename Table::Bucket::iterator>;
 
   /**
    * @brief Finds an entry in the underlying table (const).
@@ -444,7 +447,7 @@ private:
    * @return Bucket index and const iterator to entry (or end of bucket if not found).
    * @complexity Time O(1) average, O(n) worst case
    */
-  auto find_in_table(const Key& key) const -> std::pair<size_t, typename Table::Bucket::const_iterator>;
+  auto find_in_table(const Key& key) const -> std::pair<size_type, typename Table::Bucket::const_iterator>;
 
   // Access to internal table structure (for iterators).
   friend class iterator;

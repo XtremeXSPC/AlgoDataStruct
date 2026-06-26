@@ -155,7 +155,7 @@ auto HashMap<Key, Value, Hash>::const_iterator::advance_to_next_bucket() -> void
 
 // Constructor with initial capacity and load factor.
 template <typename Key, typename Value, typename Hash>
-HashMap<Key, Value, Hash>::HashMap(size_t initial_capacity, float max_load_factor, Hash hasher) :
+HashMap<Key, Value, Hash>::HashMap(size_type initial_capacity, float max_load_factor, Hash hasher) :
     table_(initial_capacity, max_load_factor, std::move(hasher)) {
 }
 
@@ -309,7 +309,7 @@ auto HashMap<Key, Value, Hash>::load_factor() const noexcept -> float {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find(const Key& key) -> iterator {
-  size_t bucket_idx = table_.hash(key);
+  size_type bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
@@ -323,7 +323,7 @@ auto HashMap<Key, Value, Hash>::find(const Key& key) -> iterator {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find(const Key& key) const -> const_iterator {
-  size_t bucket_idx = table_.hash(key);
+  size_type bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 
   for (auto it = bucket.begin(); it != bucket.end(); ++it) {
@@ -353,7 +353,7 @@ auto HashMap<Key, Value, Hash>::keys() const -> std::vector<Key> requires std::c
   std::vector<Key> result;
   result.reserve(size());
 
-  for (size_t i = 0; i < table_.capacity_; ++i) {
+  for (size_type i = 0; i < table_.capacity_; ++i) {
     for (const auto& entry : table_.buckets_[i]) {
       result.push_back(entry.first);
     }
@@ -368,7 +368,7 @@ auto HashMap<Key, Value, Hash>::values() const -> std::vector<Value> requires st
   std::vector<Value> result;
   result.reserve(size());
 
-  for (size_t i = 0; i < table_.capacity_; ++i) {
+  for (size_type i = 0; i < table_.capacity_; ++i) {
     for (const auto& entry : table_.buckets_[i]) {
       result.push_back(entry.second);
     }
@@ -384,7 +384,7 @@ auto HashMap<Key, Value, Hash>::entries() const
   std::vector<std::pair<Key, Value>> result;
   result.reserve(size());
 
-  for (size_t i = 0; i < table_.capacity_; ++i) {
+  for (size_type i = 0; i < table_.capacity_; ++i) {
     for (const auto& entry : table_.buckets_[i]) {
       result.emplace_back(entry.first, entry.second);
     }
@@ -398,7 +398,7 @@ auto HashMap<Key, Value, Hash>::entries() const
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::begin() -> iterator {
   // Find first non-empty bucket
-  for (size_t i = 0; i < table_.capacity_; ++i) {
+  for (size_type i = 0; i < table_.capacity_; ++i) {
     if (!table_.buckets_[i].is_empty()) {
       return iterator(this, i, table_.buckets_[i].begin());
     }
@@ -408,7 +408,7 @@ auto HashMap<Key, Value, Hash>::begin() -> iterator {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::begin() const -> const_iterator {
-  for (size_t i = 0; i < table_.capacity_; ++i) {
+  for (size_type i = 0; i < table_.capacity_; ++i) {
     if (!table_.buckets_[i].is_empty()) {
       return const_iterator(this, i, table_.buckets_[i].begin());
     }
@@ -442,8 +442,8 @@ auto HashMap<Key, Value, Hash>::cend() const -> const_iterator {
 //===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_t, typename Table::Bucket::iterator> {
-  size_t bucket_idx = table_.hash(key);
+auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_type, typename Table::Bucket::iterator> {
+  size_type bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 
   // Search for the key in the bucket.
@@ -456,8 +456,8 @@ auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) -> std::pair<size_
 }
 
 template <typename Key, typename Value, typename Hash>
-auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) const -> std::pair<size_t, typename Table::Bucket::const_iterator> {
-  size_t      bucket_idx = table_.hash(key);
+auto HashMap<Key, Value, Hash>::find_in_table(const Key& key) const -> std::pair<size_type, typename Table::Bucket::const_iterator> {
+  size_type      bucket_idx = table_.hash(key);
   const auto& bucket     = table_.buckets_[bucket_idx];
 
   // Search for the key in the bucket.

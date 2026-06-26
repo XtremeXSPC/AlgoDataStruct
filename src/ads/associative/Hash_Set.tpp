@@ -22,7 +22,7 @@ namespace ads::associative {
 //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT --------------------------------===//
 
 template <typename T, typename Hash>
-HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor, Hash hasher) :
+HashSet<T, Hash>::HashSet(size_type initial_capacity, double max_load_factor, Hash hasher) : // NOLINT(bugprone-easily-swappable-parameters)
     buckets_(),
     size_(0),
     max_load_factor_(max_load_factor),
@@ -30,7 +30,7 @@ HashSet<T, Hash>::HashSet(size_t initial_capacity, double max_load_factor, Hash 
   if (max_load_factor_ <= 0) {
     throw ads::hash::InvalidOperationException("Max load factor must be positive");
   }
-  buckets_.resize(std::max<size_t>(initial_capacity, 1));
+  buckets_.resize(std::max<size_type>(initial_capacity, 1));
 }
 
 template <typename T, typename Hash>
@@ -72,8 +72,8 @@ auto HashSet<T, Hash>::insert(const T& value) -> bool requires std::copy_constru
   }
 
   // Duplicate check first — avoids a needless rehash when the element already exists.
-  size_t idx   = bucket_index(value);
-  auto&  chain = buckets_[idx];
+  size_type idx   = bucket_index(value);
+  auto&     chain = buckets_[idx];
 
   for (const auto& elem : chain) {
     if (elem == value) {
@@ -97,8 +97,8 @@ auto HashSet<T, Hash>::insert(T&& value) -> bool {
     rehash(1);
   }
 
-  size_t idx   = bucket_index(value);
-  auto&  chain = buckets_[idx];
+  size_type idx   = bucket_index(value);
+  auto&     chain = buckets_[idx];
 
   for (const auto& elem : chain) {
     if (elem == value) {
@@ -128,8 +128,8 @@ auto HashSet<T, Hash>::erase(const T& value) -> bool {
     return false;
   }
 
-  size_t idx   = bucket_index(value);
-  auto&  chain = buckets_[idx];
+  size_type idx   = bucket_index(value);
+  auto&     chain = buckets_[idx];
 
   for (auto it = chain.begin(); it != chain.end(); ++it) {
     if (*it == value) {
@@ -158,7 +158,7 @@ auto HashSet<T, Hash>::contains(const T& value) const -> bool {
     return false;
   }
 
-  size_t      idx   = bucket_index(value);
+  size_type   idx   = bucket_index(value);
   const auto& chain = buckets_[idx];
 
   for (const auto& elem : chain) {
@@ -185,7 +185,7 @@ auto HashSet<T, Hash>::size() const noexcept -> size_type {
 }
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::bucket_count() const noexcept -> size_t {
+auto HashSet<T, Hash>::bucket_count() const noexcept -> size_type {
   return buckets_.size();
 }
 
@@ -201,7 +201,7 @@ auto HashSet<T, Hash>::load_factor() const noexcept -> double {
 
 template <typename T, typename Hash>
 auto HashSet<T, Hash>::begin() const -> iterator {
-  for (size_t i = 0; i < buckets_.size(); ++i) {
+  for (size_type i = 0; i < buckets_.size(); ++i) {
     if (!buckets_[i].is_empty()) {
       return iterator(this, i, buckets_[i].begin());
     }
@@ -228,19 +228,19 @@ auto HashSet<T, Hash>::cend() const -> const_iterator {
 //===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::bucket_index(const T& value) const -> size_t {
+auto HashSet<T, Hash>::bucket_index(const T& value) const -> size_type {
   return hasher_(value) % buckets_.size();
 }
 
 template <typename T, typename Hash>
-auto HashSet<T, Hash>::rehash(size_t new_bucket_count) -> void {
-  const size_t                                               bucket_count = std::max<size_t>(new_bucket_count, 1);
+auto HashSet<T, Hash>::rehash(size_type new_bucket_count) -> void {
+  const size_type                                            bucket_count = std::max<size_type>(new_bucket_count, 1);
   ads::arrays::DynamicArray<ads::lists::DoublyLinkedList<T>> new_buckets;
   new_buckets.resize(bucket_count);
 
   for (auto& bucket : buckets_) {
     for (auto& elem : bucket) {
-      size_t idx = hasher_(elem) % bucket_count;
+      size_type idx = hasher_(elem) % bucket_count;
       if constexpr (std::copy_constructible<T>) {
         new_buckets[idx].push_back(elem);
       } else {
@@ -263,7 +263,7 @@ auto HashSet<T, Hash>::check_load_factor() -> void {
     return;
   }
 
-  size_t bucket_count = buckets_.size() * 2;
+  size_type bucket_count = buckets_.size() * 2;
   while (static_cast<double>(size_ + 1) / static_cast<double>(bucket_count) > max_load_factor_) {
     bucket_count *= 2;
   }
