@@ -144,9 +144,9 @@ auto NaryTree<T>::add_child_impl(Node* parent, U&& value) -> Node* {
   if (parent == nullptr) {
     throw InvalidOperationException("add_child called with a null parent");
   }
-  auto  child   = std::unique_ptr<Node>(new Node(std::forward<U>(value)));
-  Node* raw     = child.get();
-  raw->parent_  = parent;
+  auto  child  = std::unique_ptr<Node>(new Node(std::forward<U>(value)));
+  Node* raw    = child.get();
+  raw->parent_ = parent;
   parent->children_.push_back(std::move(child));
   ++size_;
   return raw;

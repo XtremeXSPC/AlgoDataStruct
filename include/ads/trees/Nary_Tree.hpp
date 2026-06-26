@@ -64,11 +64,13 @@ public:
   public:
     /// @brief Returns a mutable reference to the stored value.
     [[nodiscard]] auto value() noexcept -> T&;
+
     /// @brief Returns a const reference to the stored value.
     [[nodiscard]] auto value() const noexcept -> const T&;
 
     /// @brief Returns the parent node, or nullptr for the root.
     [[nodiscard]] auto parent() noexcept -> Node*;
+
     /// @brief Returns the parent node, or nullptr for the root.
     [[nodiscard]] auto parent() const noexcept -> const Node*;
 
@@ -77,6 +79,7 @@ public:
 
     /// @brief Returns the child at @p index. Throws if out of range.
     [[nodiscard]] auto child(size_t index) -> Node*;
+
     /// @brief Returns the child at @p index. Throws if out of range.
     [[nodiscard]] auto child(size_t index) const -> const Node*;
 
@@ -90,8 +93,9 @@ public:
     requires(!std::is_same_v<std::remove_cvref_t<Args>, Node> && ...)
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
 
-    T                                       data;
-    Node*                                   parent_ = nullptr;
+    T     data;
+    Node* parent_ = nullptr;
+
     arr::DynamicArray<std::unique_ptr<Node>> children_;
   };
 
@@ -193,6 +197,7 @@ public:
 
   /// @brief Returns the root node, or nullptr if empty.
   [[nodiscard]] auto root() noexcept -> Node*;
+
   /// @brief Returns the root node, or nullptr if empty.
   [[nodiscard]] auto root() const noexcept -> const Node*;
 
