@@ -53,23 +53,21 @@ template <typename Visitor, typename Weight> concept WeightedNeighborVisitor =
       { std::forward<Visitor>(visitor)(vertex_id, weight) } -> std::same_as<void>;
     };
 
-template <PathWeight Weight>
-struct WeightedNeighborVisitorProbe {
+struct AnyNeighborVisitorProbe {
+  template <typename Weight>
   auto operator()(size_t, const Weight&) const -> void {}
 };
 
-template <typename Graph> concept WeightedGraph =
-    requires {
-      typename Graph::edge_weight_type;
-      typename Graph::vertex_id_type;
-    } && PathWeight<typename Graph::edge_weight_type> && std::same_as<typename Graph::vertex_id_type, size_t>
-    && requires(const Graph& graph, size_t vertex_id) {
-         { graph.num_vertices() } noexcept -> std::same_as<size_t>;
-         { graph.is_directed() } noexcept -> std::same_as<bool>;
-         {
-           graph.for_each_weighted_neighbor(vertex_id, WeightedNeighborVisitorProbe<typename Graph::edge_weight_type>{})
-         } -> std::same_as<void>;
-       };
+template <typename Graph> concept TraversableGraph = requires {
+  typename Graph::EdgeWeight;
+  typename Graph::VertexId;
+} && std::same_as<typename Graph::VertexId, size_t> && requires(const Graph& graph, size_t vertex_id) {
+  { graph.num_vertices() } noexcept -> std::same_as<size_t>;
+  { graph.is_directed() } noexcept -> std::same_as<bool>;
+  { graph.for_each_weighted_neighbor(vertex_id, AnyNeighborVisitorProbe{}) } -> std::same_as<void>;
+};
+
+template <typename Graph> concept WeightedGraph = TraversableGraph<Graph> && PathWeight<typename Graph::EdgeWeight>;
 
 } // namespace ads::graphs
 

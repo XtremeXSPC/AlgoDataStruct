@@ -27,7 +27,7 @@ GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(bool is_direc
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(size_t num_vertices, bool is_directed) :
+GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(size_type num_vertices, bool is_directed) :
     vertices_(),
     matrix_(),
     is_directed_(is_directed),
@@ -46,7 +46,8 @@ GraphAdjacencyMatrix<VertexData, EdgeWeight>::GraphAdjacencyMatrix(GraphAdjacenc
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatrix&& other) noexcept -> GraphAdjacencyMatrix& {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatrix&& other) noexcept
+    -> GraphAdjacencyMatrix& {
   if (this != &other) {
     vertices_        = std::move(other.vertices_);
     matrix_          = std::move(other.matrix_);
@@ -60,7 +61,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::operator=(GraphAdjacencyMatri
 //===----- VERTEX OPERATIONS ---------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> size_t {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> VertexId {
   vertices_.emplace_back(data);
   // Keep the adjacency matrix square and aligned with the vertex count.
   resize_matrix(vertices_.size());
@@ -68,7 +69,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(const VertexData& 
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(VertexData&& data) -> size_t {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(VertexData&& data) -> VertexId {
   vertices_.emplace_back(std::move(data));
   // Keep the adjacency matrix square and aligned with the vertex count.
   resize_matrix(vertices_.size());
@@ -76,47 +77,49 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_vertex(VertexData&& data)
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_vertex_data(size_t vertex_id) -> VertexData& {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_vertex_data(VertexId vertex_id) -> VertexData& {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].data;
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_vertex_data(size_t vertex_id) const -> const VertexData& {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_vertex_data(VertexId vertex_id) const -> const VertexData& {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].data;
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_vertex(size_t vertex_id) const noexcept -> bool {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_vertex(VertexId vertex_id) const noexcept -> bool {
   return vertex_id < vertices_.size();
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::num_vertices() const noexcept -> size_t {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::num_vertices() const noexcept -> size_type {
   return vertices_.size();
 }
 
 //===----- EDGE OPERATIONS -----------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_edge(size_t from, size_t to, EdgeWeight weight) -> void {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::add_edge(VertexId from, VertexId to, EdgeWeight weight) -> void {
   validate_vertex(from);
   validate_vertex(to);
 
-  if (!matrix_[from][to].has_value()) {
-    matrix_[from][to] = weight;
+  // A fresh edge bumps the count; an existing one simply adopts the new weight.
+  const bool is_new_edge = !matrix_[from][to].has_value();
+  matrix_[from][to]      = weight;
+  if (is_new_edge) {
     ++num_edges_;
+  }
 
-    if (!is_directed_ && from != to) {
-      matrix_[to][from] = weight;
-      // For undirected graphs, num_edges_ counts the edge only once.
-    }
+  if (!is_directed_ && from != to) {
+    matrix_[to][from] = weight;
+    // For undirected graphs, num_edges_ counts the edge only once.
   }
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::remove_edge(size_t from, size_t to) -> void {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::remove_edge(VertexId from, VertexId to) -> void {
   validate_vertex(from);
   validate_vertex(to);
 
@@ -131,7 +134,7 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::remove_edge(size_t from, size
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_edge(size_t from, size_t to) const -> bool {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_edge(VertexId from, VertexId to) const -> bool {
   if (!has_vertex(from) || !has_vertex(to)) {
     return false;
   }
@@ -139,7 +142,8 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::has_edge(size_t from, size_t 
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(VertexId from, VertexId to) const
+    -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
   }
@@ -147,17 +151,17 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_edge_weight(size_t from, 
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::num_edges() const noexcept -> size_t {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::num_edges() const noexcept -> size_type {
   return num_edges_;
 }
 
 //===----- NAVIGATION OPERATIONS -----------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id) const -> std::vector<size_t> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors(VertexId vertex_id) const -> std::vector<VertexId> {
   validate_vertex(vertex_id);
 
-  std::vector<size_t> neighbors;
+  std::vector<VertexId> neighbors;
   for (size_t i = 0; i < matrix_[vertex_id].size(); ++i) {
     if (matrix_[vertex_id][i].has_value()) {
       neighbors.push_back(i);
@@ -167,11 +171,11 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors(size_t vertex_i
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors_with_weights(size_t vertex_id) const
-    -> std::vector<std::pair<size_t, EdgeWeight>> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors_with_weights(VertexId vertex_id) const
+    -> std::vector<std::pair<VertexId, EdgeWeight>> {
   validate_vertex(vertex_id);
 
-  std::vector<std::pair<size_t, EdgeWeight>> neighbors;
+  std::vector<std::pair<VertexId, EdgeWeight>> neighbors;
   for (size_t i = 0; i < matrix_[vertex_id].size(); ++i) {
     if (matrix_[vertex_id][i].has_value()) {
       neighbors.emplace_back(i, *matrix_[vertex_id][i]);
@@ -182,8 +186,9 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::get_neighbors_with_weights(si
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 template <typename Visitor>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void
-    requires WeightedNeighborVisitor<Visitor, EdgeWeight>
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::for_each_weighted_neighbor(
+    VertexId vertex_id, Visitor&& visitor) const -> void
+  requires WeightedNeighborVisitor<Visitor, EdgeWeight>
 {
   validate_vertex(vertex_id);
 
@@ -195,16 +200,29 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::for_each_weighted_neighbor(si
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::degree(size_t vertex_id) const -> size_t {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::degree(VertexId vertex_id) const -> size_type {
   validate_vertex(vertex_id);
 
-  size_t deg = 0;
+  size_type deg = 0;
   for (size_t i = 0; i < matrix_[vertex_id].size(); ++i) {
     if (matrix_[vertex_id][i].has_value()) {
       ++deg;
     }
   }
   return deg;
+}
+
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::in_degree(VertexId vertex_id) const -> size_type {
+  validate_vertex(vertex_id);
+
+  size_type count = 0;
+  for (size_t source = 0; source < vertices_.size(); ++source) {
+    if (matrix_[source][vertex_id].has_value()) {
+      ++count;
+    }
+  }
+  return count;
 }
 
 //===----- QUERY OPERATIONS ----------------------------------------------------===//
@@ -231,20 +249,20 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::clear() -> void {
 //===----- TRAVERSAL ALGORITHMS ------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::bfs(size_t start_vertex) const -> std::vector<size_t> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::bfs(VertexId start_vertex) const -> std::vector<VertexId> {
   validate_vertex(start_vertex);
 
-  std::vector<size_t> result;
+  std::vector<VertexId> result;
   result.reserve(vertices_.size());
 
-  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
-  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+  ads::arrays::DynamicArray<bool>           visited(vertices_.size(), false);
+  ads::queues::CircularArrayQueue<VertexId> queue(vertices_.size());
 
   queue.enqueue(start_vertex);
   visited[start_vertex] = true;
 
   while (!queue.is_empty()) {
-    const size_t current = queue.front();
+    const VertexId current = queue.front();
     queue.dequeue();
     result.push_back(current);
 
@@ -260,27 +278,27 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::bfs(size_t start_vertex) cons
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(size_t start_vertex) const -> std::vector<size_t> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(VertexId start_vertex) const -> std::vector<VertexId> {
   validate_vertex(start_vertex);
 
-  std::vector<size_t> result;
+  std::vector<VertexId> result;
   result.reserve(vertices_.size());
 
-  ads::arrays::DynamicArray<bool> visited(vertices_.size(), false);
-  ads::stacks::ArrayStack<size_t> stack(vertices_.size());
+  ads::arrays::DynamicArray<bool>   visited(vertices_.size(), false);
+  ads::stacks::ArrayStack<VertexId> stack(vertices_.size());
 
   // Mark on push so the first discovered parent owns the DFS order, matching recursive traversal.
   visited[start_vertex] = true;
   stack.push(start_vertex);
 
   while (!stack.is_empty()) {
-    const size_t current = stack.top();
+    const VertexId current = stack.top();
     stack.pop();
     result.push_back(current);
 
     const auto& row = matrix_[current];
     for (size_t i = row.size(); i > 0; --i) {
-      const size_t destination = i - 1;
+      const VertexId destination = i - 1;
       if (row[destination].has_value() && !visited[destination]) {
         visited[destination] = true;
         stack.push(destination);
@@ -292,28 +310,29 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::dfs(size_t start_vertex) cons
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(VertexId from, VertexId to) const
+    -> std::optional<std::vector<VertexId>> {
   validate_vertex(from);
   validate_vertex(to);
 
   if (from == to) {
-    return std::vector<size_t>{from};
+    return std::vector<VertexId>{from};
   }
 
-  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
-  ads::arrays::DynamicArray<size_t>       parent(vertices_.size(), kNoParent);
-  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+  ads::arrays::DynamicArray<bool>           visited(vertices_.size(), false);
+  ads::arrays::DynamicArray<VertexId>       parent(vertices_.size(), kNoParent);
+  ads::queues::CircularArrayQueue<VertexId> queue(vertices_.size());
 
   queue.enqueue(from);
   visited[from] = true;
 
   while (!queue.is_empty()) {
-    const size_t current = queue.front();
+    const VertexId current = queue.front();
     queue.dequeue();
 
     if (current == to) {
-      std::vector<size_t> path;
-      size_t              node = to;
+      std::vector<VertexId> path;
+      VertexId              node = to;
 
       // Walk back using the parent vector to reconstruct the shortest path.
       while (node != from) {
@@ -339,25 +358,25 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::find_path(size_t from, size_t
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_connected(size_t v1, size_t v2) const -> bool {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::is_connected(VertexId v1, VertexId v2) const -> bool {
   return find_path(v1, v2).has_value();
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<size_t>> {
-  std::vector<std::vector<size_t>> components;
-  ads::arrays::DynamicArray<bool>  visited(vertices_.size(), false);
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<VertexId>> {
+  std::vector<std::vector<VertexId>> components;
+  ads::arrays::DynamicArray<bool>    visited(vertices_.size(), false);
 
   for (size_t i = 0; i < vertices_.size(); ++i) {
     if (!visited[i]) {
-      std::vector<size_t>                     component;
-      ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+      std::vector<VertexId>                     component;
+      ads::queues::CircularArrayQueue<VertexId> queue(vertices_.size());
 
       queue.enqueue(i);
       visited[i] = true;
 
       while (!queue.is_empty()) {
-        const size_t current = queue.front();
+        const VertexId current = queue.front();
         queue.dequeue();
         component.push_back(current);
 
@@ -380,14 +399,14 @@ auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::connected_components() const 
 //===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::validate_vertex(VertexId vertex_id) const -> void {
   if (vertex_id >= vertices_.size()) {
     throw GraphMatrixException("Invalid vertex ID: " + std::to_string(vertex_id));
   }
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::resize_matrix(size_t new_size) -> void {
+auto GraphAdjacencyMatrix<VertexData, EdgeWeight>::resize_matrix(size_type new_size) -> void {
   matrix_.resize(new_size);
 
   for (auto& row : matrix_) {

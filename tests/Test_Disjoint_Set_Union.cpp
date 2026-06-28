@@ -79,11 +79,29 @@ TEST_F(DisjointSetUnionTest, MoveSemanticsTransferState) {
   EXPECT_TRUE(assigned.connected(2, 3));
 }
 
+TEST_F(DisjointSetUnionTest, ComponentSizeTracksMerges) {
+  for (size_t i = 0; i < dsu.size(); ++i) {
+    EXPECT_EQ(dsu.component_size(i), 1U);
+  }
+
+  dsu.union_sets(0, 1);
+  dsu.union_sets(2, 3);
+  EXPECT_EQ(dsu.component_size(0), 2U);
+  EXPECT_EQ(dsu.component_size(1), 2U);
+  EXPECT_EQ(dsu.component_size(4), 1U);
+
+  dsu.union_sets(1, 2);
+  for (size_t element : {0U, 1U, 2U, 3U}) {
+    EXPECT_EQ(dsu.component_size(element), 4U);
+  }
+}
+
 //===----- ERROR HANDLING TESTS ------------------------------------------------===//
 
 TEST_F(DisjointSetUnionTest, OutOfRangeThrows) {
   EXPECT_THROW({ [[maybe_unused]] auto _ = dsu.find(99); }, DisjointSetException);
   EXPECT_THROW({ [[maybe_unused]] auto _ = dsu.connected(1, 99); }, DisjointSetException);
+  EXPECT_THROW({ [[maybe_unused]] auto _ = dsu.component_size(99); }, DisjointSetException);
 }
 
 //===---------------------------------------------------------------------------===//

@@ -19,11 +19,14 @@ namespace ads::graphs {
 //===----- CONSTRUCTORS AND ASSIGNMENT -----------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) : vertices_(), is_directed_(is_directed), num_edges_(0) {
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(bool is_directed) :
+    vertices_(),
+    is_directed_(is_directed),
+    num_edges_(0) {
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_t num_vertices, bool is_directed) :
+GraphAdjacencyList<VertexData, EdgeWeight>::GraphAdjacencyList(size_type num_vertices, bool is_directed) :
     vertices_(),
     is_directed_(is_directed),
     num_edges_(0) {
@@ -53,61 +56,70 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::operator=(GraphAdjacencyList&& 
 //===----- VERTEX OPERATIONS ---------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> size_t {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(const VertexData& data) -> VertexId {
   vertices_.emplace_back(data);
   return vertices_.size() - 1;
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(VertexData&& data) -> size_t {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::add_vertex(VertexData&& data) -> VertexId {
   vertices_.emplace_back(std::move(data));
   return vertices_.size() - 1;
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_vertex_data(size_t vertex_id) -> VertexData& {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_vertex_data(VertexId vertex_id) -> VertexData& {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].data;
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_vertex_data(size_t vertex_id) const -> const VertexData& {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_vertex_data(VertexId vertex_id) const -> const VertexData& {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].data;
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::has_vertex(size_t vertex_id) const noexcept -> bool {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::has_vertex(VertexId vertex_id) const noexcept -> bool {
   return vertex_id < vertices_.size();
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::num_vertices() const noexcept -> size_t {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::num_vertices() const noexcept -> size_type {
   return vertices_.size();
 }
 
 //===----- EDGE OPERATIONS -----------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::add_edge(size_t from, size_t to, EdgeWeight weight) -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::add_edge(VertexId from, VertexId to, EdgeWeight weight) -> void {
   validate_vertex(from);
   validate_vertex(to);
 
-  // Check if edge already exists.
-  if (!has_edge(from, to)) {
-    vertices_[from].adjacency.emplace_back(to, weight);
-    ++num_edges_;
+  // An existing edge keeps its slot but adopts the new weight (insert-or-update).
+  if (const auto edge_index = find_edge_index(from, to)) {
+    vertices_[from].adjacency[*edge_index].weight = weight;
 
-    // For undirected graphs, add reverse edge.
     if (!is_directed_ && from != to) {
-      vertices_[to].adjacency.emplace_back(from, weight);
-      // Note: num_edges_ is only incremented once for undirected edges.
+      if (const auto reverse_index = find_edge_index(to, from)) {
+        vertices_[to].adjacency[*reverse_index].weight = weight;
+      }
     }
+    return;
+  }
+
+  vertices_[from].adjacency.emplace_back(to, weight);
+  ++num_edges_;
+
+  // For undirected graphs, add reverse edge.
+  if (!is_directed_ && from != to) {
+    vertices_[to].adjacency.emplace_back(from, weight);
+    // Note: num_edges_ is only incremented once for undirected edges.
   }
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t to) -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(VertexId from, VertexId to) -> void {
   validate_vertex(from);
   validate_vertex(to);
 
@@ -128,7 +140,7 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::remove_edge(size_t from, size_t
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to) const -> bool {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(VertexId from, VertexId to) const -> bool {
   if (!has_vertex(from) || !has_vertex(to)) {
     return false;
   }
@@ -137,7 +149,8 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::has_edge(size_t from, size_t to
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, size_t to) const -> std::optional<EdgeWeight> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(VertexId from, VertexId to) const
+    -> std::optional<EdgeWeight> {
   if (!has_vertex(from) || !has_vertex(to)) {
     return std::nullopt;
   }
@@ -151,17 +164,17 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_edge_weight(size_t from, si
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::num_edges() const noexcept -> size_t {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::num_edges() const noexcept -> size_type {
   return num_edges_;
 }
 
 //===----- NAVIGATION OPERATIONS -----------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id) const -> std::vector<size_t> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors(VertexId vertex_id) const -> std::vector<VertexId> {
   validate_vertex(vertex_id);
 
-  std::vector<size_t> neighbors;
+  std::vector<VertexId> neighbors;
   neighbors.reserve(vertices_[vertex_id].adjacency.size());
 
   for (const auto& edge : vertices_[vertex_id].adjacency) {
@@ -172,11 +185,11 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors(size_t vertex_id)
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors_with_weights(size_t vertex_id) const
-    -> std::vector<std::pair<size_t, EdgeWeight>> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors_with_weights(VertexId vertex_id) const
+    -> std::vector<std::pair<VertexId, EdgeWeight>> {
   validate_vertex(vertex_id);
 
-  std::vector<std::pair<size_t, EdgeWeight>> neighbors;
+  std::vector<std::pair<VertexId, EdgeWeight>> neighbors;
   neighbors.reserve(vertices_[vertex_id].adjacency.size());
 
   for (const auto& edge : vertices_[vertex_id].adjacency) {
@@ -188,8 +201,9 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::get_neighbors_with_weights(size
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
 template <typename Visitor>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(size_t vertex_id, Visitor&& visitor) const -> void
-    requires WeightedNeighborVisitor<Visitor, EdgeWeight>
+auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(VertexId vertex_id, Visitor&& visitor) const
+    -> void
+  requires WeightedNeighborVisitor<Visitor, EdgeWeight>
 {
   validate_vertex(vertex_id);
 
@@ -199,9 +213,24 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::for_each_weighted_neighbor(size
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::degree(size_t vertex_id) const -> size_t {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::degree(VertexId vertex_id) const -> size_type {
   validate_vertex(vertex_id);
   return vertices_[vertex_id].adjacency.size();
+}
+
+template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
+auto GraphAdjacencyList<VertexData, EdgeWeight>::in_degree(VertexId vertex_id) const -> size_type {
+  validate_vertex(vertex_id);
+
+  size_type count = 0;
+  for (size_t source = 0; source < vertices_.size(); ++source) {
+    for (const auto& edge : vertices_[source].adjacency) {
+      if (edge.destination == vertex_id) {
+        ++count;
+      }
+    }
+  }
+  return count;
 }
 
 //===----- QUERY OPERATIONS ----------------------------------------------------===//
@@ -227,21 +256,21 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::clear() -> void {
 //===----- TRAVERSAL ALGORITHMS ------------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const -> std::vector<size_t> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(VertexId start_vertex) const -> std::vector<VertexId> {
   validate_vertex(start_vertex);
 
-  std::vector<size_t> result;
+  std::vector<VertexId> result;
   result.reserve(vertices_.size());
 
-  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
-  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+  ads::arrays::DynamicArray<bool>           visited(vertices_.size(), false);
+  ads::queues::CircularArrayQueue<VertexId> queue(vertices_.size());
 
   // Start BFS from start_vertex.
   queue.enqueue(start_vertex);
   visited[start_vertex] = true;
 
   while (!queue.is_empty()) {
-    const size_t current = queue.front();
+    const VertexId current = queue.front();
     queue.dequeue();
     result.push_back(current);
 
@@ -258,27 +287,27 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::bfs(size_t start_vertex) const 
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const -> std::vector<size_t> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(VertexId start_vertex) const -> std::vector<VertexId> {
   validate_vertex(start_vertex);
 
-  std::vector<size_t> result;
+  std::vector<VertexId> result;
   result.reserve(vertices_.size());
 
-  ads::arrays::DynamicArray<bool> visited(vertices_.size(), false);
-  ads::stacks::ArrayStack<size_t> stack(vertices_.size());
+  ads::arrays::DynamicArray<bool>   visited(vertices_.size(), false);
+  ads::stacks::ArrayStack<VertexId> stack(vertices_.size());
 
   // Mark on push so the first discovered parent owns the DFS order, matching recursive traversal.
   visited[start_vertex] = true;
   stack.push(start_vertex);
 
   while (!stack.is_empty()) {
-    const size_t current = stack.top();
+    const VertexId current = stack.top();
     stack.pop();
     result.push_back(current);
 
     const auto& adjacency = vertices_[current].adjacency;
     for (size_t i = adjacency.size(); i > 0; --i) {
-      const size_t destination = adjacency[i - 1].destination;
+      const VertexId destination = adjacency[i - 1].destination;
       if (!visited[destination]) {
         visited[destination] = true;
         stack.push(destination);
@@ -290,30 +319,31 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::dfs(size_t start_vertex) const 
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t to) const -> std::optional<std::vector<size_t>> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(VertexId from, VertexId to) const
+    -> std::optional<std::vector<VertexId>> {
   validate_vertex(from);
   validate_vertex(to);
 
   if (from == to) {
-    return std::vector<size_t>{from};
+    return std::vector<VertexId>{from};
   }
 
-  ads::arrays::DynamicArray<bool>         visited(vertices_.size(), false);
-  ads::arrays::DynamicArray<size_t>       parent(vertices_.size(), kNoParent);
-  ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+  ads::arrays::DynamicArray<bool>           visited(vertices_.size(), false);
+  ads::arrays::DynamicArray<VertexId>       parent(vertices_.size(), kNoParent);
+  ads::queues::CircularArrayQueue<VertexId> queue(vertices_.size());
 
   // BFS to find path.
   queue.enqueue(from);
   visited[from] = true;
 
   while (!queue.is_empty()) {
-    const size_t current = queue.front();
+    const VertexId current = queue.front();
     queue.dequeue();
 
     if (current == to) {
       // Reconstruct path.
-      std::vector<size_t> path;
-      size_t              node = to;
+      std::vector<VertexId> path;
+      VertexId              node = to;
 
       while (node != from) {
         path.push_back(node);
@@ -340,26 +370,26 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::find_path(size_t from, size_t t
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::is_connected(size_t v1, size_t v2) const -> bool {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::is_connected(VertexId v1, VertexId v2) const -> bool {
   return find_path(v1, v2).has_value();
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<size_t>> {
-  std::vector<std::vector<size_t>> components;
-  ads::arrays::DynamicArray<bool>  visited(vertices_.size(), false);
+auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const -> std::vector<std::vector<VertexId>> {
+  std::vector<std::vector<VertexId>> components;
+  ads::arrays::DynamicArray<bool>    visited(vertices_.size(), false);
 
   for (size_t i = 0; i < vertices_.size(); ++i) {
     if (!visited[i]) {
       // Start a new component.
-      std::vector<size_t>                     component;
-      ads::queues::CircularArrayQueue<size_t> queue(vertices_.size());
+      std::vector<VertexId>                     component;
+      ads::queues::CircularArrayQueue<VertexId> queue(vertices_.size());
 
       queue.enqueue(i);
       visited[i] = true;
 
       while (!queue.is_empty()) {
-        const size_t current = queue.front();
+        const VertexId current = queue.front();
         queue.dequeue();
         component.push_back(current);
 
@@ -383,14 +413,15 @@ auto GraphAdjacencyList<VertexData, EdgeWeight>::connected_components() const ->
 //===----- PRIVATE HELPER METHODS ----------------------------------------------===//
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::validate_vertex(VertexId vertex_id) const -> void {
   if (vertex_id >= vertices_.size()) {
     throw GraphException("Invalid vertex ID: " + std::to_string(vertex_id));
   }
 }
 
 template <VertexPayload VertexData, EdgeWeightValue EdgeWeight>
-auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(size_t from, size_t to) const -> std::optional<size_t> {
+auto GraphAdjacencyList<VertexData, EdgeWeight>::find_edge_index(VertexId from, VertexId to) const
+    -> std::optional<size_t> {
   const auto& adjacency = vertices_[from].adjacency;
 
   for (size_t index = 0; index < adjacency.size(); ++index) {

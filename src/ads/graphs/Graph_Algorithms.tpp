@@ -13,7 +13,6 @@
 
 #pragma once
 #include "../../../include/ads/graphs/Graph_Algorithms.hpp"
-#include "ads/arrays/Dynamic_Array.hpp"
 
 #include <algorithm>
 
@@ -84,19 +83,19 @@ auto add_with_negative_support(const EdgeWeight& lhs, const EdgeWeight& rhs, con
 
 template <PathWeight EdgeWeight>
 ShortestPathsResult<EdgeWeight>::ShortestPathsResult(
-    size_t source, DynamicArray<EdgeWeight>&& distances, DynamicArray<size_t>&& predecessors) :
+    VertexId source, DynamicArray<EdgeWeight>&& distances, DynamicArray<VertexId>&& predecessors) :
     source_(source),
     distances_(std::move(distances)),
     predecessors_(std::move(predecessors)) {
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::source() const noexcept -> size_t {
+auto ShortestPathsResult<EdgeWeight>::source() const noexcept -> VertexId {
   return source_;
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::vertex_count() const noexcept -> size_t {
+auto ShortestPathsResult<EdgeWeight>::vertex_count() const noexcept -> size_type {
   return distances_.size();
 }
 
@@ -106,40 +105,40 @@ auto ShortestPathsResult<EdgeWeight>::distances() const noexcept -> const Dynami
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::predecessor_of(size_t vertex_id) const -> size_t {
+auto ShortestPathsResult<EdgeWeight>::predecessor_of(VertexId vertex_id) const -> VertexId {
   validate_vertex(vertex_id);
   return predecessors_[vertex_id];
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::distance_to(size_t vertex_id) const -> const EdgeWeight& {
+auto ShortestPathsResult<EdgeWeight>::distance_to(VertexId vertex_id) const -> const EdgeWeight& {
   validate_vertex(vertex_id);
   return distances_[vertex_id];
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::has_path_to(size_t vertex_id) const -> bool {
+auto ShortestPathsResult<EdgeWeight>::has_path_to(VertexId vertex_id) const -> bool {
   validate_vertex(vertex_id);
   return vertex_id == source_ || predecessors_[vertex_id] != kNoPredecessor;
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::path_to(size_t vertex_id) const -> std::optional<DynamicArray<size_t>> {
+auto ShortestPathsResult<EdgeWeight>::path_to(VertexId vertex_id) const -> std::optional<DynamicArray<VertexId>> {
   validate_vertex(vertex_id);
 
   if (!has_path_to(vertex_id)) {
     return std::nullopt;
   }
 
-  DynamicArray<size_t> reversed_path;
-  for (size_t current = vertex_id;; current = predecessors_[current]) {
+  DynamicArray<VertexId> reversed_path;
+  for (VertexId current = vertex_id;; current = predecessors_[current]) {
     reversed_path.push_back(current);
     if (current == source_) {
       break;
     }
   }
 
-  DynamicArray<size_t> path;
+  DynamicArray<VertexId> path;
   path.reserve(reversed_path.size());
   for (size_t index = reversed_path.size(); index > 0; --index) {
     path.push_back(reversed_path[index - 1]);
@@ -157,7 +156,7 @@ auto ShortestPathsResult<EdgeWeight>::unreachable_distance() noexcept -> EdgeWei
 }
 
 template <PathWeight EdgeWeight>
-auto ShortestPathsResult<EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
+auto ShortestPathsResult<EdgeWeight>::validate_vertex(VertexId vertex_id) const -> void {
   if (vertex_id >= distances_.size()) {
     throw GraphAlgorithmException("Invalid vertex ID in shortest path result");
   }
@@ -165,7 +164,7 @@ auto ShortestPathsResult<EdgeWeight>::validate_vertex(size_t vertex_id) const ->
 
 template <PathWeight EdgeWeight>
 MinimumSpanningForestResult<EdgeWeight>::MinimumSpanningForestResult(
-    EdgeWeight total_weight, size_t component_count, DynamicArray<Edge>&& edges) :
+    EdgeWeight total_weight, size_type component_count, DynamicArray<Edge>&& edges) :
     total_weight_(std::move(total_weight)),
     component_count_(component_count),
     edges_(std::move(edges)) {
@@ -182,53 +181,53 @@ auto MinimumSpanningForestResult<EdgeWeight>::total_weight() const noexcept -> c
 }
 
 template <PathWeight EdgeWeight>
-auto MinimumSpanningForestResult<EdgeWeight>::component_count() const noexcept -> size_t {
+auto MinimumSpanningForestResult<EdgeWeight>::component_count() const noexcept -> size_type {
   return component_count_;
 }
 
 template <PathWeight EdgeWeight>
-auto MinimumSpanningForestResult<EdgeWeight>::edge_count() const noexcept -> size_t {
+auto MinimumSpanningForestResult<EdgeWeight>::edge_count() const noexcept -> size_type {
   return edges_.size();
 }
 
 template <PathWeight EdgeWeight>
-auto MinimumSpanningForestResult<EdgeWeight>::spans_all_vertices(size_t vertex_count) const noexcept -> bool {
+auto MinimumSpanningForestResult<EdgeWeight>::spans_all_vertices(size_type vertex_count) const noexcept -> bool {
   return vertex_count <= 1 || (component_count_ == 1 && edges_.size() + 1 == vertex_count);
 }
 
 template <PathWeight EdgeWeight>
-AllPairsShortestPathsResult<EdgeWeight>::AllPairsShortestPathsResult(
-    DynamicArray<DynamicArray<EdgeWeight>>&& distances, DynamicArray<DynamicArray<size_t>>&& next_vertices) :
+AllPairsResult<EdgeWeight>::AllPairsResult(
+    DynamicArray<DynamicArray<EdgeWeight>>&& distances, DynamicArray<DynamicArray<VertexId>>&& next_vertices) :
     distances_(std::move(distances)),
     next_vertices_(std::move(next_vertices)) {
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::vertex_count() const noexcept -> size_t {
+auto AllPairsResult<EdgeWeight>::vertex_count() const noexcept -> size_type {
   return distances_.size();
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::distances() const noexcept -> const DynamicArray<DynamicArray<EdgeWeight>>& {
+auto AllPairsResult<EdgeWeight>::distances() const noexcept -> const DynamicArray<DynamicArray<EdgeWeight>>& {
   return distances_;
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::distance(size_t source, size_t target) const -> const EdgeWeight& {
+auto AllPairsResult<EdgeWeight>::distance(VertexId source, VertexId target) const -> const EdgeWeight& {
   validate_vertex(source);
   validate_vertex(target);
   return distances_[source][target];
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::has_path(size_t source, size_t target) const -> bool {
+auto AllPairsResult<EdgeWeight>::has_path(VertexId source, VertexId target) const -> bool {
   validate_vertex(source);
   validate_vertex(target);
   return source == target || next_vertices_[source][target] != kNoNextVertex;
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::path(size_t source, size_t target) const -> std::optional<DynamicArray<size_t>> {
+auto AllPairsResult<EdgeWeight>::path(VertexId source, VertexId target) const -> std::optional<DynamicArray<VertexId>> {
   validate_vertex(source);
   validate_vertex(target);
 
@@ -236,10 +235,10 @@ auto AllPairsShortestPathsResult<EdgeWeight>::path(size_t source, size_t target)
     return std::nullopt;
   }
 
-  DynamicArray<size_t> vertices;
+  DynamicArray<VertexId> vertices;
   vertices.push_back(source);
 
-  size_t current = source;
+  VertexId current = source;
   while (current != target) {
     current = next_vertices_[current][target];
     if (current == kNoNextVertex) {
@@ -252,7 +251,7 @@ auto AllPairsShortestPathsResult<EdgeWeight>::path(size_t source, size_t target)
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::unreachable_distance() noexcept -> EdgeWeight {
+auto AllPairsResult<EdgeWeight>::unreachable_distance() noexcept -> EdgeWeight {
   if constexpr (FloatingPathWeight<EdgeWeight>) {
     return std::numeric_limits<EdgeWeight>::infinity();
   } else {
@@ -261,53 +260,52 @@ auto AllPairsShortestPathsResult<EdgeWeight>::unreachable_distance() noexcept ->
 }
 
 template <PathWeight EdgeWeight>
-auto AllPairsShortestPathsResult<EdgeWeight>::validate_vertex(size_t vertex_id) const -> void {
+auto AllPairsResult<EdgeWeight>::validate_vertex(VertexId vertex_id) const -> void {
   if (vertex_id >= distances_.size()) {
     throw GraphAlgorithmException("Invalid vertex ID in all-pairs shortest path result");
   }
 }
 
-StronglyConnectedComponentsResult::StronglyConnectedComponentsResult(
-    DynamicArray<DynamicArray<size_t>>&& components, DynamicArray<size_t>&& component_ids) :
+SccResult::SccResult(DynamicArray<DynamicArray<VertexId>>&& components, DynamicArray<size_type>&& component_ids) :
     components_(std::move(components)),
     component_ids_(std::move(component_ids)) {
 }
 
-auto StronglyConnectedComponentsResult::vertex_count() const noexcept -> size_t {
+auto SccResult::vertex_count() const noexcept -> size_type {
   return component_ids_.size();
 }
 
-auto StronglyConnectedComponentsResult::component_count() const noexcept -> size_t {
+auto SccResult::component_count() const noexcept -> size_type {
   return components_.size();
 }
 
-auto StronglyConnectedComponentsResult::components() const noexcept -> const DynamicArray<DynamicArray<size_t>>& {
+auto SccResult::components() const noexcept -> const DynamicArray<DynamicArray<VertexId>>& {
   return components_;
 }
 
-auto StronglyConnectedComponentsResult::component(size_t component_id) const -> const DynamicArray<size_t>& {
+auto SccResult::component(size_type component_id) const -> const DynamicArray<VertexId>& {
   validate_component(component_id);
   return components_[component_id];
 }
 
-auto StronglyConnectedComponentsResult::component_id_of(size_t vertex_id) const -> size_t {
+auto SccResult::component_id_of(VertexId vertex_id) const -> size_type {
   validate_vertex(vertex_id);
   return component_ids_[vertex_id];
 }
 
-auto StronglyConnectedComponentsResult::are_strongly_connected(size_t lhs, size_t rhs) const -> bool {
+auto SccResult::are_strongly_connected(VertexId lhs, VertexId rhs) const -> bool {
   validate_vertex(lhs);
   validate_vertex(rhs);
   return component_ids_[lhs] == component_ids_[rhs];
 }
 
-auto StronglyConnectedComponentsResult::validate_vertex(size_t vertex_id) const -> void {
+auto SccResult::validate_vertex(VertexId vertex_id) const -> void {
   if (vertex_id >= component_ids_.size()) {
     throw GraphAlgorithmException("Invalid vertex ID in SCC result");
   }
 }
 
-auto StronglyConnectedComponentsResult::validate_component(size_t component_id) const -> void {
+auto SccResult::validate_component(size_type component_id) const -> void {
   if (component_id >= components_.size()) {
     throw GraphAlgorithmException("Invalid component ID in SCC result");
   }
@@ -318,15 +316,16 @@ auto StronglyConnectedComponentsResult::validate_component(size_t component_id) 
 
 template <WeightedGraph Graph>
 auto collect_weighted_edges_once(const Graph& graph)
-    -> DynamicArray<typename MinimumSpanningForestResult<typename Graph::edge_weight_type>::Edge> {
-  using EdgeWeight = typename Graph::edge_weight_type;
+    -> DynamicArray<typename MinimumSpanningForestResult<typename Graph::EdgeWeight>::Edge> {
+  using EdgeWeight = typename Graph::EdgeWeight;
+  using VertexId   = typename Graph::VertexId;
   using ForestEdge = typename MinimumSpanningForestResult<EdgeWeight>::Edge;
 
   DynamicArray<ForestEdge> edges;
   edges.reserve(graph.num_edges());
 
-  for (size_t from = 0; from < graph.num_vertices(); ++from) {
-    graph.for_each_weighted_neighbor(from, [&](size_t to, const EdgeWeight& weight) {
+  for (VertexId from = 0; from < graph.num_vertices(); ++from) {
+    graph.for_each_weighted_neighbor(from, [&](VertexId to, const EdgeWeight& weight) {
       if (graph.is_directed() || from < to) {
         edges.push_back({from, to, weight});
       }
@@ -336,17 +335,18 @@ auto collect_weighted_edges_once(const Graph& graph)
   return edges;
 }
 
-template <WeightedGraph Graph>
+template <TraversableGraph Graph>
 auto build_unweighted_adjacency(const Graph& graph) -> DynamicArray<DynamicArray<size_t>> {
-  DynamicArray<DynamicArray<size_t>> adjacency;
+  using VertexId = typename Graph::VertexId;
+  DynamicArray<DynamicArray<VertexId>> adjacency;
   adjacency.reserve(graph.num_vertices());
 
-  for (size_t vertex_id = 0; vertex_id < graph.num_vertices(); ++vertex_id) {
-    adjacency.push_back(DynamicArray<size_t>{});
+  for (VertexId vertex_id = 0; vertex_id < graph.num_vertices(); ++vertex_id) {
+    adjacency.push_back(DynamicArray<VertexId>{});
   }
 
-  for (size_t from = 0; from < graph.num_vertices(); ++from) {
-    graph.for_each_weighted_neighbor(from, [&](size_t to, const auto& weight) {
+  for (VertexId from = 0; from < graph.num_vertices(); ++from) {
+    graph.for_each_weighted_neighbor(from, [&](VertexId to, const auto& weight) {
       static_cast<void>(weight);
       adjacency[from].push_back(to);
     });
@@ -356,15 +356,16 @@ auto build_unweighted_adjacency(const Graph& graph) -> DynamicArray<DynamicArray
 }
 
 auto transpose_unweighted_adjacency(const DynamicArray<DynamicArray<size_t>>& adjacency) -> DynamicArray<DynamicArray<size_t>> {
-  DynamicArray<DynamicArray<size_t>> transpose;
+  using VertexId = std::size_t;
+  DynamicArray<DynamicArray<VertexId>> transpose;
   transpose.reserve(adjacency.size());
 
-  for (size_t vertex_id = 0; vertex_id < adjacency.size(); ++vertex_id) {
-    transpose.push_back(DynamicArray<size_t>{});
+  for (VertexId vertex_id = 0; vertex_id < adjacency.size(); ++vertex_id) {
+    transpose.push_back(DynamicArray<VertexId>{});
   }
 
-  for (size_t from = 0; from < adjacency.size(); ++from) {
-    for (size_t to : adjacency[from]) {
+  for (VertexId from = 0; from < adjacency.size(); ++from) {
+    for (VertexId to : adjacency[from]) {
       transpose[to].push_back(from);
     }
   }
@@ -373,14 +374,17 @@ auto transpose_unweighted_adjacency(const DynamicArray<DynamicArray<size_t>>& ad
 }
 
 auto compute_finish_order(const DynamicArray<DynamicArray<size_t>>& adjacency) -> DynamicArray<size_t> {
+  using VertexId  = std::size_t;
+  using size_type = std::size_t;
+
   struct DfsFrame {
-    size_t vertex;
-    size_t next_neighbor_index;
+    VertexId vertex;
+    size_t   next_neighbor_index;
   };
 
-  const size_t         vertex_count = adjacency.size();
-  DynamicArray<bool>   visited(vertex_count, false);
-  DynamicArray<size_t> finish_order;
+  const size_type        vertex_count = adjacency.size();
+  DynamicArray<bool>     visited(vertex_count, false);
+  DynamicArray<VertexId> finish_order;
   finish_order.reserve(vertex_count);
 
   for (size_t start = 0; start < vertex_count; ++start) {
@@ -396,7 +400,7 @@ auto compute_finish_order(const DynamicArray<DynamicArray<size_t>>& adjacency) -
       DfsFrame& frame = stack.back();
 
       if (frame.next_neighbor_index < adjacency[frame.vertex].size()) {
-        const size_t neighbor = adjacency[frame.vertex][frame.next_neighbor_index++];
+        const VertexId neighbor = adjacency[frame.vertex][frame.next_neighbor_index++];
         if (!visited[neighbor]) {
           visited[neighbor] = true;
           stack.push_back({neighbor, 0});
@@ -414,18 +418,19 @@ auto compute_finish_order(const DynamicArray<DynamicArray<size_t>>& adjacency) -
 
 auto collect_component_from_transpose(const DynamicArray<DynamicArray<size_t>>& transpose, size_t start, DynamicArray<bool>& visited)
     -> DynamicArray<size_t> {
-  DynamicArray<size_t> component;
-  DynamicArray<size_t> stack;
+  using VertexId = std::size_t;
+  DynamicArray<VertexId> component;
+  DynamicArray<VertexId> stack;
 
   stack.push_back(start);
   visited[start] = true;
 
   while (!stack.is_empty()) {
-    const size_t vertex_id = stack.back();
+    const VertexId vertex_id = stack.back();
     stack.pop_back();
     component.push_back(vertex_id);
 
-    for (size_t neighbor : transpose[vertex_id]) {
+    for (VertexId neighbor : transpose[vertex_id]) {
       if (!visited[neighbor]) {
         visited[neighbor] = true;
         stack.push_back(neighbor);
@@ -439,11 +444,13 @@ auto collect_component_from_transpose(const DynamicArray<DynamicArray<size_t>>& 
 //===----- ALGORITHM IMPLEMENTATIONS -------------------------------------------===//
 
 template <WeightedGraph Graph>
-auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::edge_weight_type> {
-  using EdgeWeight = typename Graph::edge_weight_type;
+auto dijkstra(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::EdgeWeight> {
+  using EdgeWeight = typename Graph::EdgeWeight;
+  using VertexId   = typename Graph::VertexId;
+  using size_type  = std::size_t;
   using QueueEntry = std::pair<size_t, EdgeWeight>;
 
-  const size_t vertex_count = graph.num_vertices();
+  const size_type vertex_count = graph.num_vertices();
   if (source >= vertex_count) {
     throw GraphAlgorithmException("Dijkstra source vertex is out of range");
   }
@@ -451,7 +458,7 @@ auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPaths
   const EdgeWeight unreachable = ShortestPathsResult<EdgeWeight>::unreachable_distance();
 
   DynamicArray<EdgeWeight> distances(vertex_count, unreachable);
-  DynamicArray<size_t>     predecessors(vertex_count, ShortestPathsResult<EdgeWeight>::kNoPredecessor);
+  DynamicArray<VertexId>   predecessors(vertex_count, ShortestPathsResult<EdgeWeight>::kNoPredecessor);
   DynamicArray<bool>       visited(vertex_count, false);
   ads::queues::PriorityQueue<QueueEntry, graph_algorithm_detail::DijkstraQueueCompare<EdgeWeight>> frontier;
 
@@ -471,7 +478,7 @@ auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPaths
       continue;
     }
 
-    graph.for_each_weighted_neighbor(vertex_id, [&](size_t neighbor_id, const EdgeWeight& edge_weight) {
+    graph.for_each_weighted_neighbor(vertex_id, [&](VertexId neighbor_id, const EdgeWeight& edge_weight) {
       if (edge_weight < EdgeWeight{}) {
         throw GraphAlgorithmException("Dijkstra does not support negative edge weights");
       }
@@ -489,10 +496,12 @@ auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPaths
 }
 
 template <WeightedGraph Graph>
-auto bellman_ford_shortest_paths(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::edge_weight_type> {
-  using EdgeWeight = typename Graph::edge_weight_type;
+auto bellman_ford(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::EdgeWeight> {
+  using EdgeWeight = typename Graph::EdgeWeight;
+  using VertexId   = typename Graph::VertexId;
+  using size_type  = std::size_t;
 
-  const size_t vertex_count = graph.num_vertices();
+  const size_type vertex_count = graph.num_vertices();
   if (source >= vertex_count) {
     throw GraphAlgorithmException("Bellman-Ford source vertex is out of range");
   }
@@ -500,19 +509,19 @@ auto bellman_ford_shortest_paths(const Graph& graph, size_t source) -> ShortestP
   const EdgeWeight unreachable = ShortestPathsResult<EdgeWeight>::unreachable_distance();
 
   DynamicArray<EdgeWeight> distances(vertex_count, unreachable);
-  DynamicArray<size_t>     predecessors(vertex_count, ShortestPathsResult<EdgeWeight>::kNoPredecessor);
+  DynamicArray<VertexId>   predecessors(vertex_count, ShortestPathsResult<EdgeWeight>::kNoPredecessor);
 
   distances[source] = EdgeWeight{};
 
   for (size_t pass = 1; pass < vertex_count; ++pass) {
     bool changed = false;
 
-    for (size_t from = 0; from < vertex_count; ++from) {
+    for (VertexId from = 0; from < vertex_count; ++from) {
       if (distances[from] == unreachable) {
         continue;
       }
 
-      graph.for_each_weighted_neighbor(from, [&](size_t to, const EdgeWeight& weight) {
+      graph.for_each_weighted_neighbor(from, [&](VertexId to, const EdgeWeight& weight) {
         const EdgeWeight candidate = graph_algorithm_detail::add_with_negative_support(distances[from], weight, unreachable);
         if (candidate < distances[to]) {
           distances[to]    = candidate;
@@ -527,12 +536,12 @@ auto bellman_ford_shortest_paths(const Graph& graph, size_t source) -> ShortestP
     }
   }
 
-  for (size_t from = 0; from < vertex_count; ++from) {
+  for (VertexId from = 0; from < vertex_count; ++from) {
     if (distances[from] == unreachable) {
       continue;
     }
 
-    graph.for_each_weighted_neighbor(from, [&](size_t to, const auto& weight) {
+    graph.for_each_weighted_neighbor(from, [&](VertexId to, const auto& weight) {
       const EdgeWeight candidate = graph_algorithm_detail::add_with_negative_support(distances[from], weight, unreachable);
       if (candidate < distances[to]) {
         throw GraphAlgorithmException("Bellman-Ford detected a negative cycle reachable from the source");
@@ -544,12 +553,14 @@ auto bellman_ford_shortest_paths(const Graph& graph, size_t source) -> ShortestP
 }
 
 template <WeightedGraph Graph>
-auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::edge_weight_type> {
-  using EdgeWeight = typename Graph::edge_weight_type;
+auto prim(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::EdgeWeight> {
+  using EdgeWeight = typename Graph::EdgeWeight;
+  using VertexId   = typename Graph::VertexId;
+  using size_type  = std::size_t;
 
   struct CandidateEdge {
-    size_t     from;
-    size_t     to;
+    VertexId   from;
+    VertexId   to;
     EdgeWeight weight;
   };
 
@@ -561,7 +572,7 @@ auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestRe
     throw GraphAlgorithmException("Prim's algorithm requires an undirected graph");
   }
 
-  const size_t       vertex_count = graph.num_vertices();
+  const size_type    vertex_count = graph.num_vertices();
   DynamicArray<bool> visited(vertex_count, false);
 
   DynamicArray<typename MinimumSpanningForestResult<EdgeWeight>::Edge> forest_edges;
@@ -569,9 +580,9 @@ auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestRe
 
   ads::queues::PriorityQueue<CandidateEdge, CandidateCompare> frontier;
   EdgeWeight                                                  total_weight    = EdgeWeight{};
-  size_t                                                      component_count = 0;
+  size_type                                                   component_count = 0;
 
-  for (size_t root = 0; root < vertex_count; ++root) {
+  for (VertexId root = 0; root < vertex_count; ++root) {
     if (visited[root]) {
       continue;
     }
@@ -579,7 +590,7 @@ auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestRe
     ++component_count;
     visited[root] = true;
 
-    graph.for_each_weighted_neighbor(root, [&](size_t neighbor_id, const EdgeWeight& weight) -> auto {
+    graph.for_each_weighted_neighbor(root, [&](VertexId neighbor_id, const EdgeWeight& weight) -> auto {
       if (!visited[neighbor_id]) {
         frontier.push({root, neighbor_id, weight});
       }
@@ -597,7 +608,7 @@ auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestRe
       total_weight     = static_cast<EdgeWeight>(total_weight + edge.weight);
       forest_edges.push_back({edge.from, edge.to, edge.weight});
 
-      graph.for_each_weighted_neighbor(edge.to, [&](size_t neighbor_id, const EdgeWeight& weight) {
+      graph.for_each_weighted_neighbor(edge.to, [&](VertexId neighbor_id, const EdgeWeight& weight) {
         if (!visited[neighbor_id]) {
           frontier.push({edge.to, neighbor_id, weight});
         }
@@ -609,16 +620,17 @@ auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestRe
 }
 
 template <WeightedGraph Graph>
-auto kruskal_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::edge_weight_type> {
-  using EdgeWeight = typename Graph::edge_weight_type;
+auto kruskal(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::EdgeWeight> {
+  using EdgeWeight = typename Graph::EdgeWeight;
+  using size_type  = std::size_t;
   using ForestEdge = typename MinimumSpanningForestResult<EdgeWeight>::Edge;
 
   if (graph.is_directed()) {
     throw GraphAlgorithmException("Kruskal's algorithm requires an undirected graph");
   }
 
-  const size_t vertex_count = graph.num_vertices();
-  auto         sorted_edges = collect_weighted_edges_once(graph);
+  const size_type vertex_count = graph.num_vertices();
+  auto            sorted_edges = collect_weighted_edges_once(graph);
   ads::algorithms::quick_sort(sorted_edges.begin(), sorted_edges.end(), graph_algorithm_detail::ForestEdgeLess<EdgeWeight>{});
 
   DisjointSetUnion         components(vertex_count);
@@ -637,25 +649,27 @@ auto kruskal_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningFores
 }
 
 template <WeightedGraph Graph>
-auto floyd_warshall_all_pairs_shortest_paths(const Graph& graph) -> AllPairsShortestPathsResult<typename Graph::edge_weight_type> {
-  using EdgeWeight = typename Graph::edge_weight_type;
+auto floyd_warshall(const Graph& graph) -> AllPairsResult<typename Graph::EdgeWeight> {
+  using EdgeWeight = typename Graph::EdgeWeight;
+  using VertexId   = typename Graph::VertexId;
+  using size_type  = std::size_t;
 
-  const size_t     vertex_count = graph.num_vertices();
-  const EdgeWeight unreachable  = AllPairsShortestPathsResult<EdgeWeight>::unreachable_distance();
+  const size_type  vertex_count = graph.num_vertices();
+  const EdgeWeight unreachable  = AllPairsResult<EdgeWeight>::unreachable_distance();
 
   DynamicArray<DynamicArray<EdgeWeight>> distances;
-  DynamicArray<DynamicArray<size_t>>     next_vertices;
+  DynamicArray<DynamicArray<VertexId>>   next_vertices;
   distances.reserve(vertex_count);
   next_vertices.reserve(vertex_count);
 
-  for (size_t from = 0; from < vertex_count; ++from) {
+  for (VertexId from = 0; from < vertex_count; ++from) {
     DynamicArray<EdgeWeight> row(vertex_count, unreachable);
-    DynamicArray<size_t>     next_row(vertex_count, AllPairsShortestPathsResult<EdgeWeight>::kNoNextVertex);
+    DynamicArray<VertexId>   next_row(vertex_count, AllPairsResult<EdgeWeight>::kNoNextVertex);
 
     row[from]      = EdgeWeight{};
     next_row[from] = from;
 
-    graph.for_each_weighted_neighbor(from, [&](size_t to, const EdgeWeight& weight) {
+    graph.for_each_weighted_neighbor(from, [&](VertexId to, const EdgeWeight& weight) {
       if (weight < row[to]) {
         row[to]      = weight;
         next_row[to] = to;
@@ -667,12 +681,12 @@ auto floyd_warshall_all_pairs_shortest_paths(const Graph& graph) -> AllPairsShor
   }
 
   for (size_t via = 0; via < vertex_count; ++via) {
-    for (size_t from = 0; from < vertex_count; ++from) {
+    for (VertexId from = 0; from < vertex_count; ++from) {
       if (distances[from][via] == unreachable) {
         continue;
       }
 
-      for (size_t to = 0; to < vertex_count; ++to) {
+      for (VertexId to = 0; to < vertex_count; ++to) {
         if (distances[via][to] == unreachable) {
           continue;
         }
@@ -687,17 +701,19 @@ auto floyd_warshall_all_pairs_shortest_paths(const Graph& graph) -> AllPairsShor
     }
   }
 
-  for (size_t vertex_id = 0; vertex_id < vertex_count; ++vertex_id) {
+  for (VertexId vertex_id = 0; vertex_id < vertex_count; ++vertex_id) {
     if (distances[vertex_id][vertex_id] < EdgeWeight{}) {
       throw GraphAlgorithmException("Floyd-Warshall detected a negative cycle");
     }
   }
 
-  return AllPairsShortestPathsResult<EdgeWeight>(std::move(distances), std::move(next_vertices));
+  return AllPairsResult<EdgeWeight>(std::move(distances), std::move(next_vertices));
 }
 
-template <WeightedGraph Graph>
-auto strongly_connected_components(const Graph& graph) -> StronglyConnectedComponentsResult {
+template <TraversableGraph Graph>
+auto strongly_connected_components(const Graph& graph) -> SccResult {
+  using VertexId  = typename Graph::VertexId;
+  using size_type = std::size_t;
   if (!graph.is_directed()) {
     throw GraphAlgorithmException("Strongly connected components require a directed graph");
   }
@@ -706,60 +722,62 @@ auto strongly_connected_components(const Graph& graph) -> StronglyConnectedCompo
   const auto transpose    = transpose_unweighted_adjacency(adjacency);
   const auto finish_order = compute_finish_order(adjacency);
 
-  DynamicArray<bool>                 visited(graph.num_vertices(), false);
-  DynamicArray<size_t>               component_ids(graph.num_vertices(), 0U);
-  DynamicArray<DynamicArray<size_t>> components;
+  DynamicArray<bool>                   visited(graph.num_vertices(), false);
+  DynamicArray<size_type>              component_ids(graph.num_vertices(), 0U);
+  DynamicArray<DynamicArray<VertexId>> components;
   components.reserve(graph.num_vertices());
 
   for (size_t index = finish_order.size(); index > 0; --index) {
-    const size_t root = finish_order[index - 1];
+    const VertexId root = finish_order[index - 1];
     if (visited[root]) {
       continue;
     }
 
-    auto         component    = collect_component_from_transpose(transpose, root, visited);
-    const size_t component_id = components.size();
-    for (size_t vertex_id : component) {
+    auto            component    = collect_component_from_transpose(transpose, root, visited);
+    const size_type component_id = components.size();
+    for (VertexId vertex_id : component) {
       component_ids[vertex_id] = component_id;
     }
     components.push_back(std::move(component));
   }
 
-  return StronglyConnectedComponentsResult(std::move(components), std::move(component_ids));
+  return SccResult(std::move(components), std::move(component_ids));
 }
 
-template <WeightedGraph Graph>
+template <TraversableGraph Graph>
 auto topological_sort(const Graph& graph) -> DynamicArray<size_t> {
+  using VertexId  = typename Graph::VertexId;
+  using size_type = std::size_t;
   if (!graph.is_directed()) {
     throw GraphAlgorithmException("Topological sort requires a directed graph");
   }
 
-  const size_t         vertex_count = graph.num_vertices();
-  DynamicArray<size_t> indegree(vertex_count, 0U);
+  const size_type         vertex_count = graph.num_vertices();
+  DynamicArray<size_type> indegree(vertex_count, 0U);
 
-  for (size_t from = 0; from < vertex_count; ++from) {
-    graph.for_each_weighted_neighbor(from, [&](size_t to, const auto& weight) {
+  for (VertexId from = 0; from < vertex_count; ++from) {
+    graph.for_each_weighted_neighbor(from, [&](VertexId to, const auto& weight) {
       static_cast<void>(weight);
       ++indegree[to];
     });
   }
 
-  ads::queues::CircularArrayQueue<size_t> queue(std::max<size_t>(vertex_count, 1));
-  for (size_t vertex_id = 0; vertex_id < vertex_count; ++vertex_id) {
+  ads::queues::CircularArrayQueue<VertexId> queue(std::max<size_t>(vertex_count, 1));
+  for (VertexId vertex_id = 0; vertex_id < vertex_count; ++vertex_id) {
     if (indegree[vertex_id] == 0) {
       queue.enqueue(vertex_id);
     }
   }
 
-  DynamicArray<size_t> order;
+  DynamicArray<VertexId> order;
   order.reserve(vertex_count);
 
   while (!queue.is_empty()) {
-    const size_t vertex_id = queue.front();
+    const VertexId vertex_id = queue.front();
     queue.dequeue();
     order.push_back(vertex_id);
 
-    graph.for_each_weighted_neighbor(vertex_id, [&](size_t to, const auto& weight) {
+    graph.for_each_weighted_neighbor(vertex_id, [&](VertexId to, const auto& weight) {
       static_cast<void>(weight);
       --indegree[to];
       if (indegree[to] == 0) {

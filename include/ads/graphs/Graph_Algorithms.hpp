@@ -24,6 +24,7 @@
 #include "Graph_Adjacency_List.hpp"
 #include "Graph_Adjacency_Matrix.hpp"
 #include "Graph_Concepts.hpp"
+#include "Graph_Exception.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -38,9 +39,9 @@ namespace ads::graphs {
 /**
  * @brief Exception class for reusable graph algorithms.
  */
-class GraphAlgorithmException : public std::logic_error {
+class GraphAlgorithmException : public GraphError {
 public:
-  using std::logic_error::logic_error;
+  using GraphError::GraphError;
 };
 
 using ads::arrays::DynamicArray;
@@ -52,12 +53,16 @@ using ads::arrays::DynamicArray;
  *
  * @tparam EdgeWeight Numeric edge weight type.
  */
-template <PathWeight EdgeWeight>
+template <PathWeight EdgeWeightT>
 class ShortestPathsResult {
 public:
-  static constexpr size_t kNoPredecessor = std::numeric_limits<size_t>::max();
+  using VertexId   = size_t;
+  using size_type  = size_t;
+  using EdgeWeight = EdgeWeightT;
 
-  ShortestPathsResult(size_t source, DynamicArray<EdgeWeight>&& distances, DynamicArray<size_t>&& predecessors);
+  static constexpr VertexId kNoPredecessor = std::numeric_limits<VertexId>::max();
+
+  ShortestPathsResult(VertexId source, DynamicArray<EdgeWeight>&& distances, DynamicArray<VertexId>&& predecessors);
   ShortestPathsResult(ShortestPathsResult&& other) noexcept                    = default;
   auto operator=(ShortestPathsResult&& other) noexcept -> ShortestPathsResult& = default;
   ~ShortestPathsResult()                                                       = default;
@@ -69,13 +74,13 @@ public:
    * @brief Returns the source vertex.
    * @return Source vertex ID.
    */
-  [[nodiscard]] auto source() const noexcept -> size_t;
+  [[nodiscard]] auto source() const noexcept -> VertexId;
 
   /**
    * @brief Returns the number of tracked vertices.
    * @return Number of vertices in the graph.
    */
-  [[nodiscard]] auto vertex_count() const noexcept -> size_t;
+  [[nodiscard]] auto vertex_count() const noexcept -> size_type;
 
   /**
    * @brief Returns the raw distances container.
@@ -89,7 +94,7 @@ public:
    * @return Predecessor vertex or kNoPredecessor if unreachable/source.
    * @throws GraphAlgorithmException if vertex_id is invalid.
    */
-  [[nodiscard]] auto predecessor_of(size_t vertex_id) const -> size_t;
+  [[nodiscard]] auto predecessor_of(VertexId vertex_id) const -> VertexId;
 
   /**
    * @brief Returns the computed shortest-path distance to a vertex.
@@ -97,7 +102,7 @@ public:
    * @return Distance value or the unreachable sentinel if no path exists.
    * @throws GraphAlgorithmException if vertex_id is invalid.
    */
-  [[nodiscard]] auto distance_to(size_t vertex_id) const -> const EdgeWeight&;
+  [[nodiscard]] auto distance_to(VertexId vertex_id) const -> const EdgeWeight&;
 
   /**
    * @brief Checks whether the source can reach a vertex.
@@ -105,7 +110,7 @@ public:
    * @return true if a path exists, false otherwise.
    * @throws GraphAlgorithmException if vertex_id is invalid.
    */
-  [[nodiscard]] auto has_path_to(size_t vertex_id) const -> bool;
+  [[nodiscard]] auto has_path_to(VertexId vertex_id) const -> bool;
 
   /**
    * @brief Reconstructs the path from the source to a vertex.
@@ -113,7 +118,7 @@ public:
    * @return Ordered vertex sequence, or std::nullopt if unreachable.
    * @throws GraphAlgorithmException if vertex_id is invalid.
    */
-  [[nodiscard]] auto path_to(size_t vertex_id) const -> std::optional<DynamicArray<size_t>>;
+  [[nodiscard]] auto path_to(VertexId vertex_id) const -> std::optional<DynamicArray<VertexId>>;
 
   /**
    * @brief Returns the sentinel used for unreachable distances.
@@ -122,11 +127,11 @@ public:
   [[nodiscard]] static auto unreachable_distance() noexcept -> EdgeWeight;
 
 private:
-  size_t                   source_;
+  VertexId                 source_;
   DynamicArray<EdgeWeight> distances_;
-  DynamicArray<size_t>     predecessors_;
+  DynamicArray<VertexId>   predecessors_;
 
-  auto validate_vertex(size_t vertex_id) const -> void;
+  auto validate_vertex(VertexId vertex_id) const -> void;
 };
 
 /**
@@ -134,21 +139,25 @@ private:
  *
  * @tparam EdgeWeight Numeric edge weight type.
  */
-template <PathWeight EdgeWeight>
+template <PathWeight EdgeWeightT>
 class MinimumSpanningForestResult {
 public:
+  using VertexId   = size_t;
+  using size_type  = size_t;
+  using EdgeWeight = EdgeWeightT;
+
   /**
    * @brief Edge selected for the forest.
    */
   struct Edge {
-    size_t     from;
-    size_t     to;
+    VertexId   from;
+    VertexId   to;
     EdgeWeight weight;
 
     auto operator==(const Edge& other) const -> bool = default;
   };
 
-  MinimumSpanningForestResult(EdgeWeight total_weight, size_t component_count, DynamicArray<Edge>&& edges);
+  MinimumSpanningForestResult(EdgeWeight total_weight, size_type component_count, DynamicArray<Edge>&& edges);
   MinimumSpanningForestResult(MinimumSpanningForestResult&& other) noexcept                    = default;
   auto operator=(MinimumSpanningForestResult&& other) noexcept -> MinimumSpanningForestResult& = default;
   ~MinimumSpanningForestResult()                                                               = default;
@@ -172,24 +181,24 @@ public:
    * @brief Returns the number of connected components spanned by the forest.
    * @return Component count.
    */
-  [[nodiscard]] auto component_count() const noexcept -> size_t;
+  [[nodiscard]] auto component_count() const noexcept -> size_type;
 
   /**
    * @brief Returns the number of selected edges.
    * @return Forest edge count.
    */
-  [[nodiscard]] auto edge_count() const noexcept -> size_t;
+  [[nodiscard]] auto edge_count() const noexcept -> size_type;
 
   /**
    * @brief Checks whether the forest spans all vertices with a single tree.
    * @param vertex_count Number of vertices in the original graph.
    * @return true for a connected MST, false for a disconnected forest.
    */
-  [[nodiscard]] auto spans_all_vertices(size_t vertex_count) const noexcept -> bool;
+  [[nodiscard]] auto spans_all_vertices(size_type vertex_count) const noexcept -> bool;
 
 private:
   EdgeWeight         total_weight_;
-  size_t             component_count_;
+  size_type          component_count_;
   DynamicArray<Edge> edges_;
 };
 
@@ -198,24 +207,28 @@ private:
  *
  * @tparam EdgeWeight Numeric edge weight type.
  */
-template <PathWeight EdgeWeight>
-class AllPairsShortestPathsResult {
+template <PathWeight EdgeWeightT>
+class AllPairsResult {
 public:
-  static constexpr size_t kNoNextVertex = std::numeric_limits<size_t>::max();
+  using VertexId   = size_t;
+  using size_type  = size_t;
+  using EdgeWeight = EdgeWeightT;
 
-  AllPairsShortestPathsResult(DynamicArray<DynamicArray<EdgeWeight>>&& distances, DynamicArray<DynamicArray<size_t>>&& next_vertices);
-  AllPairsShortestPathsResult(AllPairsShortestPathsResult&& other) noexcept                    = default;
-  auto operator=(AllPairsShortestPathsResult&& other) noexcept -> AllPairsShortestPathsResult& = default;
-  ~AllPairsShortestPathsResult()                                                               = default;
+  static constexpr VertexId kNoNextVertex = std::numeric_limits<VertexId>::max();
 
-  AllPairsShortestPathsResult(const AllPairsShortestPathsResult&)                    = delete;
-  auto operator=(const AllPairsShortestPathsResult&) -> AllPairsShortestPathsResult& = delete;
+  AllPairsResult(DynamicArray<DynamicArray<EdgeWeight>>&& distances, DynamicArray<DynamicArray<VertexId>>&& next_vertices);
+  AllPairsResult(AllPairsResult&& other) noexcept                    = default;
+  auto operator=(AllPairsResult&& other) noexcept -> AllPairsResult& = default;
+  ~AllPairsResult()                                                  = default;
+
+  AllPairsResult(const AllPairsResult&)                    = delete;
+  auto operator=(const AllPairsResult&) -> AllPairsResult& = delete;
 
   /**
    * @brief Returns the number of vertices covered by the result matrices.
    * @return Vertex count.
    */
-  [[nodiscard]] auto vertex_count() const noexcept -> size_t;
+  [[nodiscard]] auto vertex_count() const noexcept -> size_type;
 
   /**
    * @brief Returns the raw distance matrix.
@@ -230,7 +243,7 @@ public:
    * @return Distance value or the unreachable sentinel if no path exists.
    * @throws GraphAlgorithmException if either vertex is invalid.
    */
-  [[nodiscard]] auto distance(size_t source, size_t target) const -> const EdgeWeight&;
+  [[nodiscard]] auto distance(VertexId source, VertexId target) const -> const EdgeWeight&;
 
   /**
    * @brief Checks whether a path exists from source to target.
@@ -239,7 +252,7 @@ public:
    * @return true if reachable, false otherwise.
    * @throws GraphAlgorithmException if either vertex is invalid.
    */
-  [[nodiscard]] auto has_path(size_t source, size_t target) const -> bool;
+  [[nodiscard]] auto has_path(VertexId source, VertexId target) const -> bool;
 
   /**
    * @brief Reconstructs the shortest path from source to target.
@@ -248,7 +261,7 @@ public:
    * @return Ordered vertex sequence, or std::nullopt if unreachable.
    * @throws GraphAlgorithmException if either vertex is invalid.
    */
-  [[nodiscard]] auto path(size_t source, size_t target) const -> std::optional<DynamicArray<size_t>>;
+  [[nodiscard]] auto path(VertexId source, VertexId target) const -> std::optional<DynamicArray<VertexId>>;
 
   /**
    * @brief Returns the sentinel used for unreachable distances.
@@ -258,41 +271,42 @@ public:
 
 private:
   DynamicArray<DynamicArray<EdgeWeight>> distances_;
-  DynamicArray<DynamicArray<size_t>>     next_vertices_;
+  DynamicArray<DynamicArray<VertexId>>   next_vertices_;
 
-  auto validate_vertex(size_t vertex_id) const -> void;
+  auto validate_vertex(VertexId vertex_id) const -> void;
 };
 
-/**
- * @brief Result of a strongly connected components computation.
- */
-class StronglyConnectedComponentsResult {
+///@brief Result of a "Strongly Connected Components" computation.
+class SccResult {
 public:
-  StronglyConnectedComponentsResult(DynamicArray<DynamicArray<size_t>>&& components, DynamicArray<size_t>&& component_ids);
-  StronglyConnectedComponentsResult(StronglyConnectedComponentsResult&& other) noexcept                    = default;
-  auto operator=(StronglyConnectedComponentsResult&& other) noexcept -> StronglyConnectedComponentsResult& = default;
-  ~StronglyConnectedComponentsResult()                                                                     = default;
+  using VertexId  = size_t;
+  using size_type = size_t;
 
-  StronglyConnectedComponentsResult(const StronglyConnectedComponentsResult&)                    = delete;
-  auto operator=(const StronglyConnectedComponentsResult&) -> StronglyConnectedComponentsResult& = delete;
+  SccResult(DynamicArray<DynamicArray<VertexId>>&& components, DynamicArray<size_type>&& component_ids);
+  SccResult(SccResult&& other) noexcept                    = default;
+  auto operator=(SccResult&& other) noexcept -> SccResult& = default;
+  ~SccResult()                                             = default;
+
+  SccResult(const SccResult&)                    = delete;
+  auto operator=(const SccResult&) -> SccResult& = delete;
 
   /**
    * @brief Returns the number of vertices covered by the result.
    * @return Vertex count.
    */
-  [[nodiscard]] auto vertex_count() const noexcept -> size_t;
+  [[nodiscard]] auto vertex_count() const noexcept -> size_type;
 
   /**
    * @brief Returns the number of strongly connected components.
    * @return Component count.
    */
-  [[nodiscard]] auto component_count() const noexcept -> size_t;
+  [[nodiscard]] auto component_count() const noexcept -> size_type;
 
   /**
    * @brief Returns the raw component collection.
    * @return Const reference to the component list.
    */
-  [[nodiscard]] auto components() const noexcept -> const DynamicArray<DynamicArray<size_t>>&;
+  [[nodiscard]] auto components() const noexcept -> const DynamicArray<DynamicArray<VertexId>>&;
 
   /**
    * @brief Returns the vertex IDs belonging to one component.
@@ -300,7 +314,7 @@ public:
    * @return Const reference to the component vertices.
    * @throws GraphAlgorithmException if component_id is invalid.
    */
-  [[nodiscard]] auto component(size_t component_id) const -> const DynamicArray<size_t>&;
+  [[nodiscard]] auto component(size_type component_id) const -> const DynamicArray<VertexId>&;
 
   /**
    * @brief Returns the component index assigned to a vertex.
@@ -308,7 +322,7 @@ public:
    * @return Component index for the vertex.
    * @throws GraphAlgorithmException if vertex_id is invalid.
    */
-  [[nodiscard]] auto component_id_of(size_t vertex_id) const -> size_t;
+  [[nodiscard]] auto component_id_of(VertexId vertex_id) const -> size_type;
 
   /**
    * @brief Checks whether two vertices belong to the same SCC.
@@ -317,14 +331,14 @@ public:
    * @return true if both vertices are in the same component.
    * @throws GraphAlgorithmException if either vertex is invalid.
    */
-  [[nodiscard]] auto are_strongly_connected(size_t lhs, size_t rhs) const -> bool;
+  [[nodiscard]] auto are_strongly_connected(VertexId lhs, VertexId rhs) const -> bool;
 
 private:
-  DynamicArray<DynamicArray<size_t>> components_;
-  DynamicArray<size_t>               component_ids_;
+  DynamicArray<DynamicArray<VertexId>> components_;
+  DynamicArray<size_type>              component_ids_;
 
-  auto validate_vertex(size_t vertex_id) const -> void;
-  auto validate_component(size_t component_id) const -> void;
+  auto validate_vertex(VertexId vertex_id) const -> void;
+  auto validate_component(size_type component_id) const -> void;
 };
 
 //===----- ALGORITHM INTERFACE -------------------------------------------------===//
@@ -340,7 +354,7 @@ private:
  * @complexity Time O((V + E) log V) for sparse graphs when neighbor traversal is efficient.
  */
 template <WeightedGraph Graph>
-auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::edge_weight_type>;
+auto dijkstra(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::EdgeWeight>;
 
 /**
  * @brief Computes single-source shortest paths with Bellman-Ford.
@@ -353,7 +367,7 @@ auto dijkstra_shortest_paths(const Graph& graph, size_t source) -> ShortestPaths
  * @complexity Time O(VE), Space O(V).
  */
 template <WeightedGraph Graph>
-auto bellman_ford_shortest_paths(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::edge_weight_type>;
+auto bellman_ford(const Graph& graph, size_t source) -> ShortestPathsResult<typename Graph::EdgeWeight>;
 
 /**
  * @brief Computes a minimum spanning forest with Prim's algorithm.
@@ -365,7 +379,7 @@ auto bellman_ford_shortest_paths(const Graph& graph, size_t source) -> ShortestP
  * @complexity Time O(E log E) with adjacency-list style neighbor traversal.
  */
 template <WeightedGraph Graph>
-auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::edge_weight_type>;
+auto prim(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::EdgeWeight>;
 
 /**
  * @brief Computes a minimum spanning forest with Kruskal's algorithm.
@@ -377,7 +391,7 @@ auto prim_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestRe
  * @complexity Time O(E log E), Space O(V + E).
  */
 template <WeightedGraph Graph>
-auto kruskal_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::edge_weight_type>;
+auto kruskal(const Graph& graph) -> MinimumSpanningForestResult<typename Graph::EdgeWeight>;
 
 /**
  * @brief Computes all-pairs shortest paths with the Floyd-Warshall algorithm.
@@ -389,7 +403,7 @@ auto kruskal_minimum_spanning_forest(const Graph& graph) -> MinimumSpanningFores
  * @complexity Time O(V^3), Space O(V^2).
  */
 template <WeightedGraph Graph>
-auto floyd_warshall_all_pairs_shortest_paths(const Graph& graph) -> AllPairsShortestPathsResult<typename Graph::edge_weight_type>;
+auto floyd_warshall(const Graph& graph) -> AllPairsResult<typename Graph::EdgeWeight>;
 
 /**
  * @brief Computes strongly connected components with Kosaraju's algorithm.
@@ -400,8 +414,8 @@ auto floyd_warshall_all_pairs_shortest_paths(const Graph& graph) -> AllPairsShor
  * @throws GraphAlgorithmException if the graph is undirected.
  * @complexity Time O(V + E), Space O(V + E).
  */
-template <WeightedGraph Graph>
-auto strongly_connected_components(const Graph& graph) -> StronglyConnectedComponentsResult;
+template <TraversableGraph Graph>
+auto strongly_connected_components(const Graph& graph) -> SccResult;
 
 /**
  * @brief Computes a topological ordering with Kahn's algorithm.
@@ -412,7 +426,7 @@ auto strongly_connected_components(const Graph& graph) -> StronglyConnectedCompo
  * @throws GraphAlgorithmException if the graph is undirected or contains a cycle.
  * @complexity Time O(V + E), Space O(V).
  */
-template <WeightedGraph Graph>
+template <TraversableGraph Graph>
 auto topological_sort(const Graph& graph) -> DynamicArray<size_t>;
 
 } // namespace ads::graphs

@@ -87,6 +87,19 @@ TEST_F(GraphAdjacencyMatrixTest, UndirectedEdgesAreStoredSymmetrically) {
   EXPECT_EQ(graph.degree(0), 2);
 }
 
+TEST_F(GraphAdjacencyMatrixTest, AddEdgeUpdatesWeightOfExistingEdge) {
+  graph.add_vertex(0);
+  graph.add_vertex(1);
+
+  graph.add_edge(0, 1, 2.5);
+  graph.add_edge(0, 1, 9.0); // Existing edge: weight is updated, not duplicated.
+
+  EXPECT_EQ(graph.num_edges(), 1);
+  EXPECT_EQ(graph.degree(0), 1);
+  EXPECT_EQ(graph.get_edge_weight(0, 1), 9.0);
+  EXPECT_EQ(graph.get_edge_weight(1, 0), 9.0); // Reverse edge updated for undirected.
+}
+
 TEST(GraphAdjacencyMatrixDirectedTest, DirectedEdgesDoNotAddReverseEdge) {
   GraphAdjacencyMatrix<int> graph(true);
   graph.add_vertex(0);
@@ -98,6 +111,20 @@ TEST(GraphAdjacencyMatrixDirectedTest, DirectedEdgesDoNotAddReverseEdge) {
   EXPECT_EQ(graph.num_edges(), 1);
   EXPECT_TRUE(graph.has_edge(0, 1));
   EXPECT_FALSE(graph.has_edge(1, 0));
+}
+
+TEST(GraphAdjacencyMatrixDirectedTest, InDegreeCountsIncomingEdges) {
+  GraphAdjacencyMatrix<int> graph(true);
+  for (int i = 0; i < 4; ++i) {
+    graph.add_vertex(i);
+  }
+  graph.add_edge(0, 3);
+  graph.add_edge(1, 3);
+  graph.add_edge(2, 3);
+
+  EXPECT_EQ(graph.in_degree(3), 3U);
+  EXPECT_EQ(graph.in_degree(0), 0U);
+  EXPECT_EQ(graph.degree(0), 1U); // out-degree
 }
 
 TEST_F(GraphAdjacencyMatrixTest, RemoveUndirectedEdgeRemovesReverseEdge) {

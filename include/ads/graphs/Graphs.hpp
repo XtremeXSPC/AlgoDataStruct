@@ -25,6 +25,7 @@
 #include "Graph_Adjacency_Matrix.hpp"
 #include "Graph_Algorithms.hpp"
 #include "Graph_Concepts.hpp"
+#include "Graph_Exception.hpp"
 
 #endif // GRAPHS_HPP
 

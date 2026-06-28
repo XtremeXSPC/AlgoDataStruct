@@ -20,6 +20,18 @@
 
 using namespace ads::graphs;
 
+// A valid edge payload that is deliberately NOT a PathWeight (no ordering/arithmetic).
+struct OpaqueWeight {};
+
+// The structural concept must accept a graph whose weight type is non-numeric,
+// while the weighted refinement must reject it.
+static_assert(TraversableGraph<GraphAdjacencyList<int, double>>);
+static_assert(WeightedGraph<GraphAdjacencyList<int, double>>);
+static_assert(TraversableGraph<GraphAdjacencyList<int, OpaqueWeight>>);
+static_assert(!WeightedGraph<GraphAdjacencyList<int, OpaqueWeight>>);
+static_assert(TraversableGraph<GraphAdjacencyMatrix<int, OpaqueWeight>>);
+static_assert(!WeightedGraph<GraphAdjacencyMatrix<int, OpaqueWeight>>);
+
 namespace {
 
 //===----- TEST UTILITIES ------------------------------------------------------===//
@@ -61,7 +73,7 @@ auto expect_valid_topological_order(
   }
 }
 
-auto normalize_components(const StronglyConnectedComponentsResult& result) -> std::vector<std::vector<size_t>> {
+auto normalize_components(const SccResult& result) -> std::vector<std::vector<size_t>> {
   std::vector<std::vector<size_t>> normalized;
   normalized.reserve(result.component_count());
 
@@ -71,11 +83,11 @@ auto normalize_components(const StronglyConnectedComponentsResult& result) -> st
     for (size_t vertex_id : component) {
       vertices.push_back(vertex_id);
     }
-    std::sort(vertices.begin(), vertices.end());
+    std::ranges::sort(vertices);
     normalized.push_back(std::move(vertices));
   }
 
-  std::sort(normalized.begin(), normalized.end());
+  std::ranges::sort(normalized);
   return normalized;
 }
 
@@ -100,7 +112,7 @@ TEST(GraphAlgorithmsDijkstraListTest, ComputesShortestDistancesAndPaths) {
   graph.add_edge(3, 4, 6.0);
   graph.add_edge(4, 5, 9.0);
 
-  auto shortest_paths = dijkstra_shortest_paths(graph, 0);
+  auto shortest_paths = dijkstra(graph, 0);
 
   EXPECT_EQ(shortest_paths.source(), 0U);
   EXPECT_EQ(shortest_paths.vertex_count(), 6U);
@@ -127,7 +139,7 @@ TEST(GraphAlgorithmsDijkstraMatrixTest, WorksWithAdjacencyMatrixGraphs) {
   graph.add_edge(2, 3, 5);
   graph.add_edge(3, 4, 3);
 
-  auto shortest_paths = dijkstra_shortest_paths(graph, 0);
+  auto shortest_paths = dijkstra(graph, 0);
 
   EXPECT_EQ(shortest_paths.distance_to(0), 0);
   EXPECT_EQ(shortest_paths.distance_to(1), 3);
@@ -147,7 +159,7 @@ TEST(GraphAlgorithmsDijkstraTest, UnreachableVerticesKeepSentinelDistance) {
   graph.add_edge(0, 1, 3.0);
   graph.add_edge(1, 2, 4.0);
 
-  auto shortest_paths = dijkstra_shortest_paths(graph, 0);
+  auto shortest_paths = dijkstra(graph, 0);
 
   EXPECT_TRUE(shortest_paths.has_path_to(0));
   EXPECT_TRUE(shortest_paths.has_path_to(2));
@@ -164,21 +176,21 @@ TEST(GraphAlgorithmsDijkstraTest, RejectsNegativeEdgeWeights) {
   graph.add_vertex(1);
   graph.add_edge(0, 1, -5);
 
-  EXPECT_THROW(static_cast<void>(dijkstra_shortest_paths(graph, 0)), GraphAlgorithmException);
+  EXPECT_THROW(static_cast<void>(dijkstra(graph, 0)), GraphAlgorithmException);
 }
 
 TEST(GraphAlgorithmsDijkstraTest, RejectsInvalidSourceVertex) {
   GraphAdjacencyList<int> graph;
   graph.add_vertex(0);
 
-  EXPECT_THROW(static_cast<void>(dijkstra_shortest_paths(graph, 1)), GraphAlgorithmException);
+  EXPECT_THROW(static_cast<void>(dijkstra(graph, 1)), GraphAlgorithmException);
 }
 
 TEST(GraphAlgorithmsDijkstraTest, SourcePathIsSingleVertex) {
   GraphAdjacencyList<int> graph;
   graph.add_vertex(42);
 
-  auto shortest_paths = dijkstra_shortest_paths(graph, 0);
+  auto shortest_paths = dijkstra(graph, 0);
 
   EXPECT_TRUE(shortest_paths.has_path_to(0));
   expect_path_eq(shortest_paths.path_to(0), {0});
@@ -204,7 +216,7 @@ TEST(GraphAlgorithmsBellmanFordTest, HandlesNegativeEdgesWithoutNegativeCycles) 
   graph.add_edge(4, 0, 2);
   graph.add_edge(4, 3, 7);
 
-  auto shortest_paths = bellman_ford_shortest_paths(graph, 0);
+  auto shortest_paths = bellman_ford(graph, 0);
 
   EXPECT_EQ(shortest_paths.distance_to(0), 0);
   EXPECT_EQ(shortest_paths.distance_to(1), 2);
@@ -225,7 +237,7 @@ TEST(GraphAlgorithmsBellmanFordTest, DetectsReachableNegativeCycles) {
   graph.add_edge(1, 2, -3);
   graph.add_edge(2, 1, 1);
 
-  EXPECT_THROW(static_cast<void>(bellman_ford_shortest_paths(graph, 0)), GraphAlgorithmException);
+  EXPECT_THROW(static_cast<void>(bellman_ford(graph, 0)), GraphAlgorithmException);
 }
 
 TEST(GraphAlgorithmsBellmanFordMatrixTest, WorksWithAdjacencyMatrixGraphs) {
@@ -240,7 +252,7 @@ TEST(GraphAlgorithmsBellmanFordMatrixTest, WorksWithAdjacencyMatrixGraphs) {
   graph.add_edge(1, 2, -2);
   graph.add_edge(2, 3, 3);
 
-  auto shortest_paths = bellman_ford_shortest_paths(graph, 0);
+  auto shortest_paths = bellman_ford(graph, 0);
 
   EXPECT_EQ(shortest_paths.distance_to(0), 0);
   EXPECT_EQ(shortest_paths.distance_to(1), 4);
@@ -265,7 +277,7 @@ TEST(GraphAlgorithmsPrimTest, BuildsMinimumSpanningForestForUndirectedGraph) {
   graph.add_edge(2, 3, 4);
   graph.add_edge(4, 5, 7);
 
-  auto forest = prim_minimum_spanning_forest(graph);
+  auto forest = prim(graph);
 
   EXPECT_EQ(forest.component_count(), 2U);
   EXPECT_EQ(forest.edge_count(), 4U);
@@ -286,7 +298,7 @@ TEST(GraphAlgorithmsPrimMatrixTest, WorksWithAdjacencyMatrixGraphs) {
   graph.add_edge(1, 3, 15);
   graph.add_edge(2, 3, 4);
 
-  auto forest = prim_minimum_spanning_forest(graph);
+  auto forest = prim(graph);
 
   EXPECT_EQ(forest.component_count(), 1U);
   EXPECT_EQ(forest.edge_count(), 3U);
@@ -300,7 +312,7 @@ TEST(GraphAlgorithmsPrimTest, RejectsDirectedGraphs) {
   graph.add_vertex(1);
   graph.add_edge(0, 1, 3);
 
-  EXPECT_THROW(static_cast<void>(prim_minimum_spanning_forest(graph)), GraphAlgorithmException);
+  EXPECT_THROW(static_cast<void>(prim(graph)), GraphAlgorithmException);
 }
 
 //===----- KRUSKAL TESTS -------------------------------------------------------===//
@@ -319,7 +331,7 @@ TEST(GraphAlgorithmsKruskalTest, BuildsMinimumSpanningForestForUndirectedGraph) 
   graph.add_edge(2, 3, 4);
   graph.add_edge(4, 5, 7);
 
-  auto forest = kruskal_minimum_spanning_forest(graph);
+  auto forest = kruskal(graph);
 
   EXPECT_EQ(forest.component_count(), 2U);
   EXPECT_EQ(forest.edge_count(), 4U);
@@ -340,7 +352,7 @@ TEST(GraphAlgorithmsKruskalMatrixTest, WorksWithAdjacencyMatrixGraphs) {
   graph.add_edge(1, 3, 15);
   graph.add_edge(2, 3, 4);
 
-  auto forest = kruskal_minimum_spanning_forest(graph);
+  auto forest = kruskal(graph);
 
   EXPECT_EQ(forest.component_count(), 1U);
   EXPECT_EQ(forest.edge_count(), 3U);
@@ -361,7 +373,7 @@ TEST(GraphAlgorithmsKruskalTest, HandlesNegativeEdgeWeights) {
   graph.add_edge(0, 3, 4);
   graph.add_edge(0, 2, 5);
 
-  auto forest = kruskal_minimum_spanning_forest(graph);
+  auto forest = kruskal(graph);
 
   EXPECT_EQ(forest.component_count(), 1U);
   EXPECT_EQ(forest.edge_count(), 3U);
@@ -384,8 +396,8 @@ TEST(GraphAlgorithmsKruskalTest, MatchesPrimOnConnectedGraph) {
   graph.add_edge(2, 4, 7);
   graph.add_edge(3, 4, 9);
 
-  const auto prim_forest    = prim_minimum_spanning_forest(graph);
-  const auto kruskal_forest = kruskal_minimum_spanning_forest(graph);
+  const auto prim_forest    = prim(graph);
+  const auto kruskal_forest = kruskal(graph);
 
   EXPECT_EQ(kruskal_forest.component_count(), prim_forest.component_count());
   EXPECT_EQ(kruskal_forest.edge_count(), prim_forest.edge_count());
@@ -399,7 +411,7 @@ TEST(GraphAlgorithmsKruskalTest, RejectsDirectedGraphs) {
   graph.add_vertex(1);
   graph.add_edge(0, 1, 3);
 
-  EXPECT_THROW(static_cast<void>(kruskal_minimum_spanning_forest(graph)), GraphAlgorithmException);
+  EXPECT_THROW(static_cast<void>(kruskal(graph)), GraphAlgorithmException);
 }
 
 //===----- FLOYD-WARSHALL TESTS ------------------------------------------------===//
@@ -416,7 +428,7 @@ TEST(GraphAlgorithmsFloydWarshallMatrixTest, ComputesAllPairsShortestPaths) {
   graph.add_edge(1, 2, 3);
   graph.add_edge(2, 3, 1);
 
-  const auto result = floyd_warshall_all_pairs_shortest_paths(graph);
+  const auto result = floyd_warshall(graph);
 
   EXPECT_EQ(result.vertex_count(), 4U);
   EXPECT_EQ(result.distance(0, 0), 0);
@@ -439,7 +451,7 @@ TEST(GraphAlgorithmsFloydWarshallListTest, WorksWithAdjacencyListGraphs) {
   graph.add_edge(1, 2, -2);
   graph.add_edge(2, 3, 3);
 
-  const auto result = floyd_warshall_all_pairs_shortest_paths(graph);
+  const auto result = floyd_warshall(graph);
 
   EXPECT_EQ(result.distance(0, 2), 2);
   EXPECT_EQ(result.distance(0, 3), 5);
@@ -456,7 +468,7 @@ TEST(GraphAlgorithmsFloydWarshallTest, UnreachablePairsKeepSentinelDistance) {
 
   graph.add_edge(0, 1, 2.5);
 
-  const auto result = floyd_warshall_all_pairs_shortest_paths(graph);
+  const auto result = floyd_warshall(graph);
 
   EXPECT_TRUE(result.has_path(0, 0));
   EXPECT_TRUE(result.has_path(0, 1));
@@ -476,7 +488,7 @@ TEST(GraphAlgorithmsFloydWarshallTest, DetectsNegativeCycles) {
   graph.add_edge(1, 2, -3);
   graph.add_edge(2, 0, 1);
 
-  EXPECT_THROW(static_cast<void>(floyd_warshall_all_pairs_shortest_paths(graph)), GraphAlgorithmException);
+  EXPECT_THROW(static_cast<void>(floyd_warshall(graph)), GraphAlgorithmException);
 }
 
 //===----- SCC TESTS -----------------------------------------------------------===//
