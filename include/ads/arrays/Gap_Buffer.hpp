@@ -286,18 +286,13 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  /// Owning pointer to the raw element storage with a custom array deleter.
+  ///@brief Owning pointer to the raw element storage with a custom array deleter.
   using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
 
-  /**
-   * @brief Returns the maximum number of elements that can be allocated for T.
-   */
+  ///@brief Returns the maximum number of elements that can be allocated for T.
   static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
 
-  /**
-   * @brief Releases raw storage previously obtained from allocate().
-   * @param ptr Pointer to release (may be null).
-   */
+  ///@brief Releases raw storage previously obtained from allocate().
   static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
 
   /**
@@ -315,20 +310,13 @@ private:
    */
   [[nodiscard]] auto to_physical_index(size_t logical_index) const noexcept -> size_t;
 
-  /**
-   * @brief Returns the number of free slots in the gap.
-   */
+  ///@brief Returns the number of free slots in the gap.
   [[nodiscard]] auto gap_size() const noexcept -> size_t;
 
-  /**
-   * @brief Ensures the gap has room for at least one element, growing if needed.
-   */
+  ///@brief Ensures the gap has room for at least one element, growing if needed.
   auto ensure_gap() -> void;
 
-  /**
-   * @brief Reallocates to new_capacity, repositioning the gap at the cursor.
-   * @param new_capacity The new total capacity.
-   */
+  ///@brief Reallocates to new_capacity, repositioning the gap at the cursor.
   auto reallocate(size_t new_capacity) -> void;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//

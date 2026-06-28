@@ -31,9 +31,7 @@ public:
   using std::logic_error::logic_error;
 };
 
-/**
- * @brief Exception thrown when an array operation exceeds capacity limits.
- */
+///@brief Exception thrown when an array operation exceeds capacity limits.
 class ArrayOverflowException : public ArrayException {
 public:
   using ArrayException::ArrayException;
@@ -41,9 +39,7 @@ public:
   ArrayOverflowException() : ArrayException("Array overflow: maximum capacity exceeded") {}
 };
 
-/**
- * @brief Exception thrown when attempting operations on an empty array.
- */
+///@brief Exception thrown when attempting operations on an empty array.
 class ArrayUnderflowException : public ArrayException {
 public:
   using ArrayException::ArrayException;
@@ -51,9 +47,7 @@ public:
   ArrayUnderflowException() : ArrayException("Array underflow: operation on empty array") {}
 };
 
-/**
- * @brief Exception thrown when accessing an index out of bounds.
- */
+///@brief Exception thrown when accessing an index out of bounds.
 class ArrayOutOfRangeException : public ArrayException {
 public:
   using ArrayException::ArrayException;
