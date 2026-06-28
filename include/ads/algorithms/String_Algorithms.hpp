@@ -25,9 +25,9 @@
 
 namespace ads::algorithms {
 
-/**
- * @brief Exception class for string algorithm configuration errors.
- */
+using ads::arrays::DynamicArray;
+
+///@brief Exception class for string algorithm configuration errors.
 class StringAlgorithmException : public std::logic_error {
 public:
   using std::logic_error::logic_error;
@@ -41,7 +41,7 @@ public:
  * @return Prefix-function values for each pattern position.
  * @complexity Time O(m), Space O(m)
  */
-[[nodiscard]] auto compute_kmp_prefix_function(std::string_view pattern) -> ads::arrays::DynamicArray<size_t>;
+[[nodiscard]] auto compute_kmp_prefix_function(std::string_view pattern) -> DynamicArray<size_t>;
 
 /**
  * @brief Finds every occurrence of pattern in text with Knuth-Morris-Pratt.
@@ -51,7 +51,7 @@ public:
  * @complexity Time O(n + m), Space O(m)
  * @note An empty pattern matches at every position, including text.size().
  */
-[[nodiscard]] auto kmp_search(std::string_view text, std::string_view pattern) -> ads::arrays::DynamicArray<size_t>;
+[[nodiscard]] auto kmp_search(std::string_view text, std::string_view pattern) -> DynamicArray<size_t>;
 
 /**
  * @brief Finds every occurrence of pattern in text with Rabin-Karp.
@@ -66,7 +66,7 @@ public:
  */
 [[nodiscard]] auto
 rabin_karp_search(std::string_view text, std::string_view pattern, std::uint64_t base = 257ULL, std::uint64_t modulus = 1'000'000'007ULL)
-    -> ads::arrays::DynamicArray<size_t>;
+    -> DynamicArray<size_t>;
 
 } // namespace ads::algorithms
 

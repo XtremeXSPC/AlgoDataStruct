@@ -20,8 +20,8 @@ namespace ads::algorithms {
 
 namespace string_algorithm_detail {
 
-inline auto all_match_positions(size_t text_length) -> ads::arrays::DynamicArray<size_t> {
-  ads::arrays::DynamicArray<size_t> matches;
+inline auto all_match_positions(size_t text_length) -> DynamicArray<size_t> {
+  DynamicArray<size_t> matches;
   matches.reserve(text_length + 1);
   for (size_t index = 0; index <= text_length; ++index) {
     matches.push_back(index);
@@ -33,8 +33,8 @@ inline auto all_match_positions(size_t text_length) -> ads::arrays::DynamicArray
 
 //===----- PATTERN MATCHING ALGORITHMS -----------------------------------------===//
 
-auto compute_kmp_prefix_function(std::string_view pattern) -> ads::arrays::DynamicArray<size_t> {
-  ads::arrays::DynamicArray<size_t> prefix(pattern.size(), 0U);
+auto compute_kmp_prefix_function(std::string_view pattern) -> DynamicArray<size_t> {
+  DynamicArray<size_t> prefix(pattern.size(), 0U);
 
   for (size_t index = 1, matched = 0; index < pattern.size(); ++index) {
     while (matched > 0 && pattern[index] != pattern[matched]) {
@@ -50,16 +50,16 @@ auto compute_kmp_prefix_function(std::string_view pattern) -> ads::arrays::Dynam
   return prefix;
 }
 
-auto kmp_search(std::string_view text, std::string_view pattern) -> ads::arrays::DynamicArray<size_t> {
+auto kmp_search(std::string_view text, std::string_view pattern) -> DynamicArray<size_t> {
   if (pattern.empty()) {
     return string_algorithm_detail::all_match_positions(text.size());
   }
   if (pattern.size() > text.size()) {
-    return ads::arrays::DynamicArray<size_t>{};
+    return DynamicArray<size_t>{};
   }
 
-  const auto                        prefix = compute_kmp_prefix_function(pattern);
-  ads::arrays::DynamicArray<size_t> matches;
+  const auto           prefix = compute_kmp_prefix_function(pattern);
+  DynamicArray<size_t> matches;
 
   for (size_t text_index = 0, matched = 0; text_index < text.size(); ++text_index) {
     while (matched > 0 && text[text_index] != pattern[matched]) {
@@ -79,8 +79,7 @@ auto kmp_search(std::string_view text, std::string_view pattern) -> ads::arrays:
   return matches;
 }
 
-auto rabin_karp_search(std::string_view text, std::string_view pattern, std::uint64_t base, std::uint64_t modulus)
-    -> ads::arrays::DynamicArray<size_t> {
+auto rabin_karp_search(std::string_view text, std::string_view pattern, std::uint64_t base, std::uint64_t modulus) -> DynamicArray<size_t> {
   if (base == 0 || modulus == 0) {
     throw StringAlgorithmException("Rabin-Karp base and modulus must be greater than zero");
   }
@@ -88,7 +87,7 @@ auto rabin_karp_search(std::string_view text, std::string_view pattern, std::uin
     return string_algorithm_detail::all_match_positions(text.size());
   }
   if (pattern.size() > text.size()) {
-    return ads::arrays::DynamicArray<size_t>{};
+    return DynamicArray<size_t>{};
   }
 
   std::uint64_t highest_power = 1;
@@ -104,7 +103,7 @@ auto rabin_karp_search(std::string_view text, std::string_view pattern, std::uin
     window_hash  = (window_hash * base + static_cast<unsigned char>(text[index])) % modulus;
   }
 
-  ads::arrays::DynamicArray<size_t> matches;
+  DynamicArray<size_t> matches;
 
   for (size_t start = 0; start + pattern.size() <= text.size(); ++start) {
     if (pattern_hash == window_hash && text.substr(start, pattern.size()) == pattern) {
