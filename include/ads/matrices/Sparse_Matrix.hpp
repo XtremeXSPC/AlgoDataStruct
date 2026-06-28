@@ -32,6 +32,8 @@
 
 namespace ads::matrices {
 
+using ads::arrays::DynamicArray;
+
 /**
  * @brief A sparse matrix stored in compressed sparse row (CSR) form.
  *
@@ -50,16 +52,13 @@ namespace ads::matrices {
 template <MatrixValue Value>
 class SparseMatrix {
 public:
-  //===----- ENTRY TYPE --------------------------------------------------------===//
+  ///@brief Type aliases for convenience.
+  using value_type   = Value;
+  using size_type    = size_t;
+  using DenseMatrixT = DynamicArray<DynamicArray<Value>>;
+  using PosResult    = std::pair<size_type, bool>;
 
-  using value_type        = Value;
-  using size_type         = size_t;
-  using dense_matrix_type = ads::arrays::DynamicArray<ads::arrays::DynamicArray<Value>>;
-  using position_result   = std::pair<size_type, bool>;
-
-  /**
-   * @brief One non-zero entry of the matrix.
-   */
+  ///@brief One non-zero entry of the matrix.
   struct Entry {
     size_type row;
     size_type column;
@@ -68,7 +67,7 @@ public:
     auto operator==(const Entry& other) const -> bool = default;
   };
 
-  using entry_list_type = ads::arrays::DynamicArray<Entry>;
+  using entry_list_type = DynamicArray<Entry>;
 
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
@@ -124,6 +123,7 @@ public:
    */
   ~SparseMatrix() = default;
 
+  // Copy operations are disabled (move-only type).
   SparseMatrix(const SparseMatrix&)                    = delete;
   auto operator=(const SparseMatrix&) -> SparseMatrix& = delete;
 
@@ -136,7 +136,7 @@ public:
    * @throws SparseMatrixException if the dense rows are not rectangular.
    * @complexity Time O(rows * cols), Space O(nnz + rows)
    */
-  [[nodiscard]] static auto from_dense(const dense_matrix_type& dense) -> SparseMatrix requires CopyMatrixValue<Value>;
+  [[nodiscard]] static auto from_dense(const DenseMatrixT& dense) -> SparseMatrix requires CopyMatrixValue<Value>;
 
   /**
    * @brief Builds a sparse matrix from a dense initializer-list matrix.
@@ -283,7 +283,7 @@ public:
    * @return Dense matrix containing explicit zeros where needed.
    * @complexity Time O(rows * cols + nnz), Space O(rows * cols)
    */
-  [[nodiscard]] auto to_dense() const -> dense_matrix_type requires CopyMatrixValue<Value>;
+  [[nodiscard]] auto to_dense() const -> DenseMatrixT requires CopyMatrixValue<Value>;
 
   /**
    * @brief Visits all non-zero entries of one row in column order.
@@ -304,29 +304,47 @@ public:
   auto for_each_non_zero(Visitor&& visitor) const -> void;
 
 private:
-  //===----- INTERNAL STORAGE --------------------------------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  size_type                            row_count_;
-  size_type                            column_count_;
-  ads::arrays::DynamicArray<size_type> row_offsets_;
-  ads::arrays::DynamicArray<size_type> column_indices_;
-  ads::arrays::DynamicArray<Value>     values_;
-
-  //===----- HELPER API --------------------------------------------------------===//
-
+  ///@brief Returns true if value compares equal to the implicit zero Value{}.
   [[nodiscard]] static auto is_zero_value(const Value& value) -> bool;
+
+  ///@brief Strict-weak-order comparator for Entry: sorts by row then column.
   [[nodiscard]] static auto entry_less(const Entry& lhs, const Entry& rhs) -> bool;
 
+  ///@brief Throws SparseMatrixException if row >= row_count_.
   auto validate_row(size_type row) const -> void;
-  auto validate_coordinate(size_type row, size_type column) const -> void;
-  auto set_empty_shape(size_type row_count, size_type column_count) -> void;
-  auto increment_row_offsets_after(size_type row) -> void;
-  auto decrement_row_offsets_after(size_type row) -> void;
-  auto locate_position_in_row(size_type row, size_type column) const -> position_result;
 
+  ///@brief Throws SparseMatrixException if (row, column) is out of bounds.
+  auto validate_coordinate(size_type row, size_type column) const -> void;
+
+  ///@brief Resets the matrix to an all-zero state with the given shape.
+  auto set_empty_shape(size_type row_count, size_type column_count) -> void;
+
+  ///@brief Adds 1 to every row_offsets_ entry after the given row (post-insert fixup).
+  auto increment_row_offsets_after(size_type row) -> void;
+
+  ///@brief Subtracts 1 from every row_offsets_ entry after the given row (post-erase fixup).
+  auto decrement_row_offsets_after(size_type row) -> void;
+
+  ///@brief Binary-searches row for column; returns {index, found} into the flat arrays.
+  [[nodiscard]] auto locate_position_in_row(size_type row, size_type column) const -> PosResult;
+
+  ///@brief Rebuilds the CSR arrays from a sorted entry range; validates shape and duplicates.
   template <std::input_iterator InputIt>
   auto rebuild_from_entries(size_type row_count, size_type column_count, InputIt first, InputIt last) -> void
       requires MatrixEntryRange<InputIt, Entry>;
+
+  //===----- DATA MEMBERS ------------------------------------------------------===//
+
+  size_type row_count_;    ///< Row count.
+  size_type column_count_; ///< Column count.
+
+  DynamicArray<size_type> row_offsets_;    ///< CSR row pointers; size == row_count_ + 1.
+  DynamicArray<size_type> column_indices_; ///< Column of each non-zero.
+  DynamicArray<Value>     values_;         ///< Non-zero values, parallel to column_indices_.
+
+  //===----- HELPER API --------------------------------------------------------===//
 };
 
 } // namespace ads::matrices

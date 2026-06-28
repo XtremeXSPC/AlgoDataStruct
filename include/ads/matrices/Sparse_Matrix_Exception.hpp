@@ -20,9 +20,7 @@
 
 namespace ads::matrices {
 
-/**
- * @brief Exception thrown for invalid sparse matrix operations.
- */
+///@brief Exception thrown for invalid sparse matrix operations.
 class SparseMatrixException : public std::logic_error {
 public:
   using std::logic_error::logic_error;

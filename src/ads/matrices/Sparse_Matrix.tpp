@@ -44,13 +44,13 @@ SparseMatrix<Value>::SparseMatrix(size_t row_count, size_t column_count, InputIt
 }
 
 template <MatrixValue Value>
-auto SparseMatrix<Value>::from_dense(const ads::arrays::DynamicArray<ads::arrays::DynamicArray<Value>>& dense) -> SparseMatrix
+auto SparseMatrix<Value>::from_dense(const DynamicArray<DynamicArray<Value>>& dense) -> SparseMatrix
   requires CopyMatrixValue<Value>
 {
   const size_t row_count    = dense.size();
   const size_t column_count = row_count == 0 ? 0 : dense[0].size();
 
-  ads::arrays::DynamicArray<Entry> entries;
+  DynamicArray<Entry> entries;
   for (size_t row = 0; row < row_count; ++row) {
     if (dense[row].size() != column_count) {
       throw SparseMatrixException("Dense matrix rows must all have the same length");
@@ -70,11 +70,11 @@ template <MatrixValue Value>
 auto SparseMatrix<Value>::from_dense(std::initializer_list<std::initializer_list<Value>> dense) -> SparseMatrix
   requires CopyMatrixValue<Value>
 {
-  ads::arrays::DynamicArray<ads::arrays::DynamicArray<Value>> rows;
+  DynamicArray<DynamicArray<Value>> rows;
   rows.reserve(dense.size());
 
   for (const auto& row : dense) {
-    rows.push_back(ads::arrays::DynamicArray<Value>(row.begin(), row.end()));
+    rows.push_back(DynamicArray<Value>(row.begin(), row.end()));
   }
 
   return from_dense(rows);
@@ -211,11 +211,11 @@ auto SparseMatrix<Value>::row_non_zero_count(size_t row) const -> size_t {
 }
 
 template <MatrixValue Value>
-auto SparseMatrix<Value>::entries_in_row(size_t row) const -> ads::arrays::DynamicArray<Entry> requires CopyMatrixValue<Value>
+auto SparseMatrix<Value>::entries_in_row(size_t row) const -> DynamicArray<Entry> requires CopyMatrixValue<Value>
 {
   validate_row(row);
 
-  ads::arrays::DynamicArray<Entry> row_entries;
+  DynamicArray<Entry> row_entries;
   row_entries.reserve(row_non_zero_count(row));
   for (size_t index = row_offsets_[row]; index < row_offsets_[row + 1]; ++index) {
     row_entries.push_back({row, column_indices_[index], values_[index]});
@@ -224,9 +224,9 @@ auto SparseMatrix<Value>::entries_in_row(size_t row) const -> ads::arrays::Dynam
 }
 
 template <MatrixValue Value>
-auto SparseMatrix<Value>::entries() const -> ads::arrays::DynamicArray<Entry> requires CopyMatrixValue<Value>
+auto SparseMatrix<Value>::entries() const -> DynamicArray<Entry> requires CopyMatrixValue<Value>
 {
-  ads::arrays::DynamicArray<Entry> all_entries;
+  DynamicArray<Entry> all_entries;
   all_entries.reserve(values_.size());
 
   for_each_non_zero([&](size_t row, size_t column, const Value& value) { all_entries.push_back({row, column, value}); });
@@ -235,13 +235,13 @@ auto SparseMatrix<Value>::entries() const -> ads::arrays::DynamicArray<Entry> re
 }
 
 template <MatrixValue Value>
-auto SparseMatrix<Value>::to_dense() const -> ads::arrays::DynamicArray<ads::arrays::DynamicArray<Value>> requires CopyMatrixValue<Value>
+auto SparseMatrix<Value>::to_dense() const -> DynamicArray<DynamicArray<Value>> requires CopyMatrixValue<Value>
 {
-  ads::arrays::DynamicArray<ads::arrays::DynamicArray<Value>> dense;
+  DynamicArray<DynamicArray<Value>> dense;
   dense.reserve(row_count_);
 
   for (size_t row = 0; row < row_count_; ++row) {
-    dense.push_back(ads::arrays::DynamicArray<Value>(column_count_, Value{}));
+    dense.push_back(DynamicArray<Value>(column_count_, Value{}));
   }
 
   for_each_non_zero([&](size_t row, size_t column, const Value& value) { dense[row][column] = value; });
@@ -340,7 +340,7 @@ auto SparseMatrix<Value>::rebuild_from_entries(size_t row_count, size_t column_c
 {
   set_empty_shape(row_count, column_count);
 
-  ads::arrays::DynamicArray<Entry> collected_entries;
+  DynamicArray<Entry> collected_entries;
   for (; first != last; ++first) {
     Entry entry = Entry(*first);
     if (entry.row >= row_count_ || entry.column >= column_count_) {
