@@ -29,9 +29,9 @@
 
 namespace ads::probabilistic {
 
-/**
- * @brief Exception class for Bloom filter operations.
- */
+using ads::arrays::DynamicArray;
+
+///@brief Exception class for Bloom filter operations.
 class BloomFilterException : public std::logic_error {
 public:
   using std::logic_error::logic_error;
@@ -46,6 +46,7 @@ public:
 template <typename Key, typename Hash = std::hash<Key>>
 class BloomFilter {
 public:
+  ///@brief Type aliases for convenience.
   using key_type    = Key;
   using hasher_type = Hash;
 
@@ -61,19 +62,27 @@ public:
   explicit BloomFilter(size_t bit_count = kDefaultBitCount, size_t hash_count = kDefaultHashCount, Hash hasher = Hash{});
 
   /**
-   * @brief Builds a filter from expected insertions and target false-positive rate.
-   * @param expected_insertions Planned number of insertion operations.
-   * @param false_positive_rate Desired false-positive rate in (0, 1).
-   * @param hasher Hash functor used to seed the probe family.
-   * @return Configured Bloom filter.
-   * @throws BloomFilterException if expected_insertions is zero or the rate is invalid.
+   * @brief Move constructor.
+   * @param other Filter to move from.
+   * @complexity Time O(1), Space O(1)
    */
-  [[nodiscard]] static auto from_estimates(size_t expected_insertions, double false_positive_rate, Hash hasher = Hash{}) -> BloomFilter;
+  BloomFilter(BloomFilter&& other) noexcept = default;
 
-  BloomFilter(BloomFilter&& other) noexcept                    = default;
+  /**
+   * @brief Move assignment operator.
+   * @param other Filter to move from.
+   * @return Reference to this filter.
+   * @complexity Time O(1), Space O(1)
+   */
   auto operator=(BloomFilter&& other) noexcept -> BloomFilter& = default;
-  ~BloomFilter()                                               = default;
 
+  /**
+   * @brief Destructor.
+   * @complexity Time O(m), Space O(1)
+   */
+  ~BloomFilter() = default;
+
+  // Copy operations are disabled (move-only type).
   BloomFilter(const BloomFilter&)                    = delete;
   auto operator=(const BloomFilter&) -> BloomFilter& = delete;
 
@@ -85,14 +94,6 @@ public:
    * @complexity Time O(k), Space O(1)
    */
   auto insert(const Key& key) -> void;
-
-  /**
-   * @brief Tests whether a key may be present.
-   * @param key Key to query.
-   * @return true if the key may be present, false if it is definitely absent.
-   * @complexity Time O(k), Space O(1)
-   */
-  [[nodiscard]] auto might_contain(const Key& key) const -> bool;
 
   /**
    * @brief Merges another compatible filter into this one.
@@ -108,61 +109,67 @@ public:
    */
   auto clear() noexcept -> void;
 
+  /**
+   * @brief Tests whether a key may be present.
+   * @param key Key to query.
+   * @return true if the key may be present, false if it is definitely absent.
+   * @complexity Time O(k), Space O(1)
+   */
+  [[nodiscard]] auto might_contain(const Key& key) const -> bool;
+
+  /**
+   * @brief Builds a filter from expected insertions and target false-positive rate.
+   * @param expected_insertions Planned number of insertion operations.
+   * @param false_positive_rate Desired false-positive rate in (0, 1).
+   * @param hasher Hash functor used to seed the probe family.
+   * @return Configured Bloom filter.
+   * @throws BloomFilterException if expected_insertions is zero or the rate is invalid.
+   */
+  [[nodiscard]] static auto from_estimates(size_t expected_insertions, double false_positive_rate, Hash hasher = Hash{}) -> BloomFilter;
+
+
   //===----- QUERY OPERATIONS --------------------------------------------------===//
 
-  /**
-   * @brief Returns the number of bits in the filter.
-   * @return Bit count.
-   */
+  ///@brief Returns the number of bits in the filter.
   [[nodiscard]] auto bit_count() const noexcept -> size_t;
 
-  /**
-   * @brief Returns the number of hash probes per key.
-   * @return Hash count.
-   */
+  ///@brief Returns the number of hash probes per key.
   [[nodiscard]] auto hash_count() const noexcept -> size_t;
 
-  /**
-   * @brief Returns how many insertion operations have been performed.
-   * @return Insert count.
-   */
+  ///@brief Returns how many insertion operations have been performed.
   [[nodiscard]] auto insert_count() const noexcept -> size_t;
 
-  /**
-   * @brief Returns the number of set bits.
-   * @return Set-bit count.
-   */
+  ///@brief Returns the number of set bits.
   [[nodiscard]] auto set_bit_count() const noexcept -> size_t;
 
-  /**
-   * @brief Returns the fraction of bits currently set.
-   * @return Load factor in [0, 1].
-   */
+  ///@brief Returns the fraction of bits currently set (load factor in [0, 1]).
   [[nodiscard]] auto load_factor() const noexcept -> double;
 
-  /**
-   * @brief Estimates the current false-positive rate from the current insert count.
-   * @return Estimated false-positive rate.
-   */
+  ///@brief Estimates the current false-positive rate from the current insert count.
   [[nodiscard]] auto estimated_false_positive_rate() const noexcept -> double;
 
 private:
-  //===----- INTERNAL STORAGE --------------------------------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  static constexpr size_t kDefaultBitCount  = 1'024;
-  static constexpr size_t kDefaultHashCount = 3;
-  static constexpr double kLn2              = std::numbers::ln2;
-
-  ads::arrays::DynamicArray<bool> bits_;
-  size_t                          hash_count_;
-  size_t                          insert_count_;
-  size_t                          set_bit_count_;
-  Hash                            hasher_;
-
-  //===----- HELPER API --------------------------------------------------------===//
-
+  ///@brief Avalanche mixer for a raw 64-bit hash value; reduces clustering between probes.
   [[nodiscard]] static auto mix_hash(std::uint64_t value) noexcept -> std::uint64_t;
-  [[nodiscard]] auto        probe_index(const Key& key, size_t probe_number) const -> size_t;
+
+  ///@brief Returns the bit index for the given key and probe number using double hashing.
+  [[nodiscard]] auto probe_index(const Key& key, size_t probe_number) const -> size_t;
+
+  //===----- DATA MEMBERS ------------------------------------------------------===//
+
+  static constexpr size_t kDefaultBitCount  = 1'024; ///< Default bit count (direct constructor).
+  static constexpr size_t kDefaultHashCount = 3;     ///< Default hash probe count per key.
+
+  static constexpr double kLn2 = std::numbers::ln2; ///< ln(2), used in capacity and hash-count formulae.
+
+  size_t hash_count_;    ///< Hash probes per key.
+  size_t insert_count_;  ///< Total insertions performed.
+  size_t set_bit_count_; ///< Bits currently set to true.
+  Hash   hasher_;        ///< Hash functor seeding the probe family.
+
+  DynamicArray<bool> bits_; ///< Bit array of length bit_count_.
 };
 
 } // namespace ads::probabilistic

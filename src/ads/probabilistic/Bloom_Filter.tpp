@@ -134,9 +134,9 @@ auto BloomFilter<Key, Hash>::estimated_false_positive_rate() const noexcept -> d
     return 0.0;
   }
 
-  const double m = static_cast<double>(bits_.size());
-  const double k = static_cast<double>(hash_count_);
-  const double n = static_cast<double>(insert_count_);
+  const auto m = static_cast<double>(bits_.size());
+  const auto k = static_cast<double>(hash_count_);
+  const auto n = static_cast<double>(insert_count_);
   return std::pow(1.0 - std::exp((-k * n) / m), k);
 }
 
