@@ -304,7 +304,7 @@ void SplayTree<T>::pre_order_traversal(const visitor_type& visit) const {
     return;
   }
 
-  arr::DynamicArray<const Node*> stack;
+  DynamicArray<const Node*> stack;
   stack.push_back(root_.get());
 
   while (!stack.is_empty()) {
@@ -333,7 +333,7 @@ void SplayTree<T>::post_order_traversal(const visitor_type& visit) const {
     bool        visited;
   };
 
-  arr::DynamicArray<PostOrderFrame> stack;
+  DynamicArray<PostOrderFrame> stack;
   stack.push_back(PostOrderFrame{root_.get(), false});
 
   while (!stack.is_empty()) {
@@ -572,7 +572,7 @@ auto SplayTree<T>::height_helper(const Node* node) const noexcept -> int {
   };
 
   int                          max_depth = -1;
-  arr::DynamicArray<HeightFrame> stack;
+  DynamicArray<HeightFrame> stack;
   stack.push_back(HeightFrame{node, 0});
 
   while (!stack.is_empty()) {
@@ -608,7 +608,7 @@ auto SplayTree<T>::validate_helper() const -> bool {
   };
 
   size_t                            counted = 0;
-  arr::DynamicArray<ValidationFrame> stack;
+  DynamicArray<ValidationFrame> stack;
   stack.push_back(ValidationFrame{root_.get(), nullptr, nullptr});
 
   while (!stack.is_empty()) {

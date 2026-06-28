@@ -307,7 +307,7 @@ auto Treap<T, Priority>::validate_properties() const -> bool {
   };
 
   size_t                                     counted = 0;
-  arr::DynamicArray<ValidationFrame> stack;
+  DynamicArray<ValidationFrame> stack;
   stack.push_back({root_.get(), nullptr, nullptr, nullptr});
 
   while (!stack.is_empty()) {
@@ -504,7 +504,7 @@ auto Treap<T, Priority>::height_helper(const Node* node) const noexcept -> int {
   };
 
   int                                    max_depth = -1;
-  arr::DynamicArray<HeightFrame> stack;
+  DynamicArray<HeightFrame> stack;
   stack.push_back({node, 0});
 
   while (!stack.is_empty()) {
@@ -525,7 +525,7 @@ auto Treap<T, Priority>::height_helper(const Node* node) const noexcept -> int {
 
 template <OrderedTreeElement T, std::totally_ordered Priority>
 auto Treap<T, Priority>::in_order_helper(const Node* node, const visitor_type& visit) const -> void {
-  arr::DynamicArray<const Node*> stack;
+  DynamicArray<const Node*> stack;
   const Node*                            current = node;
 
   while (current || !stack.is_empty()) {
@@ -547,7 +547,7 @@ auto Treap<T, Priority>::pre_order_helper(const Node* node, const visitor_type& 
     return;
   }
 
-  arr::DynamicArray<const Node*> stack;
+  DynamicArray<const Node*> stack;
   stack.push_back(node);
 
   while (!stack.is_empty()) {
@@ -575,7 +575,7 @@ auto Treap<T, Priority>::post_order_helper(const Node* node, const visitor_type&
     bool        visited;
   };
 
-  arr::DynamicArray<PostOrderFrame> stack;
+  DynamicArray<PostOrderFrame> stack;
   stack.push_back({node, false});
 
   while (!stack.is_empty()) {

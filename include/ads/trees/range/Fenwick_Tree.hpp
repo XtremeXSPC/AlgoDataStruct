@@ -17,8 +17,8 @@
 #define FENWICK_TREE_HPP
 
 #include "../../arrays/Dynamic_Array.hpp"
-#include "../exceptions/Fenwick_Tree_Exception.hpp"
 #include "../Tree_Concepts.hpp"
+#include "../exceptions/Fenwick_Tree_Exception.hpp"
 
 #include <bit>
 #include <cstddef>
@@ -29,7 +29,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief Fenwick Tree (Binary Indexed Tree) for efficient prefix and range sums.
@@ -107,9 +107,7 @@ public:
    */
   FenwickTree(FenwickTree&& other) noexcept;
 
-  /**
-   * @brief Destructor.
-   */
+  ///@brief Destructor.
   ~FenwickTree() = default;
 
   /**
@@ -246,36 +244,23 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  /**
-   * @brief Returns the least significant bit (LSB) of index.
-   * @param index The index.
-   * @return The LSB.
-   */
+  ///@brief Returns the least significant bit (LSB) of index.
   static constexpr auto lsb(size_t index) noexcept -> size_t;
 
-  /**
-   * @brief Builds the internal Fenwick tree from values_.
-   */
+  ///@brief Builds the internal Fenwick tree from values_.
   auto build_tree() -> void;
 
-  /**
-   * @brief Validates the given index.
-   * @param index The index to validate.
-   */
+  ///@brief Validates the given index.
   auto validate_index(size_t index) const -> void;
 
-  /**
-   * @brief Validates the range [left, right].
-   * @param left Zero-based left boundary (inclusive).
-   * @param right Zero-based right boundary (inclusive).
-   */
+  ///@brief Validates the range [left, right].
   auto validate_range(size_t left, size_t right) const -> void;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
-  arr::DynamicArray<T> values_;   ///< Original values for value_at() and set().
-  arr::DynamicArray<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
-  size_t                       size_ = 0; ///< Number of elements.
+  DynamicArray<T> values_;   ///< Original values for value_at() and set().
+  DynamicArray<T> tree_;     ///< Internal Fenwick tree (1-based indexing).
+  size_t          size_ = 0; ///< Number of elements.
 };
 
 } // namespace ads::trees

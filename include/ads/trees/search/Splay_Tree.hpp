@@ -30,7 +30,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief A self-adjusting binary search tree (Sleator-Tarjan splay tree).
@@ -60,6 +60,7 @@ private:
   struct Node;
 
 public:
+  ///@brief Type aliases for convenience.
   using value_type   = T;
   using size_type    = size_t;
   using visitor_type = std::function<void(const T&)>;
@@ -82,17 +83,31 @@ public:
 
     iterator() = default;
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next in-order element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next in-order element (post-increment).
     auto operator++(int) -> iterator;
+
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool;
 
   private:
     friend class SplayTree<T>;
 
+    ///@brief Constructs an iterator starting at the leftmost node of @p current's subtree.
     explicit iterator(Node* current);
+
+    ///@brief Returns the leftmost (minimum) node in @p node's subtree.
     static auto leftmost(Node* node) noexcept -> Node*;
+
+    ///@brief Returns the in-order successor of @p node, or nullptr if none.
     static auto successor(Node* node) noexcept -> Node*;
 
     Node* current_ = nullptr;
@@ -262,15 +277,28 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
+  ///@brief Returns an iterator to the smallest element. O(log n)
   auto begin() -> iterator;
+
+  ///@brief Returns a const iterator to the smallest element. O(log n)
   auto begin() const -> iterator;
+
+  ///@brief Returns a past-the-end iterator. O(1)
   auto end() -> iterator;
+
+  ///@brief Returns a const past-the-end iterator. O(1)
   auto end() const -> iterator;
+
+  ///@brief Returns a const iterator to the smallest element. O(log n)
   auto cbegin() const -> iterator;
+
+  ///@brief Returns a const past-the-end iterator. O(1)
   auto cend() const -> iterator;
 
 private:
   //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
+
+  ///@brief Internal node storing a value, owning children, and a non-owning parent pointer.
   struct Node {
     T                     data;
     std::unique_ptr<Node> left;
@@ -286,55 +314,45 @@ private:
   // These operate on the mutable root_ and are const-qualified so the logically
   // const queries (contains/find_min/find_max) may splay the accessed node.
 
-  /**
-   * @brief Returns the owning unique_ptr that holds @p node (root_ or a child slot).
-   */
+  ///@brief Returns the owning unique_ptr that holds @p node (root_ or a child slot).
   auto owning_link(Node* node) const -> std::unique_ptr<Node>&;
 
-  /**
-   * @brief Rotates the subtree left; returns the new subtree root (caller links parent).
-   */
+  ///@brief Rotates the subtree left; returns the new subtree root (caller links parent).
   auto rotate_left(std::unique_ptr<Node> x_ptr) const -> std::unique_ptr<Node>;
 
-  /**
-   * @brief Rotates the subtree right; returns the new subtree root (caller links parent).
-   */
+  ///@brief Rotates the subtree right; returns the new subtree root (caller links parent).
   auto rotate_right(std::unique_ptr<Node> y_ptr) const -> std::unique_ptr<Node>;
 
-  /**
-   * @brief Rotates @p node's right child up into @p node's position.
-   */
+  ///@brief Rotates @p node's right child up into @p node's position.
   void rotate_left_at(Node* node) const;
 
-  /**
-   * @brief Rotates @p node's left child up into @p node's position.
-   */
+  ///@brief Rotates @p node's left child up into @p node's position.
   void rotate_right_at(Node* node) const;
 
-  /**
-   * @brief Splays @p node to the root via zig / zig-zig / zig-zag steps.
-   */
+  ///@brief Splays @p node to the root via zig / zig-zig / zig-zag steps.
   void splay(Node* node) const;
 
   //===----- SEARCH HELPERS ----------------------------------------------------===//
 
-  /**
-   * @brief Locates the node holding @p value without splaying.
-   */
+  ///@brief Locates the node holding @p value without splaying.
   auto find_node(const T& value) const -> Node*;
 
+  ///@brief Returns the minimum node in @p node's subtree.
   static auto subtree_min(Node* node) noexcept -> Node*;
+
+  ///@brief Returns the maximum node in @p node's subtree.
   static auto subtree_max(Node* node) noexcept -> Node*;
 
-  /**
-   * @brief Shared insert path used by the copy/move/emplace front ends.
-   */
+  ///@brief Shared insert path used by the copy/move/emplace front ends.
   template <typename U>
   auto insert_impl(U&& value) -> bool;
 
   //===----- ITERATIVE TREE HELPERS --------------------------------------------===//
 
+  ///@brief Returns the height of @p node's subtree (empty = -1).
   auto height_helper(const Node* node) const noexcept -> int;
+
+  ///@brief Validates BST ordering, parent links, and stored size.
   auto validate_helper() const -> bool;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//

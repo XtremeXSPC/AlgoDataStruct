@@ -55,9 +55,7 @@ public:
 
   //===----- NODE STRUCTURE ----------------------------------------------------===//
 
-  /**
-   * @brief A node in the binary tree.
-   */
+  ///@brief A node in the binary tree.
   struct Node {
     T                     data;
     std::unique_ptr<Node> left  = nullptr;

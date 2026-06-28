@@ -9,7 +9,7 @@
  * @copyright MIT License 2025
  *
  */
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//
 
 #pragma once
 
@@ -31,9 +31,7 @@
 
 namespace ads::trees {
 
-/**
- * @brief Node color enum for Red-Black Tree
- */
+///@brief Node color enum for Red-Black Tree
 enum class Color : std::uint8_t { Red, Black };
 
 /**
@@ -76,6 +74,7 @@ private:
   struct Node;
 
 public:
+  ///@brief Type aliases for convenience.
   using value_type   = T;
   using visitor_type = std::function<void(const T&)>;
   using size_type    = size_t;
@@ -97,10 +96,19 @@ public:
 
     iterator() = default;
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next in-order element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next in-order element (post-increment).
     auto operator++(int) -> iterator;
+
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool;
 
   private:
@@ -108,9 +116,13 @@ public:
 
     Node* current_ = nullptr;
 
+    ///@brief Constructs an iterator starting at the leftmost node of @p root's subtree.
     explicit iterator(Node* root);
 
+    ///@brief Returns the leftmost (minimum) node in @p node's subtree.
     static auto leftmost(Node* node) noexcept -> Node*;
+
+    ///@brief Returns the in-order successor of @p node, or nullptr if none.
     static auto successor(Node* node) noexcept -> Node*;
   };
 
@@ -290,53 +302,28 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator to the smallest element.
-   * @return Iterator pointing to the first in-order element.
-   * @complexity O(log n), Space O(1)
-   */
+  ///@brief Returns an iterator to the smallest element. O(log n)
   auto begin() -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the smallest element.
-   * @return Iterator pointing to the first in-order element.
-   * @complexity O(log n), Space O(1)
-   */
+  ///@brief Returns a const iterator to the smallest element. O(log n)
   auto begin() const -> iterator;
 
-  /**
-   * @brief Returns a past-the-end iterator.
-   * @return Iterator representing the end of in-order traversal.
-   * @complexity O(1), Space O(1)
-   */
+  ///@brief Returns a past-the-end iterator. O(1)
   auto end() -> iterator;
 
-  /**
-   * @brief Returns a const past-the-end iterator.
-   * @return Iterator representing the end of in-order traversal.
-   * @complexity O(1), Space O(1)
-   */
+  ///@brief Returns a const past-the-end iterator. O(1)
   auto end() const -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the smallest element.
-   * @return Iterator pointing to the first in-order element.
-   * @complexity O(log n), Space O(1)
-   */
+  ///@brief Returns a const iterator to the smallest element. O(log n)
   auto cbegin() const -> iterator;
 
-  /**
-   * @brief Returns a const past-the-end iterator.
-   * @return Iterator representing the end of in-order traversal.
-   * @complexity O(1), Space O(1)
-   */
+  ///@brief Returns a const past-the-end iterator. O(1)
   auto cend() const -> iterator;
 
 private:
   //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
-  /**
-   * @brief Internal node structure.
-   */
+
+  ///@brief Internal node structure.
   struct Node {
     T     data;  ///< Value stored in the node.
     Color color; ///< Color of the node (Red or Black).
@@ -345,11 +332,13 @@ private:
     std::unique_ptr<Node> right;  ///< Right child.
     Node*                 parent; // Non-owning pointer for upward traversal.
 
+    ///@brief Constructs a node with a copied value, optional color and parent pointer.
     explicit Node(const T& val, Color col = Color::Red, Node* par = nullptr) requires std::copy_constructible<T>;
+
+    ///@brief Constructs a node with a moved value, optional color and parent pointer.
     explicit Node(T&& val, Color col = Color::Red, Node* par = nullptr);
   };
 
-  //===============================================================================//
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
@@ -474,18 +463,10 @@ private:
 
   //===----- TRAVERSAL HELPERS -------------------------------------------------===//
 
-  /**
-   * @brief Pre-order traversal helper.
-   * @param node Current node being visited.
-   * @param visit Function to call for each node's value.
-   */
+  ///@brief Pre-order traversal helper.
   void pre_order_helper(const Node* node, const visitor_type& visit) const;
 
-  /**
-   * @brief Post-order traversal helper.
-   * @param node Current node being visited.
-   * @param visit Function to call for each node's value.
-   */
+  ///@brief Post-order traversal helper.
   void post_order_helper(const Node* node, const visitor_type& visit) const;
 
   //===----- HEIGHT/VALIDATION -------------------------------------------------===//
@@ -524,4 +505,4 @@ private:
 
 #endif // RED_BLACK_TREE_HPP
 
-//===--------------------------------------------------------------------------===//
+//===---------------------------------------------------------------------------===//

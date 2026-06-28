@@ -28,7 +28,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief B-Tree implementation
@@ -73,6 +73,7 @@ template <OrderedTreeElement T, int MinDegree = 3>
 requires ValidBTreeDegree<MinDegree>
 class BTree {
 public:
+  ///@brief Type aliases for convenience.
   using visitor_type = std::function<void(const T&)>;
 
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
@@ -211,29 +212,16 @@ public:
 
   //===----- B-TREE SPECIFIC OPERATIONS ----------------------------------------===//
 
-  /**
-   * @brief Get minimum degree.
-   * @return Minimum degree t.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Get minimum degree. Complexity: O(1)
   static constexpr auto get_min_degree() -> int;
 
-  /**
-   * @brief Get maximum keys per node.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Get maximum keys per node. Complexity: O(1)
   static constexpr auto get_max_keys() -> int;
 
-  /**
-   * @brief Get minimum keys per node (except root).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Get minimum keys per node (except root). Complexity: O(1)
   static constexpr auto get_min_keys() -> int;
 
-  /**
-   * @brief Count total number of nodes.
-   * @complexity O(n), Space O(h)
-   */
+  ///@brief Count total number of nodes. Complexity: O(n)
   [[nodiscard]] auto count_nodes() const -> size_t;
 
   /**
@@ -272,12 +260,10 @@ private:
 
   //===----- INTERNAL NODE STRUCTURE -------------------------------------------===//
 
-  /**
-   * @brief Internal node structure.
-   */
+  ///@brief Internal node structure.
   struct Node {
-    arr::DynamicArray<T>                     keys;     // Sorted keys.
-    arr::DynamicArray<std::unique_ptr<Node>> children; // Child pointers.
+    DynamicArray<T>                     keys;     // Sorted keys.
+    DynamicArray<std::unique_ptr<Node>> children; // Child pointers.
 
     bool is_leaf; // True if leaf node.
     int  n = 0;   // Current number of keys.
@@ -285,7 +271,6 @@ private:
     explicit Node(bool leaf);
   };
 
-  //===============================================================================//
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
@@ -418,6 +403,7 @@ private:
    */
   [[nodiscard]] auto count_nodes_helper(const Node* node) const -> size_t;
 
+  ///@brief Recursive helper for in-order traversal.
   void in_order_helper(const Node* node, visitor_type visit) const;
 
   /**

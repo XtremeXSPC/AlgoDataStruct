@@ -31,18 +31,18 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 namespace detail {
 
 /**
- * @brief Concept for lazy segment tree operations.
+ * @brief Concept for Lazy Segment Tree operations.
  *
- * @details Requirements for a valid lazy segment tree configuration:
- *   - Combine: Merges two nodes (must be associative)
- *   - Apply: Applies a lazy tag to a node, given the segment length
- *   - Compose: Composes two lazy tags (must be associative)
- *   - Identity: Returns the identity element for Combine
+ * @details Requirements for a valid Lazy Segment Tree configuration:
+ *            - Combine: Merges two nodes (must be associative)
+ *            - Apply: Applies a lazy tag to a node, given the segment length
+ *            - Compose: Composes two lazy tags (must be associative)
+ *            - Identity: Returns the identity element for Combine
  *
  * @note Both Combine and Compose "MUST" be associative for correct results.
  */
@@ -60,9 +60,7 @@ template <
       { identity() } -> std::convertible_to<Node>;
     };
 
-/**
- * @brief Default combine functor using std::plus.
- */
+///@brief Default combine functor using std::plus.
 template <typename Node>
 struct LazyDefaultCombine {
   constexpr auto operator()(const Node& left, const Node& right) const noexcept(noexcept(left + right)) -> Node { return left + right; }
@@ -91,9 +89,7 @@ struct LazyDefaultCompose {
   }
 };
 
-/**
- * @brief Default identity functor.
- */
+///@brief Default identity functor.
 template <typename Node>
 struct LazyDefaultIdentity {
   constexpr auto operator()() const noexcept(std::is_nothrow_default_constructible_v<Node>) -> Node { return Node{}; }
@@ -108,17 +104,17 @@ struct LazyDefaultIdentity {
  *          for both range updates and range queries. The tree uses a recursive
  *          approach internally to properly handle lazy tag propagation.
  *
- *          **Memory Layout:**
+ *          Memory Layout:
  *            - Uses 4n memory to accommodate the recursive structure
  *            - Each node stores both a value and an optional lazy tag
  *
- *          **Complexity:**
+ *          Complexity:
  *            - Build: O(n) time, O(n) space
  *            - Point update: O(log n) time, O(log n) space (stack)
  *            - Range update: O(log n) time, O(log n) space (stack)
  *            - Range query: O(log n) time, O(log n) space (stack)
  *
- *          **Default Configuration:**
+ *          Default Configuration:
  *          The default functors implement a range-sum tree with range-add updates:
  *            - Combine: addition (sum of two segments)
  *            - Apply: node + tag * length (apply additive tag to segment)
@@ -223,9 +219,7 @@ public:
    */
   constexpr LazySegmentTree(LazySegmentTree&& other) noexcept;
 
-  /**
-   * @brief Destructor.
-   */
+  ///@brief Destructor.
   ~LazySegmentTree() = default;
 
   /**
@@ -360,9 +354,7 @@ public:
 private:
   //===----- INTERNAL NODE -----------------------------------------------------===//
 
-  /**
-   * @brief Internal node structure with value and optional lazy tag.
-   */
+  ///@brief Internal node structure with value and optional lazy tag.
   struct TreeNode {
     value_type              value;
     std::optional<tag_type> lazy = std::nullopt;
@@ -374,65 +366,44 @@ private:
 
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  /**
-   * @brief Builds the tree from input values.
-   * @param values Values used only during construction/rebuild.
-   */
-  constexpr auto build_tree(const arr::DynamicArray<Value>& values) -> void;
+  ///@brief Builds the internal Segment Tree from values.
+  constexpr auto build_tree(const DynamicArray<Value>& values) -> void;
 
-  /**
-   * @brief Recursively builds tree nodes.
-   */
-  constexpr auto build_node(size_type v, size_type tl, size_type tr, const arr::DynamicArray<Value>& values) -> void;
+  ///@brief Recursively builds tree nodes.
+  constexpr auto build_node(size_type v, size_type tl, size_type tr, const DynamicArray<Value>& values) -> void;
 
-  /**
-   * @brief Pushes lazy tag down to children.
-   */
+  ///@brief Pushes lazy tag down to children.
   constexpr auto push_down(size_type v, size_type tl, size_type tr) const -> void;
 
-  /**
-   * @brief Pulls values up from children.
-   */
+  ///@brief Pulls values up from children.
   constexpr auto pull_up(size_type v) -> void;
 
-  /**
-   * @brief Applies a tag to a node.
-   */
+  ///@brief Applies a lazy tag to a node, considering segment length.
   constexpr auto apply_tag(size_type v, size_type len, const tag_type& tag) const -> void;
 
-  /**
-   * @brief Recursively updates a range.
-   */
+  ///@brief Recursively updates a range with a lazy tag.
   constexpr auto update_range(size_type v, size_type tl, size_type tr, size_type l, size_type r, const tag_type& tag) -> void;
 
-  /**
-   * @brief Recursively assigns a single position.
-   */
+  ///@brief Recursively assigns a single position.
   constexpr auto set_node(size_type v, size_type tl, size_type tr, size_type index, const value_type& value) -> void;
 
-  /**
-   * @brief Recursively queries a range.
-   */
+  ////@brief Recursively queries a range.
   [[nodiscard]] constexpr auto query_range(size_type v, size_type tl, size_type tr, size_type l, size_type r) const -> value_type;
 
-  /**
-   * @brief Validates index bounds.
-   */
+  ///@brief Validates index bounds.
   constexpr auto validate_index(size_type index) const -> void;
 
-  /**
-   * @brief Validates range bounds.
-   */
+  ///@brief Validates range bounds.
   constexpr auto validate_range(size_type left, size_type right) const -> void;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
-  Combine                                     combine_{};  ///< Functor to combine two nodes.
-  Apply                                       apply_{};    ///< Functor to apply a tag to a node.
-  Compose                                     compose_{};  ///< Functor to compose two tags.
-  Identity                                    identity_{}; ///< Functor to get the identity node.
-  mutable arr::DynamicArray<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
-  size_type                                   size_ = 0;   ///< Number of elements in the tree.
+  Combine                        combine_{};  ///< Functor to combine two nodes.
+  Apply                          apply_{};    ///< Functor to apply a tag to a node.
+  Compose                        compose_{};  ///< Functor to compose two tags.
+  Identity                       identity_{}; ///< Functor to get the identity node.
+  mutable DynamicArray<TreeNode> tree_{};     ///< Mutable for lazy propagation in const queries.
+  size_type                      size_ = 0;   ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees

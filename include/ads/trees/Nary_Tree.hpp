@@ -29,7 +29,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief A general rooted tree where each node may have any number of children.
@@ -96,7 +96,7 @@ public:
     T     data;
     Node* parent_ = nullptr;
 
-    arr::DynamicArray<std::unique_ptr<Node>> children_;
+    DynamicArray<std::unique_ptr<Node>> children_;
   };
 
   using value_type   = T;
@@ -245,9 +245,11 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
+  ///@brief Shared implementation for set_root copy/move overloads.
   template <typename U>
   auto set_root_impl(U&& value) -> Node*;
 
+  ///@brief Shared implementation for add_child copy/move overloads.
   template <typename U>
   auto add_child_impl(Node* parent, U&& value) -> Node*;
 

@@ -83,7 +83,7 @@ template <std::input_iterator InputIt>
 auto FenwickTreeRangeUpdate<T>::build(InputIt first, InputIt last) -> void
     requires std::constructible_from<T, std::iter_reference_t<InputIt>>
 {
-  arr::DynamicArray<T> differences;
+  DynamicArray<T> differences;
   T                            previous{};
   bool                         has_previous = false;
 
@@ -165,7 +165,7 @@ auto FenwickTreeRangeUpdate<T>::add_internal(size_t index, const T& delta) -> vo
 }
 
 template <FenwickElement T>
-auto FenwickTreeRangeUpdate<T>::build_from_differences(const arr::DynamicArray<T>& differences) -> void {
+auto FenwickTreeRangeUpdate<T>::build_from_differences(const DynamicArray<T>& differences) -> void {
   size_ = differences.size();
   tree_.assign(size_ + 1, T{});
 

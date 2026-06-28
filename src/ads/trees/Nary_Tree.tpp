@@ -163,7 +163,7 @@ void NaryTree<T>::clear() noexcept {
 
   // Iteratively dismantle: move every node's children onto a worklist so each
   // node destructs as a leaf, never recursing through a deep or wide subtree.
-  arr::DynamicArray<std::unique_ptr<Node>> pending;
+  DynamicArray<std::unique_ptr<Node>> pending;
   pending.push_back(std::move(root_));
 
   while (!pending.is_empty()) {
@@ -214,8 +214,8 @@ auto NaryTree<T>::height() const noexcept -> int {
     int         depth;
   };
 
-  int                            max_depth = 0;
-  arr::DynamicArray<HeightFrame> stack;
+  int                       max_depth = 0;
+  DynamicArray<HeightFrame> stack;
   stack.push_back(HeightFrame{root_.get(), 0});
 
   while (!stack.is_empty()) {
@@ -263,7 +263,7 @@ void NaryTree<T>::pre_order_traversal(const visitor_type& visit) const {
     return;
   }
 
-  arr::DynamicArray<const Node*> stack;
+  DynamicArray<const Node*> stack;
   stack.push_back(root_.get());
 
   while (!stack.is_empty()) {
@@ -290,7 +290,7 @@ void NaryTree<T>::post_order_traversal(const visitor_type& visit) const {
     bool        visited;
   };
 
-  arr::DynamicArray<PostOrderFrame> stack;
+  DynamicArray<PostOrderFrame> stack;
   stack.push_back(PostOrderFrame{root_.get(), false});
 
   while (!stack.is_empty()) {

@@ -16,8 +16,8 @@
 #ifndef FENWICK_TREE_RANGE_UPDATE_HPP
 #define FENWICK_TREE_RANGE_UPDATE_HPP
 
-#include "Fenwick_Tree.hpp"
 #include "../exceptions/Fenwick_Tree_Exception.hpp"
+#include "Fenwick_Tree.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -27,14 +27,14 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief Fenwick Tree variant supporting range updates and point queries.
  *
  * @details This data structure supports:
- *          - Range updates: add a delta to all elements in [left, right] in O(log n)
- *          - Point queries: retrieve the value at a single index in O(log n)
+ *            - Range updates: add a delta to all elements in [left, right] in O(log n)
+ *            - Point queries: retrieve the value at a single index in O(log n)
  *
  *          Internally uses a difference array technique with a standard Fenwick tree.
  *          The prefix sum of the difference array gives the actual value at each position.
@@ -102,9 +102,7 @@ public:
    */
   FenwickTreeRangeUpdate(FenwickTreeRangeUpdate&& other) noexcept;
 
-  /**
-   * @brief Destructor.
-   */
+  ///@brief Destructor.
   ~FenwickTreeRangeUpdate() = default;
 
   /**
@@ -196,50 +194,28 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  /**
-   * @brief Returns the least significant bit (LSB) of index.
-   * @param index The index.
-   * @return The LSB.
-   */
+  ///@brief Returns the least significant bit (LSB) of index.
   static constexpr auto lsb(size_t index) noexcept -> size_t;
 
-  /**
-   * @brief Adds delta at a single position in the internal BIT.
-   * @param index Zero-based index.
-   * @param delta Value to add.
-   */
+  ///@brief Adds delta at a single position in the internal BIT.
   auto add_internal(size_t index, const T& delta) -> void;
 
-  /**
-   * @brief Builds the internal BIT from a zero-based difference array.
-   * @param differences Difference array derived from source values.
-   */
-  auto build_from_differences(const arr::DynamicArray<T>& differences) -> void;
+  ///@brief Builds the internal BIT from a zero-based difference array.
+  auto build_from_differences(const DynamicArray<T>& differences) -> void;
 
-  /**
-   * @brief Computes prefix sum up to index in the internal BIT.
-   * @param index Zero-based index (inclusive).
-   * @return The prefix sum.
-   */
+  ///@brief Computes prefix sum up to index in the internal BIT.
   [[nodiscard]] auto prefix_sum_internal(size_t index) const -> T;
 
-  /**
-   * @brief Validates the given index.
-   * @param index The index to validate.
-   */
+  ///@brief Validates the given index.
   auto validate_index(size_t index) const -> void;
 
-  /**
-   * @brief Validates the range [left, right].
-   * @param left Zero-based left boundary (inclusive).
-   * @param right Zero-based right boundary (inclusive).
-   */
+  ///@brief Validates the range [left, right].
   auto validate_range(size_t left, size_t right) const -> void;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
-  arr::DynamicArray<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
-  size_t                       size_ = 0; ///< Number of elements.
+  DynamicArray<T> tree_;     ///< Internal Fenwick tree for difference array (1-based).
+  size_t          size_ = 0; ///< Number of elements.
 };
 
 } // namespace ads::trees

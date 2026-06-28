@@ -30,7 +30,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief An implementation of an AVL Tree (Adelson-Velsky and Landis Tree).
@@ -64,6 +64,7 @@ private:
   struct Node;
 
 public:
+  ///@brief Type aliases for convenience.
   using value_type   = T;
   using visitor_type = std::function<void(const T&)>;
   using size_type    = size_t;
@@ -90,23 +91,32 @@ public:
     auto operator=(const iterator& other) -> iterator&;
     auto operator=(iterator&& other) noexcept -> iterator& = default;
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next in-order element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next in-order element (post-increment).
     auto operator++(int) -> iterator;
+
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool;
 
   private:
     friend class AVLTree<T>;
 
-    // Private constructor used by begin() to initialize the iterator.
+    ///@brief Constructs an iterator starting at the in-order first node of @p root's subtree.
     explicit iterator(Node* root);
 
     // DynamicArray keeps forward-iterator copies independent for postfix traversal.
-    arr::DynamicArray<Node*> stack_;
-    Node*                    current_ = nullptr;
+    DynamicArray<Node*> stack_;
+    Node*               current_ = nullptr;
 
-    // Helper to push all left children onto the stack.
+    ///@brief Pushes @p node and all its left descendants onto the traversal stack.
     void push_left(Node* node);
   };
 
@@ -333,46 +343,22 @@ public:
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator to the beginning (smallest element).
-   * @return iterator pointing to the smallest element in the tree.
-   * @complexity Time O(h), Space O(h)
-   */
+  ///@brief Returns an iterator to the smallest element. Complexity: O(h)
   auto begin() -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the beginning.
-   * @return const iterator pointing to the smallest element.
-   * @complexity Time O(h), Space O(h)
-   */
+  ///@brief Returns a const iterator to the smallest element. Complexity: O(h)
   auto begin() const -> iterator;
 
-  /**
-   * @brief Returns an iterator to the end (past the last element).
-   * @return iterator representing the end of the iteration.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a past-the-end iterator. Complexity: O(1)
   auto end() -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the end.
-   * @return const iterator representing the end of the iteration.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const past-the-end iterator. Complexity: O(1)
   auto end() const -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the beginning.
-   * @return const iterator pointing to the smallest element.
-   * @complexity Time O(h), Space O(h)
-   */
+  ///@brief Returns a const iterator to the smallest element. Complexity: O(h)
   auto cbegin() const -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the end.
-   * @return const iterator representing the end of the iteration.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const past-the-end iterator. Complexity: O(1)
   auto cend() const -> iterator;
 
 private:
@@ -398,7 +384,6 @@ private:
     explicit Node(Args&&... args) : data(std::forward<Args>(args)...) {}
   };
 
-  //===============================================================================//
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
@@ -558,15 +543,13 @@ private:
 
   //===----- TRAVERSAL HELPERS -------------------------------------------------===//
 
-  /**
-   * @brief Recursive helper for in-order traversal.
-   * @param node Current node being visited.
-   * @param visit Function to call for each node's value.
-   */
+  ///@brief Recursive helper for in-order traversal.
   void in_order_helper(const Node* node, const visitor_type& visit) const;
 
+  ///@brief Recursive helper for pre-order traversal.
   void pre_order_helper(const Node* node, const visitor_type& visit) const;
 
+  ///@brief Recursive helper for post-order traversal.
   void post_order_helper(const Node* node, const visitor_type& visit) const;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//

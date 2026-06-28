@@ -32,8 +32,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
-
+using ads::arrays::DynamicArray;
 using ads::support::ContainerFacade;
 
 namespace detail {
@@ -78,35 +77,25 @@ template <typename Value, typename Node, typename Combine, typename Identity, ty
       { identity() } -> std::convertible_to<Node>;
     };
 
-/**
- * @brief Concept for types supporting addition.
- */
+///@brief Concept for types supporting addition.
 template <typename T> concept Addable = requires(T a, T b) {
   { a + b } -> std::convertible_to<T>;
 };
 
-/**
- * @brief Helper to detect noexcept for combine operation.
- */
+///@brief Helper to detect noexcept for combine operation.
 template <typename Combine, typename Node>
 inline constexpr bool is_combine_nothrow_v = noexcept(std::declval<Combine>()(std::declval<Node>(), std::declval<Node>()));
 
-/**
- * @brief Helper to detect noexcept for parent recomputation.
- */
+///@brief Helper to detect noexcept for parent recomputation.
 template <typename Combine, typename Node>
 inline constexpr bool is_propagate_up_nothrow_v = noexcept(std::declval<Combine&>()(std::declval<Node&>(), std::declval<Node&>()))
                                                   && std::is_nothrow_assignable_v<Node&, std::invoke_result_t<Combine&, Node&, Node&>>;
 
-/**
- * @brief Helper to detect noexcept for identity operation.
- */
+///@brief Helper to detect noexcept for identity operation.
 template <typename Identity>
 inline constexpr bool is_identity_nothrow_v = noexcept(std::declval<Identity>()());
 
-/**
- * @brief Helper to detect noexcept for leaf builder operation.
- */
+///@brief Helper to detect noexcept for leaf builder operation.
 template <typename LeafBuilder, typename Value>
 inline constexpr bool is_leaf_builder_nothrow_v = noexcept(std::declval<LeafBuilder>()(std::declval<Value>()));
 
@@ -119,19 +108,19 @@ inline constexpr bool is_leaf_builder_nothrow_v = noexcept(std::declval<LeafBuil
  *          (where n is the number of elements). The tree is stored implicitly in
  *          contiguous storage using 0-based indexing for the public API.
  *
- *          **Memory Layout:**
+ *          Memory Layout:
  *            - Indices [0, n-1]: Internal nodes (index 0 unused, root at index 1)
  *            - Indices [n, 2n-1]: Leaf nodes corresponding to input values
  *
- *          **Complexity:**
+ *          Complexity:
  *            - Build: O(n) time, O(n) space
  *            - Point update: O(log n) time, O(1) space
  *            - Range query: O(log n) time, O(1) space
  *
- *          **Customization:**
- *              Value and Node types can differ: LeafBuilder maps Value to Node, and
- *              Combine merges Node instances during queries. This allows for complex
- *              aggregations like tracking both sum and count simultaneously.
+ *          Customization:
+ *            Value and Node types can differ: LeafBuilder maps Value to Node, and
+ *            Combine merges Node instances during queries. This allows for complex
+ *            aggregations like tracking both sum and count simultaneously.
  *
  * @note The Combine functor "MUST" be associative for correct results.
  *       Formally: combine(combine(a, b), c) == combine(a, combine(b, c))
@@ -151,8 +140,7 @@ template <
 requires detail::SegmentTreeTraits<Value, Node, Combine, Identity, LeafBuilder>
 class SegmentTree : public ContainerFacade<SegmentTree<Value, Node, Combine, Identity, LeafBuilder>> {
 public:
-  //===----- TYPE ALIASES ------------------------------------------------------===//
-
+  ///@brief Type aliases for convenience.
   using value_type      = Value;
   using node_type       = Node;
   using size_type       = std::size_t;
@@ -164,11 +152,9 @@ public:
 
   //===----- ITERATOR TYPES ----------------------------------------------------===//
 
-  /**
-   * @brief Const iterator for traversing the original values.
-   */
-  using const_iterator         = typename arr::DynamicArray<Value>::const_iterator;
-  using const_reverse_iterator = typename arr::DynamicArray<Value>::const_reverse_iterator;
+  ///@brief Const iterator for traversing the original values.
+  using const_iterator         = typename DynamicArray<Value>::const_iterator;
+  using const_reverse_iterator = typename DynamicArray<Value>::const_reverse_iterator;
 
   //===----- CONSTRUCTORS, DESTRUCTOR, ASSIGNMENT ------------------------------===//
 
@@ -309,9 +295,7 @@ public:
    */
   constexpr SegmentTree(SegmentTree&& other) noexcept;
 
-  /**
-   * @brief Destructor.
-   */
+  ///@brief Destructor.
   ~SegmentTree() = default;
 
   /**
@@ -544,12 +528,12 @@ private:
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
-  Combine                              combine_{};      ///< Functor to combine two nodes.
-  Identity                             identity_{};     ///< Functor to get the identity node.
-  LeafBuilder                          leaf_builder_{}; ///< Functor to build leaf nodes from values.
-  arr::DynamicArray<Value>     values_{};       ///< Original values for point access.
-  arr::DynamicArray<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
-  size_type                            size_ = 0;       ///< Number of elements in the tree.
+  Combine                 combine_{};      ///< Functor to combine two nodes.
+  Identity                identity_{};     ///< Functor to get the identity node.
+  LeafBuilder             leaf_builder_{}; ///< Functor to build leaf nodes from values.
+  DynamicArray<Value>     values_{};       ///< Original values for point access.
+  DynamicArray<node_type> tree_{};         ///< Internal segment tree storage (size 2n).
+  size_type               size_ = 0;       ///< Number of elements in the tree.
 };
 
 } // namespace ads::trees

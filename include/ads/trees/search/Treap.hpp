@@ -31,7 +31,7 @@
 
 namespace ads::trees {
 
-namespace arr = ads::arrays;
+using ads::arrays::DynamicArray;
 
 /**
  * @brief A randomized binary search tree that also satisfies a heap invariant on priorities.
@@ -56,13 +56,19 @@ private:
   struct Node;
 
 public:
+  ///@brief Type aliases for convenience.
   using value_type    = T;
   using visitor_type  = std::function<void(const T&)>;
   using priority_type = Priority;
   using size_type     = size_t;
 
   //===----- ITERATOR CLASS ----------------------------------------------------===//
-
+  /**
+   * @brief Forward iterator for in-order traversal of the Treap.
+   *
+   * @details Traverses values in ascending (BST) order using an explicit stack.
+   *          The iterator is a forward iterator (not bidirectional) for simplicity.
+   */
   class iterator {
   public:
     using iterator_category = std::forward_iterator_tag;
@@ -77,19 +83,30 @@ public:
     auto operator=(const iterator& other) -> iterator&;
     auto operator=(iterator&& other) noexcept -> iterator& = default;
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next in-order element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next in-order element (post-increment).
     auto operator++(int) -> iterator;
+
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool;
 
   private:
     friend class Treap<T, Priority>;
 
-    arr::DynamicArray<Node*> stack_;
-    Node*                    current_ = nullptr;
+    DynamicArray<Node*> stack_;
+    Node*               current_ = nullptr;
 
+    ///@brief Constructs an iterator starting at the in-order first node of @p root's subtree.
     explicit iterator(Node* root);
+    ///@brief Pushes @p node and all its left descendants onto the traversal stack.
     void push_left(Node* node);
   };
 
@@ -297,45 +314,28 @@ public:
 
   //===----- ITERATOR ACCESS ---------------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator to the first value in sorted order.
-   * @return Forward iterator to the smallest stored value, or end() if empty.
-   */
+  ///@brief Returns an iterator to the smallest element. Expected O(log n)
   auto begin() -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the first value in sorted order.
-   * @return Forward iterator to the smallest stored value, or end() if empty.
-   */
+  ///@brief Returns a const iterator to the smallest element. Expected O(log n)
   auto begin() const -> iterator;
 
-  /**
-   * @brief Returns the sentinel iterator one past the last value.
-   * @return End iterator.
-   */
+  ///@brief Returns a past-the-end iterator. O(1)
   auto end() -> iterator;
 
-  /**
-   * @brief Returns the const sentinel iterator one past the last value.
-   * @return End iterator.
-   */
+  ///@brief Returns a const past-the-end iterator. O(1)
   auto end() const -> iterator;
 
-  /**
-   * @brief Returns a const iterator to the first value in sorted order.
-   * @return Forward iterator to the smallest stored value, or cend() if empty.
-   */
+  ///@brief Returns a const iterator to the smallest element. Expected O(log n)
   auto cbegin() const -> iterator;
 
-  /**
-   * @brief Returns the const sentinel iterator one past the last value.
-   * @return End iterator.
-   */
+  ///@brief Returns a const past-the-end iterator. O(1)
   auto cend() const -> iterator;
 
 private:
   //===----- INTERNAL STORAGE --------------------------------------------------===//
 
+  ///@brief Internal node holding a value, a priority, and owning its two children.
   struct Node {
     T                     data;
     Priority              priority;
@@ -346,28 +346,49 @@ private:
     Node(U&& value, const Priority& node_priority) : data(std::forward<U>(value)), priority(node_priority), left(nullptr), right(nullptr) {}
   };
 
-  std::unique_ptr<Node> root_;
-  size_t                size_;
-  std::uint64_t         random_state_;
+  std::unique_ptr<Node> root_;         ///< Root of the treap.
+  size_t                size_;         ///< Number of nodes in the treap.
+  std::uint64_t         random_state_; ///< State of the internal xorshift priority generator.
 
-  static constexpr std::uint64_t kDefaultSeed = 0x9E37'79B9'7F4A'7C15ULL;
+  static constexpr std::uint64_t kDefaultSeed = 0x9E37'79B9'7F4A'7C15ULL; ///< Default xorshift seed.
 
-  //===----- HELPER API --------------------------------------------------------===//
+  //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
+  ///@brief Recursive insert helper shared by all insert_with_priority overloads.
   template <typename U>
   auto insert_with_priority_impl(std::unique_ptr<Node>& node, U&& value, const Priority& priority) -> bool;
+
+  ///@brief Recursive remove helper; returns true if the value was found and removed.
   auto remove_impl(std::unique_ptr<Node>& node, const T& value) -> bool;
 
+  ///@brief Left rotation: raises @p node's right child.
   auto rotate_left(std::unique_ptr<Node>& node) -> void;
+
+  ///@brief Right rotation: raises @p node's left child.
   auto rotate_right(std::unique_ptr<Node>& node) -> void;
+
+  ///@brief Generates the next priority via an xorshift64 step.
   auto next_priority() -> Priority;
 
+  ///@brief Locates the node holding @p value in the subtree rooted at @p node.
   auto find_node(Node* node, const T& value) const -> Node*;
+
+  ///@brief Returns the minimum node in @p node's subtree.
   auto find_min_node(Node* node) const -> Node*;
+
+  ///@brief Returns the maximum node in @p node's subtree.
   auto find_max_node(Node* node) const -> Node*;
+
+  ///@brief Returns the height of @p node's subtree (empty = -1).
   auto height_helper(const Node* node) const noexcept -> int;
+
+  ///@brief Recursive in-order traversal helper.
   auto in_order_helper(const Node* node, const visitor_type& visit) const -> void;
+
+  ///@brief Recursive pre-order traversal helper.
   auto pre_order_helper(const Node* node, const visitor_type& visit) const -> void;
+
+  ///@brief Recursive post-order traversal helper.
   auto post_order_helper(const Node* node, const visitor_type& visit) const -> void;
 };
 
