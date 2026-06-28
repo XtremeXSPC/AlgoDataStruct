@@ -15,7 +15,7 @@
 #   - Modular CMake configuration using separate files in cmake/ directory:
 #       * CompilerSetup.cmake       - Compiler flags and helper functions
 #       * LibraryDefinition.cmake   - ads_lib header-only library definition
-#       * MainExecutables.cmake     - Demo executables from src/main_*.cc
+#       * MainExecutables.cmake     - Demo executables from examples/*/main_*.cc
 #       * GoogleTest.cmake          - GoogleTest integration (optional)
 #
 # Usage:
@@ -109,7 +109,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Keep option definitions close to the core project settings so later modules can
 # branch on them consistently.
 
-option(ENABLE_DEMOS "Build demo executables from src/main_*.cc" ON)
+option(ENABLE_DEMOS "Build demo executables from examples/*/main_*.cc" ON)
 option(ENABLE_APPS "Build showcase applications and games" ON)
 option(ENABLE_TESTING "Enable unit testing with GoogleTest" OFF)
 option(DISABLE_PCH "Disable precompiled headers (for debugging)" OFF)
@@ -139,7 +139,7 @@ include(cmake/BuildOptions.cmake)
 # Library definition: Header-only ads_lib target.
 include(cmake/LibraryDefinition.cmake)
 
-# Demo executables built from src/main_*.cc.
+# Demo executables built from examples/*/main_*.cc.
 if(ENABLE_DEMOS)
     include(cmake/MainExecutables.cmake)
 else()

@@ -1,0 +1,420 @@
+//===---------------------------------------------------------------------------===//
+/**
+ * @file Test_BinarySearchTree.cpp
+ * @brief Google Test unit tests for BinarySearchTree.
+ * @version 0.1
+ * @date 2025-11-21
+ *
+ * @copyright MIT License 2025
+ */
+//===---------------------------------------------------------------------------===//
+
+#include "ads/trees/search/Binary_Search_Tree.hpp"
+
+#include <gtest/gtest.h>
+
+#include <cstddef>
+#include <random>
+#include <set>
+#include <string>
+#include <vector>
+
+using namespace ads::trees;
+
+namespace {
+
+struct BstMoveOnlyOrdered {
+  int value;
+
+  explicit BstMoveOnlyOrdered(int v) : value(v) {}
+
+  BstMoveOnlyOrdered(const BstMoveOnlyOrdered&)                        = delete;
+  auto operator=(const BstMoveOnlyOrdered&) -> BstMoveOnlyOrdered&     = delete;
+  BstMoveOnlyOrdered(BstMoveOnlyOrdered&&) noexcept                    = default;
+  auto operator=(BstMoveOnlyOrdered&&) noexcept -> BstMoveOnlyOrdered& = default;
+
+  auto operator<(const BstMoveOnlyOrdered& other) const -> bool { return value < other.value; }
+
+  auto operator==(const BstMoveOnlyOrdered& other) const -> bool { return value == other.value; }
+};
+
+template <typename Tree>
+auto expect_matches_set(const Tree& tree, const std::set<int>& oracle) -> void {
+  EXPECT_EQ(tree.size(), oracle.size());
+  EXPECT_EQ(tree.is_empty(), oracle.empty());
+  EXPECT_TRUE(tree.validate_properties());
+
+  std::vector<int> actual;
+  tree.in_order_traversal([&actual](const int& value) -> auto { actual.push_back(value); });
+  const std::vector<int> expected(oracle.begin(), oracle.end());
+  EXPECT_EQ(actual, expected);
+}
+
+} // namespace
+
+//===----- TEST FIXTURE --------------------------------------------------------===//
+
+class BinarySearchTreeTest : public ::testing::Test {
+protected:
+  BinarySearchTree<int> tree;
+
+  void SetUp() override {
+    // Common setup: create a balanced tree.
+    //        50
+    //       /  \
+    //      30   70
+    //     / \   / \
+    //    20 40 60 80
+  }
+
+  void buildBalancedTree() {
+    tree.insert(50);
+    tree.insert(30);
+    tree.insert(70);
+    tree.insert(20);
+    tree.insert(40);
+    tree.insert(60);
+    tree.insert(80);
+  }
+};
+
+//===----- BASIC STATE TESTS ---------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, IsEmptyOnConstruction) {
+  EXPECT_EQ(tree.size(), 0);
+  EXPECT_TRUE(tree.is_empty());
+  EXPECT_EQ(tree.height(), -1);
+}
+
+TEST_F(BinarySearchTreeTest, Clear) {
+  buildBalancedTree();
+  EXPECT_FALSE(tree.is_empty());
+
+  tree.clear();
+  EXPECT_EQ(tree.size(), 0);
+  EXPECT_TRUE(tree.is_empty());
+  EXPECT_EQ(tree.height(), -1);
+}
+
+//===----- INSERTION TESTS -----------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, InsertSingleElement) {
+  EXPECT_TRUE(tree.insert(50));
+  EXPECT_EQ(tree.size(), 1);
+  EXPECT_EQ(tree.height(), 0);
+  EXPECT_TRUE(tree.contains(50));
+}
+
+TEST_F(BinarySearchTreeTest, InsertMultipleElements) {
+  buildBalancedTree();
+  EXPECT_EQ(tree.size(), 7);
+  EXPECT_EQ(tree.height(), 2);
+}
+
+TEST_F(BinarySearchTreeTest, InsertDuplicateRejected) {
+  tree.insert(50);
+  EXPECT_FALSE(tree.insert(50));
+  EXPECT_EQ(tree.size(), 1);
+}
+
+TEST_F(BinarySearchTreeTest, EmplaceElement) {
+  tree.emplace(42);
+  EXPECT_EQ(tree.size(), 1);
+  EXPECT_TRUE(tree.contains(42));
+}
+
+//===----- SEARCH TESTS --------------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, ContainsElement) {
+  buildBalancedTree();
+
+  EXPECT_TRUE(tree.contains(50));
+  EXPECT_TRUE(tree.contains(20));
+  EXPECT_TRUE(tree.contains(80));
+  EXPECT_FALSE(tree.contains(15));
+  EXPECT_FALSE(tree.contains(100));
+}
+
+TEST_F(BinarySearchTreeTest, FindMinMax) {
+  buildBalancedTree();
+
+  EXPECT_EQ(tree.find_min(), 20);
+  EXPECT_EQ(tree.find_max(), 80);
+}
+
+TEST_F(BinarySearchTreeTest, FindMinMaxOnEmptyThrows) {
+  EXPECT_THROW({ [[maybe_unused]] auto val = tree.find_min(); }, EmptyTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto val = tree.find_max(); }, EmptyTreeException);
+}
+
+TEST_F(BinarySearchTreeTest, SuccessorPredecessor) {
+  buildBalancedTree();
+
+  const int* succ = tree.successor(40);
+  ASSERT_NE(succ, nullptr);
+  EXPECT_EQ(*succ, 50);
+
+  const int* pred = tree.predecessor(40);
+  ASSERT_NE(pred, nullptr);
+  EXPECT_EQ(*pred, 30);
+
+  // Test edge cases
+  EXPECT_EQ(tree.successor(80), nullptr);   // No successor for max
+  EXPECT_EQ(tree.predecessor(20), nullptr); // No predecessor for min
+}
+
+//===----- REMOVAL TESTS -------------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, RemoveLeafNode) {
+  buildBalancedTree();
+  EXPECT_TRUE(tree.remove(20));
+  EXPECT_EQ(tree.size(), 6);
+  EXPECT_FALSE(tree.contains(20));
+}
+
+TEST_F(BinarySearchTreeTest, RemoveNodeWithOneChild) {
+  tree.insert(50);
+  tree.insert(30);
+  tree.insert(20);
+
+  EXPECT_TRUE(tree.remove(30));
+  EXPECT_EQ(tree.size(), 2);
+  EXPECT_FALSE(tree.contains(30));
+  EXPECT_TRUE(tree.contains(20));
+}
+
+TEST_F(BinarySearchTreeTest, RemoveNodeWithTwoChildren) {
+  buildBalancedTree();
+  EXPECT_TRUE(tree.remove(30));
+  EXPECT_EQ(tree.size(), 6);
+  EXPECT_FALSE(tree.contains(30));
+  EXPECT_TRUE(tree.contains(20));
+  EXPECT_TRUE(tree.contains(40));
+}
+
+TEST_F(BinarySearchTreeTest, RemoveRoot) {
+  buildBalancedTree();
+  EXPECT_TRUE(tree.remove(50));
+  EXPECT_EQ(tree.size(), 6);
+  EXPECT_FALSE(tree.contains(50));
+}
+
+TEST_F(BinarySearchTreeTest, RemoveNonExistent) {
+  buildBalancedTree();
+  EXPECT_FALSE(tree.remove(100));
+  EXPECT_EQ(tree.size(), 7);
+}
+
+//===----- TRAVERSAL TESTS -----------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, InOrderTraversal) {
+  buildBalancedTree();
+
+  std::vector<int> result;
+  tree.in_order_traversal([&result](const int& val) -> void { result.push_back(val); });
+
+  std::vector<int> expected = {20, 30, 40, 50, 60, 70, 80};
+  EXPECT_EQ(result, expected);
+}
+
+TEST_F(BinarySearchTreeTest, PreOrderTraversal) {
+  buildBalancedTree();
+
+  std::vector<int> result;
+  tree.pre_order_traversal([&result](const int& val) -> void { result.push_back(val); });
+
+  std::vector<int> expected = {50, 30, 20, 40, 70, 60, 80};
+  EXPECT_EQ(result, expected);
+}
+
+TEST_F(BinarySearchTreeTest, PostOrderTraversal) {
+  buildBalancedTree();
+
+  std::vector<int> result;
+  tree.post_order_traversal([&result](const int& val) -> void { result.push_back(val); });
+
+  std::vector<int> expected = {20, 40, 30, 60, 80, 70, 50};
+  EXPECT_EQ(result, expected);
+}
+
+TEST_F(BinarySearchTreeTest, LevelOrderTraversal) {
+  buildBalancedTree();
+
+  std::vector<int> result;
+  tree.level_order_traversal([&result](const int& val) -> void { result.push_back(val); });
+
+  std::vector<int> expected = {50, 30, 70, 20, 40, 60, 80};
+  EXPECT_EQ(result, expected);
+}
+
+//===----- ITERATOR TESTS ------------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, IteratorTraversal) {
+  buildBalancedTree();
+
+  std::vector<int> actual;
+  for (const auto& val : tree) {
+    actual.push_back(val);
+  }
+
+  std::vector<int> expected = {20, 30, 40, 50, 60, 70, 80};
+  EXPECT_EQ(actual, expected);
+}
+
+TEST_F(BinarySearchTreeTest, ExplicitIterator) {
+  buildBalancedTree();
+
+  auto it = tree.begin();
+  EXPECT_EQ(*it, 20);
+  ++it;
+  EXPECT_EQ(*it, 30);
+}
+
+TEST_F(BinarySearchTreeTest, PostfixIteratorReturnsPreviousValue) {
+  buildBalancedTree();
+
+  auto it       = tree.begin();
+  auto previous = it++;
+
+  EXPECT_EQ(*previous, 20);
+  EXPECT_EQ(*it, 30);
+}
+
+//===----- MOVE SEMANTICS TESTS ------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, MoveConstructor) {
+  buildBalancedTree();
+
+  BinarySearchTree<int> moved_tree = std::move(tree);
+
+  EXPECT_TRUE(tree.is_empty());
+  EXPECT_EQ(moved_tree.size(), 7);
+  EXPECT_TRUE(moved_tree.contains(50));
+}
+
+TEST_F(BinarySearchTreeTest, MoveAssignment) {
+  buildBalancedTree();
+
+  BinarySearchTree<int> other_tree;
+  other_tree.insert(100);
+
+  other_tree = std::move(tree);
+
+  EXPECT_TRUE(tree.is_empty());
+  EXPECT_EQ(other_tree.size(), 7);
+  EXPECT_FALSE(other_tree.contains(100));
+  EXPECT_TRUE(other_tree.contains(50));
+}
+
+//===----- EDGE CASE TESTS -----------------------------------------------------===//
+
+TEST_F(BinarySearchTreeTest, SingleElementTree) {
+  tree.insert(42);
+
+  EXPECT_EQ(tree.size(), 1);
+  EXPECT_EQ(tree.height(), 0);
+  EXPECT_EQ(tree.find_min(), 42);
+  EXPECT_EQ(tree.find_max(), 42);
+}
+
+TEST_F(BinarySearchTreeTest, DegenerateTree) {
+  // Create a degenerate tree (linked list).
+  for (int i = 1; i <= 5; ++i) {
+    tree.insert(i);
+  }
+
+  EXPECT_EQ(tree.size(), 5);
+  EXPECT_EQ(tree.height(), 4); // Height equals size - 1.
+}
+
+TEST_F(BinarySearchTreeTest, LargeDegenerateTreeUsesIterativeOperations) {
+  constexpr int kElementCount = 10'000;
+  for (int value = 0; value < kElementCount; ++value) {
+    ASSERT_TRUE(tree.insert(value));
+  }
+
+  EXPECT_EQ(tree.size(), static_cast<size_t>(kElementCount));
+  EXPECT_EQ(tree.height(), kElementCount - 1);
+
+  int    expected = 0;
+  size_t visited  = 0;
+  tree.in_order_traversal([&](const int& value) -> void {
+    EXPECT_EQ(value, expected);
+    ++expected;
+    ++visited;
+  });
+
+  EXPECT_EQ(visited, static_cast<size_t>(kElementCount));
+  tree.clear();
+  EXPECT_TRUE(tree.is_empty());
+}
+
+TEST_F(BinarySearchTreeTest, RandomizedOperationsMatchStdSet) {
+  std::mt19937                    rng(0xB57);
+  std::uniform_int_distribution<> value_dist(0, 99);
+  std::uniform_int_distribution<> op_dist(0, 2);
+  std::set<int>                   oracle;
+
+  for (int step = 0; step < 500; ++step) {
+    const int value = value_dist(rng);
+    switch (op_dist(rng)) {
+    case 0:
+      EXPECT_EQ(tree.insert(value), oracle.insert(value).second) << "insert " << value;
+      break;
+    case 1:
+      EXPECT_EQ(tree.remove(value), oracle.erase(value) == 1U) << "remove " << value;
+      break;
+    default:
+      EXPECT_EQ(tree.contains(value), oracle.contains(value)) << "contains " << value;
+      break;
+    }
+
+    expect_matches_set(tree, oracle);
+  }
+}
+
+//===----- CUSTOM TYPE TESTS ---------------------------------------------------===//
+
+TEST(BinarySearchTreeCustomTypeTest, CustomComparison) {
+  struct Person {
+    std::string name;
+    int         age;
+
+    auto operator<(const Person& other) const -> bool { return age < other.age; }
+
+    auto operator==(const Person& other) const -> bool { return age == other.age; }
+  };
+
+  BinarySearchTree<Person> people_tree;
+  people_tree.emplace("Alice", 30);
+  people_tree.emplace("Bob", 25);
+  people_tree.emplace("Charlie", 35);
+
+  EXPECT_EQ(people_tree.size(), 3);
+  EXPECT_EQ(people_tree.find_min().name, "Bob");
+  EXPECT_EQ(people_tree.find_max().name, "Charlie");
+}
+
+TEST(BinarySearchTreeMoveOnlyTest, SupportsMoveOnlyValues) {
+  BinarySearchTree<BstMoveOnlyOrdered> tree;
+
+  EXPECT_TRUE(tree.insert(BstMoveOnlyOrdered{50}));
+  EXPECT_TRUE(tree.emplace(30));
+  EXPECT_TRUE(tree.insert(BstMoveOnlyOrdered{70}));
+  EXPECT_FALSE(tree.insert(BstMoveOnlyOrdered{50}));
+
+  EXPECT_EQ(tree.size(), 3U);
+  EXPECT_TRUE(tree.contains(BstMoveOnlyOrdered{30}));
+  EXPECT_EQ(tree.find_min().value, 30);
+  EXPECT_EQ(tree.find_max().value, 70);
+
+  std::vector<int> values;
+  tree.in_order_traversal([&values](const BstMoveOnlyOrdered& value) -> void { values.push_back(value.value); });
+  std::vector<int> expected{30, 50, 70};
+  EXPECT_EQ(values, expected);
+
+  EXPECT_TRUE(tree.remove(BstMoveOnlyOrdered{50}));
+  EXPECT_FALSE(tree.contains(BstMoveOnlyOrdered{50}));
+}
+
+//===---------------------------------------------------------------------------===//

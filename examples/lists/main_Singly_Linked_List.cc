@@ -1,0 +1,129 @@
+//===---------------------------------------------------------------------------===//
+/**
+ * @file main_Singly_Linked_List.cc
+ * @author Costantino Lombardi
+ * @brief Demonstration of SinglyLinkedList usage.
+ * @version 0.2
+ * @date 2025-01-20
+ *
+ * This file is a quick visual demo, not a test suite. Unit tests live in /tests.
+ */
+//===---------------------------------------------------------------------------===//
+
+#include "ads/lists/Singly_Linked_List.hpp"
+#include "support/Demo_Utilities.hpp"
+
+#include <exception>
+#include <iostream>
+#include <string>
+#include <utility>
+
+using std::cerr;
+using std::cout;
+using std::exception;
+using std::string;
+using std::to_string;
+
+using namespace ads::lists;
+
+//===----- HELPER FUNCTIONS ----------------------------------------------------===//
+
+// Helper function to print the list contents.
+template <typename T>
+auto print_list(const SinglyLinkedList<T>& list, const string& label) -> void {
+  cout << ANSI_CYAN << label << ANSI_RESET << " (size " << list.size() << "): ";
+  for (const auto& v : list) {
+    cout << v << ' ';
+  }
+  cout << '\n';
+}
+
+//===----- DEMO FUNCTIONS ------------------------------------------------------===//
+
+// Demonstrates basic push/pop operations.
+auto demo_basics() -> void {
+  ads::demo::print_section("Basic push/pop");
+
+  SinglyLinkedList<int> list;
+  list.push_front(3);
+  list.push_front(2);
+  list.push_front(1);
+  list.push_back(4);
+  list.push_back(5);
+
+  print_list(list, "After pushes");
+  cout << "front=" << list.front() << " back=" << list.back() << '\n';
+
+  list.pop_front();
+  list.pop_back();
+  print_list(list, "After pop_front + pop_back");
+}
+
+//===----- EMPLACE AND REVERSE DEMO --------------------------------------------===//
+
+// Demonstrates emplace operations and reverse.
+auto demo_emplace_and_reverse() -> void {
+  ads::demo::print_section("Emplace and reverse");
+
+  SinglyLinkedList<string> words;
+  words.emplace_front("World");
+  words.emplace_front("Hello");
+  words.emplace_back("!");
+
+  print_list(words, "Before reverse");
+  words.reverse();
+  print_list(words, "After reverse");
+}
+
+//===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
+
+// Demonstrates move semantics.
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move semantics");
+
+  SinglyLinkedList<int> original;
+  for (int i = 1; i <= 5; ++i) {
+    original.push_back(i);
+  }
+  print_list(original, "Original");
+
+  SinglyLinkedList<int> moved_ctor(std::move(original));
+  print_list(moved_ctor, "Moved (ctor)");
+  print_list(original, "Original (after move)");
+
+  SinglyLinkedList<int> assigned;
+  assigned.push_back(42);
+  assigned = std::move(moved_ctor);
+  print_list(assigned, "Moved (assignment)");
+}
+
+//===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
+
+// Demonstrates exception handling.
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception handling");
+
+  SinglyLinkedList<int> empty;
+  try {
+    empty.front();
+  } catch (const ListException& e) {
+    cout << ANSI_YELLOW << "front() threw as expected: " << e.what() << ANSI_RESET << '\n';
+  }
+}
+
+//===----- MAIN FUNCTION -------------------------------------------------------===//
+
+auto main() -> int {
+  ads::demo::print_header("SINGLY LINKED LIST - COMPREHENSIVE DEMO");
+
+  demo_basics();
+  demo_emplace_and_reverse();
+  demo_move_semantics();
+  demo_exceptions();
+
+  cout << "\n";
+  ads::demo::print_info("Done. Run ENABLE_TESTING=ON to execute the full unit tests.");
+  return 0;
+}
+
+//===---------------------------------------------------------------------------===//

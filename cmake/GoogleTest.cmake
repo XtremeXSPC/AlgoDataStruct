@@ -49,10 +49,13 @@ if(NOT GTest_FOUND)
     FetchContent_MakeAvailable(googletest)
 endif()
 
-# Collect all root test source files automatically.
-file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
+# Collect all test sources automatically, recursing the per-category subfolders
+# under tests/ (e.g. tests/heaps/, tests/trees/search/). The deprecated tests/old/
+# tree is excluded (and matches case-insensitively on macOS, so filter it out).
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/Test_*.cpp"
 )
+list(FILTER TEST_SOURCES EXCLUDE REGEX "/tests/old/")
 list(SORT TEST_SOURCES)
 
 # Create test executable if we have test files.

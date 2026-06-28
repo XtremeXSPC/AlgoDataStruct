@@ -2,9 +2,9 @@
 # ------------------------------- Demo Executables -------------------------------- #
 # ================================================================================= #
 #
-# Demo programs live in src/main_*.cc and are built automatically as <Structure>
-# executables. Auto-discovery keeps CMake aligned with the repository as new demos
-# are added or renamed.
+# Demo programs live in examples/<category>/main_*.cc and are built automatically
+# as <Structure> executables. Auto-discovery keeps CMake aligned with the
+# repository as new demos are added or renamed.
 #
 # Prerequisites:
 #   - ads_lib target must be defined (from LibraryDefinition.cmake)
@@ -15,8 +15,8 @@
 #
 # ================================================================================= #
 
-file(GLOB ADS_MAIN_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/main_*.cc"
+file(GLOB_RECURSE ADS_MAIN_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/main_*.cc"
 )
 
 list(SORT ADS_MAIN_SOURCES)
