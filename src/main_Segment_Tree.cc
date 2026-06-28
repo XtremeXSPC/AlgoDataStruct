@@ -30,6 +30,8 @@ using std::vector;
 
 using ads::trees::SegmentTree;
 
+//===----- CUSTOM FUNCTORS -----------------------------------------------------===//
+
 struct MaxCombine {
   auto operator()(int left, int right) const -> int { return std::max(left, right); }
 };

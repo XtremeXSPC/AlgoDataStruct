@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <string>
+
 using std::cerr;
 using std::cout;
 using std::exception;
@@ -83,8 +84,7 @@ auto demo_prim() -> void {
   cout << "Total weight: " << forest.total_weight() << '\n';
   cout << "Edges:\n";
   for (const auto& edge : forest.edges()) {
-    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight
-         << ")\n";
+    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight << ")\n";
   }
 }
 
@@ -128,8 +128,7 @@ auto demo_kruskal() -> void {
   cout << "Total weight: " << forest.total_weight() << '\n';
   cout << "Edges:\n";
   for (const auto& edge : forest.edges()) {
-    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight
-         << ")\n";
+    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight << ")\n";
   }
 }
 
