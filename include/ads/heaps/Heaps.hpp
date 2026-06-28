@@ -23,6 +23,7 @@
 #include "D_Ary_Heap.hpp"
 #include "Heap_Concepts.hpp"
 #include "Heap_Exception.hpp"
+#include "Leftist_Heap.hpp"
 #include "Max_Heap.hpp"
 #include "Min_Heap.hpp"
 
