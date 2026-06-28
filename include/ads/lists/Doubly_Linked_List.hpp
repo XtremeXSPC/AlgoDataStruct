@@ -146,7 +146,7 @@ public:
   DoublyLinkedList(const DoublyLinkedList&)                    = delete;
   auto operator=(const DoublyLinkedList&) -> DoublyLinkedList& = delete;
 
-  //====------------------------ INSERTION OPERATIONS -------------------------====//
+  //===----- INSERTION OPERATIONS ---------------------------------------------====//
 
   /**
    * @brief Constructs an element in-place at the front of the list.
@@ -248,7 +248,7 @@ public:
    */
   auto back() const -> const T& override;
 
-  //====-------------------------- QUERY OPERATIONS ---------------------------====//
+  //===----- QUERY OPERATIONS -------------------------------------------------====//
 
   /**
    * @brief Checks if the list is empty.
@@ -317,7 +317,7 @@ public:
    */
   void reverse() noexcept;
 
-  //====------------------------- ITERATOR OPERATIONS -------------------------====//
+  //====----- ITERATOR OPERATIONS ---------------------------------------------====//
 
   /// @brief Returns an iterator to the first element.
   auto begin() noexcept -> iterator;
@@ -380,7 +380,7 @@ public:
   }
 
 private:
-  //====---------------------------- INTERNAL NODE ----------------------------====//
+  //====----- INTERNAL NODE ---------------------------------------------------====//
   /**
    * @brief Internal node structure.
    *
