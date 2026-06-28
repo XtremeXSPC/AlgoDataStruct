@@ -47,61 +47,34 @@ class ContainerFacade {
 public:
   //===----- QUERY OPERATIONS --------------------------------------------------===//
 
-  /**
-   * @brief Checks whether the container holds no elements.
-   * @return true if size() is zero, false otherwise.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns true if size() == 0.
   [[nodiscard]] auto is_empty() const noexcept -> bool { return self().size() == 0; }
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
+  // All "Iterator Operations" execute in constant O(1) time and constant O(1) space.
 
-  /**
-   * @brief Returns a const iterator to the beginning of the container.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const iterator to the first element.
   auto cbegin() const noexcept { return self().begin(); }
 
-  /**
-   * @brief Returns a const iterator to the end of the container.
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const past-the-end iterator.
   auto cend() const noexcept { return self().end(); }
 
-  /**
-   * @brief Returns a reverse iterator to the beginning (the last element).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a reverse iterator to the last element.
   auto rbegin() noexcept { return std::reverse_iterator(self().end()); }
 
-  /**
-   * @brief Returns a reverse iterator to the end (before the first element).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a reverse iterator before the first element.
   auto rend() noexcept { return std::reverse_iterator(self().begin()); }
 
-  /**
-   * @brief Returns a const reverse iterator to the beginning (the last element).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const reverse iterator to the last element.
   auto rbegin() const noexcept { return std::reverse_iterator(self().end()); }
 
-  /**
-   * @brief Returns a const reverse iterator to the end (before the first element).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const reverse iterator before the first element.
   auto rend() const noexcept { return std::reverse_iterator(self().begin()); }
 
-  /**
-   * @brief Returns a const reverse iterator to the beginning (the last element).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const reverse iterator to the last element.
   auto crbegin() const noexcept { return std::reverse_iterator(self().end()); }
 
-  /**
-   * @brief Returns a const reverse iterator to the end (before the first element).
-   * @complexity Time O(1), Space O(1)
-   */
+  ///@brief Returns a const reverse iterator before the first element.
   auto crend() const noexcept { return std::reverse_iterator(self().begin()); }
 
   //===----- COMPARISON OPERATORS ----------------------------------------------===//
@@ -146,14 +119,10 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  /**
-   * @brief Returns a reference to the derived instance.
-   */
+  ///@brief Returns a reference to the derived instance.
   auto self() noexcept -> Derived& { return static_cast<Derived&>(*this); }
 
-  /**
-   * @brief Returns a const reference to the derived instance.
-   */
+  ///@brief Returns a const reference to the derived instance.
   auto self() const noexcept -> const Derived& { return static_cast<const Derived&>(*this); }
 };
 

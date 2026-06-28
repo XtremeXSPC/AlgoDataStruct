@@ -47,6 +47,7 @@ namespace ads::support {
 template <typename Container, bool IsConst>
 class IndexedIterator {
 public:
+  ///@brief Type aliases for convenience and STL compliance.
   using container_type    = std::conditional_t<IsConst, const Container, Container>;
   using iterator_category = std::random_access_iterator_tag;
   using value_type        = typename Container::value_type;
@@ -77,30 +78,37 @@ public:
 
   //===----- DEREFERENCE OPERATORS ---------------------------------------------===//
 
+  ///@brief Returns a reference to the element at the current index.
   auto operator*() const -> reference { return (*container_)[static_cast<size_t>(index_)]; }
 
+  ///@brief Returns a pointer to the element at the current index.
   auto operator->() const -> pointer { return &(*container_)[static_cast<size_t>(index_)]; }
 
+  ///@brief Returns a reference to the element at offset @p n from the current index.
   auto operator[](difference_type n) const -> reference { return (*container_)[static_cast<size_t>(index_ + n)]; }
 
   //===----- INCREMENT/DECREMENT OPERATORS -------------------------------------===//
 
+  ///@brief Pre-increments the iterator.
   auto operator++() -> IndexedIterator& {
     ++index_;
     return *this;
   }
 
+  ///@brief Post-increments the iterator.
   auto operator++(int) -> IndexedIterator {
     IndexedIterator tmp = *this;
     ++index_;
     return tmp;
   }
 
+  ///@brief Pre-decrements the iterator.
   auto operator--() -> IndexedIterator& {
     --index_;
     return *this;
   }
 
+  ///@brief Post-decrements the iterator.
   auto operator--(int) -> IndexedIterator {
     IndexedIterator tmp = *this;
     --index_;
@@ -109,32 +117,41 @@ public:
 
   //===----- ARITHMETIC OPERATORS ----------------------------------------------===//
 
+  ///@brief Advances the iterator by @p n positions in place.
   auto operator+=(difference_type n) -> IndexedIterator& {
     index_ += n;
     return *this;
   }
 
+  ///@brief Retreats the iterator by @p n positions in place.
   auto operator-=(difference_type n) -> IndexedIterator& {
     index_ -= n;
     return *this;
   }
 
+  ///@brief Returns an iterator advanced by @p n positions.
   friend auto operator+(IndexedIterator it, difference_type n) -> IndexedIterator { return it += n; }
 
+  ///@brief Returns an iterator advanced by @p n positions (commutative overload).
   friend auto operator+(difference_type n, IndexedIterator it) -> IndexedIterator { return it += n; }
 
+  ///@brief Returns an iterator retreated by @p n positions.
   friend auto operator-(IndexedIterator it, difference_type n) -> IndexedIterator { return it -= n; }
 
+  ///@brief Returns the signed distance between two iterators.
   friend auto operator-(const IndexedIterator& lhs, const IndexedIterator& rhs) -> difference_type { return lhs.index_ - rhs.index_; }
 
   //===----- COMPARISON OPERATORS ----------------------------------------------===//
 
-  auto operator<=>(const IndexedIterator& other) const noexcept        = default;
+  ///@brief Three-way comparison based on logical index.
+  auto operator<=>(const IndexedIterator& other) const noexcept = default;
+
+  ///@brief Equality comparison based on logical index.
   auto operator==(const IndexedIterator& other) const noexcept -> bool = default;
 
 private:
-  difference_type index_     = 0;
-  container_type* container_ = nullptr;
+  difference_type index_     = 0;       ///< Logical index into the container.
+  container_type* container_ = nullptr; ///< Non-owning pointer to the owning container.
 
   // Grant the complementary const-ness specialization access for conversion.
   template <typename, bool>
