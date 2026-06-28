@@ -13,27 +13,27 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/search/Binary_Search_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::trees;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents via in-order traversal.
 template <typename T>
-void print_tree(const BinarySearchTree<T>& tree, const string& name) {
+auto print_tree(const BinarySearchTree<T>& tree, const string& name) -> void {
   cout << "Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
 
   if (tree.is_empty()) {
@@ -49,8 +49,8 @@ void print_tree(const BinarySearchTree<T>& tree, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and traversal operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   BinarySearchTree<int> bst;
 
@@ -91,13 +91,13 @@ void demo_basic_operations() {
 //===----- SEARCH OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates search operations.
-void demo_search_operations() {
-  ads::demo::print_section("Demo: Search Operations");
+auto demo_search_operations() -> void {
+  ads::demo::print_section("Search Operations");
 
   BinarySearchTree<int> bst;
 
   // Build a tree.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     bst.insert(val);
   }
@@ -133,13 +133,13 @@ void demo_search_operations() {
 //===----- REMOVE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates remove operations.
-void demo_removal() {
-  ads::demo::print_section("Demo: Removal Operations");
+auto demo_removal() -> void {
+  ads::demo::print_section("Removal Operations");
 
   BinarySearchTree<int> bst;
 
   // Build a tree.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     bst.insert(val);
   }
@@ -175,13 +175,13 @@ void demo_removal() {
 //===----- SORTED SEQUENCE COMPARISON ------------------------------------------===//
 
 // Demonstrates sorted sequence insertion.
-void demo_iterators() {
-  ads::demo::print_section("Demo: Iterators");
+auto demo_iterators() -> void {
+  ads::demo::print_section("Iterators");
 
   BinarySearchTree<int> bst;
 
   // Build a tree.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80};
   for (int val : values) {
     bst.insert(val);
   }
@@ -200,13 +200,13 @@ void demo_iterators() {
   }
   cout << '\n';
 
-  // Test collecting values into a vector.
-  cout << "\nCollecting values into a vector:\n  ";
-  vector<int> collected;
+  // Test collecting values into a DynamicArray.
+  cout << "\nCollecting values into a DynamicArray:\n  ";
+  DynamicArray<int> collected;
   for (const auto& val : bst) {
     collected.push_back(val);
   }
-  cout << "Vector contents: ";
+  cout << "DynamicArray contents: ";
   for (int val : collected) {
     cout << val << " ";
   }
@@ -216,8 +216,8 @@ void demo_iterators() {
 //===----- CUSTOM TYPES DEMO ---------------------------------------------------===//
 
 // Demonstrates usage with custom types.
-void demo_custom_types() {
-  ads::demo::print_section("Demo: Custom Types");
+auto demo_custom_types() -> void {
+  ads::demo::print_section("Custom Types");
 
   struct Person {
     string name;
@@ -251,8 +251,8 @@ void demo_custom_types() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   BinarySearchTree<int> bst1;
   bst1.insert(50);
@@ -287,8 +287,8 @@ void demo_move_semantics() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   BinarySearchTree<int> empty_tree;
 
@@ -314,8 +314,8 @@ void demo_exceptions() {
 //===----- SORTED SEQUENCE COMPARISON ------------------------------------------===//
 
 // Test edge cases.
-void demo_edge_cases() {
-  ads::demo::print_section("Demo: Edge Cases");
+auto demo_edge_cases() -> void {
+  ads::demo::print_section("Edge Cases");
 
   // Single element tree.
   BinarySearchTree<int> single;
@@ -351,7 +351,7 @@ void demo_edge_cases() {
 
 auto main() -> int {
   try {
-    ads::demo::print_header("Binary Search Tree Usage Examples");
+    ads::demo::print_header("BINARY SEARCH TREE - COMPREHENSIVE DEMO");
 
     demo_basic_operations();
     demo_search_operations();

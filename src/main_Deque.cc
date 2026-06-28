@@ -31,7 +31,7 @@ using namespace ads::queues;
 
 // Helper function to print deque contents.
 template <typename T>
-void print_deque(const CircularArrayDeque<T>& deque, const string& label) {
+auto print_deque(const CircularArrayDeque<T>& deque, const string& label) -> void {
   cout << label << " (size: " << deque.size() << ", capacity: " << deque.capacity() << ")\n";
   if (deque.is_empty()) {
     cout << "  (empty)\n";
@@ -48,8 +48,8 @@ void print_deque(const CircularArrayDeque<T>& deque, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_front, push_back, front, back operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   CircularArrayDeque<int> deque;
   cout << "Created empty deque.\n";
@@ -69,8 +69,8 @@ void demo_basic_operations() {
 //===----- POP OPERATIONS DEMO -------------------------------------------------===//
 
 // Demonstrate pop_front and pop_back operations.
-void demo_pop_operations() {
-  ads::demo::print_section("Demo: Pop Operations");
+auto demo_pop_operations() -> void {
+  ads::demo::print_section("Pop Operations");
 
   CircularArrayDeque<int> deque;
   for (int i = 1; i <= 5; ++i) {
@@ -90,8 +90,8 @@ void demo_pop_operations() {
 //===----- RESERVE & INDEX DEMO ------------------------------------------------===//
 
 // Demonstrate reserve and index access operations.
-void demo_reserve_and_index() {
-  ads::demo::print_section("Demo: Reserve and Indexing");
+auto demo_reserve_and_index() -> void {
+  ads::demo::print_section("Reserve and Indexing");
 
   CircularArrayDeque<int> deque;
   for (int i = 0; i < 8; ++i) {
@@ -109,8 +109,8 @@ void demo_reserve_and_index() {
 //===----- EMPLACE & ITERATOR DEMO ---------------------------------------------===//
 
 // Demonstrate emplace and iterator functionality.
-void demo_emplace_iterators() {
-  ads::demo::print_section("Demo: Emplace and Iterators");
+auto demo_emplace_iterators() -> void {
+  ads::demo::print_section("Emplace and Iterators");
 
   struct Person {
     string name;
@@ -133,8 +133,8 @@ void demo_emplace_iterators() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrate move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   CircularArrayDeque<int> source;
   for (int i = 1; i <= 4; ++i) {

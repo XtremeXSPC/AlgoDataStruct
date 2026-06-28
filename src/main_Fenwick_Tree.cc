@@ -32,7 +32,7 @@ using ads::trees::FenwickTree;
 
 // Print the current state of the Fenwick tree.
 template <typename T>
-void print_tree_state(const FenwickTree<T>& tree, const string& label) {
+auto print_tree_state(const FenwickTree<T>& tree, const string& label) -> void {
   cout << label << " (size: " << tree.size() << ")\n";
   if (tree.is_empty()) {
     cout << "  (empty)\n";
@@ -55,8 +55,8 @@ void print_tree_state(const FenwickTree<T>& tree, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates building the tree and performing queries.
-void demo_build_and_queries() {
-  ads::demo::print_section("Demo: Build and Queries");
+auto demo_build_and_queries() -> void {
+  ads::demo::print_section("Build and Queries");
 
   vector<int>      values = {1, 2, 3, 4, 5};
   FenwickTree<int> tree(values);
@@ -69,8 +69,8 @@ void demo_build_and_queries() {
 //===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates point updates (additions).
-void demo_updates() {
-  ads::demo::print_section("Demo: Point Updates");
+auto demo_updates() -> void {
+  ads::demo::print_section("Point Updates");
 
   FenwickTree<int> tree({5, 1, 4, 2, 7});
   print_tree_state(tree, "Before updates");
@@ -87,8 +87,8 @@ void demo_updates() {
 //===----- SET OPERATIONS DEMO -------------------------------------------------===//
 
 // Demonstrates setting values at specific indices.
-void demo_set_operations() {
-  ads::demo::print_section("Demo: Set Operations");
+auto demo_set_operations() -> void {
+  ads::demo::print_section("Set Operations");
 
   FenwickTree<int> tree({2, 4, 6, 8});
   print_tree_state(tree, "Original tree");
@@ -101,8 +101,8 @@ void demo_set_operations() {
 //===----- RESET & CLEAR OPERATIONS --------------------------------------------===//
 
 // Demonstrates resetting and clearing the tree.
-void demo_reset_clear() {
-  ads::demo::print_section("Demo: Reset and Clear");
+auto demo_reset_clear() -> void {
+  ads::demo::print_section("Reset and Clear");
 
   FenwickTree<int> tree(3);
   print_tree_state(tree, "After reset to size 3");
@@ -115,8 +115,8 @@ void demo_reset_clear() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling for invalid operations.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   FenwickTree<int> tree({1, 2, 3});
 

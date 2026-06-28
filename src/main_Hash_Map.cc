@@ -25,14 +25,13 @@ using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
 using namespace ads::associative;
 
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access.
-void demo_hashmap_basic() {
+auto demo_hashmap_basic() -> void {
   ads::demo::print_section("HashMap - Basic Operations");
 
   HashMap<string, int> scores;
@@ -54,7 +53,7 @@ void demo_hashmap_basic() {
 //===----- ITERATION DEMO ------------------------------------------------------===//
 
 // Demonstrates iteration over HashMap.
-void demo_hashmap_iteration() {
+auto demo_hashmap_iteration() -> void {
   ads::demo::print_section("HashMap - Range-Based For Loop");
 
   HashMap<string, int> ages = {{"Alice", 25}, {"Bob", 30}, {"Charlie", 28}};
@@ -73,7 +72,7 @@ void demo_hashmap_iteration() {
 //===----- INSERTION AND EMPLACE DEMO ------------------------------------------===//
 
 // Demonstrates insert and emplace methods.
-void demo_hashmap_insert_emplace() {
+auto demo_hashmap_insert_emplace() -> void {
   ads::demo::print_section("HashMap - Insert and Emplace");
 
   HashMap<int, string> map;
@@ -98,7 +97,7 @@ void demo_hashmap_insert_emplace() {
 //===----- ERASE OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates erase method.
-void demo_hashmap_erase() {
+auto demo_hashmap_erase() -> void {
   ads::demo::print_section("HashMap - Erase Operations");
 
   HashMap<string, double> prices = {{"apple", 1.20}, {"banana", 0.50}, {"orange", 0.80}, {"grape", 2.50}};
@@ -125,7 +124,7 @@ void demo_hashmap_erase() {
 //===----- UTILITY METHODS DEMO ------------------------------------------------===//
 
 // Demonstrates keys, values, and entries methods.
-void demo_hashmap_utility_methods() {
+auto demo_hashmap_utility_methods() -> void {
   ads::demo::print_section("HashMap - Utility Methods (keys, values, entries)");
 
   HashMap<string, int> inventory = {{"apples", 50}, {"oranges", 30}, {"bananas", 45}, {"grapes", 25}};
@@ -159,7 +158,7 @@ void demo_hashmap_utility_methods() {
 //===----- APPLICATION EXAMPLE DEMO --------------------------------------------===//
 
 // Demonstrates a word frequency counter application.
-void demo_word_frequency() {
+auto demo_word_frequency() -> void {
   ads::demo::print_section("Application - Word Frequency Counter");
 
   string text = "the quick brown fox jumps over the lazy dog the fox was quick";
@@ -195,7 +194,7 @@ void demo_word_frequency() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_hashmap_move_semantics() {
+auto demo_hashmap_move_semantics() -> void {
   ads::demo::print_section("HashMap - Move Semantics");
 
   HashMap<int, string> map1;
@@ -218,7 +217,7 @@ void demo_hashmap_move_semantics() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("HASH MAP - COMPREHENSIVE DEMO PROGRAM");
+  ads::demo::print_header("HASH MAP - COMPREHENSIVE DEMO");
 
   try {
     demo_hashmap_basic();

@@ -13,6 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/hash/Hash_Table_Chaining.hpp"
 #include "../include/ads/hash/Hash_Table_Open_Addressing.hpp"
 #include "support/Demo_Utilities.hpp"
@@ -21,15 +22,14 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::hash;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
@@ -50,7 +50,7 @@ auto strategy_to_string(ProbingStrategy strategy) -> string {
 
 // Helper function to print hash table statistics.
 template <typename Key, typename Value>
-void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string& name) {
+auto print_stats(const HashTableOpenAddressing<Key, Value>& table, const string& name) -> void {
   cout << "Hash Table '" << name << "':\n";
   cout << "  Size:        " << table.size() << '\n';
   cout << "  Capacity:    " << table.capacity() << '\n';
@@ -63,8 +63,8 @@ void print_stats(const HashTableOpenAddressing<Key, Value>& table, const string&
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations (Linear Probing)");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations (Linear Probing)");
 
   HashTableOpenAddressing<int, string> table(16, ProbingStrategy::LINEAR, 0.5f);
 
@@ -92,10 +92,10 @@ void demo_basic_operations() {
 //===----- DIFFERENT PROBING STRATEGIES DEMO -----------------------------------===//
 
 // Demonstrates different probing strategies.
-void demo_probing_strategies() {
-  ads::demo::print_section("Demo: Different Probing Strategies");
+auto demo_probing_strategies() -> void {
+  ads::demo::print_section("Different Probing Strategies");
 
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
+  DynamicArray<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     cout << "\nTesting " << strategy_to_string(strategy) << ":\n";
@@ -127,8 +127,8 @@ void demo_probing_strategies() {
 //===----- TOMBSTONE HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates tombstone handling.
-void demo_tombstones() {
-  ads::demo::print_section("Demo: Tombstone Handling");
+auto demo_tombstones() -> void {
+  ads::demo::print_section("Tombstone Handling");
 
   HashTableOpenAddressing<int, string> table(8, ProbingStrategy::LINEAR, 0.5f);
 
@@ -163,8 +163,8 @@ void demo_tombstones() {
 //===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates updating existing keys.
-void demo_updates() {
-  ads::demo::print_section("Demo: Updates");
+auto demo_updates() -> void {
+  ads::demo::print_section("Updates");
 
   HashTableOpenAddressing<string, int> table;
 
@@ -191,8 +191,8 @@ void demo_updates() {
 //===----- REHASHING DEMO ------------------------------------------------------===//
 
 // Demonstrates rehashing.
-void demo_rehashing() {
-  ads::demo::print_section("Demo: Rehashing");
+auto demo_rehashing() -> void {
+  ads::demo::print_section("Rehashing");
 
   HashTableOpenAddressing<int, int> table(4, ProbingStrategy::LINEAR, 0.5f); // Small capacity, low threshold
 
@@ -226,8 +226,8 @@ void demo_rehashing() {
 //===----- HIGH COLLISIONS DEMO ------------------------------------------------===//
 
 // Demonstrates handling of high collision rates.
-void demo_high_collisions() {
-  ads::demo::print_section("Demo: High Collision Rate");
+auto demo_high_collisions() -> void {
+  ads::demo::print_section("High Collision Rate");
 
   // Small capacity forces many collisions.
   HashTableOpenAddressing<int, int> table(8, ProbingStrategy::LINEAR, 0.5f);
@@ -249,8 +249,8 @@ void demo_high_collisions() {
 //===----- RESERVE DEMO --------------------------------------------------------===//
 
 // Demonstrates reserve method.
-void demo_reserve() {
-  ads::demo::print_section("Demo: Reserve");
+auto demo_reserve() -> void {
+  ads::demo::print_section("Reserve");
 
   HashTableOpenAddressing<int, string> table;
 
@@ -272,8 +272,8 @@ void demo_reserve() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   HashTableOpenAddressing<int, string> table;
   table.insert(1, "one");
@@ -308,8 +308,8 @@ void demo_exceptions() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   HashTableOpenAddressing<int, string> table1;
   table1.insert(1, "one");
@@ -336,8 +336,8 @@ void demo_move_semantics() {
 //===----- CLEAR DEMO ----------------------------------------------------------===//
 
 // Demonstrates clear method.
-void demo_clear() {
-  ads::demo::print_section("Demo: Clear");
+auto demo_clear() -> void {
+  ads::demo::print_section("Clear");
 
   HashTableOpenAddressing<int, int> table;
   for (int i = 0; i < 50; ++i) {
@@ -361,13 +361,13 @@ void demo_clear() {
 //===----- PERFORMANCE COMPARISON DEMO -----------------------------------------===//
 
 // Performance comparison: Open Addressing vs Chaining.
-void demo_performance_comparison() {
-  ads::demo::print_section("Demo: Performance Comparison");
+auto demo_performance_comparison() -> void {
+  ads::demo::print_section("Performance Comparison");
 
   const int N = 50'000;
 
   // Test Open Addressing with different strategies.
-  vector<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
+  DynamicArray<ProbingStrategy> strategies = {ProbingStrategy::LINEAR, ProbingStrategy::QUADRATIC, ProbingStrategy::DOUBLE_HASH};
 
   for (auto strategy : strategies) {
     auto start = std::chrono::high_resolution_clock::now();
@@ -408,8 +408,8 @@ void demo_performance_comparison() {
 //===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Test edge cases.
-void demo_edge_cases() {
-  ads::demo::print_section("Demo: Edge Cases");
+auto demo_edge_cases() -> void {
+  ads::demo::print_section("Edge Cases");
 
   HashTableOpenAddressing<int, int> table;
 

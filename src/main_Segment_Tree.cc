@@ -61,7 +61,7 @@ struct SumCountLeaf {
 
 // Print the current state of the Segment Tree.
 template <typename T>
-void print_tree_state(const SegmentTree<T>& tree, const string& label) {
+auto print_tree_state(const SegmentTree<T>& tree, const string& label) -> void {
   cout << label << " (size: " << tree.size() << ")\n";
   if (tree.is_empty()) {
     cout << "  (empty)\n";
@@ -80,8 +80,8 @@ void print_tree_state(const SegmentTree<T>& tree, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates building the tree and performing queries.
-void demo_build_and_queries() {
-  ads::demo::print_section("Demo: Build and Queries");
+auto demo_build_and_queries() -> void {
+  ads::demo::print_section("Build and Queries");
 
   vector<int>      values = {1, 3, -2, 8, -7};
   SegmentTree<int> tree(values);
@@ -94,8 +94,8 @@ void demo_build_and_queries() {
 //===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates point updates (set and add).
-void demo_updates() {
-  ads::demo::print_section("Demo: Point Updates");
+auto demo_updates() -> void {
+  ads::demo::print_section("Point Updates");
 
   SegmentTree<int> tree({5, 1, 4, 2, 7});
   print_tree_state(tree, "Before updates");
@@ -112,8 +112,8 @@ void demo_updates() {
 //===----- RESET & CLEAR OPERATIONS --------------------------------------------===//
 
 // Demonstrates resetting and clearing the tree.
-void demo_reset_clear() {
-  ads::demo::print_section("Demo: Reset and Clear");
+auto demo_reset_clear() -> void {
+  ads::demo::print_section("Reset and Clear");
 
   SegmentTree<int> tree(4, 2);
   print_tree_state(tree, "After size/value constructor");
@@ -130,8 +130,8 @@ void demo_reset_clear() {
 //===----- CUSTOM FUNCTOR DEMO -------------------------------------------------===//
 
 // Demonstrates custom combine and identity functors (max segment tree).
-void demo_custom_functors() {
-  ads::demo::print_section("Demo: Custom Functors (Max)");
+auto demo_custom_functors() -> void {
+  ads::demo::print_section("Custom Functors (Max)");
 
   vector<int>                                    values = {1, 3, -2, 8, -7};
   SegmentTree<int, int, MaxCombine, MaxIdentity> tree(values);
@@ -147,8 +147,8 @@ void demo_custom_functors() {
 //===----- CUSTOM NODE DEMO ----------------------------------------------------===//
 
 // Demonstrates custom node aggregation using a leaf builder.
-void demo_custom_nodes() {
-  ads::demo::print_section("Demo: Custom Nodes (Sum + Count)");
+auto demo_custom_nodes() -> void {
+  ads::demo::print_section("Custom Nodes (Sum + Count)");
 
   vector<int> values = {2, 4, 6, 8};
 
@@ -162,8 +162,8 @@ void demo_custom_nodes() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling for invalid operations.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   SegmentTree<int> tree({1, 2, 3});
 

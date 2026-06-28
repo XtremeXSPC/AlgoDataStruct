@@ -26,14 +26,13 @@ using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
 using namespace ads::graphs;
 
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates graph construction and basic properties.
-void demo_graph_construction() {
+auto demo_graph_construction() -> void {
   ads::demo::print_section("Graph - Construction and Basic Properties");
 
   // Undirected graph.
@@ -53,7 +52,7 @@ void demo_graph_construction() {
 //===----- VERTEX AND EDGE OPERATIONS ------------------------------------------===//
 
 // Test adding vertices.
-void demo_graph_add_vertices() {
+auto demo_graph_add_vertices() -> void {
   ads::demo::print_section("Graph - Adding Vertices");
 
   GraphAdjacencyList<string> graph(false);
@@ -75,7 +74,7 @@ void demo_graph_add_vertices() {
 }
 
 // Test adding edges in undirected graph.
-void demo_graph_add_edges_undirected() {
+auto demo_graph_add_edges_undirected() -> void {
   ads::demo::print_section("Graph - Adding Edges (Undirected)");
 
   GraphAdjacencyList<int> graph(false);
@@ -116,7 +115,7 @@ void demo_graph_add_edges_undirected() {
 }
 
 // Test adding edges in directed graph.
-void demo_graph_add_edges_directed() {
+auto demo_graph_add_edges_directed() -> void {
   ads::demo::print_section("Graph - Adding Edges (Directed)");
 
   GraphAdjacencyList<int> graph(true);
@@ -150,7 +149,7 @@ void demo_graph_add_edges_directed() {
 //===----- NEIGHBORS AND REMOVAL DEMO ------------------------------------------===//
 
 // Test getting neighbors.
-void demo_graph_neighbors() {
+auto demo_graph_neighbors() -> void {
   ads::demo::print_section("Graph - Getting Neighbors");
 
   GraphAdjacencyList<char> graph(false);
@@ -184,7 +183,7 @@ void demo_graph_neighbors() {
 //===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 // Test removing edges.
-void demo_graph_remove_edge() {
+auto demo_graph_remove_edge() -> void {
   ads::demo::print_section("Graph - Removing Edges");
 
   GraphAdjacencyList<int> graph(false);
@@ -210,7 +209,7 @@ void demo_graph_remove_edge() {
 //===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 // Test removing vertices.
-void demo_graph_bfs() {
+auto demo_graph_bfs() -> void {
   ads::demo::print_section("Graph - Breadth-First Search (BFS)");
 
   GraphAdjacencyList<int> graph(false);
@@ -248,7 +247,7 @@ void demo_graph_bfs() {
 //===----- DEPTH-FIRST SEARCH DEMO ---------------------------------------------===//
 
 // Test depth-first search.
-void demo_graph_dfs() {
+auto demo_graph_dfs() -> void {
   ads::demo::print_section("Graph - Depth-First Search (DFS)");
 
   GraphAdjacencyList<int> graph(false);
@@ -282,7 +281,7 @@ void demo_graph_dfs() {
 //===----- PATH FINDING DEMO ---------------------------------------------------===//
 
 // Test path finding.
-void demo_graph_path_finding() {
+auto demo_graph_path_finding() -> void {
   ads::demo::print_section("Graph - Path Finding");
 
   GraphAdjacencyList<string> graph(false);
@@ -339,7 +338,7 @@ void demo_graph_path_finding() {
 //===----- CONNECTED COMPONENTS DEMO -------------------------------------------===//
 
 // Test connected components.
-void demo_graph_connected_components() {
+auto demo_graph_connected_components() -> void {
   ads::demo::print_section("Graph - Connected Components");
 
   GraphAdjacencyList<int> graph(false);
@@ -372,7 +371,7 @@ void demo_graph_connected_components() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Test move semantics.
-void demo_graph_move_semantics() {
+auto demo_graph_move_semantics() -> void {
   ads::demo::print_section("Graph - Move Semantics");
 
   GraphAdjacencyList<int> graph1(false);
@@ -400,7 +399,7 @@ void demo_graph_move_semantics() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Test exception handling.
-void demo_graph_exception_handling() {
+auto demo_graph_exception_handling() -> void {
   ads::demo::print_section("Graph - Exception Handling");
 
   GraphAdjacencyList<int> graph(false);
@@ -432,7 +431,7 @@ void demo_graph_exception_handling() {
 //===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Test performance on large graph.
-void demo_graph_large_performance() {
+auto demo_graph_large_performance() -> void {
   ads::demo::print_section("Graph - Large Dataset Performance");
 
   const size_t            N = 10'000;
@@ -490,7 +489,7 @@ void demo_graph_large_performance() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("GRAPH ADJACENCY LIST - EXAMPLES FOR TESTING");
+  ads::demo::print_header("GRAPH ADJACENCY LIST - COMPREHENSIVE DEMO");
 
   try {
     // Basic tests.

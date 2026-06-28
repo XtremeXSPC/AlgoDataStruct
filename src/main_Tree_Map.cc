@@ -30,7 +30,7 @@ using namespace ads::associative;
 
 // Helper function to print map entries.
 template <typename K, typename V>
-void print_entries(const TreeMap<K, V>& map, const string& label) {
+auto print_entries(const TreeMap<K, V>& map, const string& label) -> void {
   cout << label << " (size: " << map.size() << ")\n";
   auto entries = map.entries();
   if (entries.empty()) {
@@ -46,8 +46,8 @@ void print_entries(const TreeMap<K, V>& map, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   TreeMap<string, int> scores;
   scores.put("Alice", 92);
@@ -67,8 +67,8 @@ void demo_basic_operations() {
 //===----- ACCESS OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates access operations.
-void demo_access_operations() {
-  ads::demo::print_section("Demo: Access Operations");
+auto demo_access_operations() -> void {
+  ads::demo::print_section("Access Operations");
 
   TreeMap<string, int> scores;
   scores.put("Elena", 88);
@@ -91,8 +91,8 @@ void demo_access_operations() {
 //===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates emplace operations.
-void demo_emplace_operations() {
-  ads::demo::print_section("Demo: Emplace Operations");
+auto demo_emplace_operations() -> void {
+  ads::demo::print_section("Emplace Operations");
 
   struct Person {
     string name;
@@ -115,8 +115,8 @@ void demo_emplace_operations() {
 //===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates removal operations.
-void demo_removal_operations() {
-  ads::demo::print_section("Demo: Removal Operations");
+auto demo_removal_operations() -> void {
+  ads::demo::print_section("Removal Operations");
 
   TreeMap<int, string> items;
   items.put(3, "Gamma");

@@ -16,7 +16,9 @@
 
 #include <iostream>
 
+using std::cerr;
 using std::cout;
+using std::exception;
 
 using namespace ads::matrices;
 
@@ -30,15 +32,16 @@ auto demo_triplet_build() -> void {
   SparseMatrix<int> matrix(
       4, 5,
       {
-          {0, 1, 7},
-          {2, 3, 5},
-          {3, 0, 9},
+          {.row = 0, .column = 1, .value = 7},
+          {.row = 2, .column = 3, .value = 5},
+          {.row = 3, .column = 0, .value = 9},
       });
 
   cout << "Shape: " << matrix.row_count() << " x " << matrix.column_count() << '\n';
   cout << "Non-zero entries:\n";
-  matrix.for_each_non_zero(
-      [&](size_t row, size_t column, const int& value) { cout << "  (" << row << ", " << column << ") = " << value << '\n'; });
+  matrix.for_each_non_zero([&](size_t row, size_t column, const int& value) -> void {
+    cout << "  (" << row << ", " << column << ") = " << value << '\n';
+  });
 }
 
 auto demo_mutation_and_rows() -> void {
@@ -52,7 +55,7 @@ auto demo_mutation_and_rows() -> void {
 
   cout << "Row 1 entries: ";
   bool first = true;
-  matrix.for_each_in_row(1, [&](size_t column, const int& value) {
+  matrix.for_each_in_row(1, [&](size_t column, const int& value) -> void {
     if (!first) {
       cout << ", ";
     }
@@ -67,12 +70,18 @@ auto demo_mutation_and_rows() -> void {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header({"SPARSE MATRIX DEMO", "Compressed Sparse Row (CSR) container"});
+  try {
+    ads::demo::print_header("SPARSE MATRIX - COMPREHENSIVE DEMO");
 
-  demo_triplet_build();
-  demo_mutation_and_rows();
+    demo_triplet_build();
+    demo_mutation_and_rows();
 
-  ads::demo::print_footer("SPARSE MATRIX DEMO COMPLETED!");
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
   return 0;
 }
 

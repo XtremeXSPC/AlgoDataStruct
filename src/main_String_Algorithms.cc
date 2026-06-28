@@ -17,7 +17,9 @@
 #include <iostream>
 #include <string_view>
 
+using std::cerr;
 using std::cout;
+using std::exception;
 
 using namespace ads::algorithms;
 
@@ -46,21 +48,27 @@ auto print_matches(std::string_view label, const ads::arrays::DynamicArray<size_
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header({"STRING ALGORITHMS DEMO", "KMP and Rabin-Karp"});
+  try {
+    ads::demo::print_header("STRING ALGORITHMS - COMPREHENSIVE DEMO");
 
-  constexpr std::string_view text    = "abracadabra abracadabra";
-  constexpr std::string_view pattern = "abra";
+    constexpr std::string_view text    = "abracadabra abracadabra";
+    constexpr std::string_view pattern = "abra";
 
-  const auto kmp_matches   = kmp_search(text, pattern);
-  const auto rabin_matches = rabin_karp_search(text, pattern);
+    const auto kmp_matches   = kmp_search(text, pattern);
+    const auto rabin_matches = rabin_karp_search(text, pattern);
 
-  cout << "Text:    " << text << '\n';
-  cout << "Pattern: " << pattern << "\n\n";
+    cout << "Text:    " << text << '\n';
+    cout << "Pattern: " << pattern << "\n\n";
 
-  print_matches("KMP matches:         ", kmp_matches);
-  print_matches("Rabin-Karp matches:  ", rabin_matches);
+    print_matches("KMP matches:         ", kmp_matches);
+    print_matches("Rabin-Karp matches:  ", rabin_matches);
 
-  ads::demo::print_footer("STRING ALGORITHMS DEMO COMPLETED!");
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
   return 0;
 }
 

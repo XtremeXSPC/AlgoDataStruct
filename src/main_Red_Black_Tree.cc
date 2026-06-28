@@ -13,6 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/search/Red_Black_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
@@ -21,21 +22,20 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::string;
 using std::to_string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::trees;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents.
 template <typename T>
-void print_rbt(const RedBlackTree<T>& tree, const string& name) {
+auto print_rbt(const RedBlackTree<T>& tree, const string& name) -> void {
   cout << "Red-Black Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << "):\n";
 
   if (tree.is_empty()) {
@@ -51,8 +51,8 @@ void print_rbt(const RedBlackTree<T>& tree, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   RedBlackTree<int> rbt;
 
@@ -85,8 +85,8 @@ void demo_basic_operations() {
 //===----- SEQUENTIAL INSERTIONS DEMO ------------------------------------------===//
 
 // Demonstrates sequential insertions.
-void demo_sequential_insertions() {
-  ads::demo::print_section("Demo: Sequential Insertions");
+auto demo_sequential_insertions() -> void {
+  ads::demo::print_section("Sequential Insertions");
 
   cout << "Red-Black Trees maintain balance even with sequential insertions.\n\n";
 
@@ -111,13 +111,13 @@ void demo_sequential_insertions() {
 //===----- SEARCH OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates search operations.
-void demo_search_operations() {
-  ads::demo::print_section("Demo: Search Operations");
+auto demo_search_operations() -> void {
+  ads::demo::print_section("Search Operations");
 
   RedBlackTree<int> rbt;
 
   // Build a tree.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     rbt.insert(val);
   }
@@ -135,13 +135,13 @@ void demo_search_operations() {
 //===----- PROPERTY VALIDATION DEMO --------------------------------------------===//
 
 // Demonstrates validation of Red-Black Tree properties.
-void demo_property_validation() {
-  ads::demo::print_section("Demo: RB-Tree Properties Validation");
+auto demo_property_validation() -> void {
+  ads::demo::print_section("RB-Tree Properties Validation");
 
   RedBlackTree<int> rbt;
 
   // Insert random values.
-  vector<int> values = {41, 38, 31, 12, 19, 8, 50, 45, 60, 55, 70};
+  DynamicArray<int> values = {41, 38, 31, 12, 19, 8, 50, 45, 60, 55, 70};
   cout << "Inserting values: ";
   for (int val : values) {
     cout << val << " ";
@@ -160,13 +160,13 @@ void demo_property_validation() {
 //===----- RANDOM INSERTIONS DEMO ----------------------------------------------===//
 
 // Demonstrates random insertions.
-void demo_random_insertions() {
-  ads::demo::print_section("Demo: Random Insertions");
+auto demo_random_insertions() -> void {
+  ads::demo::print_section("Random Insertions");
 
   RedBlackTree<int> rbt;
 
   // Generate and shuffle values.
-  vector<int> values;
+  DynamicArray<int> values;
   for (int i = 1; i <= 100; ++i) {
     values.push_back(i);
   }
@@ -198,8 +198,8 @@ void demo_random_insertions() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   RedBlackTree<int> rbt1;
   for (int i = 1; i <= 10; ++i) {
@@ -234,8 +234,8 @@ void demo_move_semantics() {
 //===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Demonstrates performance of insertions and searches.
-void demo_performance() {
-  ads::demo::print_section("Demo: Performance");
+auto demo_performance() -> void {
+  ads::demo::print_section("Performance");
 
   const int N = 10'000;
 
@@ -270,8 +270,8 @@ void demo_performance() {
 //===----- CLEAR AND REUSE DEMO ------------------------------------------------===//
 
 // Demonstrates clear and reuse.
-void demo_clear_reuse() {
-  ads::demo::print_section("Demo: Clear and Reuse");
+auto demo_clear_reuse() -> void {
+  ads::demo::print_section("Clear and Reuse");
 
   RedBlackTree<int> rbt;
 
@@ -296,8 +296,8 @@ void demo_clear_reuse() {
 //===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Demonstrates edge cases.
-void demo_edge_cases() {
-  ads::demo::print_section("Demo: Edge Cases");
+auto demo_edge_cases() -> void {
+  ads::demo::print_section("Edge Cases");
 
   RedBlackTree<int> rbt;
 

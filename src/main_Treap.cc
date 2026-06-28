@@ -16,7 +16,9 @@
 
 #include <iostream>
 
+using std::cerr;
 using std::cout;
+using std::exception;
 
 using namespace ads::trees;
 
@@ -60,12 +62,18 @@ auto demo_regular_usage() -> void {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header({"TREAP DEMO", "BST order with heap priorities"});
+  try {
+    ads::demo::print_header("TREAP - COMPREHENSIVE DEMO");
 
-  demo_explicit_priorities();
-  demo_regular_usage();
+    demo_explicit_priorities();
+    demo_regular_usage();
 
-  ads::demo::print_footer("TREAP DEMO COMPLETED!");
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
   return 0;
 }
 

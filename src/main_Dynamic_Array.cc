@@ -31,7 +31,7 @@ using namespace ads::arrays;
 
 // Helper function to print array contents.
 template <typename T>
-void print_array(const DynamicArray<T>& array, const string& label) {
+auto print_array(const DynamicArray<T>& array, const string& label) -> void {
   cout << label << " (size: " << array.size() << ", capacity: " << array.capacity() << ")\n";
   if (array.is_empty()) {
     cout << "  (empty)\n";
@@ -47,8 +47,8 @@ void print_array(const DynamicArray<T>& array, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_back, front, back operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   DynamicArray<int> array;
   cout << "Created empty array.\n";
@@ -67,8 +67,8 @@ void demo_basic_operations() {
 //===----- INSERT & ERASE DEMO -------------------------------------------------===//
 
 // Demonstrate insert and erase operations.
-void demo_insert_erase() {
-  ads::demo::print_section("Demo: Insert and Erase");
+auto demo_insert_erase() -> void {
+  ads::demo::print_section("Insert and Erase");
 
   DynamicArray<int> array;
   array.push_back(10);
@@ -88,8 +88,8 @@ void demo_insert_erase() {
 //===----- RESIZE & RESERVE DEMO -----------------------------------------------===//
 
 // Demonstrate resize and reserve operations.
-void demo_resize_reserve() {
-  ads::demo::print_section("Demo: Resize and Reserve");
+auto demo_resize_reserve() -> void {
+  ads::demo::print_section("Resize and Reserve");
 
   DynamicArray<int> array(3, 7);
   print_array(array, "Filled array");
@@ -110,8 +110,8 @@ void demo_resize_reserve() {
 //===----- EMPLACE & ITERATOR DEMO ---------------------------------------------===//
 
 // Demonstrate emplace and iterator functionality.
-void demo_emplace_iterators() {
-  ads::demo::print_section("Demo: Emplace and Iterators");
+auto demo_emplace_iterators() -> void {
+  ads::demo::print_section("Emplace and Iterators");
 
   struct Person {
     string name;
@@ -134,8 +134,8 @@ void demo_emplace_iterators() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrate move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   DynamicArray<int> source;
   for (int i = 1; i <= 5; ++i) {

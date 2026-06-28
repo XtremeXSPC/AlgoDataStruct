@@ -35,7 +35,7 @@ using namespace ads::heaps;
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Min Heap basic operations.
-void demo_min_heap_basic() {
+auto demo_min_heap_basic() -> void {
   ads::demo::print_section("Min Heap - Basic Operations");
 
   MinHeap<int> heap;
@@ -65,7 +65,7 @@ void demo_min_heap_basic() {
 //===----- CONSTRUCTION FROM VECTOR DEMO ---------------------------------------===//
 
 // Min Heap construction from vector.
-void demo_min_heap_from_vector() {
+auto demo_min_heap_from_vector() -> void {
   ads::demo::print_section("Min Heap - Construction from Vector");
 
   vector<int> data = {15, 10, 20, 8, 12, 25, 18};
@@ -89,7 +89,7 @@ void demo_min_heap_from_vector() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Min Heap move semantics.
-void demo_min_heap_move_semantics() {
+auto demo_min_heap_move_semantics() -> void {
   ads::demo::print_section("Min Heap - Move Semantics");
 
   MinHeap<int> heap1;
@@ -118,7 +118,7 @@ void demo_min_heap_move_semantics() {
 //===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Min Heap emplace operations.
-void demo_min_heap_emplace() {
+auto demo_min_heap_emplace() -> void {
   ads::demo::print_section("Min Heap - Emplace Operations");
 
   MinHeap<string> heap;
@@ -140,7 +140,7 @@ void demo_min_heap_emplace() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Min Heap exception handling.
-void demo_min_heap_exception_handling() {
+auto demo_min_heap_exception_handling() -> void {
   ads::demo::print_section("Min Heap - Exception Handling");
 
   MinHeap<int> heap;
@@ -163,7 +163,7 @@ void demo_min_heap_exception_handling() {
 //===----- LARGE DATASET DEMO --------------------------------------------------===//
 
 // Min Heap large dataset test.
-void demo_min_heap_large() {
+auto demo_min_heap_large() -> void {
   ads::demo::print_section("Min Heap - Large Dataset");
 
   const int    N = 10'000;
@@ -191,7 +191,7 @@ void demo_min_heap_large() {
 //===----- MAX HEAP DEMOS ------------------------------------------------------===//
 
 // Max Heap basic operations.
-void demo_max_heap_basic() {
+auto demo_max_heap_basic() -> void {
   ads::demo::print_section("Max Heap - Basic Operations");
 
   MaxHeap<int> heap;
@@ -221,7 +221,7 @@ void demo_max_heap_basic() {
 //===----- CONSTRUCTION FROM VECTOR DEMO ---------------------------------------===//
 
 // Max Heap construction from vector.
-void demo_max_heap_from_vector() {
+auto demo_max_heap_from_vector() -> void {
   ads::demo::print_section("Max Heap - Construction from Vector");
 
   vector<int> data = {15, 10, 20, 8, 12, 25, 18};
@@ -245,7 +245,7 @@ void demo_max_heap_from_vector() {
 //===----- HEAPSORT APPLICATION DEMO -------------------------------------------===//
 
 // Max Heap heapsort application.
-void demo_max_heap_heapsort() {
+auto demo_max_heap_heapsort() -> void {
   ads::demo::print_section("Max Heap - Heapsort Application");
 
   vector<int> data = {64, 34, 25, 12, 22, 11, 90};
@@ -274,7 +274,7 @@ void demo_max_heap_heapsort() {
 //===----- HEAP COMPARISON DEMO ------------------------------------------------===//
 
 // Compare Min Heap and Max Heap.
-void demo_heap_comparison() {
+auto demo_heap_comparison() -> void {
   ads::demo::print_section("Heap Comparison - Min vs Max");
 
   vector<int> data = {5, 2, 8, 1, 9, 3, 7};

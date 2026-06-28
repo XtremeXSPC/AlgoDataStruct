@@ -29,15 +29,15 @@ using namespace ads::graphs;
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Prints the current status of the DisjointSetUnion.
-void print_status(const DisjointSetUnion& dsu, const string& label) {
+auto print_status(const DisjointSetUnion& dsu, const string& label) -> void {
   cout << label << " (elements: " << dsu.size() << ", sets: " << dsu.set_count() << ")\n";
 }
 
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic union and connectivity operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   DisjointSetUnion dsu(7);
   print_status(dsu, "Initial structure");
@@ -55,8 +55,8 @@ void demo_basic_operations() {
 //===----- FIND OPERATIONS DEMO ------------------------------------------------===//
 
 // Demonstrates find operations with path compression.
-void demo_find_operations() {
-  ads::demo::print_section("Demo: Find Operations");
+auto demo_find_operations() -> void {
+  ads::demo::print_section("Find Operations");
 
   DisjointSetUnion dsu(5);
   dsu.union_sets(0, 1);
@@ -70,8 +70,8 @@ void demo_find_operations() {
 //===----- DYNAMIC GROWTH DEMO -------------------------------------------------===//
 
 // Demonstrates adding new elements dynamically.
-void demo_dynamic_growth() {
-  ads::demo::print_section("Demo: Dynamic Growth");
+auto demo_dynamic_growth() -> void {
+  ads::demo::print_section("Dynamic Growth");
 
   DisjointSetUnion dsu(3);
   print_status(dsu, "Initial structure");
@@ -86,8 +86,8 @@ void demo_dynamic_growth() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling for invalid operations.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   DisjointSetUnion dsu(2);
   try {

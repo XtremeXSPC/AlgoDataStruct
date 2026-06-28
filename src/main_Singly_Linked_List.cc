@@ -30,7 +30,7 @@ using namespace ads::lists;
 
 // Helper function to print the list contents.
 template <typename T>
-void print_list(const SinglyLinkedList<T>& list, const string& label) {
+auto print_list(const SinglyLinkedList<T>& list, const string& label) -> void {
   cout << ANSI_CYAN << label << ANSI_RESET << " (size " << list.size() << "): ";
   for (const auto& v : list) {
     cout << v << ' ';
@@ -41,7 +41,7 @@ void print_list(const SinglyLinkedList<T>& list, const string& label) {
 //===----- DEMO FUNCTIONS ------------------------------------------------------===//
 
 // Demonstrates basic push/pop operations.
-void demo_basics() {
+auto demo_basics() -> void {
   ads::demo::print_section("Basic push/pop");
 
   SinglyLinkedList<int> list;
@@ -62,7 +62,7 @@ void demo_basics() {
 //===----- EMPLACE AND REVERSE DEMO --------------------------------------------===//
 
 // Demonstrates emplace operations and reverse.
-void demo_emplace_and_reverse() {
+auto demo_emplace_and_reverse() -> void {
   ads::demo::print_section("Emplace and reverse");
 
   SinglyLinkedList<string> words;
@@ -78,7 +78,7 @@ void demo_emplace_and_reverse() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
+auto demo_move_semantics() -> void {
   ads::demo::print_section("Move semantics");
 
   SinglyLinkedList<int> original;
@@ -100,7 +100,7 @@ void demo_move_semantics() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
-void demo_exceptions() {
+auto demo_exceptions() -> void {
   ads::demo::print_section("Exception handling");
 
   SinglyLinkedList<int> empty;

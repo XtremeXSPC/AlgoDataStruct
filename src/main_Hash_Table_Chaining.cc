@@ -30,7 +30,6 @@ using std::exception;
 using std::string;
 using std::to_string;
 using std::unordered_map;
-using std::vector;
 
 using namespace ads::hash;
 
@@ -38,7 +37,7 @@ using namespace ads::hash;
 
 // Helper function to print hash table statistics.
 template <typename Key, typename Value>
-void print_stats(const HashTableChaining<Key, Value>& table, const string& name) {
+auto print_stats(const HashTableChaining<Key, Value>& table, const string& name) -> void {
   cout << "Hash Table '" << name << "':\n";
   cout << "  Size:        " << table.size() << '\n';
   cout << "  Capacity:    " << table.capacity() << '\n';
@@ -50,8 +49,8 @@ void print_stats(const HashTableChaining<Key, Value>& table, const string& name)
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   HashTableChaining<int, string> table;
 
@@ -79,8 +78,8 @@ void demo_basic_operations() {
 //===----- UPDATES DEMO --------------------------------------------------------===//
 
 // Demonstrates updating existing keys.
-void demo_updates() {
-  ads::demo::print_section("Demo: Updates");
+auto demo_updates() -> void {
+  ads::demo::print_section("Updates");
 
   HashTableChaining<string, int> table;
 
@@ -107,8 +106,8 @@ void demo_updates() {
 //===----- OPERATOR[] DEMO -----------------------------------------------------===//
 
 // Demonstrates operator[].
-void demo_bracket_operator() {
-  ads::demo::print_section("Demo: Operator[]");
+auto demo_bracket_operator() -> void {
+  ads::demo::print_section("Operator[]");
 
   HashTableChaining<string, int> table;
 
@@ -131,8 +130,8 @@ void demo_bracket_operator() {
 //===----- FIND DEMO -----------------------------------------------------------===//
 
 // Demonstrates find method.
-void demo_find() {
-  ads::demo::print_section("Demo: Find");
+auto demo_find() -> void {
+  ads::demo::print_section("Find");
 
   HashTableChaining<int, string> table;
   table.insert(10, "ten");
@@ -159,8 +158,8 @@ void demo_find() {
 //===----- ERASE DEMO ----------------------------------------------------------===//
 
 // Demonstrates erase method.
-void demo_erase() {
-  ads::demo::print_section("Demo: Erase");
+auto demo_erase() -> void {
+  ads::demo::print_section("Erase");
 
   HashTableChaining<int, string> table;
 
@@ -190,8 +189,8 @@ void demo_erase() {
 //===----- REHASHING DEMO ------------------------------------------------------===//
 
 // Demonstrates rehashing.
-void demo_rehashing() {
-  ads::demo::print_section("Demo: Rehashing");
+auto demo_rehashing() -> void {
+  ads::demo::print_section("Rehashing");
 
   // Small initial capacity.
   HashTableChaining<int, int> table(4, 0.75f);
@@ -226,8 +225,8 @@ void demo_rehashing() {
 //===----- RESERVE DEMO --------------------------------------------------------===//
 
 // Demonstrates reserve method.
-void demo_reserve() {
-  ads::demo::print_section("Demo: Reserve");
+auto demo_reserve() -> void {
+  ads::demo::print_section("Reserve");
 
   HashTableChaining<int, string> table;
 
@@ -262,8 +261,8 @@ struct Person {
 //===----- CUSTOM TYPES DEMO ---------------------------------------------------===//
 
 // Demonstrates usage with custom types.
-void demo_custom_types() {
-  ads::demo::print_section("Demo: Custom Types");
+auto demo_custom_types() -> void {
+  ads::demo::print_section("Custom Types");
 
   HashTableChaining<string, Person> table;
 
@@ -282,8 +281,8 @@ void demo_custom_types() {
 //===----- COLLISION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates collision handling.
-void demo_collisions() {
-  ads::demo::print_section("Demo: Collision Handling");
+auto demo_collisions() -> void {
+  ads::demo::print_section("Collision Handling");
 
   // Use small capacity to force collisions
   HashTableChaining<int, string> table(4);
@@ -307,8 +306,8 @@ void demo_collisions() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   HashTableChaining<int, string> table;
   table.insert(1, "one");
@@ -336,8 +335,8 @@ void demo_exceptions() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   HashTableChaining<int, string> table1;
   table1.insert(1, "one");
@@ -364,8 +363,8 @@ void demo_move_semantics() {
 //===----- CLEAR DEMO ----------------------------------------------------------===//
 
 // Demonstrates clear method.
-void demo_clear() {
-  ads::demo::print_section("Demo: Clear");
+auto demo_clear() -> void {
+  ads::demo::print_section("Clear");
 
   HashTableChaining<int, int> table;
   for (int i = 0; i < 100; ++i) {
@@ -389,8 +388,8 @@ void demo_clear() {
 //===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Performance comparison with unordered_map.
-void demo_performance() {
-  ads::demo::print_section("Demo: Performance Comparison");
+auto demo_performance() -> void {
+  ads::demo::print_section("Performance Comparison");
 
   const int N = 100'000;
 

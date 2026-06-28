@@ -30,14 +30,13 @@ using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
 using namespace ads::graphs;
 
 //===----- MATRIX DEMOS --------------------------------------------------------===//
 
 // Demonstrates graph construction and basic properties.
-void demo_matrix_construction() {
+auto demo_matrix_construction() -> void {
   ads::demo::print_section("Matrix - Construction and Properties");
 
   GraphAdjacencyMatrix<int> graph(false);
@@ -49,7 +48,7 @@ void demo_matrix_construction() {
 }
 
 // Demonstrates adding vertices and edges.
-void demo_matrix_operations() {
+auto demo_matrix_operations() -> void {
   ads::demo::print_section("Matrix - Basic Operations");
 
   GraphAdjacencyMatrix<string> graph(false);
@@ -89,7 +88,7 @@ void demo_matrix_operations() {
 //===----- MATRIX TRAVERSAL ----------------------------------------------------===//
 
 // Demonstrates BFS and DFS traversals.
-void demo_matrix_traversal() {
+auto demo_matrix_traversal() -> void {
   ads::demo::print_section("Matrix - Graph Traversal");
 
   GraphAdjacencyMatrix<int> graph(false);
@@ -125,7 +124,7 @@ void demo_matrix_traversal() {
 //===----- MATRIX CONNECTED COMPONENTS -----------------------------------------===//
 
 // Test connected components.
-void demo_matrix_connected_components() {
+auto demo_matrix_connected_components() -> void {
   ads::demo::print_section("Matrix - Connected Components");
 
   GraphAdjacencyMatrix<int> graph(false);
@@ -188,7 +187,7 @@ auto measure_neighbor_iteration(GraphType& graph, size_t N, std::atomic<size_t>&
 }
 
 // Compare performance between adjacency list and matrix.
-void compare_performance() {
+auto compare_performance() -> void {
   ads::demo::print_section("Performance Comparison - List vs Matrix");
 
   const size_t N = 1'000;
@@ -271,7 +270,7 @@ void compare_performance() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("GRAPH ADJACENCY MATRIX - EXAMPLES TESTS");
+  ads::demo::print_header("GRAPH ADJACENCY MATRIX - COMPREHENSIVE DEMO");
 
   try {
     // Basic tests.

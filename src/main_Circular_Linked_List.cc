@@ -30,7 +30,7 @@ using namespace ads::lists;
 
 // Helper function to print list contents.
 template <typename T>
-void print_list(const CircularLinkedList<T>& list, const string& label) {
+auto print_list(const CircularLinkedList<T>& list, const string& label) -> void {
   cout << label << " (size: " << list.size() << ")\n";
   if (list.is_empty()) {
     cout << "  (empty)\n";
@@ -46,8 +46,8 @@ void print_list(const CircularLinkedList<T>& list, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_back, push_front, front, back operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   CircularLinkedList<int> list;
   cout << "Created empty circular linked list.\n";
@@ -73,8 +73,8 @@ void demo_basic_operations() {
 //===----- CIRCULAR BEHAVIOR DEMO ----------------------------------------------===//
 
 // Demonstrate circular behavior and rotation.
-void demo_circular_behavior() {
-  ads::demo::print_section("Demo: Circular Behavior");
+auto demo_circular_behavior() -> void {
+  ads::demo::print_section("Circular Behavior");
 
   CircularLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -98,8 +98,8 @@ void demo_circular_behavior() {
 //===----- ROUND-ROBIN DEMO ----------------------------------------------------===//
 
 // Demonstrate round-robin pattern using CircularLinkedList.
-void demo_round_robin() {
-  ads::demo::print_section("Demo: Round-Robin Pattern");
+auto demo_round_robin() -> void {
+  ads::demo::print_section("Round-Robin Pattern");
 
   cout << "Simulating round-robin task scheduling:\n\n";
 
@@ -132,8 +132,8 @@ void demo_round_robin() {
 //===----- CONTAINS AND SEARCH DEMO --------------------------------------------===//
 
 // Demonstrate contains() method.
-void demo_search() {
-  ads::demo::print_section("Demo: Search Operations");
+auto demo_search() -> void {
+  ads::demo::print_section("Search Operations");
 
   CircularLinkedList<int> list;
   for (int i = 10; i <= 50; i += 10) {
@@ -153,8 +153,8 @@ void demo_search() {
 
 //===----- REMOVAL OPERATIONS DEMO ---------------------------------------------===//
 
-void demo_removal() {
-  ads::demo::print_section("Demo: Removal Operations");
+auto demo_removal() -> void {
+  ads::demo::print_section("Removal Operations");
 
   CircularLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -181,8 +181,8 @@ void demo_removal() {
 
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
-void demo_exception_handling() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exception_handling() -> void {
+  ads::demo::print_section("Exception Handling");
 
   CircularLinkedList<int> list;
 
@@ -218,8 +218,8 @@ void demo_exception_handling() {
 
 //===----- STRING TYPE DEMO ----------------------------------------------------===//
 
-void demo_string_type() {
-  ads::demo::print_section("Demo: String Type Support");
+auto demo_string_type() -> void {
+  ads::demo::print_section("String Type Support");
 
   CircularLinkedList<string> players;
   players.emplace_back("Alice");
@@ -241,7 +241,7 @@ void demo_string_type() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("CircularLinkedList Demo");
+  ads::demo::print_header("CIRCULAR LINKED LIST - COMPREHENSIVE DEMO");
 
   try {
     demo_basic_operations();
@@ -252,7 +252,7 @@ auto main() -> int {
     demo_exception_handling();
     demo_string_type();
 
-    ads::demo::print_footer("All demos completed successfully!");
+    ads::demo::print_footer();
     return 0;
 
   } catch (const exception& e) {

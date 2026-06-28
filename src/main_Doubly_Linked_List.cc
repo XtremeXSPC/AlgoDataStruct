@@ -14,27 +14,27 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/lists/Doubly_Linked_List.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::lists;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print the list contents.
 template <typename T>
-void print_list(const DoublyLinkedList<T>& list, const string& name) {
+auto print_list(const DoublyLinkedList<T>& list, const string& name) -> void {
   cout << "List '" << name << "' (size: " << list.size() << "):\n";
 
   if (list.is_empty()) {
@@ -62,8 +62,8 @@ void print_list(const DoublyLinkedList<T>& list, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and access operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   DoublyLinkedList<int> list;
 
@@ -91,8 +91,8 @@ void demo_basic_operations() {
 //===----- POP OPERATIONS DEMO -------------------------------------------------===//
 
 // Demonstrates pop_front and pop_back operations.
-void demo_pop_operations() {
-  ads::demo::print_section("Demo: Pop Operations");
+auto demo_pop_operations() -> void {
+  ads::demo::print_section("Pop Operations");
 
   DoublyLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -114,8 +114,8 @@ void demo_pop_operations() {
 //===----- INSERT & ERASE OPERATIONS DEMO --------------------------------------===//
 
 // Demonstrates insert and erase operations.
-void demo_insert_erase() {
-  ads::demo::print_section("Demo: Insert and Erase");
+auto demo_insert_erase() -> void {
+  ads::demo::print_section("Insert and Erase");
 
   DoublyLinkedList<int> list;
   list.push_back(10);
@@ -153,8 +153,8 @@ void demo_insert_erase() {
 //===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates emplace operations.
-void demo_emplace() {
-  ads::demo::print_section("Demo: Emplace Operations");
+auto demo_emplace() -> void {
+  ads::demo::print_section("Emplace Operations");
 
   struct Person {
     string name;
@@ -179,8 +179,8 @@ void demo_emplace() {
 //===----- ITERATOR DEMO -------------------------------------------------------===//
 
 // Demonstrates iterator functionality.
-void demo_iterators() {
-  ads::demo::print_section("Demo: Iterators");
+auto demo_iterators() -> void {
+  ads::demo::print_section("Iterators");
 
   DoublyLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -218,7 +218,7 @@ void demo_iterators() {
 
   // Collecting into vector.
   cout << "\nCollecting into vector:\n  ";
-  vector<int> vec(list.begin(), list.end());
+  DynamicArray<int> vec(list.begin(), list.end());
   cout << "Vector contents: ";
   for (int v : vec) {
     cout << v << " ";
@@ -229,8 +229,8 @@ void demo_iterators() {
 //===----- REVERSE DEMO --------------------------------------------------------===//
 
 // Demonstrates reverse operation.
-void demo_reverse() {
-  ads::demo::print_section("Demo: Reverse");
+auto demo_reverse() -> void {
+  ads::demo::print_section("Reverse");
 
   DoublyLinkedList<int> list;
   for (int i = 1; i <= 5; ++i) {
@@ -256,8 +256,8 @@ void demo_reverse() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   DoublyLinkedList<int> list1;
   for (int i = 1; i <= 3; ++i) {
@@ -290,8 +290,8 @@ void demo_move_semantics() {
 //===----- CLEAR DEMO ----------------------------------------------------------===//
 
 // Demonstrates clear operation.
-void demo_clear() {
-  ads::demo::print_section("Demo: Clear and Reuse");
+auto demo_clear() -> void {
+  ads::demo::print_section("Clear and Reuse");
 
   DoublyLinkedList<int> list;
   for (int i = 0; i < 5; ++i) {
@@ -313,8 +313,8 @@ void demo_clear() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
-void demo_exceptions() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exceptions() -> void {
+  ads::demo::print_section("Exception Handling");
 
   DoublyLinkedList<int> empty_list;
 
@@ -356,8 +356,8 @@ void demo_exceptions() {
 //===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Test edge cases.
-void demo_edge_cases() {
-  ads::demo::print_section("Demo: Edge Cases");
+auto demo_edge_cases() -> void {
+  ads::demo::print_section("Edge Cases");
 
   // Single element list.
   DoublyLinkedList<int> single;

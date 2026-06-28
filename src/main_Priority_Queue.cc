@@ -34,7 +34,7 @@ using namespace ads::queues;
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
-void demo_priority_queue_basic() {
+auto demo_priority_queue_basic() -> void {
   ads::demo::print_section("Priority Queue - Basic Operations (Max-Heap)");
 
   PriorityQueue<int> pq;
@@ -65,7 +65,7 @@ void demo_priority_queue_basic() {
 //===----- MIN HEAP DEMOS ------------------------------------------------------===//
 
 // Priority Queue with Min-Heap comparator.
-void demo_priority_queue_min_heap() {
+auto demo_priority_queue_min_heap() -> void {
   ads::demo::print_section("Priority Queue - Min-Heap with greater");
 
   PriorityQueue<int, std::greater<>> min_pq;
@@ -91,7 +91,7 @@ void demo_priority_queue_min_heap() {
 //===----- CONSTRUCTION FROM VECTOR DEMO ---------------------------------------===//
 
 // Demonstrates construction from vector.
-void demo_priority_queue_from_vector() {
+auto demo_priority_queue_from_vector() -> void {
   ads::demo::print_section("Priority Queue - Construction from Vector");
 
   vector<int> data = {15, 10, 20, 8, 12, 25, 18};
@@ -116,7 +116,7 @@ void demo_priority_queue_from_vector() {
 //===----- INITIALIZER LIST CONSTRUCTION DEMO ----------------------------------===//
 
 // Demonstrates initializer list construction.
-void demo_priority_queue_initializer_list() {
+auto demo_priority_queue_initializer_list() -> void {
   ads::demo::print_section("Priority Queue - Initializer List Construction");
 
   PriorityQueue<int> pq = {3, 1, 4, 1, 5, 9, 2, 6};
@@ -135,7 +135,7 @@ void demo_priority_queue_initializer_list() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_priority_queue_move_semantics() {
+auto demo_priority_queue_move_semantics() -> void {
   ads::demo::print_section("Priority Queue - Move Semantics");
 
   PriorityQueue<int> pq1;
@@ -164,7 +164,7 @@ void demo_priority_queue_move_semantics() {
 //===----- EMPLACE OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrates emplace operations.
-void demo_priority_queue_emplace() {
+auto demo_priority_queue_emplace() -> void {
   ads::demo::print_section("Priority Queue - Emplace Operations");
 
   PriorityQueue<string> pq;
@@ -188,7 +188,7 @@ void demo_priority_queue_emplace() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrates exception handling.
-void demo_priority_queue_exception_handling() {
+auto demo_priority_queue_exception_handling() -> void {
   ads::demo::print_section("Priority Queue - Exception Handling");
 
   PriorityQueue<int> pq;
@@ -211,7 +211,7 @@ void demo_priority_queue_exception_handling() {
 //===----- SORTED ELEMENTS EXTRACTION DEMO -------------------------------------===//
 
 // Demonstrates extraction of sorted elements.
-void demo_priority_queue_sorted_elements() {
+auto demo_priority_queue_sorted_elements() -> void {
   ads::demo::print_section("Priority Queue - Sorted Elements Extraction");
 
   PriorityQueue<int> pq = {8, 3, 10, 1, 6, 14, 4, 7, 13};
@@ -248,7 +248,7 @@ struct TaskCompare {
 //===----- TASK SCHEDULING DEMO ------------------------------------------------===//
 
 // Task scheduling application demo.
-void demo_task_scheduling() {
+auto demo_task_scheduling() -> void {
   ads::demo::print_section("Application - Task Scheduling");
 
   PriorityQueue<Task, TaskCompare> task_queue;
@@ -287,7 +287,7 @@ struct EventCompare {
 };
 
 // Event simulation application demo.
-void demo_event_simulation() {
+auto demo_event_simulation() -> void {
   ads::demo::print_section("Application - Event Simulation");
 
   PriorityQueue<Event, EventCompare> event_queue;
@@ -311,7 +311,7 @@ void demo_event_simulation() {
 //===----- TOP-K ELEMENTS DEMO -------------------------------------------------===//
 
 // Top-K largest elements application demo.
-void demo_top_k_elements() {
+auto demo_top_k_elements() -> void {
   ads::demo::print_section("Application - Top-K Largest Elements");
 
   // Find top 5 largest elements from a stream using a min-heap of size 5.
@@ -348,7 +348,7 @@ void demo_top_k_elements() {
 //===----- LARGE DATASET PERFORMANCE -------------------------------------------===//
 
 // Priority Queue performance with large dataset.
-void demo_priority_queue_large() {
+auto demo_priority_queue_large() -> void {
   ads::demo::print_section("Priority Queue - Large Dataset Performance");
 
   const int          N = 100'000;
@@ -388,7 +388,7 @@ void demo_priority_queue_large() {
 //===----- HEAPIFY CONSTRUCTION PERFORMANCE ------------------------------------===//
 
 // Heapify construction performance demo.
-void demo_heapify_construction_performance() {
+auto demo_heapify_construction_performance() -> void {
   ads::demo::print_section("Priority Queue - Heapify Construction Performance");
 
   const int   N = 100'000;

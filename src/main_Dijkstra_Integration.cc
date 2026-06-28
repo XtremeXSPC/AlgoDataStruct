@@ -13,20 +13,20 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/graphs/Graph_Algorithms.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <chrono>
 #include <iostream>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::graphs;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
@@ -46,7 +46,8 @@ struct City {
  * @param source The source vertex index.
  * @param shortest_paths Dijkstra result object.
  */
-auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t source, const ShortestPathsResult<double>& shortest_paths)
+auto print_shortest_paths(
+    const GraphAdjacencyList<City, double>& graph, size_t source, const ShortestPathsResult<double>& shortest_paths)
     -> void {
   cout << "\nShortest paths from " << graph.get_vertex_data(source).name << ":\n";
   cout << "=====--------------------------------------=====\n";
@@ -64,84 +65,89 @@ auto print_shortest_paths(const GraphAdjacencyList<City, double>& graph, size_t 
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header({"DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO", "Graph (Adjacency List) + Priority Queue"});
+  try {
+    ads::demo::print_header("DIJKSTRA'S ALGORITHM - COMPREHENSIVE DEMO");
 
-  // Create a graph of European cities with distances in km.
-  GraphAdjacencyList<City, double> cities(false); // Undirected graph.
+    // Create a graph of European cities with distances in km.
+    GraphAdjacencyList<City, double> cities(false); // Undirected graph.
 
-  // Add cities.
-  size_t rome   = cities.add_vertex(City("Rome"));
-  size_t milan  = cities.add_vertex(City("Milan"));
-  size_t paris  = cities.add_vertex(City("Paris"));
-  size_t berlin = cities.add_vertex(City("Berlin"));
-  size_t munich = cities.add_vertex(City("Munich"));
-  size_t vienna = cities.add_vertex(City("Vienna"));
-  size_t zurich = cities.add_vertex(City("Zurich"));
+    // Add cities.
+    size_t rome   = cities.add_vertex(City("Rome"));
+    size_t milan  = cities.add_vertex(City("Milan"));
+    size_t paris  = cities.add_vertex(City("Paris"));
+    size_t berlin = cities.add_vertex(City("Berlin"));
+    size_t munich = cities.add_vertex(City("Munich"));
+    size_t vienna = cities.add_vertex(City("Vienna"));
+    size_t zurich = cities.add_vertex(City("Zurich"));
 
-  // Add roads (edges) with distances.
-  cities.add_edge(rome, milan, 572);     // Rome - Milan
-  cities.add_edge(milan, paris, 851);    // Milan - Paris
-  cities.add_edge(milan, zurich, 277);   // Milan - Zurich
-  cities.add_edge(paris, berlin, 1'054); // Paris - Berlin
-  cities.add_edge(berlin, munich, 585);  // Berlin - Munich
-  cities.add_edge(munich, vienna, 434);  // Munich - Vienna
-  cities.add_edge(munich, zurich, 316);  // Munich - Zurich
-  cities.add_edge(vienna, zurich, 598);  // Vienna - Zurich
+    // Add roads (edges) with distances.
+    cities.add_edge(rome, milan, 572);     // Rome - Milan
+    cities.add_edge(milan, paris, 851);    // Milan - Paris
+    cities.add_edge(milan, zurich, 277);   // Milan - Zurich
+    cities.add_edge(paris, berlin, 1'054); // Paris - Berlin
+    cities.add_edge(berlin, munich, 585);  // Berlin - Munich
+    cities.add_edge(munich, vienna, 434);  // Munich - Vienna
+    cities.add_edge(munich, zurich, 316);  // Munich - Zurich
+    cities.add_edge(vienna, zurich, 598);  // Vienna - Zurich
 
-  cout << "\nEuropean Cities Road Network:\n";
-  cout << "---------------------------------\n";
-  cout << "Vertices: " << cities.num_vertices() << "\n";
-  cout << "Edges: " << cities.num_edges() << "\n\n";
+    cout << "\nEuropean Cities Road Network:\n";
+    cout << "---------------------------------\n";
+    cout << "Vertices: " << cities.num_vertices() << "\n";
+    cout << "Edges: " << cities.num_edges() << "\n\n";
 
-  // Test Dijkstra from different starting cities.
-  const vector<string> test_cities  = {"Rome", "Paris", "Berlin"};
-  const vector<size_t> test_indices = {rome, paris, berlin};
+    // Test Dijkstra from different starting cities.
+    const DynamicArray<string> test_cities  = {"Rome", "Paris", "Berlin"};
+    const DynamicArray<size_t> test_indices = {rome, paris, berlin};
 
-  for (size_t i = 0; i < test_cities.size(); ++i) {
-    cout << "\n" << string(55, '=') << "\n";
-    cout << "Computing shortest paths from " << test_cities[i] << "...\n";
+    for (size_t i = 0; i < test_cities.size(); ++i) {
+      cout << "\n" << string(55, '=') << "\n";
+      cout << "Computing shortest paths from " << test_cities[i] << "...\n";
 
-    auto shortest_paths = dijkstra_shortest_paths(cities, test_indices[i]);
-    print_shortest_paths(cities, test_indices[i], shortest_paths);
-  }
-
-  // Performance test with larger graph.
-  cout << "\n\n" << string(55, '=') << "\n";
-  cout << "Performance Test: Random Graph\n";
-  cout << string(55, '=') << "\n";
-
-  const size_t                     num_vertices = 1'000;
-  GraphAdjacencyList<City, double> large_graph(false);
-
-  // Add vertices.
-  for (size_t i = 0; i < num_vertices; ++i) {
-    large_graph.add_vertex(City(std::format("City_{}", i)));
-  }
-
-  // Add random edges.
-  for (size_t i = 0; i < num_vertices; ++i) {
-    // Connect to next 5 vertices (circular)
-    for (size_t j = 1; j <= 5 && i + j < num_vertices; ++j) {
-      large_graph.add_edge(i, i + j, static_cast<double>(j * 10));
+      auto shortest_paths = dijkstra(cities, test_indices[i]);
+      print_shortest_paths(cities, test_indices[i], shortest_paths);
     }
+
+    // Performance test with larger graph.
+    cout << "\n\n" << string(55, '=') << "\n";
+    cout << "Performance Test: Random Graph\n";
+    cout << string(55, '=') << "\n";
+
+    const size_t                     num_vertices = 1'000;
+    GraphAdjacencyList<City, double> large_graph(false);
+
+    // Add vertices.
+    for (size_t i = 0; i < num_vertices; ++i) {
+      large_graph.add_vertex(City(std::format("City_{}", i)));
+    }
+
+    // Add random edges.
+    for (size_t i = 0; i < num_vertices; ++i) {
+      // Connect to next 5 vertices (circular)
+      for (size_t j = 1; j <= 5 && i + j < num_vertices; ++j) {
+        large_graph.add_edge(i, i + j, static_cast<double>(j * 10));
+      }
+    }
+
+    cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, " << large_graph.num_edges() << " edges\n";
+
+    cout << "Running Dijkstra from vertex 0...\n";
+    auto start_time     = std::chrono::high_resolution_clock::now();
+    auto shortest_paths = dijkstra(large_graph, 0);
+    auto end_time       = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    cout << "Completed in " << static_cast<double>(duration.count()) / 1000.0 << " ms\n";
+    cout << "Sample distances:\n";
+    cout << "  To vertex 10: " << shortest_paths.distance_to(10) << "\n";
+    cout << "  To vertex 100: " << shortest_paths.distance_to(100) << "\n";
+    cout << "  To vertex 500: " << shortest_paths.distance_to(500) << "\n";
+    cout << "  To vertex 999: " << shortest_paths.distance_to(999) << "\n";
+
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
   }
-
-  cout << "\nGraph size: " << large_graph.num_vertices() << " vertices, " << large_graph.num_edges() << " edges\n";
-
-  cout << "Running Dijkstra from vertex 0...\n";
-  auto start_time     = std::chrono::high_resolution_clock::now();
-  auto shortest_paths = dijkstra_shortest_paths(large_graph, 0);
-  auto end_time       = std::chrono::high_resolution_clock::now();
-
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-  cout << "Completed in " << static_cast<double>(duration.count()) / 1000.0 << " ms\n";
-  cout << "Sample distances:\n";
-  cout << "  To vertex 10: " << shortest_paths.distance_to(10) << "\n";
-  cout << "  To vertex 100: " << shortest_paths.distance_to(100) << "\n";
-  cout << "  To vertex 500: " << shortest_paths.distance_to(500) << "\n";
-  cout << "  To vertex 999: " << shortest_paths.distance_to(999) << "\n";
-
-  ads::demo::print_footer("DIJKSTRA'S ALGORITHM TESTS COMPLETED!");
 
   return 0;
 }

@@ -13,26 +13,26 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/Complete_Binary_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::trees;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree information.
 template <typename T>
-void print_tree_info(const CompleteBinaryTree<T>& tree, const string& label) {
+auto print_tree_info(const CompleteBinaryTree<T>& tree, const string& label) -> void {
   cout << label << "\n";
   cout << "  Size: " << tree.size() << "\n";
   cout << "  Height: " << tree.height() << "\n";
@@ -43,7 +43,7 @@ void print_tree_info(const CompleteBinaryTree<T>& tree, const string& label) {
 }
 
 // Helper function to print traversal results.
-void print_traversal(const vector<int>& elements, const string& name) {
+auto print_traversal(const DynamicArray<int>& elements, const string& name) -> void {
   cout << "  " << name << ": [ ";
   for (int val : elements) {
     cout << val << " ";
@@ -54,8 +54,8 @@ void print_traversal(const vector<int>& elements, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic insertion and properties.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   CompleteBinaryTree<int> tree;
   cout << "Created empty tree.\n";
@@ -80,8 +80,8 @@ void demo_basic_operations() {
 //===----- TRAVERSAL DEMO ------------------------------------------------------===//
 
 // Demonstrate various tree traversals.
-void demo_traversals() {
-  ads::demo::print_section("Demo: Tree Traversals");
+auto demo_traversals() -> void {
+  ads::demo::print_section("Tree Traversals");
 
   CompleteBinaryTree<int> tree{1, 2, 3, 4, 5, 6, 7};
 
@@ -92,7 +92,7 @@ void demo_traversals() {
   cout << "     / \\   / \\\n";
   cout << "    4   5 6   7\n\n";
 
-  vector<int> elements;
+  DynamicArray<int> elements;
 
   cout << "1. Level-Order (Breadth-First):\n";
   elements.clear();
@@ -124,8 +124,8 @@ void demo_traversals() {
 //===----- HEIGHT CALCULATION DEMO ---------------------------------------------===//
 
 // Demonstrate height calculation.
-void demo_height() {
-  ads::demo::print_section("Demo: Height Calculation");
+auto demo_height() -> void {
+  ads::demo::print_section("Height Calculation");
 
   CompleteBinaryTree<int> tree;
 
@@ -154,8 +154,8 @@ void demo_height() {
 //===----- SEARCH DEMO ---------------------------------------------------------===//
 
 // Demonstrate search operations.
-void demo_search() {
-  ads::demo::print_section("Demo: Search Operations");
+auto demo_search() -> void {
+  ads::demo::print_section("Search Operations");
 
   CompleteBinaryTree<int> tree{10, 20, 30, 40, 50, 60, 70};
 
@@ -166,7 +166,7 @@ void demo_search() {
   cout << "\n\n";
 
   cout << "Searching for elements:\n";
-  vector<int> search_values = {10, 30, 50, 70, 25, 100};
+  DynamicArray<int> search_values = {10, 30, 50, 70, 25, 100};
   for (int val : search_values) {
     cout << "  contains(" << val << "): " << (tree.contains(val) ? "true" : "false") << "\n";
   }
@@ -177,8 +177,8 @@ void demo_search() {
 //===----- NODE ACCESS DEMO ----------------------------------------------------===//
 
 // Demonstrate accessing nodes directly.
-void demo_node_access() {
-  ads::demo::print_section("Demo: Node Access");
+auto demo_node_access() -> void {
+  ads::demo::print_section("Node Access");
 
   CompleteBinaryTree<int> tree{1, 2, 3, 4, 5};
 
@@ -198,8 +198,8 @@ void demo_node_access() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrate exception handling for invalid operations.
-void demo_exception_handling() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exception_handling() -> void {
+  ads::demo::print_section("Exception Handling");
 
   CompleteBinaryTree<int> tree;
 
@@ -218,8 +218,8 @@ void demo_exception_handling() {
 //===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrate CompleteBinaryTree with string type.
-void demo_string_type() {
-  ads::demo::print_section("Demo: String Type Support");
+auto demo_string_type() -> void {
+  ads::demo::print_section("String Type Support");
 
   CompleteBinaryTree<string> tree;
   tree.emplace("Root");
@@ -245,7 +245,7 @@ void demo_string_type() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("CompleteBinaryTree Demo");
+  ads::demo::print_header("COMPLETE BINARY TREE - COMPREHENSIVE DEMO");
 
   try {
     demo_basic_operations();
@@ -256,7 +256,7 @@ auto main() -> int {
     demo_exception_handling();
     demo_string_type();
 
-    ads::demo::print_footer("All demos completed successfully!");
+    ads::demo::print_footer();
     return 0;
 
   } catch (const exception& e) {

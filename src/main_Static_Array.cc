@@ -31,7 +31,7 @@ using namespace ads::arrays;
 
 // Helper function to print array contents.
 template <typename T, size_t N>
-void print_array(const StaticArray<T, N>& array, const string& label) {
+auto print_array(const StaticArray<T, N>& array, const string& label) -> void {
   cout << label << " (size: " << array.size() << ")\n";
   cout << "  ";
   for (const auto& value : array) {
@@ -43,8 +43,8 @@ void print_array(const StaticArray<T, N>& array, const string& label) {
 //===----- CONSTRUCTION DEMO ---------------------------------------------------===//
 
 // Demonstrate various construction methods.
-void demo_construction() {
-  ads::demo::print_section("Demo: Construction");
+auto demo_construction() -> void {
+  ads::demo::print_section("Construction");
 
   cout << "1. Default construction (value-initialized):\n";
   StaticArray<int, 5> default_arr;
@@ -68,8 +68,8 @@ void demo_construction() {
 //===----- ACCESS OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrate access operations.
-void demo_access_operations() {
-  ads::demo::print_section("Demo: Access Operations");
+auto demo_access_operations() -> void {
+  ads::demo::print_section("Access Operations");
 
   StaticArray<int, 5> array{10, 20, 30, 40, 50};
   print_array(array, "Array");
@@ -103,8 +103,8 @@ void demo_access_operations() {
 //===----- ITERATION DEMO ------------------------------------------------------===//
 
 // Demonstrate various iteration methods.
-void demo_iteration() {
-  ads::demo::print_section("Demo: Iteration");
+auto demo_iteration() -> void {
+  ads::demo::print_section("Iteration");
 
   StaticArray<int, 5> array{1, 2, 3, 4, 5};
   print_array(array, "Array");
@@ -138,8 +138,8 @@ void demo_iteration() {
 
 //===----- COMPARISON DEMO -----------------------------------------------------===//
 
-void demo_comparison() {
-  ads::demo::print_section("Demo: Comparison");
+auto demo_comparison() -> void {
+  ads::demo::print_section("Comparison");
 
   StaticArray<int, 5> arr1{1, 2, 3, 4, 5};
   StaticArray<int, 5> arr2{1, 2, 3, 4, 5};
@@ -169,8 +169,8 @@ void demo_comparison() {
 //===----- UTILITY OPERATIONS DEMO ---------------------------------------------===//
 
 // Demonstrate utility operations like swap and fill.
-void demo_utility_operations() {
-  ads::demo::print_section("Demo: Utility Operations");
+auto demo_utility_operations() -> void {
+  ads::demo::print_section("Utility Operations");
 
   StaticArray<int, 5> arr1{1, 2, 3, 4, 5};
   StaticArray<int, 5> arr2{10, 20, 30, 40, 50};
@@ -196,8 +196,8 @@ void demo_utility_operations() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrate exception handling for out-of-bounds access.
-void demo_exception_handling() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exception_handling() -> void {
+  ads::demo::print_section("Exception Handling");
 
   StaticArray<int, 5> array{1, 2, 3, 4, 5};
 
@@ -216,8 +216,8 @@ void demo_exception_handling() {
 //===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrate StaticArray with string type.
-void demo_string_type() {
-  ads::demo::print_section("Demo: String Type Support");
+auto demo_string_type() -> void {
+  ads::demo::print_section("String Type Support");
 
   StaticArray<string, 3> strings{"Hello", "World", "C++20"};
   print_array(strings, "String array");
@@ -237,7 +237,7 @@ void demo_string_type() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("StaticArray Demo");
+  ads::demo::print_header("STATIC ARRAY - COMPREHENSIVE DEMO");
 
   try {
     demo_construction();
@@ -248,7 +248,7 @@ auto main() -> int {
     demo_exception_handling();
     demo_string_type();
 
-    ads::demo::print_footer("All demos completed successfully!");
+    ads::demo::print_footer();
     return 0;
 
   } catch (const exception& e) {

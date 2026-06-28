@@ -13,6 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/search/AVL_Tree.hpp"
 #include "../include/ads/trees/search/Binary_Search_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
@@ -21,22 +22,21 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::trees;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents via in-order traversal.
 template <typename T>
-void print_avl_tree(const AVLTree<T>& tree, const string& name) {
+auto print_avl_tree(const AVLTree<T>& tree, const string& name) -> void {
   cout << "AVL Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height()
        << ", balanced: " << (tree.is_balanced() ? "Yes" : "No") << "):\n";
 
@@ -53,8 +53,8 @@ void print_avl_tree(const AVLTree<T>& tree, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and traversal operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   AVLTree<int> avl;
 
@@ -95,8 +95,8 @@ void demo_basic_operations() {
 //===----- ROTATION DEMOS ------------------------------------------------------===//
 
 // Test Left-Left (LL) rotation.
-void demo_ll_rotation() {
-  ads::demo::print_section("Demo: Left-Left (LL) Rotation");
+auto demo_ll_rotation() -> void {
+  ads::demo::print_section("Left-Left (LL) Rotation");
 
   AVLTree<int> avl;
 
@@ -121,8 +121,8 @@ void demo_ll_rotation() {
 }
 
 // Test Right-Right (RR) rotation.
-void demo_rr_rotation() {
-  ads::demo::print_section("Demo: Right-Right (RR) Rotation");
+auto demo_rr_rotation() -> void {
+  ads::demo::print_section("Right-Right (RR) Rotation");
 
   AVLTree<int> avl;
 
@@ -147,8 +147,8 @@ void demo_rr_rotation() {
 }
 
 // Test Left-Right (LR) rotation.
-void demo_lr_rotation() {
-  ads::demo::print_section("Demo: Left-Right (LR) Rotation");
+auto demo_lr_rotation() -> void {
+  ads::demo::print_section("Left-Right (LR) Rotation");
 
   AVLTree<int> avl;
 
@@ -173,8 +173,8 @@ void demo_lr_rotation() {
 }
 
 // Test Right-Left (RL) rotation.
-void demo_rl_rotation() {
-  ads::demo::print_section("Demo: Right-Left (RL) Rotation");
+auto demo_rl_rotation() -> void {
+  ads::demo::print_section("Right-Left (RL) Rotation");
 
   AVLTree<int> avl;
 
@@ -201,13 +201,13 @@ void demo_rl_rotation() {
 //===----- SEARCH OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates search operations.
-void demo_search_operations() {
-  ads::demo::print_section("Demo: Search Operations");
+auto demo_search_operations() -> void {
+  ads::demo::print_section("Search Operations");
 
   AVLTree<int> avl;
 
   // Build a tree.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   for (int val : values) {
     avl.insert(val);
   }
@@ -228,13 +228,13 @@ void demo_search_operations() {
 //===----- REMOVE OPERATIONS ---------------------------------------------------===//
 
 // Demonstrates remove operations.
-void demo_remove_operations() {
-  ads::demo::print_section("Demo: Remove Operations");
+auto demo_remove_operations() -> void {
+  ads::demo::print_section("Remove Operations");
 
   AVLTree<int> avl;
 
   // Build a tree.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 65, 75, 90};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 65, 75, 90};
   for (int val : values) {
     avl.insert(val);
   }
@@ -269,12 +269,12 @@ void demo_remove_operations() {
 //===----- ITERATOR DEMO -------------------------------------------------------===//
 
 // Demonstrates iterator functionality.
-void demo_iterator() {
-  ads::demo::print_section("Demo: Iterator");
+auto demo_iterator() -> void {
+  ads::demo::print_section("Iterator");
 
   AVLTree<int> avl;
 
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80};
   for (int val : values) {
     avl.insert(val);
   }
@@ -289,8 +289,8 @@ void demo_iterator() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   AVLTree<int> avl1;
   avl1.insert(50);
@@ -317,8 +317,8 @@ void demo_move_semantics() {
 //===----- SORTED SEQUENCE DEMO ------------------------------------------------===//
 
 // Test with large sorted sequence (worst case for unbalanced BST).
-void demo_sorted_sequence() {
-  ads::demo::print_section("Demo: Sorted Sequence (AVL vs BST)");
+auto demo_sorted_sequence() -> void {
+  ads::demo::print_section("Sorted Sequence (AVL vs BST)");
 
   AVLTree<int>          avl;
   BinarySearchTree<int> bst;
@@ -348,8 +348,8 @@ void demo_sorted_sequence() {
 //===----- PERFORMANCE COMPARISON ----------------------------------------------===//
 
 // Performance test: AVL vs BST.
-void demo_performance() {
-  ads::demo::print_section("Demo: Performance Comparison");
+auto demo_performance() -> void {
+  ads::demo::print_section("Performance Comparison");
 
   const int N = 10'000;
 
@@ -358,7 +358,7 @@ void demo_performance() {
   std::mt19937                    gen(rd());
   std::uniform_int_distribution<> dis(1, N * 10);
 
-  vector<int> random_values;
+  DynamicArray<int> random_values;
   random_values.reserve(N);
   for (int i = 0; i < N; ++i) {
     random_values.push_back(dis(gen));
@@ -402,8 +402,8 @@ void demo_performance() {
 //===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Test edge cases.
-void demo_edge_cases() {
-  ads::demo::print_section("Demo: Edge Cases");
+auto demo_edge_cases() -> void {
+  ads::demo::print_section("Edge Cases");
 
   AVLTree<int> avl;
 
@@ -443,7 +443,7 @@ void demo_edge_cases() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("AVL TREE USAGE EXAMPLES");
+  ads::demo::print_header("AVL TREE - COMPREHENSIVE DEMO");
 
   try {
     demo_basic_operations();

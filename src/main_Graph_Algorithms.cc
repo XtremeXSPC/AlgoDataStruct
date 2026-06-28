@@ -16,7 +16,9 @@
 
 #include <iostream>
 #include <string>
+using std::cerr;
 using std::cout;
+using std::exception;
 using std::string;
 
 using namespace ads::graphs;
@@ -56,7 +58,7 @@ auto demo_bellman_ford() -> void {
   graph.add_edge(2, 3, 3);
   graph.add_edge(3, 4, 2);
 
-  const auto result = bellman_ford_shortest_paths(graph, 0);
+  const auto result = bellman_ford(graph, 0);
   cout << "Distance Rome -> Prague: " << result.distance_to(4) << '\n';
   cout << "Path Rome -> Prague: ";
   print_path(result.path_to(4));
@@ -77,11 +79,12 @@ auto demo_prim() -> void {
   graph.add_edge(2, 3, 4);
   graph.add_edge(3, 4, 2);
 
-  const auto forest = prim_minimum_spanning_forest(graph);
+  const auto forest = prim(graph);
   cout << "Total weight: " << forest.total_weight() << '\n';
   cout << "Edges:\n";
   for (const auto& edge : forest.edges()) {
-    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight << ")\n";
+    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight
+         << ")\n";
   }
 }
 
@@ -121,11 +124,12 @@ auto demo_kruskal() -> void {
   graph.add_edge(2, 3, 4);
   graph.add_edge(3, 4, 2);
 
-  const auto forest = kruskal_minimum_spanning_forest(graph);
+  const auto forest = kruskal(graph);
   cout << "Total weight: " << forest.total_weight() << '\n';
   cout << "Edges:\n";
   for (const auto& edge : forest.edges()) {
-    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight << ")\n";
+    cout << "  " << graph.get_vertex_data(edge.from) << " - " << graph.get_vertex_data(edge.to) << " (" << edge.weight
+         << ")\n";
   }
 }
 
@@ -142,7 +146,7 @@ auto demo_floyd_warshall() -> void {
   graph.add_edge(1, 2, 3);
   graph.add_edge(2, 3, 1);
 
-  const auto result = floyd_warshall_all_pairs_shortest_paths(graph);
+  const auto result = floyd_warshall(graph);
   cout << "Distance Rome -> Berlin: " << result.distance(0, 3) << '\n';
   cout << "Path Rome -> Berlin: ";
   print_path(result.path(0, 3));
@@ -184,16 +188,22 @@ auto demo_strongly_connected_components() -> void {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header({"GRAPH ALGORITHMS - SPRINT 1/2", "Bellman-Ford, Prim, Kruskal, Floyd-Warshall, SCC, Topological Sort"});
+  try {
+    ads::demo::print_header("GRAPH ALGORITHMS - COMPREHENSIVE DEMO");
 
-  demo_bellman_ford();
-  demo_prim();
-  demo_kruskal();
-  demo_floyd_warshall();
-  demo_strongly_connected_components();
-  demo_topological_sort();
+    demo_bellman_ford();
+    demo_prim();
+    demo_kruskal();
+    demo_floyd_warshall();
+    demo_strongly_connected_components();
+    demo_topological_sort();
 
-  ads::demo::print_footer("GRAPH ALGORITHMS DEMO COMPLETED!");
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
   return 0;
 }
 

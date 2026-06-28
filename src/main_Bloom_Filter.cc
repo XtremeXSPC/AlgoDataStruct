@@ -17,15 +17,17 @@
 #include <iostream>
 #include <string>
 
+using std::cerr;
 using std::cout;
+using std::exception;
 using std::string;
 
 using namespace ads::probabilistic;
 
-//===----- MAIN FUNCTION -------------------------------------------------------===//
+//===----- DEMO FILTER OPERATIONS ----------------------------------------------===//
 
-auto main() -> int {
-  ads::demo::print_header({"BLOOM FILTER DEMO", "Probabilistic membership queries"});
+auto demo_filter_operations() -> void {
+  ads::demo::print_section("Bloom Filter Operations");
 
   auto filter = BloomFilter<string>::from_estimates(1'000, 0.01);
 
@@ -42,8 +44,22 @@ auto main() -> int {
   for (const string& word : {"graph", "algorithm", "heap", "suffix"}) {
     cout << "might_contain(\"" << word << "\") = " << std::boolalpha << filter.might_contain(word) << '\n';
   }
+}
 
-  ads::demo::print_footer("BLOOM FILTER DEMO COMPLETED!");
+//===----- MAIN FUNCTION -------------------------------------------------------===//
+
+auto main() -> int {
+  try {
+    ads::demo::print_header("BLOOM FILTER - COMPREHENSIVE DEMO");
+
+    demo_filter_operations();
+
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
   return 0;
 }
 

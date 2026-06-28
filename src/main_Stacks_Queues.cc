@@ -28,7 +28,6 @@ using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
 using namespace ads::queues;
 using namespace ads::stacks;
@@ -37,7 +36,7 @@ using namespace ads::stacks;
 
 // Helper function to demonstrate polymorphic usage.
 template <typename T>
-void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
+auto demo_stack_interface(Stack<T>& stack, const string& stack_type) -> void {
   ads::demo::print_section("Testing " + stack_type);
 
   // Test push operations.
@@ -69,7 +68,7 @@ void demo_stack_interface(Stack<T>& stack, const string& stack_type) {
 
 // Demonstrates basic insertion and extraction.
 template <typename T>
-void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
+auto demo_queue_interface(Queue<T>& queue, const string& queue_type) -> void {
   ads::demo::print_section("Testing " + queue_type);
 
   // Test enqueue operations.
@@ -101,7 +100,7 @@ void demo_queue_interface(Queue<T>& queue, const string& queue_type) {
 //===----- PERFORMANCE COMPARISON ----------------------------------------------===//
 
 // Performance comparison function.
-void performance_comparison() {
+auto performance_comparison() -> void {
   ads::demo::print_section("Performance Comparison");
   const int iterations = 100'000;
 
@@ -169,7 +168,7 @@ void performance_comparison() {
 //===----- EMPLACE FUNCTIONALITY DEMO ------------------------------------------===//
 
 // Test emplace functionality with complex types.
-void demo_emplace_functionality() {
+auto demo_emplace_functionality() -> void {
   ads::demo::print_section("Testing Emplace with Complex Types");
 
   struct Person {

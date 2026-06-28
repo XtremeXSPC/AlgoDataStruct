@@ -17,7 +17,9 @@
 #include <iostream>
 #include <string>
 
+using std::cerr;
 using std::cout;
+using std::exception;
 using std::string;
 
 using namespace ads::heaps;
@@ -64,12 +66,18 @@ auto demo_min_d_ary_heap() -> void {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header({"D-ARY HEAP DEMO", "Configurable heap arity with max/min semantics"});
+  try {
+    ads::demo::print_header("D-ARY HEAP - COMPREHENSIVE DEMO");
 
-  demo_max_d_ary_heap();
-  demo_min_d_ary_heap();
+    demo_max_d_ary_heap();
+    demo_min_d_ary_heap();
 
-  ads::demo::print_footer("D-ARY HEAP DEMO COMPLETED!");
+    ads::demo::print_footer();
+  } catch (const exception& e) {
+    cerr << "\nUnexpected error: " << e.what() << '\n';
+    return 1;
+  }
+
   return 0;
 }
 

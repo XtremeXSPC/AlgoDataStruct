@@ -30,7 +30,7 @@ using namespace ads::arrays;
 
 // Helper function to print array contents.
 template <typename T>
-void print_array(const CircularArray<T>& array, const string& label) {
+auto print_array(const CircularArray<T>& array, const string& label) -> void {
   cout << label << " (size: " << array.size() << ", capacity: " << array.capacity() << ")\n";
   if (array.is_empty()) {
     cout << "  (empty)\n";
@@ -46,8 +46,8 @@ void print_array(const CircularArray<T>& array, const string& label) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrate basic push_back, push_front, front, back operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   CircularArray<int> array;
   cout << "Created empty circular array.\n";
@@ -73,8 +73,8 @@ void demo_basic_operations() {
 //===----- DUAL-ENDED OPERATIONS DEMO ------------------------------------------===//
 
 // Demonstrate push/pop at both ends.
-void demo_dual_ended() {
-  ads::demo::print_section("Demo: Dual-Ended Operations");
+auto demo_dual_ended() -> void {
+  ads::demo::print_section("Dual-Ended Operations");
 
   CircularArray<int> array;
 
@@ -106,8 +106,8 @@ void demo_dual_ended() {
 //===----- WRAP-AROUND BEHAVIOR DEMO -------------------------------------------===//
 
 // Demonstrate wrap-around behavior.
-void demo_wrap_around() {
-  ads::demo::print_section("Demo: Wrap-Around Behavior");
+auto demo_wrap_around() -> void {
+  ads::demo::print_section("Wrap-Around Behavior");
 
   CircularArray<int> array(8);
   cout << "Created array with capacity 8.\n";
@@ -144,8 +144,8 @@ void demo_wrap_around() {
 //===----- ITERATION DEMO ------------------------------------------------------===//
 
 // Demonstrate iteration over circular array.
-void demo_iteration() {
-  ads::demo::print_section("Demo: Iteration");
+auto demo_iteration() -> void {
+  ads::demo::print_section("Iteration");
 
   CircularArray<int> array;
   for (int i = 1; i <= 5; ++i) {
@@ -183,8 +183,8 @@ void demo_iteration() {
 //===----- CAPACITY MANAGEMENT DEMO --------------------------------------------===//
 
 // Demonstrate capacity management functions.
-void demo_capacity() {
-  ads::demo::print_section("Demo: Capacity Management");
+auto demo_capacity() -> void {
+  ads::demo::print_section("Capacity Management");
 
   CircularArray<int> array;
   cout << "Initial capacity: " << array.capacity() << "\n";
@@ -215,8 +215,8 @@ void demo_capacity() {
 //===----- EXCEPTION HANDLING DEMO ---------------------------------------------===//
 
 // Demonstrate exception handling for out-of-bounds and underflow.
-void demo_exception_handling() {
-  ads::demo::print_section("Demo: Exception Handling");
+auto demo_exception_handling() -> void {
+  ads::demo::print_section("Exception Handling");
 
   CircularArray<int> array;
 
@@ -254,8 +254,8 @@ void demo_exception_handling() {
 //===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrate CircularArray with string type.
-void demo_string_type() {
-  ads::demo::print_section("Demo: String Type Support");
+auto demo_string_type() -> void {
+  ads::demo::print_section("String Type Support");
 
   CircularArray<string> strings;
   strings.emplace_back("World");
@@ -276,7 +276,7 @@ void demo_string_type() {
 //===----- MAIN FUNCTION -------------------------------------------------------===//
 
 auto main() -> int {
-  ads::demo::print_header("CircularArray Demo");
+  ads::demo::print_header("CIRCULAR ARRAY - COMPREHENSIVE DEMO");
 
   try {
     demo_basic_operations();
@@ -287,7 +287,7 @@ auto main() -> int {
     demo_exception_handling();
     demo_string_type();
 
-    ads::demo::print_footer("All demos completed successfully!");
+    ads::demo::print_footer();
     return 0;
 
   } catch (const exception& e) {

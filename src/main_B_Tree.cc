@@ -13,6 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/search/B_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
@@ -21,22 +22,21 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::exception;
 using std::string;
 using std::to_string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using namespace ads::trees;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print tree contents.
 template <int MinDegree>
-void print_btree(const BTree<int, MinDegree>& tree, const string& name) {
+auto print_btree(const BTree<int, MinDegree>& tree, const string& name) -> void {
   cout << "B-Tree '" << name << "' (size: " << tree.size() << ", height: " << tree.height() << ", nodes: " << tree.count_nodes() << "):\n";
 
   if (tree.is_empty()) {
@@ -52,8 +52,8 @@ void print_btree(const BTree<int, MinDegree>& tree, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and traversal operations.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   BTree<int, 3> btree; // Minimum degree t=3 (2-5 keys per node).
 
@@ -89,8 +89,8 @@ void demo_basic_operations() {
 //===----- NODE SPLITTING DEMO -------------------------------------------------===//
 
 // Demonstrates node splitting during insertions.
-void demo_node_splitting() {
-  ads::demo::print_section("Demo: Node Splitting");
+auto demo_node_splitting() -> void {
+  ads::demo::print_section("Node Splitting");
 
   cout << "B-Trees split nodes when they become full.\n";
   cout << "With t=2, each node can hold 1-3 keys.\n\n";
@@ -115,8 +115,8 @@ void demo_node_splitting() {
 //===----- DIFFERENT DEGREES DEMO ----------------------------------------------===//
 
 // Demonstrates B-Trees with different minimum degrees.
-void demo_different_degrees() {
-  ads::demo::print_section("Demo: Different Minimum Degrees");
+auto demo_different_degrees() -> void {
+  ads::demo::print_section("Different Minimum Degrees");
 
   cout << "Higher minimum degree = wider tree = shorter height\n\n";
 
@@ -156,13 +156,13 @@ void demo_different_degrees() {
 //===----- SEARCH AND TRAVERSAL DEMO -------------------------------------------===//
 
 // Demonstrates search and traversal operations.
-void demo_search_traversal() {
-  ads::demo::print_section("Demo: Search and Traversal");
+auto demo_search_traversal() -> void {
+  ads::demo::print_section("Search and Traversal");
 
   BTree<int, 3> btree;
 
   // Insert in random order.
-  vector<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
+  DynamicArray<int> values = {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45};
   cout << "Inserting values in order: ";
   for (int val : values) {
     cout << val << " ";
@@ -182,13 +182,13 @@ void demo_search_traversal() {
 //===----- RANDOM INSERTIONS DEMO ----------------------------------------------===//
 
 // Demonstrates random insertions.
-void demo_random_insertions() {
-  ads::demo::print_section("Demo: Random Insertions");
+auto demo_random_insertions() -> void {
+  ads::demo::print_section("Random Insertions");
 
   BTree<int, 3> btree;
 
   // Generate and shuffle values.
-  vector<int> values;
+  DynamicArray<int> values;
   for (int i = 1; i <= 100; ++i) {
     values.push_back(i);
   }
@@ -220,8 +220,8 @@ void demo_random_insertions() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   BTree<int, 3> btree1;
   for (int i = 1; i <= 20; ++i) {
@@ -256,12 +256,12 @@ void demo_move_semantics() {
 //===----- STRING TYPE DEMO ----------------------------------------------------===//
 
 // Demonstrates B-Tree with string type.
-void demo_string_type() {
-  ads::demo::print_section("Demo: String Type Support");
+auto demo_string_type() -> void {
+  ads::demo::print_section("String Type Support");
 
   BTree<string, 3> btree;
 
-  vector<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon"};
+  DynamicArray<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon"};
 
   cout << "Inserting fruits: ";
   for (const auto& word : words) {
@@ -282,8 +282,8 @@ void demo_string_type() {
 //===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Demonstrates performance with large datasets.
-void demo_performance() {
-  ads::demo::print_section("Demo: Performance");
+auto demo_performance() -> void {
+  ads::demo::print_section("Performance");
 
   const int N = 10'000;
 
@@ -318,8 +318,8 @@ void demo_performance() {
 //===----- CLEAR AND REUSE DEMO ------------------------------------------------===//
 
 // Demonstrates clearing the tree and reusing it.
-void demo_clear_reuse() {
-  ads::demo::print_section("Demo: Clear and Reuse");
+auto demo_clear_reuse() -> void {
+  ads::demo::print_section("Clear and Reuse");
 
   BTree<int, 3> btree;
 
@@ -344,8 +344,8 @@ void demo_clear_reuse() {
 //===----- HEIGHT COMPARISON DEMO ----------------------------------------------===//
 
 // Demonstrates height comparison for different minimum degrees.
-void demo_height_comparison() {
-  ads::demo::print_section("Demo: Height Comparison");
+auto demo_height_comparison() -> void {
+  ads::demo::print_section("Height Comparison");
 
   const int N = 1'000;
 
@@ -372,7 +372,7 @@ void demo_height_comparison() {
 
 auto main() -> int {
   try {
-    ads::demo::print_header("B-Tree Usage Examples");
+    ads::demo::print_header("B-TREE - COMPREHENSIVE DEMO");
 
     demo_basic_operations();
     demo_node_splitting();

@@ -13,6 +13,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "../include/ads/arrays/Dynamic_Array.hpp"
 #include "../include/ads/trees/trie/Trie.hpp"
 #include "support/Demo_Utilities.hpp"
 
@@ -21,19 +22,18 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::string;
-using std::vector;
 
+using ads::arrays::DynamicArray;
 using TrieType = ads::trees::Trie<>;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
 // Helper function to print trie statistics.
-void print_trie_stats(const TrieType& trie, const string& name) {
+auto print_trie_stats(const TrieType& trie, const string& name) -> void {
   cout << "Trie '" << name << "' (size: " << trie.size() << "):\n";
 
   if (trie.is_empty()) {
@@ -58,8 +58,8 @@ void print_trie_stats(const TrieType& trie, const string& name) {
 //===----- BASIC OPERATIONS DEMO -----------------------------------------------===//
 
 // Demonstrates basic insertion and extraction.
-void demo_basic_operations() {
-  ads::demo::print_section("Demo: Basic Operations");
+auto demo_basic_operations() -> void {
+  ads::demo::print_section("Basic Operations");
 
   TrieType trie;
 
@@ -94,13 +94,13 @@ void demo_basic_operations() {
 //===----- PREFIX OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates prefix-based operations.
-void demo_prefix_operations() {
-  ads::demo::print_section("Demo: Prefix Operations");
+auto demo_prefix_operations() -> void {
+  ads::demo::print_section("Prefix Operations");
 
   TrieType trie;
 
   // Insert words with common prefixes.
-  vector<string> words = {"apple", "application", "apply", "apt", "banana", "band", "bandana"};
+  DynamicArray<string> words = {"apple", "application", "apply", "apt", "banana", "band", "bandana"};
   for (const auto& word : words) {
     trie.insert(word);
   }
@@ -133,13 +133,13 @@ void demo_prefix_operations() {
 //===----- AUTOCOMPLETE DEMO ---------------------------------------------------===//
 
 // Demonstrates autocomplete functionality.
-void demo_autocomplete() {
-  ads::demo::print_section("Demo: Autocomplete");
+auto demo_autocomplete() -> void {
+  ads::demo::print_section("Autocomplete");
 
   TrieType trie;
 
   // Insert a vocabulary.
-  vector<string> vocabulary = {"car",   "card",     "care",   "careful",     "carefully", "careless",  "carpet", "carpool", "cat",
+  DynamicArray<string> vocabulary = {"car",   "card",     "care",   "careful",     "carefully", "careless",  "carpet", "carpool", "cat",
                                "catch", "category", "cattle", "celebration", "cell",      "cellphone", "center", "central"};
 
   for (const auto& word : vocabulary) {
@@ -171,12 +171,12 @@ void demo_autocomplete() {
 //===----- WORD COUNTING DEMO --------------------------------------------------===//
 
 // Demonstrates word counting with prefixes.
-void demo_word_counting() {
-  ads::demo::print_section("Demo: Word Counting");
+auto demo_word_counting() -> void {
+  ads::demo::print_section("Word Counting");
 
   TrieType trie;
 
-  vector<string> words = {"test", "testing", "tested", "tester", "tests", "the", "them", "their", "there", "these"};
+  DynamicArray<string> words = {"test", "testing", "tested", "tester", "tests", "the", "them", "their", "there", "these"};
 
   for (const auto& word : words) {
     trie.insert(word);
@@ -195,8 +195,8 @@ void demo_word_counting() {
 //===----- REMOVE OPERATIONS DEMO ----------------------------------------------===//
 
 // Demonstrates remove operations.
-void demo_remove_operations() {
-  ads::demo::print_section("Demo: Remove Operations");
+auto demo_remove_operations() -> void {
+  ads::demo::print_section("Remove Operations");
 
   TrieType trie;
 
@@ -226,8 +226,8 @@ void demo_remove_operations() {
 //===----- MOVE SEMANTICS DEMO -------------------------------------------------===//
 
 // Demonstrates move semantics.
-void demo_move_semantics() {
-  ads::demo::print_section("Demo: Move Semantics");
+auto demo_move_semantics() -> void {
+  ads::demo::print_section("Move Semantics");
 
   TrieType trie1;
   trie1.insert("hello");
@@ -261,8 +261,8 @@ void demo_move_semantics() {
 //===----- PERFORMANCE DEMO ----------------------------------------------------===//
 
 // Permormance testing.
-void demo_performance() {
-  ads::demo::print_section("Demo: Performance");
+auto demo_performance() -> void {
+  ads::demo::print_section("Performance");
 
   TrieType trie;
 
@@ -307,8 +307,8 @@ void demo_performance() {
 //===----- CASE SENSITIVITY DEMO -----------------------------------------------===//
 
 // Test case sensitivity.
-void demo_case_sensitivity() {
-  ads::demo::print_section("Demo: Case Sensitivity");
+auto demo_case_sensitivity() -> void {
+  ads::demo::print_section("Case Sensitivity");
 
   TrieType trie;
 
@@ -329,8 +329,8 @@ void demo_case_sensitivity() {
 //===----- EDGE CASES DEMO -----------------------------------------------------===//
 
 // Edge cases.
-void demo_edge_cases() {
-  ads::demo::print_section("Demo: Edge Cases");
+auto demo_edge_cases() -> void {
+  ads::demo::print_section("Edge Cases");
 
   TrieType trie;
 
