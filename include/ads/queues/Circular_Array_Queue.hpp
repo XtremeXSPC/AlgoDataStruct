@@ -241,16 +241,16 @@ private:
    */
   void reallocate(size_t new_capacity);
 
-  /// Owning pointer to the raw element storage with a custom array deleter.
+  ///@brief Owning pointer to the raw element storage with a custom array deleter.
   using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
 
-  /// Returns the maximum number of elements that can be allocated for T.
+  ///@brief Returns the maximum number of elements that can be allocated for T.
   static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
 
-  /// Releases raw storage previously obtained from allocate().
+  ///@brief Releases raw storage previously obtained from allocate().
   static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
 
-  /// Allocates uninitialized storage for capacity elements; throws on overflow.
+  ///@brief Allocates uninitialized storage for capacity elements; throws on overflow.
   static auto allocate(size_t capacity) -> storage_ptr;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//

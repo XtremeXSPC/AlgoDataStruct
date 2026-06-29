@@ -191,20 +191,21 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
-  /// Returns a typed pointer to the inline storage.
+  ///@brief Returns a typed pointer to the inline storage.
   auto data() noexcept -> T* { return reinterpret_cast<T*>(storage_); }
 
-  /// Returns a typed const pointer to the inline storage.
+  ///@brief Returns a typed const pointer to the inline storage.
   auto data() const noexcept -> const T* { return reinterpret_cast<const T*>(storage_); }
 
-  /// Maps a logical offset from the front to a physical index in the ring buffer.
+  ///@brief Maps a logical offset from the front to a physical index in the ring buffer.
   [[nodiscard]] auto physical(size_t logical) const noexcept -> size_t { return (front_ + logical) % N; }
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
+  size_t front_; ///< Physical index of the front element.
+  size_t size_;  ///< Number of constructed elements.
+
   alignas(T) std::byte storage_[sizeof(T) * N]; ///< Raw inline storage for N elements.
-  size_t front_;                                ///< Physical index of the front element.
-  size_t size_;                                 ///< Number of constructed elements.
 };
 
 } // namespace ads::queues

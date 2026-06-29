@@ -232,22 +232,13 @@ public:
 
   //===----- QUERY OPERATIONS --------------------------------------------------===//
 
-  /**
-   * @brief Checks if the deque is empty.
-   * @return true if the deque is empty, false otherwise.
-   */
+  ///@brief Checks if the deque is empty.
   [[nodiscard]] auto is_empty() const noexcept -> bool;
 
-  /**
-   * @brief Returns the number of elements in the deque.
-   * @return The number of elements.
-   */
+  ///@brief Returns the number of elements in the deque.
   [[nodiscard]] auto size() const noexcept -> size_t;
 
-  /**
-   * @brief Returns the current capacity of the deque.
-   * @return The capacity.
-   */
+  ///@brief Returns the current capacity of the deque.
   [[nodiscard]] auto capacity() const noexcept -> size_t;
 
   //===----- CAPACITY OPERATIONS -----------------------------------------------===//
@@ -258,23 +249,21 @@ public:
    */
   auto reserve(size_t new_capacity) -> void;
 
-  /**
-   * @brief Shrinks the capacity to fit the current size.
-   */
+  ///@brief Shrinks the capacity to fit the current size.
   auto shrink_to_fit() -> void;
 
   //===----- ITERATOR OPERATIONS -----------------------------------------------===//
 
-  /**
-   * @brief Returns an iterator/const_iterator to the beginning of the deque.
-   */
+  ///@brief Returns an iterator to the beginning of the deque.
   auto begin() noexcept -> iterator;
+
+  ///@brief Returns a const iterator to the beginning of the deque.
   auto begin() const noexcept -> const_iterator;
 
-  /**
-   * @brief Returns an iterator/const_iterator to the end of the deque.
-   */
+  ///@brief Returns an iterator to the end of the deque.
   auto end() noexcept -> iterator;
+
+  ///@brief Returns a const iterator to the end of the deque.
   auto end() const noexcept -> const_iterator;
 
   // cbegin/cend, the reverse-iterator accessors, and the relational operators
@@ -333,16 +322,16 @@ private:
    */
   auto reallocate(size_t new_capacity) -> void;
 
-  /// Owning pointer to the raw element storage with a custom array deleter.
+  ///@brief Owning pointer to the raw element storage with a custom array deleter.
   using storage_ptr = std::unique_ptr<T[], void (*)(T*)>;
 
-  /// Returns the maximum number of elements that can be allocated for T.
+  ///@brief Returns the maximum number of elements that can be allocated for T.
   static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
 
-  /// Releases raw storage previously obtained from allocate().
+  ///@brief Releases raw storage previously obtained from allocate().
   static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
 
-  /// Allocates uninitialized storage for capacity elements; throws on overflow.
+  ///@brief Allocates uninitialized storage for capacity elements; throws on overflow.
   static auto allocate(size_t capacity) -> storage_ptr;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//

@@ -211,11 +211,6 @@ public:
   auto sorted_elements() -> std::vector<T>;
 
 private:
-  //===----- DATA MEMBERS ------------------------------------------------------===//
-
-  ads::arrays::DynamicArray<T> heap_; ///< Dynamic array storing the heap.
-  Compare                      comp_; ///< Comparison function object.
-
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /**
@@ -262,6 +257,11 @@ private:
    * @complexity Time O(1), Space O(1)
    */
   [[nodiscard]] static auto right_child(size_t i) noexcept -> size_t { return 2 * i + 2; }
+
+  //===----- DATA MEMBERS ------------------------------------------------------===//
+
+  ads::arrays::DynamicArray<T> heap_; ///< Dynamic array storing the heap.
+  Compare                      comp_; ///< Comparison function object.
 };
 
 } // namespace ads::queues
