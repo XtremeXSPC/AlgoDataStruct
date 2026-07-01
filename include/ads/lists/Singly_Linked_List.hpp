@@ -62,13 +62,22 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
+    ///@brief Default constructor for iterator.
     explicit iterator(Node* ptr = nullptr) : node_ptr_(ptr) {}
 
+    ///@brief Returns a reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next element (post-increment).
     auto operator++(int) -> iterator;
 
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
@@ -91,13 +100,22 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
+    ///@brief Default constructor for const_iterator.
     explicit const_iterator(const Node* ptr = nullptr) : node_ptr_(ptr) {}
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next element (pre-increment).
     auto operator++() -> const_iterator&;
+
+    ///@brief Advances to the next element (post-increment).
     auto operator++(int) -> const_iterator;
 
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const const_iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:

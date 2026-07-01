@@ -64,14 +64,25 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
+    ///@brief Default constructor for iterator.
     iterator() = default;
 
+    ///@brief Constructs an iterator starting at @p node with @p remaining elements to visit.
     iterator(Node* node, size_type remaining) : node_(node), remaining_(remaining) {}
 
+    ///@brief Returns a reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next element (post-increment).
     auto operator++(int) -> iterator;
+
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool;
 
   private:
@@ -82,9 +93,7 @@ public:
 
   //===----- CONST_ITERATOR CLASS ----------------------------------------------===//
 
-  /**
-   * @brief Const forward iterator for CircularLinkedList.
-   */
+  ///@brief Const forward iterator for CircularLinkedList.
   class const_iterator {
   public:
     using iterator_category = std::forward_iterator_tag;
@@ -93,16 +102,28 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
+    ///@brief Default constructor for const_iterator.
     const_iterator() = default;
 
+    ///@brief Constructs a const_iterator starting at @p node with @p remaining elements to visit.
     const_iterator(const Node* node, size_type remaining) : node_(node), remaining_(remaining) {}
 
+    ///@brief Constructs a const_iterator from a non-const iterator.
     const_iterator(const iterator& it) : node_(it.node_), remaining_(it.remaining_) {}
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next element (pre-increment).
     auto operator++() -> const_iterator&;
+
+    ///@brief Advances to the next element (post-increment).
     auto operator++(int) -> const_iterator;
+
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const const_iterator& other) const -> bool;
 
   private:

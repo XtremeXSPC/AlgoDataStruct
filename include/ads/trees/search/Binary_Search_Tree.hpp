@@ -81,10 +81,19 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
+    ///@brief Default constructor for an end iterator.
     iterator() = default;
+
+    ///@brief Copy constructor.
     iterator(const iterator& other);
+
+    ///@brief Move constructor.
     iterator(iterator&& other) noexcept = default;
+
+    ///@brief Copy assignment operator.
     auto operator=(const iterator& other) -> iterator&;
+
+    ///@brief Move assignment operator.
     auto operator=(iterator&& other) noexcept -> iterator& = default;
 
     ///@brief Returns a const reference to the current element.

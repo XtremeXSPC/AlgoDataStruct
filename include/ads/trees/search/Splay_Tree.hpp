@@ -81,6 +81,7 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
+    ///@brief Default constructor for iterator.
     iterator() = default;
 
     ///@brief Returns a const reference to the current element.

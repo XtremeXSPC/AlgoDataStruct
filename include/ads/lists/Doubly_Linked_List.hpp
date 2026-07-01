@@ -61,15 +61,28 @@ public:
     using pointer           = T*;
     using reference         = T&;
 
+    ///@brief Default constructor for iterator.
     iterator(Node* ptr = nullptr, DoublyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
+    ///@brief Returns a reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next element (pre-increment).
     auto operator++() -> iterator&;
+
+    ///@brief Advances to the next element (post-increment).
     auto operator++(int) -> iterator;
+
+    ///@brief Moves to the previous element (pre-decrement).
     auto operator--() -> iterator&;
+
+    ///@brief Moves to the previous element (post-decrement).
     auto operator--(int) -> iterator;
 
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
@@ -93,15 +106,28 @@ public:
     using pointer           = const T*;
     using reference         = const T&;
 
+    ///@brief Default constructor for const_iterator.
     const_iterator(const Node* ptr = nullptr, const DoublyLinkedList<T>* list = nullptr) : node_ptr_(ptr), list_ptr_(list) {}
 
+    ///@brief Returns a const reference to the current element.
     auto operator*() const -> reference;
+
+    ///@brief Returns a const pointer to the current element.
     auto operator->() const -> pointer;
+
+    ///@brief Advances to the next element (pre-increment).
     auto operator++() -> const_iterator&;
+
+    ///@brief Advances to the next element (post-increment).
     auto operator++(int) -> const_iterator;
+
+    ///@brief Moves to the previous element (pre-decrement).
     auto operator--() -> const_iterator&;
+
+    ///@brief Moves to the previous element (post-decrement).
     auto operator--(int) -> const_iterator;
 
+    ///@brief Returns true if both iterators point to the same position.
     auto operator==(const const_iterator& other) const -> bool { return node_ptr_ == other.node_ptr_; }
 
   private:
