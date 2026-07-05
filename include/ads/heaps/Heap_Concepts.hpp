@@ -19,29 +19,40 @@
 #include "../../support/Support.hpp"
 
 #include <concepts>
+#include <type_traits>
 #include <utility>
 
 namespace ads::heaps {
 
 namespace sup = ads::support;
 
-template <typename T>
-concept HeapValue = sup::NonReferenceDestructible<T>;
+namespace detail {
 
-template <typename T>
-concept CopyHeapValue = HeapValue<T> && sup::Copyable<T>;
+///@brief Returns true when two comparator objects define a compatible ordering.
+template <typename Compare>
+[[nodiscard]] constexpr auto compatible_comparators(const Compare& lhs, const Compare& rhs) -> bool {
+  if constexpr (std::is_empty_v<Compare>) {
+    return true;
+  } else if constexpr (std::equality_comparable<Compare>) {
+    return lhs == rhs;
+  } else {
+    return false;
+  }
+}
 
-template <typename T>
-concept MoveHeapValue = HeapValue<T> && sup::Movable<T>;
+} // namespace detail
 
-template <typename T>
-concept OrderedHeapValue = HeapValue<T> && sup::OrderedValue<T>;
+template <typename T> concept HeapValue = sup::NonReferenceDestructible<T>;
 
-template <typename T, typename... Args>
-concept EmplaceHeapValue = HeapValue<T> && sup::ConstructibleFrom<T, Args...>;
+template <typename T> concept CopyHeapValue = HeapValue<T> && sup::Copyable<T>;
 
-template <typename InputIt, typename T>
-concept HeapRangeValue = HeapValue<T> && sup::InputConstructibleFor<InputIt, T>;
+template <typename T> concept MoveHeapValue = HeapValue<T> && sup::Movable<T>;
+
+template <typename T> concept OrderedHeapValue = HeapValue<T> && sup::OrderedValue<T>;
+
+template <typename T, typename... Args> concept EmplaceHeapValue = HeapValue<T> && sup::ConstructibleFrom<T, Args...>;
+
+template <typename InputIt, typename T> concept HeapRangeValue = HeapValue<T> && sup::InputConstructibleFor<InputIt, T>;
 
 /**
  * @brief Models a meldable (mergeable) heap: the shared contract of the
@@ -55,21 +66,20 @@ concept HeapRangeValue = HeapValue<T> && sup::InputConstructibleFor<InputIt, T>;
  *          handle-based @c decrease_key / @c erase extension owned by the forest
  *          heaps is intentionally kept outside this concept.
  */
-template <typename H>
-concept MeldableHeap =
+template <typename H> concept MeldableHeap =
     requires {
       typename H::value_type;
       typename H::size_type;
-    } && HeapValue<typename H::value_type> && MoveHeapValue<typename H::value_type> &&
-    requires(H heap, H other, const H const_heap, typename H::value_type value) {
-      { const_heap.top() } -> std::same_as<const typename H::value_type&>;
-      { heap.extract_top() } -> std::same_as<typename H::value_type>;
-      { heap.insert(std::move(value)) } -> std::same_as<void>;
-      { heap.merge(std::move(other)) } -> std::same_as<void>;
-      { const_heap.is_empty() } -> std::same_as<bool>;
-      { const_heap.size() } -> std::same_as<typename H::size_type>;
-      { heap.clear() } -> std::same_as<void>;
-    };
+    } && HeapValue<typename H::value_type> && MoveHeapValue<typename H::value_type>
+    && requires(H heap, H other, const H const_heap, typename H::value_type value) {
+         { const_heap.top() } -> std::same_as<const typename H::value_type&>;
+         { heap.extract_top() } -> std::same_as<typename H::value_type>;
+         { heap.insert(std::move(value)) } -> std::same_as<void>;
+         { heap.merge(std::move(other)) } -> std::same_as<void>;
+         { const_heap.is_empty() } -> std::same_as<bool>;
+         { const_heap.size() } -> std::same_as<typename H::size_type>;
+         { heap.clear() } -> std::same_as<void>;
+       };
 
 } // namespace ads::heaps
 

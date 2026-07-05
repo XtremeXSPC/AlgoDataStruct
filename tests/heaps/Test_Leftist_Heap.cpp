@@ -9,6 +9,7 @@
  */
 //===---------------------------------------------------------------------------===//
 
+#include "Meldable_Heap_Test_Support.hpp"
 #include "ads/heaps/Leftist_Heap.hpp"
 
 #include <gtest/gtest.h>
@@ -33,9 +34,7 @@ struct LeftistHeapInspector {
 
   static auto npl(const NodePtr& node) -> int { return node ? node->npl : -1; }
 
-  static auto count(const NodePtr& node) -> std::size_t {
-    return node ? 1 + count(node->left) + count(node->right) : 0;
-  }
+  static auto count(const NodePtr& node) -> std::size_t { return node ? 1 + count(node->left) + count(node->right) : 0; }
 
   static auto check(const Heap& heap, const NodePtr& node) -> bool {
     if (!node) {
@@ -65,79 +64,7 @@ struct LeftistHeapInspector {
 
 } // namespace ads::heaps::detail
 
-namespace leftist_test {
-
-// Move-only, totally-ordered payload to exercise the move-only insert/emplace
-// and extract paths. Named uniquely to stay clear of other tests under the
-// unity build.
-struct MoveOnlyOrdered {
-  int value = 0;
-
-  MoveOnlyOrdered() = default;
-  explicit MoveOnlyOrdered(int v) : value(v) {}
-
-  MoveOnlyOrdered(MoveOnlyOrdered&&) noexcept            = default;
-  auto operator=(MoveOnlyOrdered&&) noexcept -> MoveOnlyOrdered& = default;
-  MoveOnlyOrdered(const MoveOnlyOrdered&)                = delete;
-  auto operator=(const MoveOnlyOrdered&) -> MoveOnlyOrdered&     = delete;
-
-  auto operator<=>(const MoveOnlyOrdered&) const = default;
-};
-
-// Orders by absolute value; used to prove the comparator is fully generic.
-struct AbsLess {
-  auto operator()(int a, int b) const -> bool { return std::abs(a) < std::abs(b); }
-};
-
-// Drains `heap` and asserts it yields `input` in the order produced by sorting
-// with `pop_order` (the comparator describing extraction order). Reusable by
-// every MeldableHeap, so the deferred heaps can share it.
-template <typename Heap, typename PopOrder>
-void expect_drains_in_order(Heap heap, std::vector<int> input, PopOrder pop_order) {
-  std::sort(input.begin(), input.end(), pop_order);
-  ASSERT_EQ(heap.size(), input.size());
-  for (int expected : input) {
-    ASSERT_FALSE(heap.is_empty());
-    EXPECT_EQ(heap.top(), expected);
-    EXPECT_EQ(heap.extract_top(), expected);
-  }
-  EXPECT_TRUE(heap.is_empty());
-  EXPECT_EQ(heap.size(), 0U);
-}
-
-// Interleaved random push/pop workload validated step-by-step against a
-// std::priority_queue oracle. Heap and Oracle must agree on priority order.
-template <typename Heap, typename Oracle>
-void expect_matches_oracle(unsigned seed, int ops) {
-  Heap                               heap;
-  Oracle                             oracle;
-  std::mt19937                       rng(seed);
-  std::uniform_int_distribution<int> value(-10000, 10000);
-  std::bernoulli_distribution        do_pop(0.45);
-
-  for (int i = 0; i < ops; ++i) {
-    if (!oracle.empty() && do_pop(rng)) {
-      ASSERT_EQ(heap.top(), oracle.top());
-      EXPECT_EQ(heap.extract_top(), oracle.top());
-      oracle.pop();
-    } else {
-      int v = value(rng);
-      heap.insert(v);
-      oracle.push(v);
-    }
-    ASSERT_EQ(heap.size(), oracle.size());
-  }
-  while (!oracle.empty()) {
-    EXPECT_EQ(heap.extract_top(), oracle.top());
-    oracle.pop();
-  }
-  EXPECT_TRUE(heap.is_empty());
-}
-
-using MaxOracle = std::priority_queue<int>;
-using MinOracle = std::priority_queue<int, std::vector<int>, std::greater<>>;
-
-} // namespace leftist_test
+namespace leftist_test = ads::heaps::meldable_test;
 
 //===----- CONCEPT & TYPE-TRAIT CHECKS -----------------------------------------===//
 
@@ -190,8 +117,7 @@ TEST(LeftistHeapBasic, ClearEmptiesHeap) {
 //===----- CONSTRUCTION --------------------------------------------------------===//
 
 TEST(LeftistHeapConstruction, InitializerList) {
-  leftist_test::expect_drains_in_order(MaxLeftistHeap<int>{3, 1, 4, 1, 5, 9, 2, 6},
-                                       {3, 1, 4, 1, 5, 9, 2, 6}, std::greater<int>{});
+  leftist_test::expect_drains_in_order(MaxLeftistHeap<int>{3, 1, 4, 1, 5, 9, 2, 6}, {3, 1, 4, 1, 5, 9, 2, 6}, std::greater<int>{});
 }
 
 TEST(LeftistHeapConstruction, FromVector) {
@@ -292,11 +218,11 @@ TEST(LeftistHeapEdge, AllDuplicates) {
 //===----- RANDOMIZED ORACLE ---------------------------------------------------===//
 
 TEST(LeftistHeapRandomized, MaxMatchesPriorityQueue) {
-  leftist_test::expect_matches_oracle<MaxLeftistHeap<int>, leftist_test::MaxOracle>(/*seed=*/1234, /*ops=*/20000);
+  leftist_test::expect_matches_oracle<MaxLeftistHeap<int>, leftist_test::MaxOracle>(/*seed=*/1'234, /*ops=*/20'000);
 }
 
 TEST(LeftistHeapRandomized, MinMatchesPriorityQueue) {
-  leftist_test::expect_matches_oracle<MinLeftistHeap<int>, leftist_test::MinOracle>(/*seed=*/9876, /*ops=*/20000);
+  leftist_test::expect_matches_oracle<MinLeftistHeap<int>, leftist_test::MinOracle>(/*seed=*/9'876, /*ops=*/20'000);
 }
 
 //===----- STRUCTURAL INVARIANT (WHITE-BOX) ------------------------------------===//
@@ -306,11 +232,11 @@ TEST(LeftistHeapInvariant, HoldsUnderRandomizedOps) {
   using Inspector = ads::heaps::detail::LeftistHeapInspector<Heap>;
 
   Heap                               heap;
-  std::mt19937                       rng(2024);
-  std::uniform_int_distribution<int> value(-1000, 1000);
+  std::mt19937                       rng(2'024);
+  std::uniform_int_distribution<int> value(-1'000, 1'000);
   std::bernoulli_distribution        do_pop(0.4);
 
-  for (int i = 0; i < 4000; ++i) {
+  for (int i = 0; i < 4'000; ++i) {
     if (!heap.is_empty() && do_pop(rng)) {
       heap.extract_top();
     } else {
@@ -336,7 +262,7 @@ TEST(LeftistHeapInvariant, HoldsAfterMerge) {
   a.merge(std::move(b));
   EXPECT_TRUE(Inspector::valid(a));
   EXPECT_TRUE(Inspector::size_matches(a));
-  EXPECT_EQ(a.size(), 1200U);
+  EXPECT_EQ(a.size(), 1'200U);
 }
 
 //===----- MOVE-ONLY PAYLOAD ---------------------------------------------------===//
