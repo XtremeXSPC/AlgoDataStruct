@@ -20,6 +20,7 @@
 #ifndef HEAPS_HPP
 #define HEAPS_HPP
 
+#include "Binomial_Heap.hpp"
 #include "D_Ary_Heap.hpp"
 #include "Heap_Concepts.hpp"
 #include "Heap_Exception.hpp"
