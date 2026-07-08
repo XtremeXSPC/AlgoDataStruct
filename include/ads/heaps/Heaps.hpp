@@ -27,6 +27,7 @@
 #include "Leftist_Heap.hpp"
 #include "Max_Heap.hpp"
 #include "Min_Heap.hpp"
+#include "Pairing_Heap.hpp"
 #include "Skew_Heap.hpp"
 
 #endif // HEAPS_HPP
