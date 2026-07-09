@@ -22,6 +22,7 @@
 
 #include "Binomial_Heap.hpp"
 #include "D_Ary_Heap.hpp"
+#include "Fibonacci_Heap.hpp"
 #include "Heap_Concepts.hpp"
 #include "Heap_Exception.hpp"
 #include "Leftist_Heap.hpp"
