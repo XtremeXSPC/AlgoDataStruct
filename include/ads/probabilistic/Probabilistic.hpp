@@ -22,6 +22,7 @@
 
 #include "Bloom_Filter.hpp"
 #include "Count_Min_Sketch.hpp"
+#include "HyperLogLog.hpp"
 
 #endif // PROBABILISTIC_HPP
 
