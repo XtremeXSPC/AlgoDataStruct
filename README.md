@@ -1,199 +1,216 @@
-# AlgoDataStruct: Data Structures Library (C++)
+# AlgoDataStruct — A Modern C++20 Data Structures Library
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![C++20](https://img.shields.io/badge/C++-20-purple.svg)
+![C++20](https://img.shields.io/badge/C%2B%2B-20-purple.svg)
+![Header-only](https://img.shields.io/badge/header--only-yes-green.svg)
 
-## Description
+**AlgoDataStruct** is an educational, header-only C++20 library of classic and
+advanced data structures. It favours clear invariants, small well-documented
+APIs, and rigorously tested behaviour over micro-optimisation — the goal is code
+you can *read and learn from*, backed by tests strong enough to trust.
 
-**AlgoDataStruct** is an educational, header-only C++ library that implements classic data
-structures with modern C++20. The project favors clear invariants, clean APIs, and
-well-documented behavior over micro-optimizations.
+## Highlights
 
-Key characteristics:
-
-- Header-only templates with `.tpp` implementation files included by the public headers
-- STL-friendly iteration/traversal where applicable and explicit error handling via custom exceptions
-- Focused, testable implementations intended for study and extension
+- **C++20 throughout** — reusable concepts express container requirements across
+  the core structure families, catching many API mistakes at compile time.
+- **Header + `.tpp` split** — each public header in `include/ads/<category>/`
+  includes its implementation from `src/ads/<category>/`; consumers only include
+  the header.
+- **Explicit ownership** — structures use project containers, smart pointers,
+  and focused `std::` storage where each choice best expresses the invariant;
+  temporary algorithm buffers are kept local to the operation that needs them.
+- **Disciplined resource handling** — move semantics and `clear`/`reset`
+  throughout, with move-only types where copying would be unsafe.
+- **Custom exceptions** per category (e.g. `HeapException`, `ArrayOutOfRangeException`).
+- **Doxygen docs** describing public operations, invariants, errors, and
+  complexity where applicable.
+- **Tested hard** — GoogleTest coverage includes construction / move / clear,
+  empty / single / duplicate / large workloads, algorithmic guarantees, and
+  comparisons against exact oracles; sanitizer presets are available as a
+  separate validation profile.
 
 ## Implemented Data Structures
 
 <details open>
-<summary><strong>Linear Structures</strong></summary>
+<summary><strong>Arrays</strong> — <code>include/ads/arrays/</code></summary>
 
-- **Arrays**
-  - Static Array
-  - Dynamic Array (vector-like growth)
-  - Circular Array (wrap-around indexing)
-
-- **Linked Lists**
-  - Singly Linked List
-  - Doubly Linked List
-  - Circular Linked List
-
-- **Stacks**
-  - Array-based Stack
-  - Linked-list-based Stack
-
-- **Queues**
-  - Linked Queue
-  - Circular Queue
-  - Circular Deque
-  - Priority Queue (binary heap)
+- Static Array (fixed size)
+- Static Vector (fixed-capacity, inline storage)
+- Dynamic Array (vector-like growth)
+- Circular Array (wrap-around indexing)
+- Array View (non-owning span)
+- Gap Buffer (edit-friendly text buffer)
 
 </details>
 
 <details>
-<summary><strong>Trees</strong></summary>
+<summary><strong>Linked Lists</strong> — <code>include/ads/lists/</code></summary>
 
-- Complete Binary Tree (level-order insertion)
-- Binary Search Tree (BST)
-- AVL Tree
-- Red-Black Tree
-- Treap
-- B-Tree
-- Trie (Prefix Tree)
-- Fenwick Tree (Binary Indexed Tree)
-- Fenwick Tree with Range Update
-- Segment Tree
-- Lazy Segment Tree
+- Singly Linked List
+- Doubly Linked List
+- Circular Linked List
 
 </details>
 
 <details>
-<summary><strong>Heaps</strong></summary>
+<summary><strong>Stacks &amp; Queues</strong> — <code>include/ads/stacks/</code>, <code>include/ads/queues/</code></summary>
 
-- Min Heap
-- Max Heap
+- Array Stack, Linked Stack, Static Stack
+- Linked Queue, Static Queue
+- Circular Array Queue, Circular Array Deque
+- Priority Queue (binary heap)
+
+</details>
+
+<details>
+<summary><strong>Heaps</strong> — <code>include/ads/heaps/</code></summary>
+
+- Min Heap, Max Heap
 - D-ary Heap (configurable arity, min/max semantics)
+- **Meldable family** (share a `MeldableHeap` concept):
+  - Leftist Heap
+  - Skew Heap
+  - Binomial Heap — handle-based `decrease_key` / `erase`
+  - Pairing Heap — handle-based `decrease_key` / `erase`
+  - Fibonacci Heap — O(1) amortized `decrease_key` (the Dijkstra/Prim bound)
 
 </details>
 
 <details>
-<summary><strong>Matrix Structures</strong></summary>
+<summary><strong>Trees</strong> — <code>include/ads/trees/</code></summary>
 
+- **Search** (`trees/search/`): Binary Search Tree, AVL Tree, Red-Black Tree,
+  Splay Tree, Treap, B-Tree
+- **Range** (`trees/range/`): Fenwick Tree, Fenwick Tree with Range Update,
+  Segment Tree, Lazy Segment Tree
+- **Trie** (`trees/trie/`): Trie (prefix tree)
+- Complete Binary Tree, N-ary Tree
+
+</details>
+
+<details>
+<summary><strong>Hashing &amp; Associative</strong> — <code>include/ads/hash/</code>, <code>include/ads/associative/</code></summary>
+
+- Hash Table with chaining
+- Hash Table with open addressing (linear / quadratic / double hashing)
+- Dictionary interface, HashMap, TreeMap, HashSet, TreeSet, Set
+
+</details>
+
+<details>
+<summary><strong>Graphs &amp; Matrices</strong> — <code>include/ads/graphs/</code>, <code>include/ads/matrices/</code></summary>
+
+- Adjacency List, Adjacency Matrix
+- Disjoint Set Union (Union-Find)
+- Graph algorithms
 - Sparse Matrix (CSR)
 
 </details>
 
 <details>
-<summary><strong>Hashing Structures</strong></summary>
+<summary><strong>Probabilistic</strong> — <code>include/ads/probabilistic/</code></summary>
 
-- Hash table with chaining
-- Hash table with open addressing (linear, quadratic, double hashing)
-
-</details>
-
-<details>
-<summary><strong>Associative Structures</strong></summary>
-
-- Dictionary interface
-- HashMap
-- TreeMap
-- HashSet
-- TreeSet
+- Bloom Filter (approximate set membership)
+- Count-Min Sketch (frequency estimation)
+- HyperLogLog (distinct-cardinality estimation)
 
 </details>
 
 <details>
-<summary><strong>Graph Structures</strong></summary>
+<summary><strong>Algorithms</strong> — <code>include/ads/algorithms/</code></summary>
 
-- Adjacency List
-- Adjacency Matrix
-- Disjoint Sets (Union-Find)
+- Sorting algorithms
+- String algorithms
 
 </details>
 
-## Roadmap (Advanced)
+See [`ROADMAP.md`](ROADMAP.md) for what is planned next and the tiered build-out
+plan. Current focus: the T2 themed blocks — the meldable-heap family is complete,
+and the probabilistic-sketch block now includes Count-Min Sketch and HyperLogLog;
+Cuckoo Filter is next.
 
-- Skip List (advanced)
-- B+ Tree, 2-3 Tree, 2-3-4 Tree
-- String structures (Suffix Tree/Array, Suffix Automaton, Rope)
-- Probabilistic structures (Bloom Filter, Count-Min Sketch, HyperLogLog)
-- Spatial structures (KD-Tree, R-Tree, Quad/Oct-tree)
+## Repository Layout
 
-## Repository Organization
-
-```path
+```text
 AlgoDataStruct/
-├── include/
-│   └── ads/
-│       ├── arrays/
-│       ├── lists/
-│       ├── stacks/
-│       ├── queues/
-│       ├── trees/
-│       ├── heaps/
-│       ├── matrices/
-│       ├── hash/
-│       ├── associative/
-│       └── graphs/
-├── src/
-│   ├── ads/               # .tpp implementation files
-│   └── main_*.cc          # usage demos / sample programs
-├── tests/                 # unit tests (standalone)
-├── docs/                  # generated documentation
-│   └── html/
-├── Documentation/         # additional notes and PDFs
+├── include/ads/            # public headers, one folder per category
+│   ├── arrays/  lists/  stacks/  queues/  heaps/
+│   ├── trees/{search,range,trie}/
+│   ├── hash/  associative/  graphs/  matrices/
+│   └── probabilistic/  algorithms/
+├── include/support/        # generic concepts, aliases, and demo utilities
+├── src/ads/                # .tpp implementations, mirroring include/ads
+├── examples/<category>/    # runnable demos: main_<Name>.cc
+├── tests/<category>/       # GoogleTest unit tests: Test_<Name>.cpp
+├── cmake/                  # build modules (library, GoogleTest, ...)
+├── docs/                   # Doxygen output (Doxyfile at the root)
 ├── CMakeLists.txt
+├── CMakePresets.json
 ├── clang-toolchain.cmake
 ├── gcc-toolchain.cmake
-└── Makefile
+└── ROADMAP.md
 ```
 
-## Code Conventions
+Both tests and demos use **library-rooted includes** — e.g.
+`#include "ads/heaps/Fibonacci_Heap.hpp"` — resolved through the `ads_lib` target's
+include directory.
 
-- **C++**: LLVM-based formatting and repository-specific conventions
-- Header-only templates: public headers in `include/ads`, implementations in `src/ads`
-- Many structures include iterators or traversal callbacks where they make sense
-- Documentation is written in Doxygen style; complexity notes are included when available
-- Tests and demos live in `tests/` and `src/main_*.cc`
+## Building, Testing, and Sanitizers
 
-## Build and Run (optional)
-
-The library is header-only; you can include the headers directly. To build the demo
-executables in `src/main_*.cc`:
+The project uses CMake presets (Clang by default; GCC variants have a `-gcc`
+suffix). Requires a C++20 compiler and CMake ≥ 3.20.
 
 ```sh
+# Configure + build (Clang, Debug)
 cmake --preset debug
 cmake --build --preset build-debug
+
+# Build and run the test suite
+cmake --preset debug-tests
+cmake --build --preset build-debug-tests
+ctest --test-dir build/clang/debug-tests --output-on-failure
+# (or run the runner directly)
+./build/clang/debug-tests/bin/runTests
+
+# AddressSanitizer + UndefinedBehaviorSanitizer
+cmake --preset sanitize-tests
+cmake --build --preset build-sanitize-tests
+ctest --test-dir build/clang/sanitize-tests --output-on-failure
 ```
 
-You can also configure manually with `-B build/clang/debug`. Demo executables are
-placed in `build/<toolchain>/<profile>/bin/`, for example
-`build/clang/debug/bin/test_Binary_Search_Tree`. Use `gcc-toolchain.cmake` if you
-prefer GCC.
+Demo executables are placed in `build/<toolchain>/<profile>/bin/`; a demo
+`examples/heaps/main_Fibonacci_Heap.cc` builds to the target `Fibonacci_Heap`.
+Available profiles include `debug`, `release`, `debug-tests`, `sanitize-tests`,
+and `thread-sanitize-tests` (each with a `-gcc` counterpart).
+
+Because the library is header-only, you can also skip CMake entirely and just add
+`include/` (and `src/`) to your include path.
 
 ## Usage
 
-### C++
+### Balanced BST — AVL Tree
 
 ```cpp
-// Example usage of an AVL Tree
-#include "ads/trees/AVL_Tree.hpp"
+#include "ads/trees/search/AVL_Tree.hpp"
 #include <iostream>
 
 int main() {
-    ads::trees::AVLTree<int> avlTree;
+  ads::trees::AVLTree<int> tree;
+  tree.insert(10);
+  tree.insert(20);
+  tree.insert(30);
 
-    avlTree.insert(10);
-    avlTree.insert(20);
-    avlTree.insert(30);
+  std::cout << std::boolalpha << tree.contains(20) << "\n"; // true
+  tree.remove(20);
+  std::cout << std::boolalpha << tree.contains(20) << "\n"; // false
 
-    std::cout << std::boolalpha << avlTree.contains(20) << "\n"; // true
-    avlTree.remove(20);
-    std::cout << std::boolalpha << avlTree.contains(20) << "\n"; // false
-
-    std::cout << "In-order traversal: ";
-    avlTree.in_order_traversal([](const int& value) {
-        std::cout << value << " ";
-    });
-    std::cout << "\n";
-
-    return 0;
+  std::cout << "in-order: ";
+  tree.in_order_traversal([](const int& v) { std::cout << v << ' '; });
+  std::cout << "\n";
 }
 ```
 
-## Example: Using HashMap
+### Key/Value Map — HashMap
 
 ```cpp
 #include "ads/associative/Hash_Map.hpp"
@@ -201,84 +218,100 @@ int main() {
 #include <string>
 
 int main() {
-    ads::associative::HashMap<std::string, int> scores;
+  ads::associative::HashMap<std::string, int> scores;
+  scores.put("Alice", 95);
+  scores.put("Bob", 89);
 
-    // Adding key-value pairs
-    scores.put("Alice", 95);
-    scores.put("Bob", 89);
-    scores.put("Charlie", 92);
+  std::cout << scores.at("Bob") << "\n";                       // 89
+  std::cout << std::boolalpha << scores.contains("Eve") << "\n"; // false
 
-    // Retrieving values
-    std::cout << "Bob's score: " << scores.at("Bob") << "\n"; // 89
-
-    // Checking if a key exists
-    std::cout << "Does David have a score? " << std::boolalpha
-              << scores.contains("David") << "\n"; // false
-
-    // Updating a value
-    scores.put("Bob", 91);
-    std::cout << "Bob's updated score: " << scores.at("Bob") << "\n"; // 91
-
-    // Removing a key-value pair
-    scores.erase("Charlie");
-    std::cout << "Charlie's score exists? " << std::boolalpha
-              << scores.contains("Charlie") << "\n"; // false
-
-    return 0;
+  scores.put("Bob", 91);        // update
+  scores.erase("Alice");        // remove
+  std::cout << scores.size() << "\n"; // 1
 }
 ```
 
-## Contributions
+### Priority Queue with `decrease_key` — Fibonacci Heap
 
-Contributions are welcome! Please read our contribution guidelines before submitting a pull request.
+```cpp
+#include "ads/heaps/Fibonacci_Heap.hpp"
+#include <iostream>
 
-1. **Missing implementations**: Check the list of pending structures
-2. **Performance improvements**: Optimizations without compromising clarity
-3. **Documentation**: Improvements to comments, examples, or guides
-4. **Tests**: Add more test cases or improve existing ones
+int main() {
+  ads::heaps::MinFibonacciHeap<int> heap;
+  heap.insert(50);
+  auto handle = heap.emplace(80);   // keep a stable handle to this element
+  heap.insert(20);
 
-When adding a new structure, please include:
+  std::cout << heap.top() << "\n";  // 20
 
-- Public header in `include/ads/<area>/`
-- `.tpp` implementation in `src/ads/<area>/`
-- A demo in `src/main_<Structure>.cc` and a unit test in `tests/`
-- An update to this README if it changes the public surface
+  heap.decrease_key(handle, 5);     // 80 -> 5, now the minimum
+  std::cout << heap.extract_top() << "\n"; // 5
+  std::cout << heap.extract_top() << "\n"; // 20
+}
+```
+
+### Frequency Estimation — Count-Min Sketch
+
+```cpp
+#include "ads/probabilistic/Count_Min_Sketch.hpp"
+#include <iostream>
+#include <string>
+
+int main() {
+  // Size the sketch for a target error/confidence.
+  auto sketch = ads::probabilistic::CountMinSketch<std::string>::from_estimates(
+      /*epsilon=*/0.001, /*delta=*/0.01);
+
+  sketch.add("apple", 50);
+  sketch.add("banana", 10);
+
+  // Never underestimates the true frequency.
+  std::cout << sketch.estimate("apple")  << "\n"; // >= 50
+  std::cout << sketch.estimate("cherry") << "\n"; // 0 (never added)
+}
+```
+
+## Conventions
+
+- **C++20**, LLVM-based formatting (`.clang-format`), lint via `.clang-tidy`.
+- Public headers in `include/ads/<category>/`, implementations in
+  `src/ads/<category>/*.tpp`, included at the bottom of each header.
+- Container categories expose domain concepts (`*_Concepts.hpp`) where shared
+  semantic constraints are useful; multi-facility modules provide umbrella
+  headers such as `Heaps.hpp` and `Probabilistic.hpp`.
+- Doxygen comments with complexity notes; English by default.
+- Tests in `tests/<category>/Test_<Name>.cpp`, demos in
+  `examples/<category>/main_<Name>.cc`.
+
+## Contributing
+
+Contributions are welcome. When adding a structure `X` in category `cat`:
+
+- Public header `include/ads/cat/X.hpp`, using the category concept when one
+  expresses the structure's semantic requirements, and implementation
+  `src/ads/cat/X.tpp`.
+- Add `X.hpp` to the category umbrella header.
+- Unit test `tests/cat/Test_X.cpp` covering construction / move / clear, edge
+  cases (empty / single / duplicate / large), algorithmic-guarantee tests, and an
+  oracle comparison; keep `runTests` green and the sanitizer build clean.
+- A demo `examples/cat/main_X.cc` following the existing demo style.
+- Update this README when the public surface changes.
 
 ## Learning Resources
 
-### Essential References
-
-- [Introduction to Algorithms](https://mitpress.mit.edu/books/introduction-algorithms-third-edition) - Cormen, Leiserson, Rivest, Stein
-- [Algorithms, 4th Edition](https://algs4.cs.princeton.edu/home/) - Sedgewick & Wayne
-- [Data Structure in C++](https://www.wiley.com/en-us/Data+Structures+and+Algorithms+in+C%2B%2B%2C+2nd+Edition-p-9780470383278) - Michael T. Goodrich, Roberto Tamassia, David M. Mount
-- [The Art of Computer Programming](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) - Knuth
-- [Algorithm Design Manual](https://www.springer.com/gp/book/9781848000698) - Steven S. Skiena
-
-### Advanced Topics
-
-- [Advanced Data Structures](https://www.cambridge.org/core/books/advanced-data-structures/D58D5C2D12F23464E0406320554A251B) - Peter Brass
-- [Purely Functional Data Structures](https://www.cambridge.org/core/books/purely-functional-data-structures/0409255DA1B48FA731859AC72E34D494) - Chris Okasaki
-- [Graph Algorithms](https://www.amazon.com/Graph-Algorithms-Shimon-Even/dp/0716780453) - Shimon Even
-- [Data Structures and Network Algorithms](https://epubs.siam.org/doi/book/10.1137/1.9781611970265) - Robert Endre Tarjan
-- [Handbook of Data Structures and Applications](https://www.routledge.com/Handbook-of-Data-Structures-and-Applications/Mehta-Sahni/p/book/9780367571481) - Dinesh P. Mehta, Sartaj Sahni
-
-### Specialized Resources
-
-- [Pearls of Functional Algorithm Design](https://www.cambridge.org/core/books/pearls-of-functional-algorithm-design/B0CF0A666A65F6A1E3B1C509AF8BDAAA) - Richard Bird
-- [Algorithms and Data Structures: The Basic Toolbox](https://www.springer.com/gp/book/9783540779773) - Kurt Mehlhorn, Peter Sanders
-- [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) - Antti Laaksonen
-- [Real-World Algorithms: A Beginner's Guide](https://mitpress.mit.edu/books/real-world-algorithms) - Panos Louridas
-
-### Spatial and Nearest Neighbor Search
-
-- [Similarity Search: The Metric Space Approach](https://www.springer.com/gp/book/9780387291468) - Pavel Zezula, Giuseppe Amato, Vlastislav Dohnal, Michal Batko
-- [Nearest Neighbor Methods in Learning and Vision](https://mitpress.mit.edu/books/nearest-neighbor-methods-learning-and-vision) - Gregory Shakhnarovich, Trevor Darrell, Piotr Indyk
-- [Foundations of Multidimensional and Metric Data Structures](https://www.sciencedirect.com/book/9780123694461/foundations-of-multidimensional-and-metric-data-structures) - Hanan Samet
-- [Computational Geometry: Algorithms and Applications](https://www.springer.com/gp/book/9783540779735) - Mark de Berg, Otfried Cheong, Marc van Kreveld, Mark Overmars
+- [Introduction to Algorithms](https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/) — Cormen, Leiserson, Rivest, Stein
+- [Algorithms, 4th Edition](https://algs4.cs.princeton.edu/home/) — Sedgewick & Wayne
+- [Data Structures and Algorithms in C++](https://www.wiley.com/en-us/Data+Structures+and+Algorithms+in+C%2B%2B%2C+2nd+Edition-p-9780470383278) — Goodrich, Tamassia, Mount
+- [The Art of Computer Programming](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) — Knuth
+- [Advanced Data Structures](https://www.cambridge.org/core/books/advanced-data-structures/D58D5C2D12F23464E0406320554A251B) — Peter Brass
+- [Data Structures and Network Algorithms](https://epubs.siam.org/doi/book/10.1137/1.9781611970265) — Robert Endre Tarjan
+- [Algorithms and Data Structures: The Basic Toolbox](https://people.mpi-inf.mpg.de/~mehlhorn/Toolbox.html) — Mehlhorn & Sanders
+- [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) — Antti Laaksonen
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Licensed under the **MIT License** — each source file carries the MIT header.
 
 ## Contact
 
