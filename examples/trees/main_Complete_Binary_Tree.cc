@@ -96,25 +96,25 @@ auto demo_traversals() -> void {
 
   cout << "1. Level-Order (Breadth-First):\n";
   elements.clear();
-  tree.level_order_traversal([&elements](int val) { elements.push_back(val); });
+  tree.level_order_traversal([&elements](int val) -> void { elements.push_back(val); });
   print_traversal(elements, "Level-order");
   cout << "   Visits nodes level by level, left to right.\n";
 
   cout << "\n2. Pre-Order (Root, Left, Right):\n";
   elements.clear();
-  tree.pre_order_traversal([&elements](int val) { elements.push_back(val); });
+  tree.pre_order_traversal([&elements](int val) -> void { elements.push_back(val); });
   print_traversal(elements, "Pre-order ");
   cout << "   Root first, then left subtree, then right subtree.\n";
 
   cout << "\n3. In-Order (Left, Root, Right):\n";
   elements.clear();
-  tree.in_order_traversal([&elements](int val) { elements.push_back(val); });
+  tree.in_order_traversal([&elements](int val) -> void { elements.push_back(val); });
   print_traversal(elements, "In-order  ");
   cout << "   Left subtree, then root, then right subtree.\n";
 
   cout << "\n4. Post-Order (Left, Right, Root):\n";
   elements.clear();
-  tree.post_order_traversal([&elements](int val) { elements.push_back(val); });
+  tree.post_order_traversal([&elements](int val) -> void { elements.push_back(val); });
   print_traversal(elements, "Post-order");
   cout << "   Left subtree, then right subtree, then root.\n";
 
@@ -229,7 +229,7 @@ auto demo_string_type() -> void {
   tree.emplace("LR");
 
   cout << "String tree (level-order): ";
-  tree.level_order_traversal([](const string& s) { cout << "\"" << s << "\" "; });
+  tree.level_order_traversal([](const string& s) -> void { cout << "\"" << s << "\" "; });
   cout << "\n\n";
 
   cout << "Tree structure:\n";
