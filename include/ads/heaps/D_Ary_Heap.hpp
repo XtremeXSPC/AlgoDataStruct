@@ -35,16 +35,37 @@ namespace ads::heaps {
  * @brief A configurable d-ary heap backed by a dynamic array.
  *
  * @details This class generalizes the binary heap by allowing each node to have
- *          `d` children, where `d >= 2` is chosen at construction time.
+ *          'd' children, where 'd >= 2' is chosen at construction time. Elements
+ *          are stored in level order inside a contiguous 'DynamicArray', so no
+ *          node allocation is needed and parent/child navigation is pure index
+ *          arithmetic.
  *
- *          By default, `Compare = std::less<T>` builds a max-heap semantics,
- *          matching the project's `PriorityQueue`: the top element is the one
- *          with highest priority according to `Compare`.
+ *          Increasing the arity shortens the heap height, which can reduce the
+ *          number of upward moves during 'insert' and 'update_key'. The tradeoff
+ *          is that 'heapify_down' must scan up to 'd' children at every level, so
+ *          extraction costs O(d log_d n). This makes the structure useful when a
+ *          wider, cache-friendly heap is preferable to a strictly binary one.
  *
- *          For a node at index `i`:
- *          - Parent at `(i - 1) / d`
- *          - First child at `d * i + 1`
- *          - Last child at `d * i + d`
+ *          Priority is defined by 'Compare'. With the default 'std::less<T>',
+ *          'top()' yields the maximum element, matching 'PriorityQueue' and the
+ *          rest of the heap family; use 'MinDAryHeap' for min-heap semantics or
+ *          'MaxDAryHeap' for the explicit max-heap alias. The type is move-only,
+ *          array-backed, and intentionally not meldable.
+ *
+ *          Complexity: 'top' is O(1); 'insert' and upward 'update_key' are
+ *          O(log_d n); 'extract_top', downward 'update_key', and bottom-up
+ *          repair steps are O(d log_d n); construction from a range uses
+ *          bottom-up heapify in O(n).
+ *
+ *          Exception safety: 'top'/'extract_top' on an empty heap and
+ *          'update_key' with an invalid index throw 'HeapException' without
+ *          modifying the heap; 'clear' is 'noexcept', and move operations follow
+ *          the comparator's move guarantees.
+ *
+ *          For a node at index 'i':
+ *          - Parent at '(i - 1) / d'
+ *          - First child at 'd * i + 1'
+ *          - Last child at 'd * i + d'
  *
  * @tparam T The element type.
  * @tparam Compare Comparator defining priority order.
@@ -65,8 +86,7 @@ public:
    * @throws HeapException if arity < 2.
    * @complexity Time O(1), Space O(initial_capacity)
    */
-  explicit DAryHeap(
-      size_type arity = kDefaultArity, size_type initial_capacity = kInitialCapacity, Compare comp = Compare{});
+  explicit DAryHeap(size_type arity = kDefaultArity, size_type initial_capacity = kInitialCapacity, Compare comp = Compare{});
 
   /**
    * @brief Constructs a heap from a vector using bottom-up heapify.
@@ -89,8 +109,7 @@ public:
    * @complexity Time O(n), Space O(n)
    */
   template <std::input_iterator InputIt>
-  DAryHeap(InputIt first, InputIt last, size_type arity = kDefaultArity, Compare comp = Compare{})
-    requires HeapRangeValue<InputIt, T>;
+  DAryHeap(InputIt first, InputIt last, size_type arity = kDefaultArity, Compare comp = Compare{}) requires HeapRangeValue<InputIt, T>;
 
   /**
    * @brief Constructs a heap from an initializer list using bottom-up heapify.
@@ -133,16 +152,14 @@ public:
    * @param value Value to insert.
    * @complexity Time O(log_d n) amortized, Space O(1)
    */
-  auto insert(const T& value) -> void
-    requires CopyHeapValue<T>;
+  auto insert(const T& value) -> void requires CopyHeapValue<T>;
 
   /**
    * @brief Inserts an element into the heap using move semantics.
    * @param value Value to insert.
    * @complexity Time O(log_d n) amortized, Space O(1)
    */
-  auto insert(T&& value) -> void
-    requires MoveHeapValue<T>;
+  auto insert(T&& value) -> void requires MoveHeapValue<T>;
 
   /**
    * @brief Constructs an element in-place inside the heap.
@@ -152,8 +169,7 @@ public:
    * @complexity Time O(log_d n) amortized, Space O(1)
    */
   template <typename... Args>
-  auto emplace(Args&&... args) -> T&
-    requires EmplaceHeapValue<T, Args...>;
+  auto emplace(Args&&... args) -> T& requires EmplaceHeapValue<T, Args...>;
 
   //===----- ACCESS OPERATIONS -------------------------------------------------===//
 
@@ -190,8 +206,7 @@ public:
    * @throws HeapException if index is out of bounds.
    * @complexity Time O(log_d n), Space O(1)
    */
-  auto update_key(size_type index, const T& new_value) -> void
-    requires CopyHeapValue<T>;
+  auto update_key(size_type index, const T& new_value) -> void requires CopyHeapValue<T>;
 
   /**
    * @brief Replaces the value stored at an index using move semantics and restores heap order.
@@ -200,8 +215,7 @@ public:
    * @throws HeapException if index is out of bounds.
    * @complexity Time O(log_d n), Space O(1)
    */
-  auto update_key(size_type index, T&& new_value) -> void
-    requires MoveHeapValue<T>;
+  auto update_key(size_type index, T&& new_value) -> void requires MoveHeapValue<T>;
 
   /**
    * @brief Removes all elements from the heap.
@@ -249,25 +263,41 @@ public:
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
+  ///@brief Returns true if 'lhs' has strictly higher priority than 'rhs'.
   [[nodiscard]] auto has_higher_priority(const T& lhs, const T& rhs) const -> bool;
+
+  ///@brief Returns the parent index of a non-root node.
   [[nodiscard]] auto parent(size_t index) const noexcept -> size_t;
+
+  ///@brief Returns the first child index for the node at 'index'.
   [[nodiscard]] auto first_child(size_t index) const noexcept -> size_t;
 
-  auto        heapify_up(size_t index) -> size_t;
-  auto        heapify_down(size_t index) -> void;
-  auto        build_heap() -> void;
-  auto        validate_non_empty(const char* operation) const -> void;
-  auto        validate_index(size_t index, const char* operation) const -> void;
+  ///@brief Sifts an element toward the root and returns its final index.
+  auto heapify_up(size_t index) -> size_t;
+
+  ///@brief Sifts an element toward the leaves until heap order is restored.
+  auto heapify_down(size_t index) -> void;
+
+  ///@brief Establishes the heap invariant over all stored elements bottom-up.
+  auto build_heap() -> void;
+
+  ///@brief Throws if the heap is empty before 'operation'.
+  auto validate_non_empty(const char* operation) const -> void;
+
+  ///@brief Throws if 'index' is out of bounds before 'operation'.
+  auto validate_index(size_t index, const char* operation) const -> void;
+
+  ///@brief Validates an arity value and returns it unchanged.
   static auto validate_arity(size_t arity) -> size_t;
 
   //===----- DATA MEMBERS ------------------------------------------------------===//
 
-  ads::arrays::DynamicArray<T> data_;
-  size_t                       arity_;
-  Compare                      comp_;
+  ads::arrays::DynamicArray<T> data_;  ///< Heap storage in level-order layout.
+  size_t                       arity_; ///< Number of children per internal node.
+  Compare                      comp_;  ///< Comparator defining priority order.
 
-  static constexpr size_t kDefaultArity    = 2;
-  static constexpr size_t kInitialCapacity = 16;
+  static constexpr size_t kDefaultArity    = 2;  ///< Default binary-heap arity.
+  static constexpr size_t kInitialCapacity = 16; ///< Default reserved capacity.
 };
 
 template <typename T>
