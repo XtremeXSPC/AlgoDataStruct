@@ -113,6 +113,7 @@ you can *read and learn from*, backed by tests strong enough to trust.
 - Bloom Filter (approximate set membership)
 - Count-Min Sketch (frequency estimation)
 - HyperLogLog (distinct-cardinality estimation)
+- Cuckoo Filter (approximate membership with deletion)
 
 </details>
 
@@ -126,8 +127,8 @@ you can *read and learn from*, backed by tests strong enough to trust.
 
 See [`ROADMAP.md`](ROADMAP.md) for what is planned next and the tiered build-out
 plan. Current focus: the T2 themed blocks — the meldable-heap family is complete,
-and the probabilistic-sketch block now includes Count-Min Sketch and HyperLogLog;
-Cuckoo Filter is next.
+and the probabilistic-sketch block is complete with Count-Min Sketch, HyperLogLog,
+and Cuckoo Filter.
 
 ## Repository Layout
 
