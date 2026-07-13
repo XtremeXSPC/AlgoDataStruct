@@ -28,6 +28,9 @@
 #include "search/Splay_Tree.hpp"
 #include "search/Treap.hpp"
 
+// Sequence-derived / augmented trees.
+#include "search/Cartesian_Tree.hpp"
+
 // Array-backed range-query structures.
 #include "range/Fenwick_Tree.hpp"
 #include "range/Fenwick_Tree_Range_Update.hpp"
