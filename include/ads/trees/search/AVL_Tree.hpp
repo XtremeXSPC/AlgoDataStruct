@@ -492,22 +492,28 @@ private:
 
   /**
    * @brief Recursive helper for inserting a value.
-   * @param node Reference to the node pointer (can be modified to point to new node).
+   * @details Operates on the owning link by reference so the tree keeps
+   *          ownership of every subtree while descending: if a comparison or
+   *          the node allocation throws, the tree is left untouched (strong
+   *          guarantee). Rebalancing runs only on the success path and cannot
+   *          throw.
+   * @param node Owning link to the subtree (rewired in place).
    * @param value The value to insert.
    * @param inserted Output parameter: set to true if inserted, false if duplicate.
-   * @return Potentially new root after insertion and balancing.
    */
   template <typename U>
-  auto insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted) -> std::unique_ptr<Node>;
+  auto insert_helper(std::unique_ptr<Node>& node, U&& value, bool& inserted) -> void;
 
   /**
    * @brief Recursive helper for removing a value.
-   * @param node Reference to the node pointer.
+   * @details Same by-reference discipline as insert_helper: comparisons happen
+   *          while the tree is fully owned by its links, and the structural
+   *          splice plus rebalancing are non-throwing pointer operations.
+   * @param node Owning link to the subtree (rewired in place).
    * @param value The value to remove.
    * @param removed Output parameter: set to true if removed, false if not found.
-   * @return Potentially new root after removal and balancing.
    */
-  auto remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed) -> std::unique_ptr<Node>;
+  auto remove_helper(std::unique_ptr<Node>& node, const T& value, bool& removed) -> void;
 
   /**
    * @brief Finds and detaches the minimum node from a subtree.

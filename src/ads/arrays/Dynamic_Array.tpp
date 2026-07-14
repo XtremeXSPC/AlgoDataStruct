@@ -136,7 +136,14 @@ template <ArrayElement T>
 template <typename... Args>
 auto DynamicArray<T>::emplace_back(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
-  ensure_capacity(size_ + 1);
+  if (size_ == capacity_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this array (e.g. push_back(v[0])): materialize the value first, then
+    // grow and re-enter through the non-growing path below.
+    T value(std::forward<Args>(args)...);
+    ensure_capacity(size_ + 1);
+    return emplace_back(std::move(value));
+  }
 
   T* element_ptr = data_.get() + size_;
   std::construct_at(element_ptr, std::forward<Args>(args)...);
@@ -169,14 +176,16 @@ auto DynamicArray<T>::emplace(size_t index, Args&&... args) -> T& requires Inser
     return emplace_back(std::forward<Args>(args)...);
   }
 
+  // Construct the value before growing: construction may throw (leaving the
+  // array untouched), and args may alias an element that reallocation would
+  // invalidate.
+  T value(std::forward<Args>(args)...);
+
   // Ensure enough capacity.
   ensure_capacity(size_ + 1);
 
   // Shift elements right to make space.
   T* data_ptr = data_.get();
-
-  // Construct value first so no mutation happens if construction throws.
-  T value(std::forward<Args>(args)...);
 
   // Create one uninitialized slot at the end by move/copy-constructing the last element.
   std::construct_at(data_ptr + size_, std::move_if_noexcept(data_ptr[size_ - 1]));
@@ -492,6 +501,10 @@ template <ArrayElement T>
 auto DynamicArray<T>::allocate(size_t capacity) -> storage_ptr {
   if (capacity > max_elements()) {
     throw ArrayOverflowException("DynamicArray capacity overflow");
+  }
+  if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+    // Over-aligned element types need the aligned operator new[] overload.
+    return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T), std::align_val_t{alignof(T)})), &deallocate);
   }
   return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }

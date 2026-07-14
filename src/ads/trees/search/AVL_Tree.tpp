@@ -120,7 +120,7 @@ template <OrderedTreeElement T>
 auto AVLTree<T>::insert(const T& value) -> bool requires std::copy_constructible<T>
 {
   bool inserted = false;
-  root_         = insert_helper(std::move(root_), value, inserted);
+  insert_helper(root_, value, inserted);
   if (inserted) {
     ++size_;
   }
@@ -130,7 +130,7 @@ auto AVLTree<T>::insert(const T& value) -> bool requires std::copy_constructible
 template <OrderedTreeElement T>
 auto AVLTree<T>::insert(T&& value) -> bool {
   bool inserted = false;
-  root_         = insert_helper(std::move(root_), std::move(value), inserted);
+  insert_helper(root_, std::move(value), inserted);
   if (inserted) {
     ++size_;
   }
@@ -148,7 +148,7 @@ auto AVLTree<T>::emplace(Args&&... args) -> bool {
 template <OrderedTreeElement T>
 auto AVLTree<T>::remove(const T& value) -> bool {
   bool removed = false;
-  root_        = remove_helper(std::move(root_), value, removed);
+  remove_helper(root_, value, removed);
   if (removed) {
     --size_;
   }
@@ -477,68 +477,78 @@ auto AVLTree<T>::validate_helper(const Node* node, const T* lower_bound, const T
 
 template <OrderedTreeElement T>
 template <typename U>
-auto AVLTree<T>::insert_helper(std::unique_ptr<Node> node, U&& value, bool& inserted) -> std::unique_ptr<Node> {
-  // Base case: create new node.
+auto AVLTree<T>::insert_helper(std::unique_ptr<Node>& node, U&& value, bool& inserted) -> void {
+  // Base case: create new node. Allocation happens while every subtree is
+  // still owned by its tree link, so a throw leaves the tree untouched.
   if (!node) {
+    node     = std::make_unique<Node>(std::forward<U>(value));
     inserted = true;
-    return std::make_unique<Node>(std::forward<U>(value));
+    return;
   }
 
-  // Recursive BST insertion.
+  // Recursive BST insertion through the owning link.
   if (value < node->data) {
-    node->left = insert_helper(std::move(node->left), std::forward<U>(value), inserted);
+    insert_helper(node->left, std::forward<U>(value), inserted);
   } else if (node->data < value) {
-    node->right = insert_helper(std::move(node->right), std::forward<U>(value), inserted);
+    insert_helper(node->right, std::forward<U>(value), inserted);
   } else {
     // Duplicate value, don't insert.
     inserted = false;
-    return node;
+    return;
   }
 
-  // Balance the node after insertion.
-  return balance(std::move(node));
+  // Balance only the path that actually changed; balance() performs pure
+  // pointer/height operations and cannot throw.
+  if (inserted) {
+    node = balance(std::move(node));
+  }
 }
 
 template <OrderedTreeElement T>
-auto AVLTree<T>::remove_helper(std::unique_ptr<Node> node, const T& value, bool& removed) -> std::unique_ptr<Node> {
+auto AVLTree<T>::remove_helper(std::unique_ptr<Node>& node, const T& value, bool& removed) -> void {
   // Base case: value not found.
   if (!node) {
     removed = false;
-    return nullptr;
+    return;
   }
 
-  // Recursive search for node to remove.
+  // Recursive search through the owning link; comparisons run while the tree
+  // is fully owned by its links, so a throwing comparator cannot lose nodes.
   if (value < node->data) {
-    node->left = remove_helper(std::move(node->left), value, removed);
+    remove_helper(node->left, value, removed);
   } else if (node->data < value) {
-    node->right = remove_helper(std::move(node->right), value, removed);
+    remove_helper(node->right, value, removed);
   } else {
-    // Found the node to remove.
+    // Found the node to remove. Everything below is non-throwing pointer work.
     removed = true;
 
     // Case 1: Node with only right child or no children.
     if (!node->left) {
-      return std::move(node->right);
+      node = std::move(node->right);
+      return;
     }
 
     // Case 2: Node with only left child.
     if (!node->right) {
-      return std::move(node->left);
+      node = std::move(node->left);
+      return;
     }
 
     // Case 3: Node with two children.
     // Find the in-order successor (minimum in right subtree).
     auto successor = detach_min(node->right);
 
-    // Replace node's data with successor's data.
+    // Splice the successor into the removed node's position.
     successor->left  = std::move(node->left);
     successor->right = std::move(node->right);
 
     node = std::move(successor);
   }
 
-  // Balance the node after removal.
-  return balance(std::move(node));
+  // Balance only the path that actually changed.
+  if (removed) {
+    node = balance(std::move(node));
+  }
 }
 
 template <OrderedTreeElement T>

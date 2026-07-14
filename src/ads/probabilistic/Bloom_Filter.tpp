@@ -22,11 +22,11 @@ namespace ads::probabilistic {
 
 template <typename Key, typename Hash>
 BloomFilter<Key, Hash>::BloomFilter(size_t bit_count, size_t hash_count, Hash hasher) :
-    bits_(bit_count, false),
     hash_count_(hash_count),
     insert_count_(0),
     set_bit_count_(0),
-    hasher_(std::move(hasher)) {
+    hasher_(std::move(hasher)),
+    bits_(bit_count, false) {
   if (bit_count == 0) {
     throw BloomFilterException("Bloom filter bit_count must be greater than zero");
   }
@@ -56,6 +56,10 @@ auto BloomFilter<Key, Hash>::from_estimates(size_t expected_insertions, double f
 
 template <typename Key, typename Hash>
 auto BloomFilter<Key, Hash>::insert(const Key& key) -> void {
+  if (bits_.is_empty()) {
+    throw BloomFilterException("BloomFilter cannot insert into a moved-from filter");
+  }
+
   for (size_t probe_number = 0; probe_number < hash_count_; ++probe_number) {
     const size_t index = probe_index(key, probe_number);
     if (!bits_[index]) {
@@ -68,6 +72,10 @@ auto BloomFilter<Key, Hash>::insert(const Key& key) -> void {
 
 template <typename Key, typename Hash>
 auto BloomFilter<Key, Hash>::might_contain(const Key& key) const -> bool {
+  if (bits_.is_empty()) {
+    return false; // moved-from filter: no bits to probe
+  }
+
   for (size_t probe_number = 0; probe_number < hash_count_; ++probe_number) {
     if (!bits_[probe_index(key, probe_number)]) {
       return false;

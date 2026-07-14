@@ -84,7 +84,12 @@ public:
    * @brief Destructor (automatic cleanup via unique_ptr).
    * @complexity Time O(n), Space O(1)
    */
-  ~Trie() = default;
+  /**
+   * @brief Destructor. Tears the trie down iteratively.
+   * @details Falls back to the recursive unique_ptr cascade only if the
+   *          iterative teardown cannot allocate its work stack.
+   */
+  ~Trie();
 
   /**
    * @brief Move assignment operator.

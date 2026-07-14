@@ -42,19 +42,9 @@ StaticArray<T, N>::StaticArray(const T& value) requires StaticCopyArrayElement<T
   std::ranges::fill(data_, value);
 }
 
-template <ArrayElement T, size_t N>
-requires ValidStaticArrayExtent<N>
-StaticArray<T, N>::StaticArray(const StaticArray& other) requires StaticCopyArrayElement<T>
-{
-  std::ranges::copy(other.data_, data_);
-}
-
-template <ArrayElement T, size_t N>
-requires ValidStaticArrayExtent<N>
-StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) requires StaticMoveArrayElement<T>
-{
-  std::ranges::move(other.data_, data_);
-}
+// Copy and move constructors are defaulted in the class definition: the
+// implicit elementwise construction is both faster (no default-init pass)
+// and exception-correct.
 
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>

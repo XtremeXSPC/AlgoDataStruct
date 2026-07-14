@@ -111,7 +111,8 @@ public:
    * @param element The element to find.
    * @return The root representative index.
    * @throws DisjointSetException if element is out of range.
-   * @complexity Amortized inverse Ackermann (no compression).
+   * @complexity O(log n) worst case: without path compression only the
+   *             union-by-rank bound applies.
    */
   [[nodiscard]] auto find(Element element) const -> Element;
 

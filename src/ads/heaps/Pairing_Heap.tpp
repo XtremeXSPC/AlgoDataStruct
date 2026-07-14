@@ -187,24 +187,22 @@ auto PairingHeap<T, Compare>::size() const noexcept -> size_type {
 
 template <HeapValue T, typename Compare>
 auto PairingHeap<T, Compare>::clear() noexcept -> void {
-  // Iterative teardown: a pairing tree can have O(n)-long child or sibling
-  // chains (e.g. after n inserts the root has n children), so a recursive
-  // unique_ptr cascade could overflow the stack. Move every node onto an
-  // explicit work list instead.
-  std::vector<NodePtr> pending;
-  if (root_) {
-    pending.push_back(std::move(root_));
-  }
-  while (!pending.empty()) {
-    NodePtr node = std::move(pending.back());
-    pending.pop_back();
+  // Iterative, allocation-free teardown: a pairing tree can have O(n)-long
+  // child or sibling chains (e.g. after n inserts the root has n children),
+  // so a recursive unique_ptr cascade could overflow the stack. Treating
+  // (child, sibling) as (left, right) of a binary tree, repeatedly rotate so
+  // the node about to be dropped has no child; this needs no work list, so a
+  // noexcept clear() cannot abort on allocation failure.
+  NodePtr node = std::move(root_);
+  while (node) {
     if (node->child) {
-      pending.push_back(std::move(node->child));
+      NodePtr child  = std::move(node->child);
+      node->child    = std::move(child->sibling);
+      child->sibling = std::move(node);
+      node           = std::move(child);
+    } else {
+      node = std::move(node->sibling);
     }
-    if (node->sibling) {
-      pending.push_back(std::move(node->sibling));
-    }
-    // 'node' dies here with both owning links already moved out.
   }
   size_ = 0;
 }
@@ -239,8 +237,21 @@ auto PairingHeap<T, Compare>::combine_siblings(NodePtr first, const Compare& com
     return nullptr;
   }
 
-  // Detach the sibling list into a buffer, clearing the transient links.
+  // Count the siblings and reserve both buffers BEFORE detaching anything:
+  // if an allocation fails here, the sibling list is still owned by 'first'
+  // and no subtree can be destroyed. Past this point every buffer operation
+  // stays within capacity and meld() is pure pointer work, so nothing throws.
+  std::size_t sibling_count = 0;
+  for (const Node* cur = first.get(); cur != nullptr; cur = cur->sibling.get()) {
+    ++sibling_count;
+  }
+
   std::vector<NodePtr> subtrees;
+  subtrees.reserve(sibling_count);
+  std::vector<NodePtr> paired;
+  paired.reserve((sibling_count + 1) / 2);
+
+  // Detach the sibling list into a buffer, clearing the transient links.
   for (NodePtr node = std::move(first); node;) {
     NodePtr next  = std::move(node->sibling);
     node->prev    = nullptr;
@@ -250,8 +261,6 @@ auto PairingHeap<T, Compare>::combine_siblings(NodePtr first, const Compare& com
   }
 
   // First pass: meld neighbours left to right.
-  std::vector<NodePtr> paired;
-  paired.reserve((subtrees.size() + 1) / 2);
   for (std::size_t i = 0; i + 1 < subtrees.size(); i += 2) {
     paired.push_back(meld(std::move(subtrees[i]), std::move(subtrees[i + 1]), comp));
   }

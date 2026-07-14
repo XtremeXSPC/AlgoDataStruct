@@ -54,6 +54,17 @@ auto Trie<UseMap>::operator=(Trie&& other) noexcept -> Trie& {
   return *this;
 }
 
+template <bool UseMap>
+Trie<UseMap>::~Trie() {
+  try {
+    clear(); // iterative teardown; see clear()
+  } catch (...) {
+    // The work stack could not be allocated: fall back to the recursive
+    // cascade rather than aborting (only reachable under memory exhaustion).
+    root_.reset();
+  }
+}
+
 //===----- INSERTION OPERATIONS ------------------------------------------------===//
 
 template <bool UseMap>
@@ -83,6 +94,28 @@ void Trie<UseMap>::insert(const std::string& word) {
 
 template <bool UseMap>
 void Trie<UseMap>::clear() {
+  // Iterative teardown: trie depth equals the longest stored word, so letting
+  // the unique_ptr cascade recurse could overflow the stack on pathological
+  // input. Every node is moved onto an explicit work stack and dies as a leaf.
+  if (root_) {
+    ads::stacks::ArrayStack<std::unique_ptr<TrieNode>> pending;
+    pending.push(std::move(root_));
+    while (!pending.is_empty()) {
+      std::unique_ptr<TrieNode> node = std::move(pending.top());
+      pending.pop();
+      if constexpr (UseMap) {
+        for (size_t i = 0; i < node->children.size(); ++i) {
+          pending.push(std::move(node->children[i].child));
+        }
+      } else {
+        for (auto& child : node->children) {
+          if (child) {
+            pending.push(std::move(child));
+          }
+        }
+      }
+    }
+  }
   root_       = std::make_unique<TrieNode>();
   word_count_ = 0;
 }
@@ -303,8 +336,12 @@ auto Trie<UseMap>::get_child(const TrieNode* node, char c) const -> const TrieNo
     }
     return nullptr;
   } else {
-    int idx = char_to_index(c);
-    return node->children[idx].get();
+    // Lookups treat characters outside a-z as "not stored" instead of
+    // throwing: only insertions reject them (see char_to_index).
+    if (c < 'a' || c > 'z') {
+      return nullptr;
+    }
+    return node->children[static_cast<size_t>(c - 'a')].get();
   }
 }
 
@@ -322,8 +359,12 @@ auto Trie<UseMap>::get_child(TrieNode* node, char c) -> TrieNode* {
     }
     return nullptr;
   } else {
-    int idx = char_to_index(c);
-    return node->children[idx].get();
+    // Lookups treat characters outside a-z as "not stored" instead of
+    // throwing: only insertions reject them (see char_to_index).
+    if (c < 'a' || c > 'z') {
+      return nullptr;
+    }
+    return node->children[static_cast<size_t>(c - 'a')].get();
   }
 }
 

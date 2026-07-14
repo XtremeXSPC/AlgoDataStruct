@@ -14,6 +14,7 @@
 #pragma once
 #include "../../../include/ads/heaps/Fibonacci_Heap.hpp"
 
+#include <bit>
 #include <string>
 #include <vector>
 
@@ -135,8 +136,21 @@ auto FibonacciHeap<T, Compare>::extract_top() -> T {
   if (z == next) {
     top_ = nullptr; // z was the only node
   } else {
-    top_ = next; // provisional; consolidate finds the real top
-    consolidate();
+    // Establish the true extremum before consolidating so a failed
+    // consolidation below still leaves top_ pointing at the real top.
+    top_ = next;
+    for (Node* cur = next->right; cur != next; cur = cur->right) {
+      if (comp_(top_->value, cur->value)) {
+        top_ = cur;
+      }
+    }
+    try {
+      consolidate();
+    } catch (...) {
+      // Consolidation only compacts the root list; the forest is already a
+      // valid heap with a correct top_, so treat an allocation failure here
+      // like the shrink optimizations elsewhere and keep the wider root list.
+    }
   }
   arena_free(z);
   --size_;
@@ -310,17 +324,30 @@ auto FibonacciHeap<T, Compare>::link_child(Node* child, Node* parent) noexcept -
 
 template <HeapValue T, typename Compare>
 auto FibonacciHeap<T, Compare>::consolidate() -> void {
+  // Count the roots and reserve both scratch buffers BEFORE any relinking:
+  // once linking starts, the circular lists are being rewritten and a throw
+  // would leave them corrupted. After these reserves every buffer operation
+  // stays within capacity, so the linking loop below cannot throw.
+  std::size_t root_count = 1;
+  for (Node* cur = top_->right; cur != top_; cur = cur->right) {
+    ++root_count;
+  }
+
+  std::vector<Node*> roots;
+  roots.reserve(root_count);
+  std::vector<Node*> by_degree; // by_degree[d] == the single surviving root of degree d
+  // Trees of a Fibonacci heap with n nodes have degree <= log_phi(n) < 1.5*log2(n).
+  by_degree.reserve(2 * static_cast<std::size_t>(std::bit_width(size_)) + 4U);
+
   // Collect the current roots up front: linking rewrites the root list, so we
   // must not walk it live.
-  std::vector<Node*> roots;
-  Node*              start = top_;
-  Node*              w     = start;
+  Node* start = top_;
+  Node* w     = start;
   do {
     roots.push_back(w);
     w = w->right;
   } while (w != start);
 
-  std::vector<Node*> by_degree; // by_degree[d] == the single surviving root of degree d
   for (Node* root : roots) {
     Node* x = root;
     auto  d = static_cast<std::size_t>(x->degree);

@@ -203,12 +203,13 @@ public:
   auto reserve(size_t capacity) -> void;
 
   /**
-   * @brief Extracts all elements in sorted order.
+   * @brief Extracts all elements in sorted order, emptying the queue.
+   * @details Named for its destructive semantics: the previous name
+   *          (extract_sorted) read like a const query while draining the heap.
    * @return Vector of elements in sorted order.
    * @complexity Time O(n log n), Space O(n)
-   * @note This operation empties the queue.
    */
-  auto sorted_elements() -> std::vector<T>;
+  auto extract_sorted() -> std::vector<T>;
 
 private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//

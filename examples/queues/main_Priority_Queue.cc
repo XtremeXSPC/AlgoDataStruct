@@ -219,7 +219,7 @@ auto demo_priority_queue_sorted_elements() -> void {
   cout << "Original queue size: " << pq.size() << '\n';
   cout << "Extracting all elements in sorted order:\n";
 
-  auto sorted = pq.sorted_elements();
+  auto sorted = pq.extract_sorted();
 
   cout << "Sorted (descending): ";
   for (int val : sorted) {
@@ -338,7 +338,7 @@ auto demo_top_k_elements() -> void {
   }
 
   cout << "Top " << k << " largest elements (ascending order):\n";
-  auto result = min_heap.sorted_elements();
+  auto result = min_heap.extract_sorted();
   for (int val : result) {
     cout << val << ' ';
   }

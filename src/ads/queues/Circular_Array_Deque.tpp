@@ -68,7 +68,13 @@ auto CircularArrayDeque<T>::operator=(CircularArrayDeque&& other) noexcept -> Ci
 template <QueueValue T>
 template <typename... Args>
 auto CircularArrayDeque<T>::emplace_front(Args&&... args) -> T& {
-  ensure_capacity(size_ + 1);
+  if (size_ == capacity_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this deque (e.g. push_front(dq[0])): materialize the value first.
+    T value(std::forward<Args>(args)...);
+    ensure_capacity(size_ + 1);
+    return emplace_front(std::move(value));
+  }
 
   const size_t new_front   = prev_index(front_);
   T*           element_ptr = data_.get() + new_front;
@@ -82,7 +88,13 @@ auto CircularArrayDeque<T>::emplace_front(Args&&... args) -> T& {
 template <QueueValue T>
 template <typename... Args>
 auto CircularArrayDeque<T>::emplace_back(Args&&... args) -> T& {
-  ensure_capacity(size_ + 1);
+  if (size_ == capacity_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this deque (e.g. push_back(dq[0])): materialize the value first.
+    T value(std::forward<Args>(args)...);
+    ensure_capacity(size_ + 1);
+    return emplace_back(std::move(value));
+  }
 
   // Calculate the index for the new back element.
   const size_t insert_index = index_from_front(size_);
@@ -135,7 +147,8 @@ auto CircularArrayDeque<T>::pop_front() -> void {
     const size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
       reallocate(new_capacity);
-    } catch (const std::bad_alloc&) {
+    } catch (...) {
+      // Shrinking is an optimization - keep current storage on failures.
     }
   }
 }
@@ -161,7 +174,8 @@ auto CircularArrayDeque<T>::pop_back() -> void {
     const size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
       reallocate(new_capacity);
-    } catch (const std::bad_alloc&) {
+    } catch (...) {
+      // Shrinking is an optimization - keep current storage on failures.
     }
   }
 }
@@ -332,6 +346,10 @@ template <QueueValue T>
 auto CircularArrayDeque<T>::allocate(size_t capacity) -> storage_ptr {
   if (capacity > max_elements()) {
     throw QueueOverflowException("Deque capacity overflow");
+  }
+  if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+    // Over-aligned element types need the aligned operator new[] overload.
+    return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T), std::align_val_t{alignof(T)})), &deallocate);
   }
   return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }

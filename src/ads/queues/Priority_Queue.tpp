@@ -140,7 +140,7 @@ auto PriorityQueue<T, Compare>::reserve(size_t capacity) -> void {
 }
 
 template <QueueValue T, typename Compare>
-auto PriorityQueue<T, Compare>::sorted_elements() -> std::vector<T> {
+auto PriorityQueue<T, Compare>::extract_sorted() -> std::vector<T> {
   std::vector<T> result;
   result.reserve(heap_.size());
 

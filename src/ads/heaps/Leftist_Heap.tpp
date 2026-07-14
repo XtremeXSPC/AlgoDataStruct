@@ -122,6 +122,9 @@ auto LeftistHeap<T, Compare>::merge(LeftistHeap&& other) -> void {
   if (this == &other) {
     return; // self-merge is a no-op
   }
+  if (!detail::compatible_comparators(comp_, other.comp_)) {
+    throw HeapException("LeftistHeap::merge: incompatible comparator objects");
+  }
   root_ = merge_nodes(std::move(root_), std::move(other.root_), comp_);
   size_ += other.size_;
   other.size_ = 0;

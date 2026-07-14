@@ -303,12 +303,12 @@ void DoublyLinkedList<T>::clear() noexcept {
 }
 
 template <ListElement T>
-auto DoublyLinkedList<T>::insert(iterator pos, const T& value) {
+auto DoublyLinkedList<T>::insert(iterator pos, const T& value) -> iterator {
   return insert(pos, T(value)); // Calls the T&& version.
 }
 
 template <ListElement T>
-auto DoublyLinkedList<T>::insert(iterator pos, T&& value) requires MoveListElement<T>
+auto DoublyLinkedList<T>::insert(iterator pos, T&& value) -> iterator requires MoveListElement<T>
 {
   // Edge cases: insertion at head or tail.
   if (pos == begin()) {
@@ -341,7 +341,7 @@ auto DoublyLinkedList<T>::insert(iterator pos, T&& value) requires MoveListEleme
 }
 
 template <ListElement T>
-auto DoublyLinkedList<T>::erase(iterator pos) {
+auto DoublyLinkedList<T>::erase(iterator pos) -> iterator {
   if (pos == end() || is_empty()) {
     throw ListException("cannot erase an invalid or end iterator");
   }

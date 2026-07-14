@@ -407,6 +407,14 @@ private:
   [[nodiscard]] auto probe(const Key& key, size_t i) const -> size_t;
 
   /**
+   * @brief Probe step from precomputed hashes (h1, and h2 for double hashing).
+   * @details Lookups hoist hash1/hash2 out of the probe loop: recomputing them
+   *          per step made every probe pay the hash (and, for double hashing,
+   *          the gcd loop) again.
+   */
+  [[nodiscard]] auto probe_step(size_t h1, size_t h2, size_t i, size_t capacity) const noexcept -> size_t;
+
+  /**
    * @brief Computes probe sequence index for an explicit table size.
    * @param key The key being probed.
    * @param i Probe attempt number.
@@ -489,6 +497,13 @@ private:
    * @complexity Time O(n) in the worst case due to rehashing.
    */
   void check_and_rehash();
+
+  /**
+   * @brief Returns true if inserting one more entry would trigger a rehash.
+   * @details Insert paths use this to detach key/value arguments that may alias
+   *          storage inside this table before the rehash destroys it.
+   */
+  [[nodiscard]] auto needs_growth_for_insert() const noexcept -> bool;
 
   /**
    * @brief Rehashes before a new insertion would exceed the occupied load factor.

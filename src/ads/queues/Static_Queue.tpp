@@ -28,9 +28,17 @@ template <QueueValue T, size_t N>
 requires(N > 0)
 StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept(std::is_nothrow_move_constructible_v<T>) : front_(0), size_(0) {
   // Move elements in logical (FIFO) order; the new front is linearized to index 0.
-  for (size_t i = 0; i < other.size_; ++i) {
-    std::construct_at(data() + i, std::move(other.data()[other.physical(i)]));
-    ++size_;
+  // A throwing element move never runs this object's destructor: roll back
+  // the prefix constructed so far by hand. `other` keeps its remaining
+  // elements (basic guarantee).
+  try {
+    for (size_t i = 0; i < other.size_; ++i) {
+      std::construct_at(data() + i, std::move(other.data()[other.physical(i)]));
+      ++size_;
+    }
+  } catch (...) {
+    clear();
+    throw;
   }
   other.clear();
 }
@@ -46,9 +54,17 @@ requires(N > 0)
 auto StaticQueue<T, N>::operator=(StaticQueue&& other) noexcept(std::is_nothrow_move_constructible_v<T>) -> StaticQueue& {
   if (this != &other) {
     clear();
-    for (size_t i = 0; i < other.size_; ++i) {
-      std::construct_at(data() + i, std::move(other.data()[other.physical(i)]));
-      ++size_;
+  // A throwing element move never runs this object's destructor: roll back
+  // the prefix constructed so far by hand. `other` keeps its remaining
+  // elements (basic guarantee).
+    try {
+      for (size_t i = 0; i < other.size_; ++i) {
+        std::construct_at(data() + i, std::move(other.data()[other.physical(i)]));
+        ++size_;
+      }
+    } catch (...) {
+      clear();
+      throw;
     }
     other.clear();
   }

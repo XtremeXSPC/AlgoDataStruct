@@ -309,6 +309,10 @@ auto HashMap<Key, Value, Hash>::load_factor() const noexcept -> float {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find(const Key& key) -> iterator {
+  if (table_.capacity_ == 0) {
+    return end(); // moved-from map: nothing stored, nothing to hash into
+  }
+
   size_type bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 
@@ -323,6 +327,10 @@ auto HashMap<Key, Value, Hash>::find(const Key& key) -> iterator {
 
 template <typename Key, typename Value, typename Hash>
 auto HashMap<Key, Value, Hash>::find(const Key& key) const -> const_iterator {
+  if (table_.capacity_ == 0) {
+    return end(); // moved-from map: nothing stored, nothing to hash into
+  }
+
   size_type bucket_idx = table_.hash(key);
   auto&  bucket     = table_.buckets_[bucket_idx];
 

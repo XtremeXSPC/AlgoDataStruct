@@ -103,19 +103,41 @@ public:
   SparseMatrix(size_type row_count, size_type column_count, InputIt first, InputIt last) requires MatrixEntryRange<InputIt, Entry>;
 
   /**
-   * @brief Move constructor.
+   * @brief Move constructor. Leaves @p other as a valid empty 0x0 matrix.
+   * @details User-defined (not defaulted) so the source's cached shape is
+   *          zeroed together with its emptied CSR arrays; a defaulted move
+   *          would leave a stale row/column count next to empty arrays.
    * @param other Matrix to move from.
    * @complexity Time O(1), Space O(1)
    */
-  SparseMatrix(SparseMatrix&& other) noexcept = default;
+  SparseMatrix(SparseMatrix&& other) noexcept :
+      row_count_(other.row_count_),
+      column_count_(other.column_count_),
+      row_offsets_(std::move(other.row_offsets_)),
+      column_indices_(std::move(other.column_indices_)),
+      values_(std::move(other.values_)) {
+    other.row_count_    = 0;
+    other.column_count_ = 0;
+  }
 
   /**
-   * @brief Move assignment operator.
+   * @brief Move assignment operator. Leaves @p other as a valid empty 0x0 matrix.
    * @param other Matrix to move from.
    * @return Reference to this matrix.
    * @complexity Time O(1), Space O(1)
    */
-  auto operator=(SparseMatrix&& other) noexcept -> SparseMatrix& = default;
+  auto operator=(SparseMatrix&& other) noexcept -> SparseMatrix& {
+    if (this != &other) {
+      row_count_          = other.row_count_;
+      column_count_       = other.column_count_;
+      row_offsets_        = std::move(other.row_offsets_);
+      column_indices_     = std::move(other.column_indices_);
+      values_             = std::move(other.values_);
+      other.row_count_    = 0;
+      other.column_count_ = 0;
+    }
+    return *this;
+  }
 
   /**
    * @brief Destructor.

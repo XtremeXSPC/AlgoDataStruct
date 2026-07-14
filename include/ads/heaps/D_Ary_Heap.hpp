@@ -63,9 +63,9 @@ namespace ads::heaps {
  *          the comparator's move guarantees.
  *
  *          For a node at index 'i':
- *          - Parent at '(i - 1) / d'
- *          - First child at 'd * i + 1'
- *          - Last child at 'd * i + d'
+ *            - Parent at '(i - 1) / d'
+ *            - First child at 'd * i + 1'
+ *            - Last child at 'd * i + d'
  *
  * @tparam T The element type.
  * @tparam Compare Comparator defining priority order.

@@ -81,18 +81,18 @@ public:
   explicit StaticArray(const T& value) requires StaticCopyArrayElement<T>;
 
   /**
-   * @brief Copy constructor.
-   * @param other The array to copy from.
+   * @brief Copy constructor. Copy-constructs each element directly.
+   * @details Defaulted: the implicit elementwise copy avoids the extra
+   *          default-construct-then-assign pass a user-provided body would need.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(const StaticArray& other) requires StaticCopyArrayElement<T>;
+  StaticArray(const StaticArray&) requires StaticCopyArrayElement<T> = default;
 
   /**
-   * @brief Move constructor.
-   * @param other The array to move from.
+   * @brief Move constructor. Move-constructs each element directly.
    * @complexity Time O(N), Space O(1)
    */
-  StaticArray(StaticArray&& other) noexcept(std::is_nothrow_assignable_v<T&, T>) requires StaticMoveArrayElement<T>;
+  StaticArray(StaticArray&&) requires StaticMoveArrayElement<T> = default;
 
   /**
    * @brief Destructor. Destroys all elements.

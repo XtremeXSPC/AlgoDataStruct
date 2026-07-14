@@ -42,6 +42,11 @@ using ads::support::ContainerFacade;
  *          ArrayView only views contiguous storage; it cannot view a CircularArray.
  *
  * @tparam T The (possibly const-qualified) element type being viewed.
+ *
+ * @note operator== (from ContainerFacade) compares the viewed ELEMENTS,
+ *       not the identity of the underlying storage - two views over
+ *       different buffers with equal contents compare equal (std::span,
+ *       by contrast, has no operator==).
  */
 template <typename T>
 class ArrayView : public ContainerFacade<ArrayView<T>> {

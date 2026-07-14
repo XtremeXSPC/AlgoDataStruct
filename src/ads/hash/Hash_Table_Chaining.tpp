@@ -90,6 +90,8 @@ template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::insert(const Key& key, const Value& value) -> bool requires CopyHashEntry<Key, Value>
 {
+  ensure_initialized(); // a moved-from table has no buckets to hash into
+
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -99,9 +101,16 @@ auto HashTableChaining<Key, Value, Hash>::insert(const Key& key, const Value& va
     return false;
   }
 
-  ensure_capacity_for_insert();
-  bucket_idx = hash(key);
-  buckets_[bucket_idx].emplace_back(key, value);
+  if (needs_growth_for_insert()) {
+    // Rehashing destroys the old buckets: detach key/value from any storage
+    // they may alias inside this table before growing.
+    Key   detached_key(key);
+    Value detached_value(value);
+    ensure_capacity_for_insert();
+    buckets_[hash(detached_key)].emplace_back(std::move(detached_key), std::move(detached_value));
+  } else {
+    buckets_[bucket_idx].emplace_back(key, value);
+  }
   ++size_;
   return true;
 }
@@ -110,6 +119,8 @@ template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::insert(const Key& key, Value&& value) -> bool requires CopyKeyMoveHashEntry<Key, Value>
 {
+  ensure_initialized(); // a moved-from table has no buckets to hash into
+
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -119,9 +130,16 @@ auto HashTableChaining<Key, Value, Hash>::insert(const Key& key, Value&& value) 
     return false;
   }
 
-  ensure_capacity_for_insert();
-  bucket_idx = hash(key);
-  buckets_[bucket_idx].emplace_back(key, std::move(value));
+  if (needs_growth_for_insert()) {
+    // Rehashing destroys the old buckets: detach key/value from any storage
+    // they may alias inside this table before growing.
+    Key   detached_key(key);
+    Value detached_value(std::move(value));
+    ensure_capacity_for_insert();
+    buckets_[hash(detached_key)].emplace_back(std::move(detached_key), std::move(detached_value));
+  } else {
+    buckets_[bucket_idx].emplace_back(key, std::move(value));
+  }
   ++size_;
   return true;
 }
@@ -130,6 +148,8 @@ template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::insert(Key&& key, Value&& value) -> bool requires MoveHashEntry<Key, Value>
 {
+  ensure_initialized(); // a moved-from table has no buckets to hash into
+
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -139,9 +159,16 @@ auto HashTableChaining<Key, Value, Hash>::insert(Key&& key, Value&& value) -> bo
     return false;
   }
 
-  ensure_capacity_for_insert();
-  bucket_idx = hash(key);
-  buckets_[bucket_idx].emplace_back(std::move(key), std::move(value));
+  if (needs_growth_for_insert()) {
+    // Rehashing destroys the old buckets: detach key/value from any storage
+    // they may alias inside this table before growing.
+    Key   detached_key(std::move(key));
+    Value detached_value(std::move(value));
+    ensure_capacity_for_insert();
+    buckets_[hash(detached_key)].emplace_back(std::move(detached_key), std::move(detached_value));
+  } else {
+    buckets_[bucket_idx].emplace_back(std::move(key), std::move(value));
+  }
   ++size_;
   return true;
 }
@@ -152,6 +179,8 @@ template <typename... Args>
 auto HashTableChaining<Key, Value, Hash>::emplace(const Key& key, Args&&... args)
     -> Value& requires CopyHashKey<Key> && EmplaceHashValue<Value, Args...>
 {
+  ensure_initialized(); // a moved-from table has no buckets to hash into
+
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -161,8 +190,17 @@ auto HashTableChaining<Key, Value, Hash>::emplace(const Key& key, Args&&... args
     return it->second;
   }
 
-  ensure_capacity_for_insert();
-  bucket_idx  = hash(key);
+  if (needs_growth_for_insert()) {
+    // Rehashing destroys the old buckets: detach key and the constructed value
+    // from any storage they may alias inside this table before growing.
+    Key   detached_key(key);
+    Value detached_value(std::forward<Args>(args)...);
+    ensure_capacity_for_insert();
+    auto& entry = buckets_[hash(detached_key)].emplace_back(std::move(detached_key), std::move(detached_value));
+    ++size_;
+    return entry.second;
+  }
+
   auto& entry = buckets_[bucket_idx].emplace_back(key, std::forward<Args>(args)...);
   ++size_;
   return entry.second;
@@ -173,6 +211,9 @@ auto HashTableChaining<Key, Value, Hash>::emplace(const Key& key, Args&&... args
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::at(const Key& key) -> Value& {
+  if (capacity_ == 0) {
+    throw KeyNotFoundException("Key not found in hash table");
+  }
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -186,6 +227,9 @@ auto HashTableChaining<Key, Value, Hash>::at(const Key& key) -> Value& {
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::at(const Key& key) const -> const Value& {
+  if (capacity_ == 0) {
+    throw KeyNotFoundException("Key not found in hash table");
+  }
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -200,6 +244,8 @@ template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::operator[](const Key& key) -> Value& requires CopyHashKey<Key> && DefaultHashValue<Value>
 {
+  ensure_initialized(); // a moved-from table has no buckets to hash into
+
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -207,13 +253,21 @@ auto HashTableChaining<Key, Value, Hash>::operator[](const Key& key) -> Value& r
     return it->second;
   }
 
-  // Grow before insertion so the returned reference is never invalidated.
-  ensure_capacity_for_insert();
-  bucket_idx = hash(key);
-  buckets_[bucket_idx].emplace_back(key, Value{});
+  // Grow before insertion so the returned reference is never invalidated. The
+  // key is detached first because it may alias storage inside this table that
+  // the rehash would destroy.
+  if (needs_growth_for_insert()) {
+    Key detached_key(key);
+    ensure_capacity_for_insert();
+    bucket_idx  = hash(detached_key);
+    auto& entry = buckets_[bucket_idx].emplace_back(std::move(detached_key), Value{});
+    ++size_;
+    return entry.second;
+  }
+
+  auto& entry = buckets_[bucket_idx].emplace_back(key, Value{});
   ++size_;
-  it = find_in_bucket(buckets_[bucket_idx], key);
-  return it->second;
+  return entry.second;
 }
 
 //===----- SEARCH OPERATIONS ---------------------------------------------------===//
@@ -221,6 +275,9 @@ auto HashTableChaining<Key, Value, Hash>::operator[](const Key& key) -> Value& r
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::contains(const Key& key) const -> bool {
+  if (capacity_ == 0) {
+    return false; // moved-from table: nothing stored, nothing to hash into
+  }
   size_t bucket_idx = hash(key);
   return find_in_bucket(buckets_[bucket_idx], key) != buckets_[bucket_idx].end();
 }
@@ -228,6 +285,9 @@ auto HashTableChaining<Key, Value, Hash>::contains(const Key& key) const -> bool
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::find(const Key& key) -> Value* {
+  if (capacity_ == 0) {
+    return nullptr; // moved-from table: nothing stored, nothing to hash into
+  }
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -240,6 +300,9 @@ auto HashTableChaining<Key, Value, Hash>::find(const Key& key) -> Value* {
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::find(const Key& key) const -> const Value* {
+  if (capacity_ == 0) {
+    return nullptr; // moved-from table: nothing stored, nothing to hash into
+  }
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -252,6 +315,9 @@ auto HashTableChaining<Key, Value, Hash>::find(const Key& key) const -> const Va
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::count(const Key& key) const -> size_type {
+  if (capacity_ == 0) {
+    return 0; // moved-from table: nothing stored, nothing to hash into
+  }
   size_t bucket_idx = hash(key);
   return find_in_bucket(buckets_[bucket_idx], key) != buckets_[bucket_idx].end() ? 1 : 0;
 }
@@ -261,6 +327,9 @@ auto HashTableChaining<Key, Value, Hash>::count(const Key& key) const -> size_ty
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
 auto HashTableChaining<Key, Value, Hash>::erase(const Key& key) -> bool {
+  if (capacity_ == 0) {
+    return false; // moved-from table: nothing stored, nothing to hash into
+  }
   size_t bucket_idx = hash(key);
   auto   it         = find_in_bucket(buckets_[bucket_idx], key);
 
@@ -401,8 +470,22 @@ void HashTableChaining<Key, Value, Hash>::check_and_rehash() {
 
 template <CopyHashKey Key, HashValue Value, typename Hash>
 requires HashFor<Hash, Key>
+void HashTableChaining<Key, Value, Hash>::ensure_initialized() {
+  if (capacity_ == 0) {
+    rehash(kInitialCapacity);
+  }
+}
+
+template <CopyHashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
+auto HashTableChaining<Key, Value, Hash>::needs_growth_for_insert() const noexcept -> bool {
+  return capacity_ == 0 || static_cast<float>(size_ + 1) / static_cast<float>(capacity_) > max_load_factor_;
+}
+
+template <CopyHashKey Key, HashValue Value, typename Hash>
+requires HashFor<Hash, Key>
 void HashTableChaining<Key, Value, Hash>::ensure_capacity_for_insert() {
-  if (capacity_ == 0 || static_cast<float>(size_ + 1) / static_cast<float>(capacity_) > max_load_factor_) {
+  if (needs_growth_for_insert()) {
     rehash(std::max<size_t>(capacity_ * kGrowthFactor, 1));
   }
 }

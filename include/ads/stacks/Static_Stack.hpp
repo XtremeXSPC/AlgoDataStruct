@@ -177,6 +177,10 @@ private:
   //===----- PRIVATE HELPER METHODS --------------------------------------------===//
 
   /// Returns a typed pointer to the inline storage.
+  // NOTE: accessing constructed elements through this cast relies on the
+  // usual inline-storage idiom (as in std::optional/inplace_vector
+  // implementations). std::launder is deliberately NOT used: calling it when
+  // no element is alive at index 0 would itself be undefined.
   auto data() noexcept -> T* { return reinterpret_cast<T*>(storage_); }
 
   /// Returns a typed const pointer to the inline storage.

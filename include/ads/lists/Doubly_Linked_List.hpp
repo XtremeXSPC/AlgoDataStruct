@@ -35,6 +35,12 @@ namespace ads::lists {
  *          Memory management is automated via std::unique_ptr.
  *
  * @tparam T The type of data to store in the list.
+ *
+ * @note The polymorphic List<T> interface forces the copying
+ *       push_front/push_back(const T&) overloads to exist even for
+ *       move-only element types; those overloads then throw
+ *       ListException at runtime. Prefer the rvalue overloads or the
+ *       emplace functions for move-only payloads.
  */
 
 template <ListElement T>
@@ -314,7 +320,7 @@ public:
    * @complexity Time O(1), Space O(1)
    * @note Undefined behavior if pos does not belong to this list.
    */
-  auto insert(iterator pos, const T& value);
+  auto insert(iterator pos, const T& value) -> iterator;
 
   /**
    * @brief Inserts an element before the position indicated by the iterator (move version).
@@ -324,7 +330,7 @@ public:
    * @complexity Time O(1), Space O(1)
    * @note Undefined behavior if pos does not belong to this list.
    */
-  auto insert(iterator pos, T&& value) requires MoveListElement<T>;
+  auto insert(iterator pos, T&& value) -> iterator requires MoveListElement<T>;
 
   /**
    * @brief Removes the element at the given iterator position.
@@ -334,7 +340,7 @@ public:
    * @complexity Time O(1), Space O(1)
    * @note Undefined behavior if pos does not belong to this list.
    */
-  auto erase(iterator pos);
+  auto erase(iterator pos) -> iterator;
 
   /**
    * @brief Reverses the order of elements in the list.

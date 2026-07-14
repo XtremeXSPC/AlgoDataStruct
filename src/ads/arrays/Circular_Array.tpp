@@ -93,7 +93,13 @@ template <ArrayElement T>
 template <typename... Args>
 auto CircularArray<T>::emplace_front(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
-  ensure_capacity(size_ + 1);
+  if (size_ == capacity_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this array (e.g. push_front(arr[0])): materialize the value first.
+    T value(std::forward<Args>(args)...);
+    ensure_capacity(size_ + 1);
+    return emplace_front(std::move(value));
+  }
 
   const size_t new_head = (head_ + capacity_ - 1) % capacity_;
   T*           ptr      = data_.get() + new_head;
@@ -120,7 +126,13 @@ template <ArrayElement T>
 template <typename... Args>
 auto CircularArray<T>::emplace_back(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
-  ensure_capacity(size_ + 1);
+  if (size_ == capacity_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this array (e.g. push_back(arr[0])): materialize the value first.
+    T value(std::forward<Args>(args)...);
+    ensure_capacity(size_ + 1);
+    return emplace_back(std::move(value));
+  }
 
   size_t physical_index = to_physical_index(size_);
   T*     ptr            = data_.get() + physical_index;
@@ -304,6 +316,10 @@ template <ArrayElement T>
 auto CircularArray<T>::allocate(size_t capacity) -> storage_ptr {
   if (capacity > max_elements()) {
     throw ArrayOverflowException("CircularArray capacity overflow");
+  }
+  if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+    // Over-aligned element types need the aligned operator new[] overload.
+    return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T), std::align_val_t{alignof(T)})), &deallocate);
   }
   return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }

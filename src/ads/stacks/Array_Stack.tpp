@@ -58,7 +58,11 @@ template <StackValue T>
 template <typename... Args>
 auto ArrayStack<T>::emplace(Args&&... args) -> T& {
   if (size_ == capacity_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this stack (e.g. push(st.top())): materialize the value first.
+    T value(std::forward<Args>(args)...);
     grow();
+    return emplace(std::move(value));
   }
 
   T* top_ptr = data_.get() + size_;
@@ -70,7 +74,12 @@ auto ArrayStack<T>::emplace(Args&&... args) -> T& {
 
 template <StackValue T>
 void ArrayStack<T>::push(const T& value) {
-  emplace(value);
+  if constexpr (CopyStackValue<T>) {
+    emplace(value);
+  } else {
+    // Keep the polymorphic Stack<T> interface instantiable for move-only payloads.
+    throw StackException("push copy requires copy-constructible values");
+  }
 }
 
 template <StackValue T>
@@ -96,10 +105,9 @@ void ArrayStack<T>::pop() {
     size_t new_capacity = std::max(capacity_ / 2, kMinCapacity);
     try {
       reallocate(new_capacity);
-    } catch (const std::bad_alloc&) {
-      // If reallocation fails, continue with current capacity.
-      // This is a non-critical optimization - the stack remains functional
-      // with the current (larger) capacity.
+    } catch (...) {
+      // Shrinking is an optimization: whatever failed (allocation or an
+      // element copy), the stack keeps its current (larger) storage.
     }
   }
 }
@@ -177,6 +185,10 @@ template <StackValue T>
 auto ArrayStack<T>::allocate(size_t capacity) -> storage_ptr {
   if (capacity > max_elements()) {
     throw StackOverflowException("Stack capacity overflow");
+  }
+  if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+    // Over-aligned element types need the aligned operator new[] overload.
+    return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T), std::align_val_t{alignof(T)})), &deallocate);
   }
   return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }

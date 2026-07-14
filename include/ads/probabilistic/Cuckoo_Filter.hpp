@@ -8,6 +8,11 @@
  *
  * @copyright MIT License 2026
  *
+ *
+ * @warning erase(key) removes one matching fingerprint: erasing a key
+ *          that was never inserted can delete another key's fingerprint
+ *          (a false negative). Only erase keys known to be present, as
+ *          with every cuckoo filter.
  */
 //===---------------------------------------------------------------------------===//
 

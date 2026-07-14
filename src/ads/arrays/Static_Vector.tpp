@@ -31,10 +31,16 @@ StaticVector<T, N>::StaticVector(std::initializer_list<T> values) requires CopyA
   if (values.size() > N) {
     throw ArrayOverflowException("StaticVector capacity exceeded");
   }
-  // Construct elements one by one; the destructor cleans up on a throwing copy.
-  for (const auto& value : values) {
-    std::construct_at(data() + size_, value);
-    ++size_;
+  // A throwing copy never runs the destructor of a partially built object:
+  // roll back the elements constructed so far by hand.
+  try {
+    for (const auto& value : values) {
+      std::construct_at(data() + size_, value);
+      ++size_;
+    }
+  } catch (...) {
+    clear();
+    throw;
   }
 }
 
@@ -45,9 +51,16 @@ StaticVector<T, N>::StaticVector(size_t count, const T& value) requires CopyArra
   if (count > N) {
     throw ArrayOverflowException("StaticVector capacity exceeded");
   }
-  for (; size_ < count;) {
-    std::construct_at(data() + size_, value);
-    ++size_;
+  // A throwing copy never runs the destructor of a partially built object:
+  // roll back the elements constructed so far by hand.
+  try {
+    for (; size_ < count;) {
+      std::construct_at(data() + size_, value);
+      ++size_;
+    }
+  } catch (...) {
+    clear();
+    throw;
   }
 }
 
@@ -56,9 +69,17 @@ requires ValidStaticArrayExtent<N>
 StaticVector<T, N>::StaticVector(StaticVector&& other) noexcept(std::is_nothrow_move_constructible_v<T>) requires MoveArrayElement<T>
     : size_(0) {
   // Inline storage cannot be stolen, so each element is moved individually.
-  for (size_t i = 0; i < other.size_; ++i) {
-    std::construct_at(data() + size_, std::move(other.data()[i]));
-    ++size_;
+  // A throwing element move never runs this object's destructor: roll back
+  // the prefix constructed so far by hand. `other` keeps its remaining
+  // elements (basic guarantee).
+  try {
+    for (size_t i = 0; i < other.size_; ++i) {
+      std::construct_at(data() + size_, std::move(other.data()[i]));
+      ++size_;
+    }
+  } catch (...) {
+    clear();
+    throw;
   }
   other.clear();
 }
@@ -76,9 +97,17 @@ auto StaticVector<T, N>::operator=(StaticVector&& other) noexcept(std::is_nothro
 {
   if (this != &other) {
     clear();
-    for (size_t i = 0; i < other.size_; ++i) {
-      std::construct_at(data() + size_, std::move(other.data()[i]));
-      ++size_;
+  // A throwing element move never runs this object's destructor: roll back
+  // the prefix constructed so far by hand. `other` keeps its remaining
+  // elements (basic guarantee).
+    try {
+      for (size_t i = 0; i < other.size_; ++i) {
+        std::construct_at(data() + size_, std::move(other.data()[i]));
+        ++size_;
+      }
+    } catch (...) {
+      clear();
+      throw;
     }
     other.clear();
   }
@@ -320,6 +349,10 @@ auto StaticVector<T, N>::back() const -> const T& {
 template <ArrayElement T, size_t N>
 requires ValidStaticArrayExtent<N>
 auto StaticVector<T, N>::data() noexcept -> T* {
+  // NOTE: accessing constructed elements through this cast relies on the
+  // usual inline-storage idiom (as in std::optional/inplace_vector
+  // implementations). std::launder is deliberately NOT used: calling it when
+  // no element is alive at index 0 would itself be undefined.
   return reinterpret_cast<T*>(storage_);
 }
 

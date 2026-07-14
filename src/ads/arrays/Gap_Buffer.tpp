@@ -91,7 +91,14 @@ template <ArrayElement T>
 template <typename... Args>
 auto GapBuffer<T>::emplace(Args&&... args) -> T& requires AppendArrayElement<T, Args...>
 {
-  ensure_gap();
+  if (gap_begin_ == gap_end_) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this buffer (e.g. insert(gb[0])): materialize the value first.
+    T value(std::forward<Args>(args)...);
+    ensure_gap();
+    return emplace(std::move(value));
+  }
+
   T* ptr = data_.get() + gap_begin_;
   std::construct_at(ptr, std::forward<Args>(args)...);
   // Publish the new element only after construction so a throwing T is harmless.
@@ -290,6 +297,10 @@ template <ArrayElement T>
 auto GapBuffer<T>::allocate(size_t capacity) -> storage_ptr {
   if (capacity > max_elements()) {
     throw ArrayOverflowException("GapBuffer capacity overflow");
+  }
+  if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+    // Over-aligned element types need the aligned operator new[] overload.
+    return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T), std::align_val_t{alignof(T)})), &deallocate);
   }
   return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }

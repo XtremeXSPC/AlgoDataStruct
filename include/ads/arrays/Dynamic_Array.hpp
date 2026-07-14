@@ -44,6 +44,12 @@ using ads::support::ContainerFacade;
  *          optimal performance.
  *
  * @tparam T The type of elements stored in the array.
+ *
+ * @warning Iterator/pointer invalidation: any growth (push_back, insert,
+ *          emplace*, resize, reserve) may reallocate, and - unlike
+ *          std::vector - pop_back() and erase() may also reallocate to
+ *          shrink underused storage. Treat every mutating call as
+ *          invalidating all iterators, references, and data() pointers.
  */
 template <ArrayElement T>
 class DynamicArray : public ContainerFacade<DynamicArray<T>> {
@@ -371,7 +377,13 @@ private:
    * @brief Releases raw storage previously obtained from allocate().
    * @param ptr Pointer to release (may be null).
    */
-  static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
+  static auto deallocate(T* ptr) noexcept -> void {
+    if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+      ::operator delete[](static_cast<void*>(ptr), std::align_val_t{alignof(T)});
+    } else {
+      ::operator delete[](static_cast<void*>(ptr));
+    }
+  }
 
   /**
    * @brief Allocates uninitialized storage for the given number of elements.

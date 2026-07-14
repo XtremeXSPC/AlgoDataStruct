@@ -65,8 +65,9 @@ struct BinomialHeapInspector;
  *          (for the default max-heap that means a larger value). The type is
  *          move-only and models the 'MeldableHeap' concept.
  *
- *          Complexity: O(log n) for 'insert' (amortized O(1)), 'extract_top',
- *          'merge', 'decrease_key', and 'erase'; O(log n) for 'top'.
+ *          Complexity: O(log n) for 'insert', 'extract_top', 'merge',
+ *          'decrease_key', and 'erase'; O(log n) for 'top'. (Insert is not
+ *          amortized O(1) here: 'union_with' rebuilds the whole root list.)
  *
  *          Exception safety: 'top'/'extract_top' on an empty heap and an invalid
  *          'decrease_key'/'erase' throw 'HeapException' without modifying the
@@ -182,14 +183,14 @@ public:
   /**
    * @brief Inserts an element into the heap.
    * @param value The value to insert (lvalue reference).
-   * @complexity Time O(log n) worst case, O(1) amortized; Space O(1)
+   * @complexity Time O(log n), Space O(1)
    */
   auto insert(const T& value) -> void requires CopyHeapValue<T>;
 
   /**
    * @brief Inserts an element into the heap (move version).
    * @param value The value to insert (rvalue reference).
-   * @complexity Time O(log n) worst case, O(1) amortized; Space O(1)
+   * @complexity Time O(log n), Space O(1)
    */
   auto insert(T&& value) -> void requires MoveHeapValue<T>;
 
@@ -199,7 +200,7 @@ public:
    * @param args Arguments to forward to T's constructor.
    * @return A stable @ref Handle to the inserted element, usable with
    *         'decrease_key' and 'erase' until the element is removed.
-   * @complexity Time O(log n) worst case, O(1) amortized; Space O(1)
+   * @complexity Time O(log n), Space O(1)
    */
   template <typename... Args>
   auto emplace(Args&&... args) -> Handle requires EmplaceHeapValue<T, Args...>;
@@ -326,8 +327,12 @@ private:
   /**
    * @brief Unions this forest with a detached root list, coalescing equal
    *        degrees; the result replaces 'head_'.
+   * @param other_head The detached, degree-ascending root list to meld in.
+   * @param incoming_count Element count of the incoming list (an upper bound
+   *        is fine); used to pre-reserve the coalescing buffer so an
+   *        allocation failure cannot destroy melded nodes.
    */
-  auto union_with(NodePtr other_head) -> void;
+  auto union_with(NodePtr other_head, size_type incoming_count) -> void;
 
   ///@brief Returns the root of highest priority (null only when the forest is empty).
   auto find_top_root() const -> Node*;
@@ -349,8 +354,9 @@ private:
   /**
    * @brief Swaps the values and handle records of two nodes, keeping each handle
    *        record pointing at the node that now holds its element.
+   * @note Not noexcept: swapping T values may throw for throwing-swap types.
    */
-  static auto swap_payload(Node& a, Node& b) noexcept -> void;
+  static auto swap_payload(Node& a, Node& b) -> void;
 
   /**
    * @brief Throws HeapException if the heap is empty.

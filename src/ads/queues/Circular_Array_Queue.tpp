@@ -70,7 +70,11 @@ template <QueueValue T>
 template <typename... Args>
 auto CircularArrayQueue<T>::emplace(Args&&... args) -> T& {
   if (is_full()) {
+    // Growing reallocates and would invalidate arguments that alias an element
+    // of this queue (e.g. enqueue(q.front())): materialize the value first.
+    T value(std::forward<Args>(args)...);
     grow();
+    return emplace(std::move(value));
   }
 
   T* rear_ptr = data_.get() + rear_;
@@ -209,6 +213,10 @@ template <QueueValue T>
 auto CircularArrayQueue<T>::allocate(size_t capacity) -> storage_ptr {
   if (capacity > max_elements()) {
     throw QueueOverflowException("Queue capacity overflow");
+  }
+  if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+    // Over-aligned element types need the aligned operator new[] overload.
+    return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T), std::align_val_t{alignof(T)})), &deallocate);
   }
   return storage_ptr(static_cast<T*>(::operator new[](capacity * sizeof(T))), &deallocate);
 }

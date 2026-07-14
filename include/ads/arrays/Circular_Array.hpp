@@ -45,6 +45,11 @@ using ads::support::IndexedIterator;
  *          behavior. Suitable for implementing queues, deques, and ring buffers.
  *
  * @tparam T The type of elements stored in the array.
+ *
+ * @note Iterators address the LOGICAL position, not the element:
+ *       they survive reallocation, but any front insertion/removal
+ *       shifts the meaning of every live iterator by one position.
+ *       Treat mutating calls as invalidating outstanding iterators.
  */
 template <ArrayElement T>
 class CircularArray : public ContainerFacade<CircularArray<T>> {
@@ -315,7 +320,13 @@ private:
    * @brief Releases raw storage previously obtained from allocate().
    * @param ptr Pointer to release (may be null).
    */
-  static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
+  static auto deallocate(T* ptr) noexcept -> void {
+    if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+      ::operator delete[](static_cast<void*>(ptr), std::align_val_t{alignof(T)});
+    } else {
+      ::operator delete[](static_cast<void*>(ptr));
+    }
+  }
 
   /**
    * @brief Allocates uninitialized storage for the given number of elements.

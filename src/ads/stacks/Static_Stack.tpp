@@ -28,9 +28,17 @@ template <StackValue T, size_t N>
 requires(N > 0)
 StaticStack<T, N>::StaticStack(StaticStack&& other) noexcept(std::is_nothrow_move_constructible_v<T>) : size_(0) {
   // Inline storage cannot be stolen, so each element is moved individually.
-  for (size_t i = 0; i < other.size_; ++i) {
-    std::construct_at(data() + size_, std::move(other.data()[i]));
-    ++size_;
+  // A throwing element move never runs this object's destructor: roll back
+  // the prefix constructed so far by hand. `other` keeps its remaining
+  // elements (basic guarantee).
+  try {
+    for (size_t i = 0; i < other.size_; ++i) {
+      std::construct_at(data() + size_, std::move(other.data()[i]));
+      ++size_;
+    }
+  } catch (...) {
+    clear();
+    throw;
   }
   other.clear();
 }
@@ -46,9 +54,17 @@ requires(N > 0)
 auto StaticStack<T, N>::operator=(StaticStack&& other) noexcept(std::is_nothrow_move_constructible_v<T>) -> StaticStack& {
   if (this != &other) {
     clear();
-    for (size_t i = 0; i < other.size_; ++i) {
-      std::construct_at(data() + size_, std::move(other.data()[i]));
-      ++size_;
+  // A throwing element move never runs this object's destructor: roll back
+  // the prefix constructed so far by hand. `other` keeps its remaining
+  // elements (basic guarantee).
+    try {
+      for (size_t i = 0; i < other.size_; ++i) {
+        std::construct_at(data() + size_, std::move(other.data()[i]));
+        ++size_;
+      }
+    } catch (...) {
+      clear();
+      throw;
     }
     other.clear();
   }
@@ -74,7 +90,12 @@ auto StaticStack<T, N>::emplace(Args&&... args) -> T& requires EmplaceStackValue
 template <StackValue T, size_t N>
 requires(N > 0)
 void StaticStack<T, N>::push(const T& value) {
-  emplace(value);
+  if constexpr (CopyStackValue<T>) {
+    emplace(value);
+  } else {
+    // Keep the polymorphic Stack<T> interface instantiable for move-only payloads.
+    throw StackException("push copy requires copy-constructible values");
+  }
 }
 
 template <StackValue T, size_t N>

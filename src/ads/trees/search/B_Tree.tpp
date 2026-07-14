@@ -89,8 +89,19 @@ auto BTree<T, MinDegree>::insert_impl(U&& key) -> bool {
   // If root is full, split it.
   if (root_->n == MAX_KEYS) {
     auto new_root = std::make_unique<Node>(false);
+    // The push_back cannot throw: a fresh internal node pre-reserves child
+    // capacity and unique_ptr moves are noexcept.
     new_root->children.push_back(std::move(root_));
-    split_child(new_root.get(), 0);
+    try {
+      split_child(new_root.get(), 0);
+    } catch (...) {
+      // split_child allocates its new node before mutating anything, so on
+      // allocation failure this hands the intact root back instead of letting
+      // it die inside the local new_root. (A throwing key-move mid-split
+      // still degrades to the basic guarantee, as elsewhere in this tree.)
+      root_ = std::move(new_root->children[0]);
+      throw;
+    }
     root_ = std::move(new_root);
   }
 

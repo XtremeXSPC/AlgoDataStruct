@@ -14,6 +14,7 @@
 #pragma once
 #include "../../../include/ads/heaps/Binomial_Heap.hpp"
 
+#include <bit>
 #include <string>
 #include <vector>
 
@@ -98,7 +99,7 @@ auto BinomialHeap<T, Compare>::emplace(Args&&... args) -> Handle requires Emplac
   node->handle->node = node.get();
   HandleData* record = node->handle.get();
 
-  union_with(std::move(node)); // single degree-0 tree melded into the forest
+  union_with(std::move(node), 1); // single degree-0 tree melded into the forest
   ++size_;
   return Handle(record);
 }
@@ -160,7 +161,7 @@ auto BinomialHeap<T, Compare>::merge(BinomialHeap&& other) -> void {
   if (!detail::compatible_comparators(comp_, other.comp_)) {
     throw HeapException("BinomialHeap::merge: incompatible comparator objects");
   }
-  union_with(std::move(other.head_));
+  union_with(std::move(other.head_), other.size_);
   size_ += other.size_;
   other.size_ = 0;
 }
@@ -225,13 +226,21 @@ auto BinomialHeap<T, Compare>::merge_root_lists(NodePtr lhs, NodePtr rhs) -> Nod
 }
 
 template <HeapValue T, typename Compare>
-auto BinomialHeap<T, Compare>::union_with(NodePtr other_head) -> void {
+auto BinomialHeap<T, Compare>::union_with(NodePtr other_head, size_type incoming_count) -> void {
+  // Reserve the coalescing buffer BEFORE consuming either root list: if this
+  // allocation fails, both lists are still owned and the heap is unchanged.
+  // A forest holding at most n elements has trees of degree <= floor(log2 n),
+  // and the carry can push one degree further.
+  const auto slot_bound = static_cast<std::size_t>(std::bit_width(size_ + incoming_count + 1)) + 2U;
+  std::vector<NodePtr> slots;
+  slots.reserve(slot_bound);
+
   NodePtr merged = merge_root_lists(std::move(head_), std::move(other_head));
 
   // Coalesce equal degrees exactly like binary addition with carry: 'slots[d]'
   // holds the single surviving tree of degree d, if any. Feeding the roots in
-  // ascending degree keeps the carry local.
-  std::vector<NodePtr> slots;
+  // ascending degree keeps the carry local. Every slots operation below stays
+  // within the reserved capacity, so this loop cannot throw.
   NodePtr              cursor = std::move(merged);
   while (cursor) {
     NodePtr node = std::move(cursor);
@@ -314,7 +323,8 @@ auto BinomialHeap<T, Compare>::extract_root(Node* root) -> NodePtr {
     child->sibling = std::move(reversed);
     reversed       = std::move(child);
   }
-  union_with(std::move(reversed));
+  // The children were already counted in size_, so no extra headroom is needed.
+  union_with(std::move(reversed), 0);
 
   return detached;
 }
@@ -330,7 +340,7 @@ auto BinomialHeap<T, Compare>::sift_up(Node* node, const Compare& comp, bool to_
 }
 
 template <HeapValue T, typename Compare>
-auto BinomialHeap<T, Compare>::swap_payload(Node& a, Node& b) noexcept -> void {
+auto BinomialHeap<T, Compare>::swap_payload(Node& a, Node& b) -> void {
   using std::swap;
   swap(a.value, b.value);
   swap(a.handle, b.handle);

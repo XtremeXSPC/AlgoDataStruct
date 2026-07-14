@@ -115,7 +115,17 @@ template <MatrixValue Value>
 auto SparseMatrix<Value>::clear() noexcept -> void {
   column_indices_.clear();
   values_.clear();
-  row_offsets_.assign(row_count_ + 1, 0U);
+  if (row_offsets_.size() == row_count_ + 1) {
+    // Zero the row pointers in place: a noexcept clear() must not allocate.
+    for (size_type i = 0; i < row_offsets_.size(); ++i) {
+      row_offsets_[i] = 0;
+    }
+  } else {
+    // Degenerate (e.g. moved-from) state: collapse to a consistent empty matrix.
+    row_offsets_.clear();
+    row_count_    = 0;
+    column_count_ = 0;
+  }
 }
 
 template <MatrixValue Value>

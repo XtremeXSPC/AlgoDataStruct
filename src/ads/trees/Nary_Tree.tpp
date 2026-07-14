@@ -161,21 +161,25 @@ void NaryTree<T>::clear() noexcept {
     return;
   }
 
-  // Iteratively dismantle: move every node's children onto a worklist so each
-  // node destructs as a leaf, never recursing through a deep or wide subtree.
-  DynamicArray<std::unique_ptr<Node>> pending;
-  pending.push_back(std::move(root_));
-
-  while (!pending.is_empty()) {
-    std::unique_ptr<Node> node = std::move(pending.back());
-    pending.pop_back();
-
-    for (size_t i = 0; i < node->children_.size(); ++i) {
-      pending.push_back(std::move(node->children_[i]));
+  // Iterative, allocation-free teardown guided by the parent pointers: walk to
+  // the deepest last child and pop it from its parent, so every node destructs
+  // as a leaf. Each edge is traversed once (O(n)) and no worklist is needed,
+  // so a noexcept clear() cannot abort on allocation failure.
+  Node* current = root_.get();
+  while (true) {
+    if (!current->children_.is_empty()) {
+      current = current->children_.back().get();
+      continue;
     }
-    // node goes out of scope here holding only emptied (null) child slots.
+    Node* parent = current->parent_;
+    if (parent == nullptr) {
+      break; // the root itself is now a leaf
+    }
+    parent->children_.pop_back(); // destroys the current leaf in place
+    current = parent;
   }
 
+  root_.reset();
   size_ = 0;
 }
 

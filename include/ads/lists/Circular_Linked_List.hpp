@@ -38,6 +38,12 @@ namespace ads::lists {
  *          scheduling, circular buffers, and turn-based games.
  *
  * @tparam T The type of data to store in the list.
+ *
+ * @note The polymorphic List<T> interface forces the copying
+ *       push_front/push_back(const T&) overloads to exist even for
+ *       move-only element types; those overloads then throw
+ *       ListException at runtime. Prefer the rvalue overloads or the
+ *       emplace functions for move-only payloads.
  */
 template <ListElement T>
 class CircularLinkedList {

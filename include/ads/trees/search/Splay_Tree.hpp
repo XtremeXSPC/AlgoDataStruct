@@ -53,6 +53,12 @@ using ads::arrays::DynamicArray;
  *
  * @tparam T The stored value type. Must support "operator<" and "operator==".
  *         Copy insertion additionally requires copy construction.
+ *
+ * @warning Self-adjusting: the const accessors (contains, find_min,
+ *          find_max) splay the accessed node to the root, mutating the
+ *          internal structure through a mutable root. Unlike standard
+ *          containers, concurrent calls to const members on the same tree
+ *          are therefore a data race and require external synchronization.
  */
 template <OrderedTreeElement T>
 class SplayTree {

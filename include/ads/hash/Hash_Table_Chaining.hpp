@@ -362,6 +362,20 @@ private:
   void check_and_rehash();
 
   /**
+   * @brief Restores a usable bucket array on a moved-from table.
+   * @details A moved-from table has capacity 0; hashing would divide by zero.
+   *          Mutating entry points call this before touching any bucket.
+   */
+  void ensure_initialized();
+
+  /**
+   * @brief Returns true if inserting one more entry would trigger a rehash.
+   * @details Insert paths use this to detach key/value arguments that may alias
+   *          storage inside this table before the rehash destroys it.
+   */
+  [[nodiscard]] auto needs_growth_for_insert() const noexcept -> bool;
+
+  /**
    * @brief Rehashes before a new insertion would exceed the load factor.
    * @complexity Time O(n) if rehashing occurs.
    */

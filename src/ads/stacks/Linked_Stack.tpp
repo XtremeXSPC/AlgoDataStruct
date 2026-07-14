@@ -70,7 +70,12 @@ auto LinkedStack<T>::emplace(Args&&... args) -> T& {
 
 template <StackValue T>
 void LinkedStack<T>::push(const T& value) {
-  emplace(value);
+  if constexpr (CopyStackValue<T>) {
+    emplace(value);
+  } else {
+    // Keep the polymorphic Stack<T> interface instantiable for move-only payloads.
+    throw StackException("push copy requires copy-constructible values");
+  }
 }
 
 template <StackValue T>

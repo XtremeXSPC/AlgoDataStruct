@@ -209,7 +209,13 @@ private:
   static constexpr auto max_elements() noexcept -> size_t { return std::numeric_limits<size_t>::max() / sizeof(T); }
 
   ///@brief Releases raw storage previously obtained from allocate().
-  static auto deallocate(T* ptr) noexcept -> void { ::operator delete[](ptr); }
+  static auto deallocate(T* ptr) noexcept -> void {
+    if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+      ::operator delete[](static_cast<void*>(ptr), std::align_val_t{alignof(T)});
+    } else {
+      ::operator delete[](static_cast<void*>(ptr));
+    }
+  }
 
   ///@brief Allocates uninitialized storage for capacity elements; throws on overflow.
   static auto allocate(size_t capacity) -> storage_ptr;

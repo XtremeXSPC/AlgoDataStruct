@@ -151,7 +151,7 @@ TEST(PriorityQueueConstructorTest, InitializerListConstructorHeapifiesElements) 
 TEST(PriorityQueueUtilityTest, SortedElementsExtractsInPriorityOrder) {
   PriorityQueue<int> queue{4, 1, 9, 7, 3};
 
-  const std::vector<int> sorted = queue.sorted_elements();
+  const std::vector<int> sorted = queue.extract_sorted();
 
   EXPECT_EQ(sorted, (std::vector<int>{9, 7, 4, 3, 1}));
   EXPECT_TRUE(queue.is_empty());
