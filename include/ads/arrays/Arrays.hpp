@@ -27,6 +27,7 @@
 #include "Array_View.hpp"
 #include "Circular_Array.hpp"
 #include "Dynamic_Array.hpp"
+#include "Dynamic_Bitset.hpp"
 #include "Gap_Buffer.hpp"
 #include "Static_Array.hpp"
 #include "Static_Vector.hpp"
