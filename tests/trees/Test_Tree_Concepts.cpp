@@ -11,7 +11,6 @@
 
 #include "ads/trees/Complete_Binary_Tree.hpp"
 #include "ads/trees/Tree_Concepts.hpp"
-#include "ads/trees/range/Fenwick_Tree.hpp"
 #include "ads/trees/search/AVL_Tree.hpp"
 #include "ads/trees/search/B_Tree.hpp"
 #include "ads/trees/search/Binary_Search_Tree.hpp"
@@ -47,10 +46,6 @@ struct OnlyEqualityComparable {
 
 struct NonDestructibleType {
   ~NonDestructibleType() = delete;
-};
-
-struct FenwickMissingOps {
-  int value = 0;
 };
 
 struct MoveOnlyOrdered {
@@ -91,9 +86,6 @@ static_assert(!OrderedTreeElement<OnlyEqualityComparable>);
 static_assert(ValidBTreeDegree<2>);
 static_assert(!ValidBTreeDegree<1>);
 
-static_assert(FenwickElement<int>);
-static_assert(!FenwickElement<FenwickMissingOps>);
-
 static_assert(requires(BinarySearchTree<LessAndEqualComparable>& tree, const LessAndEqualComparable& value) {
   tree.insert(value);
   tree.remove(value);
@@ -117,11 +109,6 @@ static_assert(requires(BTree<LessAndEqualComparable, 3>& tree, const LessAndEqua
 static_assert(requires(CompleteBinaryTree<LessAndEqualComparable>& tree, const LessAndEqualComparable& value) {
   tree.insert(value);
   tree.contains(value);
-});
-
-static_assert(requires(FenwickTree<int>& tree) {
-  tree.add(0, 1);
-  tree.lower_bound(1);
 });
 
 static_assert(OrderedSearchTree<BinarySearchTree<LessAndEqualComparable>, LessAndEqualComparable>);

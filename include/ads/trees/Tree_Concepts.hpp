@@ -3,8 +3,8 @@
  * @file Tree_Concepts.hpp
  * @author Costantino Lombardi
  * @brief Defines reusable C++20 concepts for tree containers.
- * @version 0.2
- * @date 2026-02-07
+ * @version 0.5
+ * @date 2026-07-14
  *
  * @details These concepts form the semantic tree layer built on top of the
  *          generic `ads::support` vocabulary. They describe what it means for
@@ -26,6 +26,7 @@
 #include <compare>
 #include <concepts>
 #include <functional>
+#include <type_traits>
 
 namespace ads::trees {
 
@@ -38,6 +39,43 @@ template <typename T> concept EqualityComparableTreeElement = TreeElement<T> && 
 template <typename T> concept OrderedTreeElement = EqualityComparableTreeElement<T> && requires(const T& lhs, const T& rhs) {
   { lhs < rhs } -> std::convertible_to<bool>;
 };
+
+/**
+ * @brief Endpoint suitable for an augmented interval tree.
+ * @details Endpoint copies may throw, but ordering must not: tree mutations update
+ *          structural metadata after attaching a new node and rely on comparisons
+ *          being non-throwing to preserve the invariants during that commit phase.
+ */
+template <typename Endpoint> concept IntervalEndpoint =
+    OrderedTreeElement<Endpoint> && std::copyable<Endpoint> && requires(const Endpoint& lhs, const Endpoint& rhs) {
+      { lhs < rhs } noexcept -> std::same_as<bool>;
+    };
+
+/**
+ * @brief Key suitable for the ordered blocks and separators of a B+ tree.
+ * @details Keys are copied into leaf records and internal separators, while node
+ *          rebalancing moves them without a recovery path. Ordering must therefore
+ *          be non-throwing and moves must preserve the tree during commit phases.
+ */
+template <typename Key> concept BPlusKey = TreeElement<Key> && std::copyable<Key> && std::is_nothrow_move_constructible_v<Key>
+                                           && std::is_nothrow_move_assignable_v<Key> && requires(const Key& lhs, const Key& rhs) {
+                                                { lhs < rhs } noexcept -> std::same_as<bool>;
+                                              };
+
+/**
+ * @brief Value suitable for relocation between B+ tree leaf blocks.
+ */
+template <typename Value> concept BPlusValue =
+    TreeElement<Value> && std::movable<Value> && std::is_nothrow_move_constructible_v<Value> && std::is_nothrow_move_assignable_v<Value>;
+
+/**
+ * @brief Arithmetic coordinate accepted by spatial tree structures.
+ * @details Boolean and cv-qualified types are excluded because they do not form
+ *          a mutable numeric value domain suitable for geometric operations.
+ */
+template <typename Coordinate> concept KDCoordinate =
+    std::same_as<Coordinate, std::remove_cv_t<Coordinate>>
+    && ((std::integral<Coordinate> && !std::same_as<Coordinate, bool>) || std::floating_point<Coordinate>);
 
 // clang-format off
 template <typename Tree, typename T>
@@ -95,14 +133,6 @@ concept ValidatableOrderedSearchTree = OrderedSearchTree<Tree, T> && requires(co
 
 template <int MinDegree>
 concept ValidBTreeDegree = (MinDegree >= 2);
-
-template <typename T>
-concept FenwickElement = sup::DefaultInitializable<T> && requires(T a, T b) {
-  { T{} };
-  { a += b } -> std::same_as<T&>;
-  { a - b } -> std::convertible_to<T>;
-  { a < b } -> std::convertible_to<bool>;
-};
 
 } // namespace ads::trees
 
