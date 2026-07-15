@@ -2,18 +2,18 @@
 /**
  * @file main_Fenwick_Tree.cc
  * @author Costantino Lombardi
- * @brief Comprehensive demo program for FenwickTree implementation.
+ * @brief Demonstrates commutative-group Fenwick Tree queries and updates.
  * @version 0.1
  * @date 2026-01-28
  *
  * @copyright MIT License 2026
  *
- * This program demonstrates the usage of the FenwickTree data structure,
- * showcasing prefix queries, range queries, and point updates.
+ * This program demonstrates the algebra-driven FenwickTree API, showcasing
+ * prefix queries, range queries, point updates, and prefix lower bounds.
  */
 //===---------------------------------------------------------------------------===//
 
-#include "ads/trees/range/Fenwick_Tree.hpp"
+#include "ads/range/Fenwick_Tree.hpp"
 #include "support/Demo_Utilities.hpp"
 
 #include <iostream>
@@ -26,7 +26,7 @@ using std::exception;
 using std::string;
 using std::vector;
 
-using ads::trees::FenwickTree;
+using ads::range::FenwickTree;
 
 //===----- HELPER FUNCTIONS ----------------------------------------------------===//
 
@@ -47,7 +47,7 @@ auto print_tree_state(const FenwickTree<T>& tree, const string& label) -> void {
 
   cout << "  Prefix sums: ";
   for (size_t i = 0; i < tree.size(); ++i) {
-    cout << tree.prefix_sum(i) << " ";
+    cout << tree.prefix_query(i) << " ";
   }
   cout << "\n";
 }
@@ -62,8 +62,8 @@ auto demo_build_and_queries() -> void {
   FenwickTree<int> tree(values);
 
   print_tree_state(tree, "Initial tree");
-  cout << "Total sum: " << tree.total_sum() << "\n";
-  cout << "Sum [1..3]: " << tree.range_sum(1, 3) << "\n";
+  cout << "Total sum: " << tree.total() << "\n";
+  cout << "Sum [1..3]: " << tree.range_query(1, 3) << "\n";
 }
 
 //===----- UPDATE OPERATIONS DEMO ----------------------------------------------===//
@@ -76,12 +76,12 @@ auto demo_updates() -> void {
   print_tree_state(tree, "Before updates");
 
   cout << "Adding +3 at index 2\n";
-  tree.add(2, 3);
+  tree.apply(2, 3);
   cout << "Adding -2 at index 4\n";
-  tree.add(4, -2);
+  tree.apply(4, -2);
 
   print_tree_state(tree, "After updates");
-  cout << "Sum [0..2]: " << tree.range_sum(0, 2) << "\n";
+  cout << "Sum [0..2]: " << tree.range_query(0, 2) << "\n";
 }
 
 //===----- SET OPERATIONS DEMO -------------------------------------------------===//
@@ -121,14 +121,14 @@ auto demo_exceptions() -> void {
   FenwickTree<int> tree({1, 2, 3});
 
   try {
-    tree.add(5, 1);
-  } catch (const ads::trees::FenwickTreeException& e) {
+    tree.apply(5, 1);
+  } catch (const ads::range::RangeException& e) {
     cout << "Caught exception: " << e.what() << "\n";
   }
 
   try {
-    [[maybe_unused]] auto sum = tree.range_sum(2, 1);
-  } catch (const ads::trees::FenwickTreeException& e) {
+    [[maybe_unused]] auto sum = tree.range_query(2, 1);
+  } catch (const ads::range::RangeException& e) {
     cout << "Caught exception: " << e.what() << "\n";
   }
 }
@@ -148,7 +148,7 @@ auto main() -> int {
 
     ads::demo::print_footer();
   } catch (const exception& e) {
-    ads::demo::print_error(string("Unhandled exception: ") + e.what());
+    cerr << "\nUnhandled exception: " << e.what() << '\n';
     return 1;
   }
 

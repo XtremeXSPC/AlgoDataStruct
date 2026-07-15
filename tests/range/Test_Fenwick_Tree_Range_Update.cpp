@@ -1,7 +1,7 @@
 //===---------------------------------------------------------------------------===//
 /**
  * @file Test_Fenwick_Tree_Range_Update.cpp
- * @brief Google Test unit tests for FenwickTreeRangeUpdate implementation.
+ * @brief Unit tests for the group-difference FenwickTreeRangeUpdate.
  * @version 0.1
  * @date 2026-01-29
  *
@@ -9,13 +9,13 @@
  */
 //===---------------------------------------------------------------------------===//
 
-#include "ads/trees/range/Fenwick_Tree_Range_Update.hpp"
+#include "ads/range/Fenwick_Tree_Range_Update.hpp"
 
 #include <gtest/gtest.h>
 
 #include <vector>
 
-using namespace ads::trees;
+using namespace ads::range;
 
 //===----- BASIC STATE TESTS ---------------------------------------------------===//
 
@@ -76,7 +76,7 @@ TEST(FenwickTreeRangeUpdateBasicTest, ConstructionFromInitializerList) {
 
 TEST(FenwickTreeRangeUpdateBasicTest, BuildReplacesExistingValues) {
   FenwickTreeRangeUpdate<int> tree(3, 10);
-  tree.range_add(0, 2, 5);
+  tree.range_apply(0, 2, 5);
 
   tree.build({4, 5, 6, 7});
 
@@ -91,7 +91,7 @@ TEST(FenwickTreeRangeUpdateBasicTest, BuildReplacesExistingValues) {
 TEST(FenwickTreeRangeUpdateTest, SingleRangeAdd) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  tree.range_add(1, 3, 10); // Add 10 to indices 1, 2, 3
+  tree.range_apply(1, 3, 10); // Add 10 to indices 1, 2, 3
 
   EXPECT_EQ(tree.point_query(0), 0);
   EXPECT_EQ(tree.point_query(1), 10);
@@ -103,8 +103,8 @@ TEST(FenwickTreeRangeUpdateTest, SingleRangeAdd) {
 TEST(FenwickTreeRangeUpdateTest, MultipleRangeAdds) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  tree.range_add(0, 2, 5); // [5, 5, 5, 0, 0]
-  tree.range_add(2, 4, 3); // [5, 5, 8, 3, 3]
+  tree.range_apply(0, 2, 5); // [5, 5, 5, 0, 0]
+  tree.range_apply(2, 4, 3); // [5, 5, 8, 3, 3]
 
   EXPECT_EQ(tree.point_query(0), 5);
   EXPECT_EQ(tree.point_query(1), 5);
@@ -116,8 +116,8 @@ TEST(FenwickTreeRangeUpdateTest, MultipleRangeAdds) {
 TEST(FenwickTreeRangeUpdateTest, OverlappingRanges) {
   FenwickTreeRangeUpdate<int> tree(6);
 
-  tree.range_add(0, 3, 10); // [10, 10, 10, 10, 0, 0]
-  tree.range_add(2, 5, 5);  // [10, 10, 15, 15, 5, 5]
+  tree.range_apply(0, 3, 10); // [10, 10, 10, 10, 0, 0]
+  tree.range_apply(2, 5, 5);  // [10, 10, 15, 15, 5, 5]
 
   EXPECT_EQ(tree.point_query(0), 10);
   EXPECT_EQ(tree.point_query(1), 10);
@@ -130,7 +130,7 @@ TEST(FenwickTreeRangeUpdateTest, OverlappingRanges) {
 TEST(FenwickTreeRangeUpdateTest, SingleElementRange) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  tree.range_add(2, 2, 100); // Add 100 to index 2 only
+  tree.range_apply(2, 2, 100); // Add 100 to index 2 only
 
   EXPECT_EQ(tree.point_query(0), 0);
   EXPECT_EQ(tree.point_query(1), 0);
@@ -142,7 +142,7 @@ TEST(FenwickTreeRangeUpdateTest, SingleElementRange) {
 TEST(FenwickTreeRangeUpdateTest, FullRangeUpdate) {
   FenwickTreeRangeUpdate<int> tree(4);
 
-  tree.range_add(0, 3, 7); // Add 7 to all elements
+  tree.range_apply(0, 3, 7); // Add 7 to all elements
 
   for (size_t i = 0; i < 4; ++i) {
     EXPECT_EQ(tree.point_query(i), 7);
@@ -152,8 +152,8 @@ TEST(FenwickTreeRangeUpdateTest, FullRangeUpdate) {
 TEST(FenwickTreeRangeUpdateTest, NegativeDelta) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  tree.range_add(0, 4, 20); // [20, 20, 20, 20, 20]
-  tree.range_add(1, 3, -5); // [20, 15, 15, 15, 20]
+  tree.range_apply(0, 4, 20); // [20, 20, 20, 20, 20]
+  tree.range_apply(1, 3, -5); // [20, 15, 15, 15, 20]
 
   EXPECT_EQ(tree.point_query(0), 20);
   EXPECT_EQ(tree.point_query(1), 15);
@@ -166,7 +166,7 @@ TEST(FenwickTreeRangeUpdateTest, NegativeDelta) {
 
 TEST(FenwickTreeRangeUpdateTest, ClearTree) {
   FenwickTreeRangeUpdate<int> tree(5);
-  tree.range_add(0, 4, 10);
+  tree.range_apply(0, 4, 10);
 
   tree.clear();
 
@@ -176,7 +176,7 @@ TEST(FenwickTreeRangeUpdateTest, ClearTree) {
 
 TEST(FenwickTreeRangeUpdateTest, ResetTree) {
   FenwickTreeRangeUpdate<int> tree(5);
-  tree.range_add(0, 4, 10);
+  tree.range_apply(0, 4, 10);
 
   tree.reset(3);
 
@@ -190,7 +190,7 @@ TEST(FenwickTreeRangeUpdateTest, ResetTree) {
 
 TEST(FenwickTreeRangeUpdateTest, MoveConstructor) {
   FenwickTreeRangeUpdate<int> tree(5);
-  tree.range_add(0, 4, 10);
+  tree.range_apply(0, 4, 10);
 
   FenwickTreeRangeUpdate<int> moved = std::move(tree);
 
@@ -201,7 +201,7 @@ TEST(FenwickTreeRangeUpdateTest, MoveConstructor) {
 
 TEST(FenwickTreeRangeUpdateTest, MoveAssignment) {
   FenwickTreeRangeUpdate<int> tree(5);
-  tree.range_add(0, 4, 10);
+  tree.range_apply(0, 4, 10);
 
   FenwickTreeRangeUpdate<int> assigned;
   assigned = std::move(tree);
@@ -216,17 +216,17 @@ TEST(FenwickTreeRangeUpdateTest, MoveAssignment) {
 TEST(FenwickTreeRangeUpdateEdgeCaseTest, SingleElement) {
   FenwickTreeRangeUpdate<int> tree(1);
 
-  tree.range_add(0, 0, 42);
+  tree.range_apply(0, 0, 42);
   EXPECT_EQ(tree.point_query(0), 42);
 
-  tree.range_add(0, 0, -10);
+  tree.range_apply(0, 0, -10);
   EXPECT_EQ(tree.point_query(0), 32);
 }
 
 TEST(FenwickTreeRangeUpdateEdgeCaseTest, LastIndexRange) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  tree.range_add(4, 4, 100); // Only last element
+  tree.range_apply(4, 4, 100); // Only last element
 
   EXPECT_EQ(tree.point_query(3), 0);
   EXPECT_EQ(tree.point_query(4), 100);
@@ -235,8 +235,8 @@ TEST(FenwickTreeRangeUpdateEdgeCaseTest, LastIndexRange) {
 TEST(FenwickTreeRangeUpdateEdgeCaseTest, LargeValues) {
   FenwickTreeRangeUpdate<long long> tree(3);
 
-  tree.range_add(0, 2, 1'000'000'000LL);
-  tree.range_add(0, 2, 2'000'000'000LL);
+  tree.range_apply(0, 2, 1'000'000'000LL);
+  tree.range_apply(0, 2, 2'000'000'000LL);
 
   EXPECT_EQ(tree.point_query(0), 3'000'000'000LL);
   EXPECT_EQ(tree.point_query(1), 3'000'000'000LL);
@@ -248,28 +248,28 @@ TEST(FenwickTreeRangeUpdateEdgeCaseTest, LargeValues) {
 TEST(FenwickTreeRangeUpdateErrorTest, PointQueryOutOfRange) {
   FenwickTreeRangeUpdate<int> tree(3);
 
-  EXPECT_THROW({ [[maybe_unused]] auto _ = tree.point_query(3); }, FenwickTreeException);
-  EXPECT_THROW({ [[maybe_unused]] auto _ = tree.point_query(100); }, FenwickTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto _ = tree.point_query(3); }, RangeIndexException);
+  EXPECT_THROW({ [[maybe_unused]] auto _ = tree.point_query(100); }, RangeIndexException);
 }
 
 TEST(FenwickTreeRangeUpdateErrorTest, RangeAddInvalidRange) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  EXPECT_THROW(tree.range_add(3, 2, 10), FenwickTreeException); // left > right
+  EXPECT_THROW(tree.range_apply(3, 2, 10), InvalidRangeException); // left > right
 }
 
 TEST(FenwickTreeRangeUpdateErrorTest, RangeAddOutOfBounds) {
   FenwickTreeRangeUpdate<int> tree(5);
 
-  EXPECT_THROW(tree.range_add(0, 5, 10), FenwickTreeException); // right >= size
-  EXPECT_THROW(tree.range_add(3, 10, 10), FenwickTreeException);
+  EXPECT_THROW(tree.range_apply(0, 5, 10), InvalidRangeException); // right >= size
+  EXPECT_THROW(tree.range_apply(3, 10, 10), InvalidRangeException);
 }
 
 TEST(FenwickTreeRangeUpdateErrorTest, EmptyTreeOperations) {
   FenwickTreeRangeUpdate<int> tree;
 
-  EXPECT_THROW({ [[maybe_unused]] auto _ = tree.point_query(0); }, FenwickTreeException);
-  EXPECT_THROW(tree.range_add(0, 0, 10), FenwickTreeException);
+  EXPECT_THROW({ [[maybe_unused]] auto _ = tree.point_query(0); }, RangeIndexException);
+  EXPECT_THROW(tree.range_apply(0, 0, 10), InvalidRangeException);
 }
 
 //===---------------------------------------------------------------------------===//
