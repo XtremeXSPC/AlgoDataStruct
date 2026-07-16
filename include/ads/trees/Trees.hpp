@@ -22,6 +22,7 @@
 
 // Ordered search trees.
 #include "search/AVL_Tree.hpp"
+#include "search/BPlus_Tree.hpp"
 #include "search/B_Tree.hpp"
 #include "search/Binary_Search_Tree.hpp"
 #include "search/Red_Black_Tree.hpp"
@@ -30,12 +31,10 @@
 
 // Sequence-derived / augmented trees.
 #include "search/Cartesian_Tree.hpp"
+#include "search/Interval_Tree.hpp"
 
-// Array-backed range-query structures.
-#include "range/Fenwick_Tree.hpp"
-#include "range/Fenwick_Tree_Range_Update.hpp"
-#include "range/Lazy_Segment_Tree.hpp"
-#include "range/Segment_Tree.hpp"
+// Spatial trees.
+#include "search/KD_Tree.hpp"
 
 // Digital (prefix) trees.
 #include "trie/Trie.hpp"
@@ -47,8 +46,6 @@
 // Shared concepts and exceptions.
 #include "Tree_Concepts.hpp"
 #include "exceptions/Binary_Tree_Exception.hpp"
-#include "exceptions/Fenwick_Tree_Exception.hpp"
-#include "exceptions/Segment_Tree_Exception.hpp"
 
 #endif // TREES_HPP
 
