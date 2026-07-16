@@ -13,6 +13,9 @@ you can *read and learn from*, backed by tests strong enough to trust.
 
 - **C++20 throughout** — reusable concepts express container requirements across
   the core structure families, catching many API mistakes at compile time.
+- **Shared algebra policies** — semigroups, monoids, commutative groups, and acted
+  monoids give range-query structures one explicit, stateful-capable definition of
+  their mathematical operations instead of unrelated function-object bundles.
 - **Header + `.tpp` split** — each public header in `include/ads/<category>/`
   includes its implementation from `src/ads/<category>/`; consumers only include
   the header.
@@ -40,6 +43,7 @@ you can *read and learn from*, backed by tests strong enough to trust.
 - Circular Array (wrap-around indexing)
 - Array View (non-owning span)
 - Gap Buffer (edit-friendly text buffer)
+- Dynamic Bitset (resizable packed-bit sequence)
 
 </details>
 
@@ -80,11 +84,34 @@ you can *read and learn from*, backed by tests strong enough to trust.
 <summary><strong>Trees</strong> — <code>include/ads/trees/</code></summary>
 
 - **Search** (`trees/search/`): Binary Search Tree, AVL Tree, Red-Black Tree,
-  Splay Tree, Treap, B-Tree
-- **Range** (`trees/range/`): Fenwick Tree, Fenwick Tree with Range Update,
-  Segment Tree, Lazy Segment Tree
+  Splay Tree, Treap, B-Tree, B+ Tree, Cartesian Tree, k-d Tree, Interval Tree
 - **Trie** (`trees/trie/`): Trie (prefix tree)
 - Complete Binary Tree, N-ary Tree
+
+</details>
+
+<details>
+<summary><strong>Algebra Policies</strong> — <code>include/ads/algebra/</code></summary>
+
+- Concepts for semigroups, idempotent semigroups, monoids, groups, commutative
+  groups, and acted monoids
+- Built-in additive, min/max, GCD, assignment, and affine-transformation policies
+- Ready-to-use range-add/sum, range-add/min, range-add/max, range-assign/sum, and
+  range-affine/sum acted monoids
+- Object-based policy storage: empty policies have zero overhead, while stateful
+  policies remain supported
+
+</details>
+
+<details>
+<summary><strong>Range Queries</strong> — <code>include/ads/range/</code></summary>
+
+- Fenwick Tree and range-update Fenwick Tree over commutative groups
+- Segment Tree over monoids, including non-commutative aggregates and custom leaf
+  builders
+- Lazy Segment Tree and Sqrt Decomposition over the same acted-monoid interface
+- Sparse Table over idempotent semigroups (no artificial identity required)
+- Transactional point/range modifications with strong exception guarantees
 
 </details>
 
@@ -128,7 +155,8 @@ you can *read and learn from*, backed by tests strong enough to trust.
 See [`ROADMAP.md`](ROADMAP.md) for what is planned next and the tiered build-out
 plan. Current focus: the T2 themed blocks — the meldable-heap family is complete,
 and the probabilistic-sketch block is complete with Count-Min Sketch, HyperLogLog,
-and Cuckoo Filter.
+and Cuckoo Filter; the spatial/augmented block now includes the B+ Tree; and the
+array primitives now include Dynamic Bitset.
 
 ## Repository Layout
 
@@ -136,7 +164,8 @@ and Cuckoo Filter.
 AlgoDataStruct/
 ├── include/ads/            # public headers, one folder per category
 │   ├── arrays/  lists/  stacks/  queues/  heaps/
-│   ├── trees/{search,range,trie}/
+│   ├── trees/{search,trie}/
+│   ├── algebra/  range/
 │   ├── hash/  associative/  graphs/  matrices/
 │   └── probabilistic/  algorithms/
 ├── include/support/        # generic concepts, aliases, and demo utilities
@@ -223,12 +252,12 @@ int main() {
   scores.put("Alice", 95);
   scores.put("Bob", 89);
 
-  std::cout << scores.at("Bob") << "\n";                       // 89
-  std::cout << std::boolalpha << scores.contains("Eve") << "\n"; // false
+  std::cout << scores.at("Bob") << "\n";    // 89
+  std::cout << std::boolalpha << scores.contains("Eve") << "\n";
 
-  scores.put("Bob", 91);        // update
-  scores.erase("Alice");        // remove
-  std::cout << scores.size() << "\n"; // 1
+  scores.put("Bob", 91);    // update
+  scores.erase("Alice");    // remove
+  std::cout << scores.size() << "\n";
 }
 ```
 
@@ -273,6 +302,41 @@ int main() {
 }
 ```
 
+### Shared Algebra — Lazy Range Structures
+
+```cpp
+#include "ads/algebra/Algebra.hpp"
+#include "ads/range/Range.hpp"
+
+#include <vector>
+
+int main() {
+  using Value  = long long;
+  using Policy = ads::algebra::RangeAffineRangeSum<Value>;
+
+  const std::vector<Value> values{1, 2, 3, 4};
+  ads::range::LazySegmentTree<Value, Policy> segment(values);
+  ads::range::SqrtDecomposition<Value, Policy> sqrt(values);
+
+  // Apply x -> 2*x + 3 to the inclusive range [1, 3].
+  const ads::algebra::AffineTransform<Value> action{2, 3};
+  segment.range_apply(1, 3, action);
+  sqrt.range_apply(1, 3, action);
+
+  // Both lazy structures also expose the same point-replacement operation.
+  segment.set(0, 10);
+  sqrt.set(0, 10);
+
+  return segment.total() == sqrt.total() ? 0 : 1;
+}
+```
+
+The policy is the full contract: it defines the value monoid, action monoid,
+length-aware application, and chronological composition. `FenwickTree` instead
+requires a commutative group, `SegmentTree` a monoid, and `SparseTable` an
+idempotent semigroup. The concepts check each API shape; algebraic laws are semantic
+requirements covered by dedicated law and differential tests.
+
 ## Conventions
 
 - **C++20**, LLVM-based formatting (`.clang-format`), lint via `.clang-tidy`.
@@ -280,7 +344,7 @@ int main() {
   `src/ads/<category>/*.tpp`, included at the bottom of each header.
 - Container categories expose domain concepts (`*_Concepts.hpp`) where shared
   semantic constraints are useful; multi-facility modules provide umbrella
-  headers such as `Heaps.hpp` and `Probabilistic.hpp`.
+  headers such as `Heaps.hpp`, `Algebra.hpp`, and `Range.hpp`.
 - Doxygen comments with complexity notes; English by default.
 - Tests in `tests/<category>/Test_<Name>.cpp`, demos in
   `examples/<category>/main_<Name>.cc`.
